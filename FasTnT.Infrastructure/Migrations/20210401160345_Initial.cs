@@ -128,6 +128,26 @@ namespace FasTnT.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CorrectiveEventId",
+                schema: "Epcis",
+                columns: table => new
+                {
+                    CorrectiveId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CorrectiveEventId", x => new { x.EventId, x.CorrectiveId });
+                    table.ForeignKey(
+                        name: "FK_CorrectiveEventId_Event_EventId",
+                        column: x => x.EventId,
+                        principalSchema: "Epcis",
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CustomField",
                 schema: "Epcis",
                 columns: table => new
@@ -189,7 +209,7 @@ namespace FasTnT.Infrastructure.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<short>(type: "smallint", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     EventId = table.Column<long>(type: "bigint", nullable: false),
                     Direction = table.Column<short>(type: "smallint", nullable: false)
@@ -301,6 +321,10 @@ namespace FasTnT.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "ContactInformation",
+                schema: "Epcis");
+
+            migrationBuilder.DropTable(
+                name: "CorrectiveEventId",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(

@@ -72,6 +72,20 @@ namespace FasTnT.Infrastructure.Migrations
                     b.ToTable("ContactInformation", "Epcis");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.CorrectiveEventId", b =>
+                {
+                    b.Property<long>("EventId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("CorrectiveId")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("EventId", "CorrectiveId");
+
+                    b.ToTable("CorrectiveEventId", "Epcis");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.CustomField", b =>
                 {
                     b.Property<long>("EventId")
@@ -312,8 +326,8 @@ namespace FasTnT.Infrastructure.Migrations
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
 
-                    b.Property<short>("Type")
-                        .HasColumnType("smallint");
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Id")
                         .HasMaxLength(256)
@@ -385,6 +399,17 @@ namespace FasTnT.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Header");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.CorrectiveEventId", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
+                        .WithMany("CorrectiveEventIds")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.CustomField", b =>
@@ -487,6 +512,8 @@ namespace FasTnT.Infrastructure.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Event", b =>
                 {
+                    b.Navigation("CorrectiveEventIds");
+
                     b.Navigation("CustomFields");
 
                     b.Navigation("Epcs");

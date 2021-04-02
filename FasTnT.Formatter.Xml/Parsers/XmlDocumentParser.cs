@@ -33,10 +33,23 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         public async Task<XDocument> ParseAsync(Stream input, CancellationToken cancellationToken)
         {
-            var document = await XDocument.LoadAsync(input, LoadOptions.None, cancellationToken);
-            document.Validate(_schema, (e, t) => { if (t.Exception != null) throw new EpcisException(ExceptionType.ValidationException, t.Exception.Message); });
+            var document = await LoadDocument(input, cancellationToken);
+            document.Validate(_schema, (e, t) => { if (t.Exception != null) throw new EpcisException(ExceptionType.ValidationException, t.Message); });
 
             return document;
         }
+
+        private static async Task<XDocument> LoadDocument(Stream input, CancellationToken cancellationToken)
+        {
+            try
+            {
+                return await XDocument.LoadAsync(input, LoadOptions.None, cancellationToken);
+            }
+            catch
+            {
+                throw new FormatException("XML is invalud");
+            }
+        }
+
     }
 }

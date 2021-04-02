@@ -246,7 +246,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
             Event.CorrectiveDeclarationTime = DateTime.Parse(element.Element("declarationTime").Value);
             Event.CorrectiveReason = element.Element("reason")?.Value;
-            Event.CorrectiveEventIds.AddRange(element.Element("correctiveEventIDs")?.Elements("correctiveEventID")?.Select(x => x.Value));
+            Event.CorrectiveEventIds.AddRange(element.Element("correctiveEventIDs")?.Elements("correctiveEventID")?.Select(x => new CorrectiveEventId { CorrectiveId = x.Value }));
             ParseExtension(element.Element("extension"), Event, FieldType.ErrorDeclarationExtension);
             ParseFields(element, Event, FieldType.ErrorDeclarationCustomField);
         }

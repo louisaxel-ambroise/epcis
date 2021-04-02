@@ -16,7 +16,7 @@ namespace FasTnT.Application.Queries.Poll
 {
     public class SimpleEventQuery : IEpcisQuery
     {
-        private static readonly IDictionary<string, Action<IQueryable<Event>, QueryParameter>> SimpleParameters = new Dictionary<string, Action<IQueryable<Event>, QueryParameter>>
+        private static readonly IDictionary<string, Func<IQueryable<Event>, QueryParameter, IQueryable<Event>>> SimpleParameters = new Dictionary<string, Func<IQueryable<Event>, QueryParameter, IQueryable<Event>>>
         {
             { "eventType",               (query, param) => query.Where(x => param.Values.Select(Enumeration.GetByDisplayName<EventType>).Contains(x.Type)) },
             { "eventCountLimit",         (query, param) => query.Take(param.GetValue<int>()) },
@@ -30,14 +30,14 @@ namespace FasTnT.Application.Queries.Poll
             { "EQ_readPoint",            (query, param) => query.Where(x => param.Values.Contains(x.ReadPoint)) },
             { "EXISTS_errorDeclaration", (query, param) => query.Where(x => x.CorrectiveDeclarationTime.HasValue) },
             { "EQ_errorReason",          (query, param) => query.Where(x => param.Values.Contains(x.CorrectiveReason)) },
-            { "EQ_correctiveEventID",    (query, param) => query.Where(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce))) },
+            { "EQ_correctiveEventID",    (query, param) => query.Where(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))) },
             //{ "WD_readPoint",            (query, param) => query.Where(new MasterdataHierarchyFilter { Field = EpcisField.ReadPoint, Values = param.Values }) },
             //{ "WD_bizLocation",          (query, param) => query.Where(new MasterdataHierarchyFilter { Field = EpcisField.BusinessLocation, Values = param.Values }) },
             { "EQ_requestId",            (query, param) => query.Where(x => param.Values.Select(int.Parse).Contains(x.Request.Id)) },
             //{ "orderBy",                 (query, param) => query.Where(new OrderFilter { Field = Enumeration.GetByDisplayName<EpcisField>(param.GetValue<string>()) }) },
             //{ "orderDirection",          (query, param) => query.Where(new OrderDirectionFilter { Direction = Enumeration.GetByDisplayName<OrderDirection>(param.GetValue<string>()) }) }
         };
-        private static readonly IDictionary<string, Action<IQueryable<Event>, QueryParameter>> RegexParameters = new Dictionary<string, Action<IQueryable<Event>, QueryParameter>>
+        private static readonly IDictionary<string, Func<IQueryable<Event>, QueryParameter, IQueryable<Event>>> RegexParameters = new Dictionary<string, Func<IQueryable<Event>, QueryParameter, IQueryable<Event>>>
         {
             { "^EQ_(source|destination)_",  (query, param) => query.Where(x => x.SourceDests.Any(sd => sd.Id == param.GetParamNameValue('_', 3, 2) && sd.Direction == param.GetSourceDestinationType() && param.Values.Contains(sd.Type))) },
             { "^EQ_bizTransaction_",        (query, param) => query.Where(x => x.Transactions.Any(t => t.Id == param.GetParamNameValue('_', 3, 2) && param.Values.Contains(t.Id))) },
@@ -72,21 +72,24 @@ namespace FasTnT.Application.Queries.Poll
 
         public async Task<PollResponse> HandleAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
         {
-            var query = _context.Events
-                .AsNoTracking()
-                .Include(x => x.Epcs)
-                .Include(x => x.SourceDests)
-                .Include(x => x.CustomFields)
-                .Include(x => x.Transactions);
+            var query = _context.Events.AsNoTracking();
 
             foreach (var parameter in parameters)
             {
-                ApplyParameter(parameter, query);
+                query = ApplyParameter(parameter, query);
             }
 
-            var result = await query.ToListAsync(cancellationToken);
-
-            CheckEventCountRestriction(result);
+            var eventIds = await query.Select(evt => evt.Id).ToListAsync(cancellationToken);
+            
+            CheckEventCountRestriction(eventIds);
+            
+            var result = await _context.Events.AsSplitQuery()
+                .Include(x => x.Epcs)
+                .Include(x => x.SourceDests)
+                .Include(x => x.CustomFields).ThenInclude(x => x.Children)
+                .Include(x => x.Transactions)
+                .Where(evt => eventIds.Contains(evt.Id))
+                .ToListAsync(cancellationToken);
 
             return new PollResponse
             {
@@ -95,36 +98,34 @@ namespace FasTnT.Application.Queries.Poll
             };
         }
 
-        private void ApplyParameter(QueryParameter parameter, IQueryable<Event> query)
+        private IQueryable<Event> ApplyParameter(QueryParameter parameter, IQueryable<Event> query)
         {
-            if (IsSimpleParameter(parameter, out Action<IQueryable<Event>, QueryParameter> action) || IsRegexParameter(parameter, out action))
+            if (IsSimpleParameter(parameter, out Func<IQueryable<Event>, QueryParameter, IQueryable<Event>> action) || IsRegexParameter(parameter, out action))
             {
                 try
                 {
-                    action(query, parameter);
-
                     if (parameter.Name == "maxEventCount")
                     {
                         _maxEventCount = parameter.GetValue<int>();
                     }
+
+                    return action(query, parameter);
                 }
                 catch (Exception ex)
                 {
                     throw new EpcisException(ExceptionType.QueryParameterException, ex.Message);
                 }
-
-                return;
             }
             
             throw new NotImplementedException($"Query parameter unexpected or not implemented: '{parameter.Name}'");
         }
 
-        private static bool IsSimpleParameter(QueryParameter parameter, out Action<IQueryable<Event>, QueryParameter> action)
+        private static bool IsSimpleParameter(QueryParameter parameter, out Func<IQueryable<Event>, QueryParameter, IQueryable<Event>> action)
         {
             return SimpleParameters.TryGetValue(parameter.Name, out action);
         }
 
-        private static bool IsRegexParameter(QueryParameter parameter, out Action<IQueryable<Event>, QueryParameter> action)
+        private static bool IsRegexParameter(QueryParameter parameter, out Func<IQueryable<Event>, QueryParameter, IQueryable<Event>> action)
         {
             var matchingRegex = RegexParameters.FirstOrDefault(x => Regex.Match(parameter.Name, x.Key, RegexOptions.Singleline).Success);
             action = matchingRegex.Value;
@@ -132,7 +133,7 @@ namespace FasTnT.Application.Queries.Poll
             return matchingRegex.Key != default;
         }
 
-        private void CheckEventCountRestriction(IEnumerable<Event> result)
+        private void CheckEventCountRestriction(IEnumerable<long> result)
         {
             if (_maxEventCount.HasValue && result.Count() > _maxEventCount)
             {

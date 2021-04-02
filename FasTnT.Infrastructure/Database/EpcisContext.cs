@@ -5,9 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,10 +15,20 @@ namespace FasTnT.Infrastructure.Database
     {
         private int _currentNumber = 0;
         
-        public DbSet<Request> Requests { get; init; }
-        public DbSet<Event> Events { get; init; }
+        public DbSet<Request> Requests { get; private set; }
+        public DbSet<Event> Events { get; private set; }
 
-        public EpcisContext(DbContextOptions<EpcisContext> options) : base(options) { }
+        public EpcisContext(DbContextOptions<EpcisContext> options) : base(options) 
+        { 
+            ChangeTracker.AutoDetectChangesEnabled = false;
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ChangeTracker.DetectChanges();
+
+            return base.SaveChangesAsync(cancellationToken);
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -106,7 +114,6 @@ namespace FasTnT.Infrastructure.Database
                 entity.ToTable(nameof(Event), nameof(EpcisSchema.Epcis));
                 entity.HasKey(x => x.Id);
                 entity.Property(x => x.Id).IsRequired(true).UseIdentityColumn(1, 1);
-                entity.Property(x => x.CaptureTime).IsRequired(true);
                 entity.Property(x => x.EventTime).IsRequired(true);
                 entity.Property(x => x.Type).IsRequired(true).HasConversion(x => x.Id, x => Enumeration.GetById<EventType>(x));
                 entity.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => new TimeZoneOffset { Value = x });
@@ -123,8 +130,8 @@ namespace FasTnT.Infrastructure.Database
                 entity.HasMany(x => x.Transactions).WithOne(x => x.Event).HasForeignKey("EventId");
                 entity.HasMany(x => x.SourceDests).WithOne(x => x.Event).HasForeignKey("EventId");
                 entity.HasMany(x => x.CustomFields).WithOne(x => x.Event).HasForeignKey("EventId");
+                entity.HasMany(x => x.CorrectiveEventIds).WithOne(x => x.Event).HasForeignKey("EventId");
                 entity.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId");
-                entity.Ignore(x => x.CorrectiveEventIds); // TODO: map
             }
             {
                 var entity = modelBuilder.Entity<Epc>();
@@ -139,11 +146,18 @@ namespace FasTnT.Infrastructure.Database
                 entity.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("EventId");
             }
             {
+                var entity = modelBuilder.Entity<CorrectiveEventId>();
+                entity.ToTable(nameof(CorrectiveEventId), nameof(EpcisSchema.Epcis));
+                entity.HasKey("EventId", nameof(CorrectiveEventId.CorrectiveId));
+                entity.Property<long>("EventId");
+                entity.Property(x => x.CorrectiveId).IsRequired(true).HasMaxLength(256);
+            }
+            {
                 var entity = modelBuilder.Entity<SourceDestination>();
                 entity.ToTable(nameof(SourceDestination), nameof(EpcisSchema.Epcis));
                 entity.HasKey("EventId", nameof(SourceDestination.Type), nameof(SourceDestination.Id));
                 entity.Property<long>("EventId");
-                entity.Property(x => x.Type).HasConversion<short>().IsRequired(true);
+                entity.Property(x => x.Type).IsRequired(true);
                 entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
                 entity.Property(x => x.Direction).IsRequired(true).HasConversion(x => x.Id, x => Enumeration.GetById<SourceDestinationType>(x));
                 entity.HasOne(x => x.Event).WithMany(x => x.SourceDests).HasForeignKey("EventId");
@@ -175,21 +189,19 @@ namespace FasTnT.Infrastructure.Database
             }
         }
 
-        internal int NextInteger() { _currentNumber = _currentNumber+1; return _currentNumber; }
-    }
+        internal int NextInteger() { _currentNumber += 1; return _currentNumber; }
 
-    internal class CustomFieldValueGenerator : ValueGenerator<int>
-    {
-        public override bool GeneratesTemporaryValues { get; }
-
-        public override int Next([NotNull] EntityEntry entry)
+        internal class CustomFieldValueGenerator : ValueGenerator<int>
         {
-            if (entry.Entity is not CustomField customField) 
-                throw new ArgumentNullException($"{nameof(CustomFieldValueGenerator)} should be used only for {nameof(CustomField)}");
-            if (entry.Context is not EpcisContext context) 
-                throw new ArgumentNullException($"{nameof(CustomFieldValueGenerator)} should be used only from {nameof(EpcisContext)}");
+            public override bool GeneratesTemporaryValues { get; }
 
-            return context.NextInteger(); ;
+            public override int Next([NotNull] EntityEntry entry)
+            {
+                if (entry.Context is not EpcisContext context)
+                    throw new ArgumentNullException($"{nameof(CustomFieldValueGenerator)} should be used only from {nameof(EpcisContext)} DB Context");
+
+                return context.NextInteger();
+            }
         }
     }
 }

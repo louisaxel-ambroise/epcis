@@ -22,7 +22,7 @@ namespace FasTnT.Domain.Model
         public string TransformationId { get; set; }
         public DateTime? CorrectiveDeclarationTime { get; set; }
         public string CorrectiveReason { get; set; }
-        public List<string> CorrectiveEventIds { get; set; } = new List<string>();
+        public List<CorrectiveEventId> CorrectiveEventIds { get; set; } = new List<CorrectiveEventId>();
         public List<Epc> Epcs { get; set; } = new List<Epc>();
         public List<BusinessTransaction> Transactions { get; set; } = new List<BusinessTransaction>();
         public List<SourceDestination> SourceDests { get; set; } = new List<SourceDestination>();

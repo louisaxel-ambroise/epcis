@@ -11,6 +11,7 @@ namespace FasTnT.Formatter.Xml.Parsers
         {
             var request = new Request
             {
+                CaptureDate = DateTime.UtcNow,
                 DocumentTime = DateTime.Parse(root.Attribute("creationDate").Value),
                 SchemaVersion = root.Attribute("schemaVersion").Value
             };
@@ -27,7 +28,7 @@ namespace FasTnT.Formatter.Xml.Parsers
             switch (element.Name.LocalName)
             {
                 case "EventList":
-                    request.Events.AddRange(XmlEventParser.ParseEvents(element)); break;
+                    request.Events = XmlEventParser.ParseEvents(element).ToList(); break;
             }
         }
     }

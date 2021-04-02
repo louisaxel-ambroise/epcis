@@ -1,15 +1,16 @@
+using Carter;
 using FasTnT.Application;
+using FasTnT.Application.Behaviors;
 using FasTnT.Application.Queries.Poll;
 using FasTnT.Application.Services;
-using FasTnT.Host.v1_2;
 using FasTnT.Infrastructure.Database;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Reflection;
 
 namespace FasTnT.Host
 {
@@ -17,11 +18,16 @@ namespace FasTnT.Host
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IEpcisQuery, SimpleEventQuery>();
-            services.AddDbContext<EpcisContext>(o => o.UseSqlServer("Server=(local);Database=EpcisEfCore;Integrated Security=true;").EnableSensitiveDataLogging());
-            services.AddMediatR(Assembly.GetAssembly(typeof(ICommand<>)));
+            var contextOptions = new DbContextOptionsBuilder<EpcisContext>().UseSqlServer("Server=(local);Database=EpcisEfCore;Integrated Security=true;");
 
-            var context = new EpcisContext(new DbContextOptionsBuilder<EpcisContext>().UseSqlServer("Server=(local);Database=EpcisEfCore;Integrated Security=true;").Options);
+            services.AddDbContext<EpcisContext>(o => o.UseSqlServer("Server=(local);Database=EpcisEfCore;Integrated Security=true;").EnableSensitiveDataLogging());
+            services.AddMediatR(typeof(ICommand<>).Assembly);
+            services.AddValidatorsFromAssembly(typeof(CommandValidationBehavior<,>).Assembly);
+            services.AddTransient<IEpcisQuery, SimpleEventQuery>();
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
+            services.AddCarter(o => o.OpenApi.Enabled = true);
+
+            var context = new EpcisContext(contextOptions.Options);
             context.Database.Migrate();
         }
 
@@ -31,11 +37,10 @@ namespace FasTnT.Host
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseExceptionHandler("/epciserror");
 
             app.UseRouting();
-
-            app.UseCaptureEpcis1_2("/v1_2/Capture.svc");
-            app.UseQueryEpcis1_2("/v1_2/Query.svc");
+            app.UseEndpoints(builder => builder.MapCarter());
         }
     }
 }
