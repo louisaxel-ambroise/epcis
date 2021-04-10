@@ -13,7 +13,7 @@ namespace FasTnT.Infrastructure.Database
 {
     public class EpcisContext : DbContext
     {
-        private int _currentNumber = 0;
+        private int _generationIndex = 0;
         
         public DbSet<Request> Requests { get; private set; }
         public DbSet<Event> Events { get; private set; }
@@ -189,7 +189,7 @@ namespace FasTnT.Infrastructure.Database
             }
         }
 
-        internal int NextInteger() { _currentNumber += 1; return _currentNumber; }
+        internal int NextInteger() { return _generationIndex += 1; }
 
         internal class CustomFieldValueGenerator : ValueGenerator<int>
         {

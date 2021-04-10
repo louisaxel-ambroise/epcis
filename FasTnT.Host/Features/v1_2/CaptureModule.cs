@@ -22,9 +22,17 @@ namespace FasTnT.Host.Features.v1_2
 
                     await res.WriteAsync(XmlResponseFormatter.FormatCaptureResponse(response));
                 }
-                catch(Exception ex)
+                catch (FormatException)
                 {
-                    res.StatusCode = ex is FormatException ? 400 : ex is EpcisException ? 422 : 500;
+                    res.StatusCode = 400;
+                }
+                catch(EpcisException)
+                {
+                    res.StatusCode = 422;
+                }
+                catch
+                {
+                    res.StatusCode =  500;
                 }
             });
         }
