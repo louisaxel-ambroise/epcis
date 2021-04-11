@@ -108,9 +108,9 @@ namespace FasTnT.Application.Queries.Poll
 
         private static IQueryable<Event> ApplyMatchParameter(QueryParameter param, IQueryable<Event> query)
         {
-            for (int i = 0; i < param.Values.Length; i++)
+            foreach (var value in param.Values)
             {
-                query = query.Where(x => x.Epcs.Any(e => param.GetMatchEpcTypes().Contains(e.Type) && EF.Functions.Like(e.Id, param.Values[i].Replace("*", "%"))));
+                query = query.Where(x => x.Epcs.Any(e => param.GetMatchEpcTypes().Contains(e.Type) && EF.Functions.Like(e.Id, value.Replace("*", "%"))));
             }
 
             return query;
