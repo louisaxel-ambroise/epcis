@@ -8,7 +8,7 @@ namespace FasTnT.Domain.Model
         public string Type { get; set; }
         public string Id { get; set; }
 
-        public List<MasterDataAttribute> Attributes { get; set; } = new List<MasterDataAttribute>();
-        public List<string> Children { get; set; } = new List<string>();
+        public List<MasterDataAttribute> Attributes { get; set; } = new();
+        public List<string> Children { get; set; } = new();
     }
 }

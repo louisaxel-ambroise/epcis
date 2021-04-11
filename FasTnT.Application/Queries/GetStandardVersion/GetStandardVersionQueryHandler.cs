@@ -7,7 +7,7 @@ namespace FasTnT.Application.Queries.GetStandardVersion
     {
         public Task<GetStandardVersionResponse> Handle(GetStandardVersionQuery request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(new GetStandardVersionResponse { Version = "1.2" });
+            return Task.FromResult<GetStandardVersionResponse>(new() { Version = "1.2" });
         }
     }
 }

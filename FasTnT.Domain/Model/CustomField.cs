@@ -14,6 +14,6 @@ namespace FasTnT.Domain.Model
         public double? NumericValue { get; set; }
         public DateTime? DateValue { get; set; }
         public CustomField Parent { get; set; }
-        public List<CustomField> Children { get; set; } = new List<CustomField>();
+        public List<CustomField> Children { get; set; } = new();
     }
 }

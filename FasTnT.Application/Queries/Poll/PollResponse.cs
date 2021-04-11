@@ -7,7 +7,7 @@ namespace FasTnT.Application.Queries.Poll
     {
         public string QueryName { get; init; }
         public string SubscriptionId { get; init; }
-        public IList<Event> EventList { get; init; } = new List<Event>();
-        public IList<MasterData> MasterdataList { get; init; } = new List<MasterData>();
+        public List<Event> EventList { get; init; } = new();
+        public List<MasterData> MasterdataList { get; init; } = new();
     }
 }

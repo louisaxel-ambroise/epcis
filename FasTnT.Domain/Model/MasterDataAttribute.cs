@@ -7,6 +7,6 @@ namespace FasTnT.Domain.Model
         public MasterData MasterData { get; set; }
         public string Id { get; set; }
         public string Value { get; set; }
-        public List<MasterDataField> Fields { get; set; } = new List<MasterDataField>();
+        public List<MasterDataField> Fields { get; set; } = new();
     }
 }

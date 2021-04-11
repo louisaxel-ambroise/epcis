@@ -53,10 +53,10 @@ namespace FasTnT.Application.Queries.Poll
                 .Where(evt => eventIds.Contains(evt.Id))
                 .ToListAsync(cancellationToken);
 
-            return new PollResponse
+            return new()
             {
                 QueryName = Name,
-                EventList = result.ToArray()
+                EventList = result.ToList()
             };
         }
 

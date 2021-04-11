@@ -10,7 +10,7 @@ namespace FasTnT.Domain.Model
         public DateTime CaptureDate { get; set; }
         public DateTime DocumentTime { get; set; }
         public string SchemaVersion { get; set; }
-        public IList<Event> Events { get; set; } = new List<Event>();
-        public IList<MasterData> Masterdata { get; set; } = new List<MasterData>();
+        public List<Event> Events { get; set; } = new();
+        public List<MasterData> Masterdata { get; set; } = new();
     }
 }

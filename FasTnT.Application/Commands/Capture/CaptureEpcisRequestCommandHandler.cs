@@ -18,7 +18,7 @@ namespace FasTnT.Application.Commands
             _context.Requests.Add(request.Request);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new CaptureEpcisRequestResponse
+            return new()
             {
                 CommandId = request.Request.Id.ToString()
             };

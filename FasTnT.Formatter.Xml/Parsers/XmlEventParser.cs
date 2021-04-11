@@ -290,7 +290,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         private static BusinessTransaction CreateBusinessTransaction(XElement element)
         {
-            return new BusinessTransaction
+            return new()
             {
                 Id = element.Value,
                 Type = element.Attribute("type").Value
@@ -299,7 +299,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         private static SourceDestination CreateSourceDest(XElement element, SourceDestinationType destination)
         {
-            return new SourceDestination
+            return new()
             {
                 Type = element.Attribute("type").Value,
                 Id = element.Value,
@@ -327,7 +327,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         public static CustomField ParseAttribute(XAttribute element)
         {
-            return new CustomField
+            return new()
             {
                 Type = FieldType.Attribute,
                 Name = element.Name.LocalName,
