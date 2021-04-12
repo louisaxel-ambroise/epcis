@@ -29,14 +29,12 @@ namespace FasTnT.Formatter.Xml.Parsers
         {
             foreach (var element in root.Elements())
             {
-                if (RootParsers.TryGetValue(element.Name.LocalName, out Func<XElement, Event> parser))
-                {
-                    yield return parser(element);
-                }
-                else
+                if (!RootParsers.TryGetValue(element.Name.LocalName, out Func<XElement, Event> parser))
                 {
                     throw new Exception($"Element '{element.Name.LocalName}' not expected in this context");
                 }
+
+                yield return parser(element);
             }
         }
 
@@ -44,14 +42,12 @@ namespace FasTnT.Formatter.Xml.Parsers
         {
             var eventElement = element.Elements().First();
 
-            if (ExtensionParsers.TryGetValue(eventElement.Name.LocalName, out Func<XElement, Event> parser))
-            {
-                return parser(eventElement);
-            }
-            else
+            if (!ExtensionParsers.TryGetValue(eventElement.Name.LocalName, out Func<XElement, Event> parser))
             {
                 throw new Exception($"Element '{eventElement.Name.LocalName}' not expected in this context");
             }
+
+            return parser(eventElement);
         }
 
         public static Event ParseObjectEvent(XElement eventRoot)

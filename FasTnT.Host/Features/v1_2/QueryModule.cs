@@ -26,8 +26,8 @@ namespace FasTnT.Host.Features.v1_2
                     var response = queryParser.Action switch
                     {
                         "Poll" => XmlResponseFormatter.FormatPoll(await mediator.Send(queryParser.ParsePollQuery())),
-                        "GetVendorVersion" => XmlResponseFormatter.FormatVendorVersion(await mediator.Send(queryParser.ParseGetVendorVersion())),
-                        "GetStandardVersion" => XmlResponseFormatter.FormatStandardVersion(await mediator.Send(queryParser.ParseGetStandardVersion())),
+                        "GetVendorVersion" => XmlResponseFormatter.FormatVendorVersion(await mediator.Send(SoapQueryParser.ParseGetVendorVersion())),
+                        "GetStandardVersion" => XmlResponseFormatter.FormatStandardVersion(await mediator.Send(SoapQueryParser.ParseGetStandardVersion())),
                         _ => throw new Exception()
                     };
 

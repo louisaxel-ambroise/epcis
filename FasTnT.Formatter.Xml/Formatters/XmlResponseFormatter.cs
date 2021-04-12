@@ -3,7 +3,6 @@ using FasTnT.Application.Queries.GetStandardVersion;
 using FasTnT.Application.Queries.Poll;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Formatter.Xml.Utils;
-using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace FasTnT.Formatter.Xml
@@ -12,19 +11,11 @@ namespace FasTnT.Formatter.Xml
     {
         public static string FormatPoll(PollResponse response)
         {
-            var resultName = "EventList";
-            var resultList = default(IEnumerable<XElement>);
-
-            if (response.EventList.Count > 0)
+            var (resultName, resultList) = response.MasterdataList.Count switch
             {
-                resultName = "EventList";
-                resultList = XmlEventFormatter.FormatList(response.EventList);
-            }
-            else if (response.MasterdataList.Count > 0)
-            {
-                resultName = "VocabularyList";
-                //resultList = XmlMasterdataFormatter.FormatMasterData(response.MasterdataList, cancellationToken);
-            }
+                > 0  => ("VocabularyList", default), //XmlMasterdataFormatter.FormatMasterData(response.MasterdataList);
+                <= 0 => ("EventList", XmlEventFormatter.FormatList(response.EventList))
+            };
 
             var queryResults = new XElement(XName.Get("QueryResults", Namespaces.Query),
                 new XElement("queryName", response.QueryName),

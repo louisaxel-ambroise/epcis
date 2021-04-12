@@ -28,15 +28,15 @@ namespace FasTnT.Formatter.Xml
             var queryName = _queryElement.Element("queryName").Value;
             var parameters = ParsePollParameters(_queryElement.Element("params")?.Elements()).ToArray();
 
-            return new PollQuery
+            return new()
             {
                 QueryName = queryName,
                 Parameters = parameters
             };
         }
 
-        public GetVendorVersionQuery ParseGetVendorVersion() => new GetVendorVersionQuery();
-        public GetStandardVersionQuery ParseGetStandardVersion() => new GetStandardVersionQuery();
+        public static GetVendorVersionQuery ParseGetVendorVersion() => new();
+        public static GetStandardVersionQuery ParseGetStandardVersion() => new();
 
         internal static IEnumerable<QueryParameter> ParsePollParameters(IEnumerable<XElement> elements)
         {
@@ -45,7 +45,7 @@ namespace FasTnT.Formatter.Xml
                 var name = element.Element("name")?.Value?.Trim();
                 var values = element.Element("value")?.HasElements ?? false ? element.Element("value").Elements().Select(x => x.Value) : new[] { element.Element("value")?.Value };
 
-                yield return new QueryParameter
+                yield return new()
                 {
                     Name = name,
                     Values = values.ToArray()
@@ -58,15 +58,10 @@ namespace FasTnT.Formatter.Xml
             var document = await XDocument.LoadAsync(stream, LoadOptions.None, cancellationToken);
             var envelopBody = document.Element(XName.Get("Envelope", Namespaces.SoapEnvelop))?.Element(XName.Get("Body", Namespaces.SoapEnvelop));
 
-            if (envelopBody == null || !envelopBody.HasElements)
-            {
-                throw new Exception("Malformed SOAP request");
-            }
-            else
-            {
-                var action = envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query).Name.LocalName;
-                return new SoapQueryParser(envelopBody.Elements().Single(), action);
-            }
+            if (envelopBody == null || !envelopBody.HasElements) throw new Exception("Malformed SOAP request");
+
+            var action = envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query).Name.LocalName;
+            return new(envelopBody.Elements().Single(), action);
         }
     }
 }
