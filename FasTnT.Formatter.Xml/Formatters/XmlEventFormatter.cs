@@ -3,7 +3,6 @@ using FasTnT.Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Xml.Linq;
 
 namespace FasTnT.Formatter.Xml
@@ -178,16 +177,12 @@ namespace FasTnT.Formatter.Xml
 
         private static XElement CreateSourceList(Event evt)
         {
-            return new XElement("sourceList", evt.SourceDests
-                .Where(x => x.Direction == SourceDestinationType.Source)
-                .Select(x => new XElement("source", new XAttribute("type", x.Type), x.Id)));
+            return new XElement("sourceList", evt.Sources.Select(x => new XElement("source", new XAttribute("type", x.Type), x.Id)));
         }
 
         private static XElement CreateDestinationList(Event evt)
         {
-            return new XElement("destinationList", evt.SourceDests
-                .Where(x => x.Direction == SourceDestinationType.Destination)
-                .Select(x => new XElement("destination", new XAttribute("type", x.Type), x.Id)));
+            return new XElement("destinationList", evt.Destinations.Select(x => new XElement("destination", new XAttribute("type", x.Type), x.Id)));
         }
 
         private static XElement CreateFromCustomFields(Event evt, FieldType type, string elementName)

@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Infrastructure.Database
+﻿namespace FasTnT.Infrastructure.Configuration
 {
     enum EpcisSchema
     {

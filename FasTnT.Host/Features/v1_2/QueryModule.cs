@@ -1,9 +1,11 @@
 ﻿using FasTnT.Formatter.Xml;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using System.IO;
 using System;
 using FasTnT.Domain.Exceptions;
+using FasTnT.Host.Extensions;
+using System.Reflection;
+using FasTnT.Application.Queries.Poll;
+using FasTnT.Application.Queries.GetStandardVersion;
 
 namespace FasTnT.Host.Features.v1_2
 {
@@ -13,7 +15,8 @@ namespace FasTnT.Host.Features.v1_2
         {
             Get("query.svc", async (req, res) =>
             {
-                await res.WriteAsync("WSDL");
+                res.ContentType = "text/xml";
+                await Assembly.GetExecutingAssembly().GetManifestResourceStream(@"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl").CopyToAsync(res.Body);
             });
 
             Post("query.svc", async (req, res) =>
@@ -22,22 +25,24 @@ namespace FasTnT.Host.Features.v1_2
                 
                 try
                 {
-                    var queryParser = await SoapQueryParser.ParseEnvelop(req.Body, req.HttpContext.RequestAborted);
-                    var response = queryParser.Action switch
+                    var queryParser = await req.ParseSoapEnvelope(req.HttpContext.RequestAborted);
+                    var response = queryParser switch
                     {
-                        "Poll" => XmlResponseFormatter.FormatPoll(await mediator.Send(queryParser.ParsePollQuery())),
-                        "GetVendorVersion" => XmlResponseFormatter.FormatVendorVersion(await mediator.Send(SoapQueryParser.ParseGetVendorVersion())),
-                        "GetStandardVersion" => XmlResponseFormatter.FormatStandardVersion(await mediator.Send(SoapQueryParser.ParseGetStandardVersion())),
+                        PollQuery poll => XmlResponseFormatter.FormatPoll(await mediator.Send(poll)),
+                        GetVendorVersionQuery getVendorVersion => XmlResponseFormatter.FormatVendorVersion(await mediator.Send(getVendorVersion)),
+                        GetStandardVersionQuery getStandardVersion => XmlResponseFormatter.FormatStandardVersion(await mediator.Send(getStandardVersion)),
+                        // TODO: subscription queries
                         _ => throw new Exception()
                     };
 
-                    await res.WriteAsync(response, req.HttpContext.RequestAborted);
+                    await res.FormatSoap(response, req.HttpContext.RequestAborted);
                 }
                 catch(EpcisException ex)
                 {
-                    await res.WriteAsync(XmlResponseFormatter.FormatError(ex), req.HttpContext.RequestAborted);
+                    await res.FormatSoap(XmlResponseFormatter.FormatError(ex), req.HttpContext.RequestAborted);
                 }
             });
         }
+
     }
 }

@@ -1,8 +1,5 @@
-﻿using FasTnT.Formatter.Xml;
-using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using FasTnT.Formatter.Xml.Parsers;
-using System.IO;
 using FasTnT.Domain.Exceptions;
 using System;
 
@@ -20,7 +17,7 @@ namespace FasTnT.Host.Features.v1_2
                     var request = await CaptureRequestParser.Parse(req.Body, req.HttpContext.RequestAborted);
                     var response = await mediator.Send(request, req.HttpContext.RequestAborted);
 
-                    await res.WriteAsync(XmlResponseFormatter.FormatCaptureResponse(response));
+                    res.StatusCode = 201;
                 }
                 catch (FormatException)
                 {

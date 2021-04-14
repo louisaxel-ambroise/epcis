@@ -3,6 +3,7 @@ using FasTnT.Application;
 using FasTnT.Application.Behaviors;
 using FasTnT.Application.Queries.Poll;
 using FasTnT.Application.Services;
+using FasTnT.Infrastructure.Configuration;
 using FasTnT.Infrastructure.Database;
 using FluentValidation;
 using MediatR;
@@ -20,6 +21,7 @@ namespace FasTnT.Host
         {
             var contextOptions = new DbContextOptionsBuilder<EpcisContext>().UseSqlServer("Server=(local);Database=EpcisEfCore;Integrated Security=true;");
 
+            services.AddScoped<IdentityGenerator>();
             services.AddDbContext<EpcisContext>(o => o.UseSqlServer("Server=(local);Database=EpcisEfCore;Integrated Security=true;").EnableSensitiveDataLogging());
             services.AddMediatR(typeof(ICommand<>).Assembly);
             services.AddValidatorsFromAssembly(typeof(CommandValidationBehavior<,>).Assembly);

@@ -1,32 +1,28 @@
 ﻿using FasTnT.Application.Queries.Poll;
 using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model;
 using System;
 using System.Globalization;
-using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FasTnT.Domain.Utils
 {
     public static class QueryParameterExtensions
     {
-        public static T GetValue<T>(this QueryParameter parameter)
+        public static int GetIntValue(this QueryParameter parameter) => int.Parse(parameter.Value());
+        public static double GetNumeric(this QueryParameter parameter) => double.Parse(parameter.Value());
+        public static DateTime GetDate(this QueryParameter parameter) => DateTime.Parse(parameter.Value(), null, DateTimeStyles.AdjustToUniversal);
+
+        public static bool IsDateTime(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), "^([0-9]{4})-([0-9]{2})-([0-9]{2})");
+        public static bool IsNumeric(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), @"^-?\d+(?:\.\d+)?$");
+
+        public static string Value(this QueryParameter parameter)
         {
             if (parameter.Values.Length != 1)
             {
                 throw new Exception($"A single value is expected, but multiple were found. Parameter name '{parameter.Name}'");
             }
 
-            return ChangeType<T>(parameter.Values.Single());
-        }
-
-        public static object GetComparisonValue(this QueryParameter parameter)
-        {
-            if (parameter.Values.Length != 1)
-            {
-                throw new Exception($"A single value is expected, but multiple were found. Parameter name '{parameter.Name}'");
-            }
-
-            return DateTime.TryParse(parameter.Values[0], null, DateTimeStyles.AdjustToUniversal, out DateTime date) ? (object) date : ChangeType<double>(parameter.Values[0]);
+            return parameter.Values[0];
         }
 
         public static SourceDestinationType GetSourceDestinationType(this QueryParameter parameter)
@@ -34,31 +30,18 @@ namespace FasTnT.Domain.Utils
             return parameter.Name.StartsWith("EQ_source") ? SourceDestinationType.Source : SourceDestinationType.Destination;
         }
 
-        public static string GetParamNameValue(this QueryParameter parameter, char splitChar, int splitCount, int valueIndex)
-        {
-            return parameter.Name.Split(splitChar, splitCount)[valueIndex];
-        }
+        public static string GetSimpleId(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
 
-        public static CustomField GetField(this QueryParameter parameter, FieldType type, bool inner)
-        {
-            var parts = parameter.Name.Split('_');
-            var nameIndex = type == FieldType.CustomField ? inner ? 2 : 1 : inner ? 3 : 2;
-            var splittedName = parts[nameIndex].Split('#');
+        public static string InnerIlmdName(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[1];
+        public static string InnerIlmdNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[0];
+        public static string IlmdName(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[1];
+        public static string IlmdNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[0];
+        public static string InnerFieldName(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[1];
+        public static string InnerFieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[0];
+        public static string FieldName(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[1];
+        public static string FieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[0];
 
-            return new CustomField
-            {
-                Namespace = splittedName[0],
-                Name = splittedName[1],
-                Type = type
-            };
-        }
-
-        public static string GetAttributeName(this QueryParameter parameter)
-        {
-            var parts = parameter.Name.Split('_', 3);
-
-            return parts[2];
-        }
+        public static string GetAttributeName(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
 
         public static EpcType[] GetMatchEpcTypes(this QueryParameter parameter)
         {
@@ -77,22 +60,6 @@ namespace FasTnT.Domain.Utils
                 "anyEpcClass"    => new[] { EpcType.Quantity, EpcType.InputQuantity, EpcType.OutputQuantity },
                 _                => throw new Exception($"Unknown 'MATCH_*' parameter: '{parameter.Name}'")
             };
-        }
-
-        private static T ChangeType<T>(string value)
-        {
-            if (typeof(T) == typeof(string))
-                return (T)Convert.ChangeType(value, typeof(T));
-            if (typeof(T) == typeof(DateTime))
-                return (T)Convert.ChangeType(DateTime.Parse(value), typeof(T));
-            if (typeof(T) == typeof(int))
-                return (T)Convert.ChangeType(int.Parse(value), typeof(T));
-            if (typeof(T) == typeof(double))
-                return (T)Convert.ChangeType(double.Parse(value), typeof(T));
-            if (typeof(T) == typeof(bool))
-                return (T)Convert.ChangeType(bool.Parse(value), typeof(T));
-        
-            throw new Exception($"Invalid value type: '{typeof(T).Name}'");
         }
     }
 }

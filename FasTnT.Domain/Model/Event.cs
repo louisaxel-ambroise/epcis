@@ -25,7 +25,8 @@ namespace FasTnT.Domain.Model
         public List<CorrectiveEventId> CorrectiveEventIds { get; set; } = new();
         public List<Epc> Epcs { get; set; } = new List<Epc>();
         public List<BusinessTransaction> Transactions { get; set; } = new();
-        public List<SourceDestination> SourceDests { get; set; } = new();
+        public List<Source> Sources { get; set; } = new();
+        public List<Destination> Destinations { get; set; } = new();
         public List<CustomField> CustomFields { get; set; } = new();
     }
 }

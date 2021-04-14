@@ -9,7 +9,7 @@ namespace FasTnT.Formatter.Xml
 {
     public static class XmlResponseFormatter
     {
-        public static string FormatPoll(PollResponse response)
+        public static XElement FormatPoll(PollResponse response)
         {
             var (resultName, resultList) = response.MasterdataList.Count switch
             {
@@ -23,34 +23,27 @@ namespace FasTnT.Formatter.Xml
                 new XElement("resultsBody", new XElement(resultName, resultList))
             );
 
-            return SoapResponseBuilder.WrapSoap11(queryResults);
+            return queryResults;
         }
 
-        public static string FormatError(EpcisException exception)
+        public static XElement FormatError(EpcisException exception)
         {
             var reason = !string.IsNullOrEmpty(exception.Message) ? new XElement("reason", exception.Message) : null;
             var severity = (exception.Severity != null) ? new XElement("severity", exception.Severity.DisplayName) : null;
 
-            return new XElement(exception.ExceptionType.DisplayName, reason, severity).ToString();
+            return new XElement(exception.ExceptionType.DisplayName, reason, severity);
         }
 
-        public static string FormatVendorVersion(GetVendorVersionResponse response)
+        public static XElement FormatVendorVersion(GetVendorVersionResponse response)
         {
-            var formatted = new XElement(XName.Get("GetVendorVersionResult", Namespaces.Query), response.Version);
-
-            return SoapResponseBuilder.WrapSoap11(formatted);
+            return new XElement(XName.Get("GetVendorVersionResult", Namespaces.Query), response.Version);
         }
 
-        public static string FormatStandardVersion(GetStandardVersionResponse response)
+        public static XElement FormatStandardVersion(GetStandardVersionResponse response)
         {
-            var formatted = new XElement(XName.Get("GetStandardVersionResult", Namespaces.Query), response.Version);
-
-            return SoapResponseBuilder.WrapSoap11(formatted);
+            return new XElement(XName.Get("GetStandardVersionResult", Namespaces.Query), response.Version);
         }
 
-        public static string FormatCaptureResponse(CaptureEpcisRequestResponse _)
-        {
-            return string.Empty;
-        }
+        public static XElement FormatCaptureResponse(CaptureEpcisRequestResponse _) => default;
     }
 }

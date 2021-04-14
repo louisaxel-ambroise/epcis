@@ -15,6 +15,10 @@ namespace FasTnT.Host
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseKestrel(options =>
+                    {
+                        options.AllowSynchronousIO = true;
+                    });
                 });
     }
 }

@@ -267,14 +267,14 @@ namespace FasTnT.Formatter.Xml.Parsers
         {
             if (element == null || element.IsEmpty) return;
 
-            Event.SourceDests.AddRange(element.Elements("source").Select(x => CreateSourceDest(x, SourceDestinationType.Source)));
+            Event.Sources.AddRange(element.Elements("source").Select(CreateSource));
         }
 
         internal static void ParseDestinations(XElement element, Event Event)
         {
             if (element == null || element.IsEmpty) return;
 
-            Event.SourceDests.AddRange(element.Elements("destination").Select(x => CreateSourceDest(x, SourceDestinationType.Destination)));
+            Event.Destinations.AddRange(element.Elements("destination").Select(CreateDest));
         }
 
         internal static void ParseTransactions(XElement element, Event Event)
@@ -293,14 +293,14 @@ namespace FasTnT.Formatter.Xml.Parsers
             };
         }
 
-        private static SourceDestination CreateSourceDest(XElement element, SourceDestinationType destination)
+        private static Source CreateSource(XElement element)
         {
-            return new()
-            {
-                Type = element.Attribute("type").Value,
-                Id = element.Value,
-                Direction = destination
-            };
+            return new() { Type = element.Attribute("type").Value, Id = element.Value };
+        }
+
+        private static Destination CreateDest(XElement element)
+        {
+            return new() { Type = element.Attribute("type").Value, Id = element.Value };
         }
 
         public static CustomField ParseCustomFields(XElement element, FieldType fieldType)
