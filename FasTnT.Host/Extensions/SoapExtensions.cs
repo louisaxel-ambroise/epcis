@@ -21,7 +21,7 @@ namespace FasTnT.Host.Extensions
                 new XElement(XName.Get("Body", Namespaces.SoapEnvelop), element)
             ));
 
-            using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings() { Async = true });
+            using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true });
 
             await envelope.WriteToAsync(xmlWriter, cancellationToken);
         }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Infrastructure.Configuration
 {
-    internal class EpcisModelConfiguration
+    internal static class EpcisModelConfiguration
     {
         internal static void Apply(ModelBuilder modelBuilder)
         {
