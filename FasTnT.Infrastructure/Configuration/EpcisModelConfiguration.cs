@@ -160,7 +160,7 @@ namespace FasTnT.Infrastructure.Configuration
                 entity.Property<long>("EventId");
                 entity.Property<int?>("ParentId").IsRequired(false);
                 entity.HasKey("EventId", "FieldId");
-                entity.Property(x => x.Type).IsRequired(true).HasConversion(x => x.Id, x => Enumeration.GetById<FieldType>(x)); ;
+                entity.Property(x => x.Type).IsRequired(true).HasConversion(x => x.Id, x => Enumeration.GetById<FieldType>(x));
                 entity.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
                 entity.Property(x => x.Namespace).HasMaxLength(256).IsRequired(false);
                 entity.Property(x => x.TextValue).IsRequired(false);

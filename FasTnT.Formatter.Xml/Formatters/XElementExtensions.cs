@@ -15,10 +15,10 @@ namespace FasTnT.Formatter.Xml
 
         public static void AddIfNotNull(this XElement destination, IEnumerable<XElement> children)
         {
-            if (children == null || !children.Any()) return;
-            if (children.All(x => x.IsEmpty)) return;
-
-            destination.Add(children.Where(x => !x.IsEmpty));
+            if (children != null && children.Any(x => !x.IsEmpty))
+            {
+                destination.Add(children.Where(x => !x.IsEmpty));
+            }
         }
     }
 }

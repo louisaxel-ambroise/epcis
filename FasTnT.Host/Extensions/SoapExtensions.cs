@@ -12,8 +12,7 @@ namespace FasTnT.Host.Extensions
 {
     public static class SoapExtensions
     {
-        private static readonly XAttribute[] CommonAttributes = 
-            new XAttribute[] { new(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new(XNamespace.Xmlns + "epcisq", Namespaces.Query) };
+        private static readonly XAttribute[] CommonAttributes = { new(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new(XNamespace.Xmlns + "epcisq", Namespaces.Query) };
 
         public static async Task FormatSoap(this HttpResponse response, XElement element, CancellationToken cancellationToken)
         {

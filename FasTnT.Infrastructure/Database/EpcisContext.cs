@@ -9,14 +9,12 @@ namespace FasTnT.Infrastructure.Database
 {
     public class EpcisContext : DbContext
     {
-        private int _generationIndex = 0;
-        
         public DbSet<Request> Requests { get; init; }
         public DbSet<Event> Events { get; init; }
 
         public EpcisContext(DbContextOptions<EpcisContext> options) : base(options) { }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             ChangeTracker.DetectChanges();
 
@@ -24,7 +22,5 @@ namespace FasTnT.Infrastructure.Database
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) => EpcisModelConfiguration.Apply(modelBuilder);
-
-        internal int NextInteger() => _generationIndex += 1;
     }
 }
