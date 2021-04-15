@@ -33,8 +33,12 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         public async Task<XDocument> ParseAsync(Stream input, CancellationToken cancellationToken)
         {
-            var document = await LoadDocument(input, cancellationToken);
-            document.Validate(_schema, (e, t) => { if (t.Exception != null) throw new EpcisException(ExceptionType.ValidationException, t.Message); });
+            var document = await LoadDocument(input, cancellationToken).ConfigureAwait(false);
+            document.Validate(_schema, (e, t) => { if (t.Exception != null)
+                {
+                    throw new EpcisException(ExceptionType.ValidationException, t.Message);
+                }
+            });
 
             return document;
         }
