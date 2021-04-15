@@ -19,7 +19,7 @@ namespace FasTnT.Domain.Utils
         {
             if (parameter.Values.Length != 1)
             {
-                throw new Exception($"A single value is expected, but multiple were found. Parameter name '{parameter.Name}'");
+                throw new ArgumentException($"A single value is expected, but multiple were found. Parameter name '{parameter.Name}'");
             }
 
             return parameter.Values[0];
@@ -45,7 +45,10 @@ namespace FasTnT.Domain.Utils
 
         public static EpcType[] GetMatchEpcTypes(this QueryParameter parameter)
         {
-            if (!parameter.Name.StartsWith("MATCH_")) throw new Exception("A 'MATCH_*' parameter is expected here.");
+            if (!parameter.Name.StartsWith("MATCH_"))
+            {
+                throw new ArgumentException("A 'MATCH_*' parameter is expected here.");
+            }
 
             return parameter.Name[6..] switch
             {
@@ -58,7 +61,7 @@ namespace FasTnT.Domain.Utils
                 "inputEpcClass"  => new[] { EpcType.InputQuantity },
                 "outputEpcClass" => new[] { EpcType.OutputQuantity },
                 "anyEpcClass"    => new[] { EpcType.Quantity, EpcType.InputQuantity, EpcType.OutputQuantity },
-                _                => throw new Exception($"Unknown 'MATCH_*' parameter: '{parameter.Name}'")
+                _                => throw new ArgumentException($"Unknown 'MATCH_*' parameter: '{parameter.Name}'")
             };
         }
     }

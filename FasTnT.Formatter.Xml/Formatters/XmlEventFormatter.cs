@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace FasTnT.Formatter.Xml
 {
-    public class XmlEventFormatter
+    public static class XmlEventFormatter
     {
         static readonly IDictionary<EventType, Func<Event, XElement>> Formatters = new Dictionary<EventType, Func<Event, XElement>>
         {

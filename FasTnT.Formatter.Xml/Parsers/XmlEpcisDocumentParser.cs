@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Model;
 using System;
 using System.Linq;
 using System.Xml.Linq;
@@ -28,7 +29,13 @@ namespace FasTnT.Formatter.Xml.Parsers
             switch (element.Name.LocalName)
             {
                 case "EventList":
-                    request.Events = XmlEventParser.ParseEvents(element).ToList(); break;
+                    request.Events = XmlEventParser.ParseEvents(element).ToList(); 
+                    break;
+                case "MasterdataList":
+                    request.Masterdata = default;
+                    break;
+                default:
+                    throw new EpcisException(ExceptionType.ValidationException, $"Invalid element: {element.Name.LocalName}");
             }
         }
     }

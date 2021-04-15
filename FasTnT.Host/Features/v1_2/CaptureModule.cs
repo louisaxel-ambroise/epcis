@@ -15,7 +15,7 @@ namespace FasTnT.Host.Features.v1_2
                 try
                 {
                     var request = await CaptureRequestParser.Parse(req.Body, req.HttpContext.RequestAborted);
-                    var response = await mediator.Send(request, req.HttpContext.RequestAborted);
+                    await mediator.Send(request, req.HttpContext.RequestAborted);
 
                     res.StatusCode = 201;
                 }

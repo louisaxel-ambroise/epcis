@@ -34,5 +34,10 @@ namespace FasTnT.Domain.Utils
 
         public static bool operator ==(Enumeration left, Enumeration right) => left is null ? right is null : left.Equals(right);
         public static bool operator !=(Enumeration left, Enumeration right) => !(left == right);
+
+        public static bool operator <(Enumeration left, Enumeration right) => left is null ? right is not null : left.CompareTo(right) < 0;
+        public static bool operator <=(Enumeration left, Enumeration right) => left is null || left.CompareTo(right) <= 0;
+        public static bool operator >(Enumeration left, Enumeration right) => left is not null && left.CompareTo(right) > 0;
+        public static bool operator >=(Enumeration left, Enumeration right) => left is null ? right is null : left.CompareTo(right) >= 0;
     }
 }
