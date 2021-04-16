@@ -1,6 +1,5 @@
 ﻿using FasTnT.Formatter.Xml;
 using MediatR;
-using System;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Extensions;
 using System.Reflection;
@@ -16,7 +15,10 @@ namespace FasTnT.Host.Features.v1_2
             Get("query.svc", async (req, res) =>
             {
                 res.ContentType = "text/xml";
-                await Assembly.GetExecutingAssembly().GetManifestResourceStream(@"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl").CopyToAsync(res.Body);
+                await Assembly.GetExecutingAssembly()
+                              .GetManifestResourceStream(@"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl")
+                              .CopyToAsync(res.Body)
+                              .ConfigureAwait(false);
             });
 
             Post("query.svc", async (req, res) =>
@@ -25,14 +27,14 @@ namespace FasTnT.Host.Features.v1_2
                 
                 try
                 {
-                    var queryParser = await req.ParseSoapEnvelope(req.HttpContext.RequestAborted);
-                    var response = queryParser switch
+                    var query = await req.ParseSoapEnvelope(req.HttpContext.RequestAborted);
+                    var response = query switch
                     {
                         PollQuery poll => XmlResponseFormatter.FormatPoll(await mediator.Send(poll)),
                         GetVendorVersionQuery getVendorVersion => XmlResponseFormatter.FormatVendorVersion(await mediator.Send(getVendorVersion)),
                         GetStandardVersionQuery getStandardVersion => XmlResponseFormatter.FormatStandardVersion(await mediator.Send(getStandardVersion)),
                         // TODO: subscription queries
-                        _ => throw new Exception()
+                        _ => throw new EpcisException(ExceptionType.ValidationException, $"Invalid query: {query.GetType().Name}");
                     };
 
                     await res.FormatSoap(response, req.HttpContext.RequestAborted);

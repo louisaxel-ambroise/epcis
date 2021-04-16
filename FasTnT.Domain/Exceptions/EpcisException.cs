@@ -9,7 +9,9 @@ namespace FasTnT.Domain.Exceptions
         public ExceptionType ExceptionType { get; }
         public ExceptionSeverity Severity { get; }
 
-        public EpcisException(ExceptionType exceptionType, string message, ExceptionSeverity severity = null) : base(message)
+        public EpcisException(ExceptionType exceptionType, string message) : this(exceptionType, message, null) { }
+
+        public EpcisException(ExceptionType exceptionType, string message, ExceptionSeverity severity) : base(message)
         {
             ExceptionType = exceptionType;
             Severity = severity ?? ExceptionSeverity.Error;

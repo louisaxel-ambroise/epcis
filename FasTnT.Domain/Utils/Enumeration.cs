@@ -24,7 +24,7 @@ namespace FasTnT.Domain.Utils
         public static T GetByDisplayNameInvariant<T>(string displayName) where T : Enumeration, new() => GetAll<T>().SingleOrDefault(x => string.Equals(x.DisplayName, displayName, StringComparison.OrdinalIgnoreCase)) ?? throw NameException<T>(displayName);
         public static T GetById<T>(short id) where T : Enumeration, new() => GetAll<T>().SingleOrDefault(x => x.Id == id) ?? throw IdException<T>(id);
 
-        public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
+        public int CompareTo(object obj) => Id.CompareTo(((Enumeration)obj).Id);
         public override int GetHashCode() => 2108858624 + GetType().GetHashCode() + Id.GetHashCode();
         public override string ToString() => DisplayName;
         public override bool Equals(object obj) => (obj is Enumeration other) && GetType().Equals(obj.GetType()) && Id.Equals(other.Id);
