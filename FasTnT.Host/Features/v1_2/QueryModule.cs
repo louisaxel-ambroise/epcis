@@ -34,7 +34,7 @@ namespace FasTnT.Host.Features.v1_2
                         GetVendorVersionQuery getVendorVersion => XmlResponseFormatter.FormatVendorVersion(await mediator.Send(getVendorVersion)),
                         GetStandardVersionQuery getStandardVersion => XmlResponseFormatter.FormatStandardVersion(await mediator.Send(getStandardVersion)),
                         // TODO: subscription queries
-                        _ => throw new EpcisException(ExceptionType.ValidationException, $"Invalid query: {query.GetType().Name}");
+                        _ => throw new EpcisException(ExceptionType.ValidationException, $"Invalid query: {query.GetType().Name}")
                     };
 
                     await res.FormatSoap(response, req.HttpContext.RequestAborted);
