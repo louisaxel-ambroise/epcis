@@ -64,10 +64,10 @@ namespace FasTnT.Application.Queries.Poll
         {
             return param.Name switch
             {
-                // Complete filters
+                // Simple filters
                 "eventType"               => query.Where(x => param.Values.Select(Enumeration.GetByDisplayName<EventType>).Contains(x.Type)),
                 "eventCountLimit"         => query.Take(param.GetIntValue()),
-                "maxEventCount"           => query.Take(1 + (_maxEventCount = param.GetIntValue()) ?? default),
+                "maxEventCount"           => ParseMaxEventCount(param, query),
                 "GE_eventTime"            => query.Where(x => x.EventTime >= param.GetDate()),
                 "LT_eventTime"            => query.Where(x => x.EventTime < param.GetDate()),
                 "GE_recordTime"           => query.Where(x => x.Request.CaptureDate >= param.GetDate()),
@@ -91,10 +91,10 @@ namespace FasTnT.Application.Queries.Poll
                 "LT_quantity"             => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity < param.GetNumeric())),
                 "LE_quantity"             => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity <= param.GetNumeric())),
                 // Family filters
+                var s when s.StartsWith("MATCH_")             => ApplyMatchParameter(param, query),
                 var s when s.StartsWith("EQ_source_")         => query.Where(x => x.Sources.Any(s => s.Id == param.GetSimpleId() && param.Values.Contains(s.Type))),
                 var s when s.StartsWith("EQ_destination_")    => query.Where(x => x.Destinations.Any(d => d.Id == param.GetSimpleId() && param.Values.Contains(d.Type))),
                 var s when s.StartsWith("EQ_bizTransaction_") => query.Where(x => x.Transactions.Any(t => t.Id == param.GetSimpleId() && param.Values.Contains(t.Type))),
-                var s when s.StartsWith("MATCH_")             => ApplyMatchParameter(param, query),
                 var s when s.StartsWith("EQ_INNER_ILMD_")     => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.Ilmd && f.Parent != null && param.Values.Contains(f.TextValue) && f.Name == param.InnerIlmdName() && f.Namespace == param.InnerIlmdNamespace())),
                 var s when s.StartsWith("EQ_ILMD_")           => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.Ilmd && f.Parent == null && param.Values.Contains(f.TextValue) && f.Name == param.IlmdName() && f.Namespace == param.IlmdNamespace())),
                 var s when s.StartsWith("EXISTS_INNER_ILMD_") => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.Ilmd && f.Parent != null && f.Name == param.InnerIlmdName() && f.Namespace == param.InnerIlmdNamespace())),
@@ -111,6 +111,13 @@ namespace FasTnT.Application.Queries.Poll
                 //{ "^HASATTR_",                  (query, param) => query.Where(new ExistsAttributeFilter { Field = param.GetAttributeField(), AttributeName = param.GetAttributeName()}) }
                 _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is not implemented: {param.Name}")
             };
+        }
+
+        private IQueryable<Event> ParseMaxEventCount(QueryParameter param, IQueryable<Event> query)
+        {
+            _maxEventCount = param.GetIntValue();
+
+            return query.Take(1 + _maxEventCount.Value);
         }
 
         private static IQueryable<Event> ApplyComparison(QueryParameter param, IQueryable<Event> query, FieldType type, string nameSpace, string name, bool inner)

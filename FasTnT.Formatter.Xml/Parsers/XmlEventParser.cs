@@ -31,7 +31,7 @@ namespace FasTnT.Formatter.Xml.Parsers
             {
                 if (!RootParsers.TryGetValue(element.Name.LocalName, out Func<XElement, Event> parser))
                 {
-                    throw new Exception($"Element '{element.Name.LocalName}' not expected in this context");
+                    throw new ArgumentException($"Element '{element.Name.LocalName}' not expected in this context");
                 }
 
                 yield return parser(element);
@@ -44,7 +44,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
             if (!ExtensionParsers.TryGetValue(eventElement.Name.LocalName, out Func<XElement, Event> parser))
             {
-                throw new Exception($"Element '{eventElement.Name.LocalName}' not expected in this context");
+                throw new ArgumentException($"Element '{eventElement.Name.LocalName}' not expected in this context");
             }
 
             return parser(eventElement);

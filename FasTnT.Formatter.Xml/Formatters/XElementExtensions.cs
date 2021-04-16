@@ -8,9 +8,10 @@ namespace FasTnT.Formatter.Xml
     {
         public static void AddIfNotNull(this XElement destination, XElement children)
         {
-            if (children == null || children.IsEmpty) return;
-
-            destination.Add(children);
+            if (children != null && !children.IsEmpty)
+            {
+                destination.Add(children);
+            }
         }
 
         public static void AddIfNotNull(this XElement destination, IEnumerable<XElement> children)
