@@ -16,7 +16,7 @@ namespace FasTnT.Application.Queries.Poll
 {
     public class SimpleEventQuery : IEpcisQuery
     {
-        const string Comp = "(GE|GT|LE|LT)";
+        const string Comparison = "(GE|GT|LE|LT)";
 
         private readonly EpcisContext _context;
         private int? _maxEventCount = default;
@@ -90,28 +90,39 @@ namespace FasTnT.Application.Queries.Poll
                 "GE_quantity"             => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity >= param.GetNumeric())),
                 "LT_quantity"             => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity < param.GetNumeric())),
                 "LE_quantity"             => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity <= param.GetNumeric())),
+
                 // Family filters
                 var s when s.StartsWith("MATCH_")             => ApplyMatchParameter(param, query),
                 var s when s.StartsWith("EQ_source_")         => query.Where(x => x.Sources.Any(s => s.Id == param.GetSimpleId() && param.Values.Contains(s.Type))),
                 var s when s.StartsWith("EQ_destination_")    => query.Where(x => x.Destinations.Any(d => d.Id == param.GetSimpleId() && param.Values.Contains(d.Type))),
                 var s when s.StartsWith("EQ_bizTransaction_") => query.Where(x => x.Transactions.Any(t => t.Id == param.GetSimpleId() && param.Values.Contains(t.Type))),
-                var s when s.StartsWith("EQ_INNER_ILMD_")     => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.Ilmd && f.Parent != null && param.Values.Contains(f.TextValue) && f.Name == param.InnerIlmdName() && f.Namespace == param.InnerIlmdNamespace())),
-                var s when s.StartsWith("EQ_ILMD_")           => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.Ilmd && f.Parent == null && param.Values.Contains(f.TextValue) && f.Name == param.IlmdName() && f.Namespace == param.IlmdNamespace())),
-                var s when s.StartsWith("EXISTS_INNER_ILMD_") => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.Ilmd && f.Parent != null && f.Name == param.InnerIlmdName() && f.Namespace == param.InnerIlmdNamespace())),
-                var s when s.StartsWith("EXISTS_ILMD_")       => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.Ilmd && f.Parent == null && f.Name == param.IlmdName() && f.Namespace == param.IlmdNamespace())),
-                var s when s.StartsWith("EXISTS_INNER_")      => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.CustomField && f.Parent != null && f.Name == param.InnerFieldName() && f.Namespace == param.InnerFieldNamespace())),
-                var s when s.StartsWith("EQ_INNER_")          => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.CustomField && f.Parent != null && f.Name == param.InnerFieldName() && f.Namespace == param.InnerFieldNamespace() && param.Values.Contains(f.TextValue))),
-                var s when s.StartsWith("EQ_")                => query.Where(x => x.CustomFields.Any(f => f.Type == FieldType.CustomField && f.Parent == null && f.Name == param.FieldName() && f.Namespace == param.FieldNamespace() && param.Values.Contains(f.TextValue))),
+                var s when s.StartsWith("EQ_INNER_ILMD_")     => ApplyCustomFieldParameter(param.Values, query, FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()),
+                var s when s.StartsWith("EQ_ILMD_")           => ApplyCustomFieldParameter(param.Values, query, FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()),
+                var s when s.StartsWith("EXISTS_INNER_ILMD_") => ApplyExistsCustomFieldParameter(query, FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()),
+                var s when s.StartsWith("EXISTS_ILMD_")       => ApplyExistsCustomFieldParameter(query, FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()),
+                var s when s.StartsWith("EXISTS_INNER_")      => ApplyExistsCustomFieldParameter(query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
+                var s when s.StartsWith("EQ_INNER_")          => ApplyCustomFieldParameter(param.Values, query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
+                var s when s.StartsWith("EQ_")                => ApplyCustomFieldParameter(param.Values, query, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()), 
+
                 // Regex filters (Date/Numeric value comparison)
-                var r when Regex.IsMatch(r, $"^{Comp}_INNER_ILMD") => ApplyComparison(param, query, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true),
-                var r when Regex.IsMatch(r, $"^{Comp}_ILMD")       => ApplyComparison(param, query, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false),
-                var r when Regex.IsMatch(r, $"^{Comp}_INNER")      => ApplyComparison(param, query, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-                var r when Regex.IsMatch(r, $"^{Comp}_")           => ApplyComparison(param, query, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false),
-                //{ "^EQATTR_",                   (query, param) => query.Where(new AttributeFilter { Field = param.GetAttributeField(), AttributeName = param.GetAttributeName(), Values = param.Values }) },
-                //{ "^HASATTR_",                  (query, param) => query.Where(new ExistsAttributeFilter { Field = param.GetAttributeField(), AttributeName = param.GetAttributeName()}) }
+                var r when Regex.IsMatch(r, $"^{Comparison}_INNER_ILMD") => ApplyComparison(param, query, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true),
+                var r when Regex.IsMatch(r, $"^{Comparison}_ILMD")       => ApplyComparison(param, query, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false),
+                var r when Regex.IsMatch(r, $"^{Comparison}_INNER")      => ApplyComparison(param, query, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true),
+                var r when Regex.IsMatch(r, $"^{Comparison}_")           => ApplyComparison(param, query, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false),
+
+                // Regex HasAttr/EqAttr filters
+                var r when Regex.IsMatch(r, $"^EQATTR_")  => throw new EpcisException(ExceptionType.ImplementationException, "EQATTR_ parameter family is not implemented"),
+                var r when Regex.IsMatch(r, $"^HASATTR_") => throw new EpcisException(ExceptionType.ImplementationException, "HASATTR_ parameter family is not implemented"),
+                // Any other case is an unknown parameter
                 _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is not implemented: {param.Name}")
             };
         }
+
+        private static IQueryable<Event> ApplyExistsCustomFieldParameter(IQueryable<Event> query, FieldType type, bool inner, string name, string ns)
+            => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns));
+
+        private static IQueryable<Event> ApplyCustomFieldParameter(string[] values, IQueryable<Event> query, FieldType type, bool inner, string name, string ns)
+            => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && values.Contains(f.TextValue) && f.Name == name && f.Namespace == ns));
 
         private IQueryable<Event> ParseMaxEventCount(QueryParameter param, IQueryable<Event> query)
         {
@@ -120,14 +131,14 @@ namespace FasTnT.Application.Queries.Poll
             return query.Take(1 + _maxEventCount.Value);
         }
 
-        private static IQueryable<Event> ApplyComparison(QueryParameter param, IQueryable<Event> query, FieldType type, string nameSpace, string name, bool inner)
+        private static IQueryable<Event> ApplyComparison(QueryParameter param, IQueryable<Event> query, FieldType type, string ns, string name, bool inner)
         {
             return param.Name.Substring(0, 2) switch
             {
-                "GE" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == nameSpace &&((param.IsDateTime() && f.DateValue >= param.GetDate()) || (param.IsNumeric() && f.NumericValue >= param.GetNumeric())))),
-                "GT" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == nameSpace && ((param.IsDateTime() && f.DateValue > param.GetDate()) || (param.IsNumeric() && f.NumericValue > param.GetNumeric())))),
-                "LE" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == nameSpace && ((param.IsDateTime() && f.DateValue <= param.GetDate()) || (param.IsNumeric() && f.NumericValue <= param.GetNumeric())))),
-                "LT" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == nameSpace && ((param.IsDateTime() && f.DateValue < param.GetDate()) || (param.IsNumeric() && f.NumericValue < param.GetNumeric())))),
+                "GE" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns &&((param.IsDateTime() && f.DateValue >= param.GetDate()) || (param.IsNumeric() && f.NumericValue >= param.GetNumeric())))),
+                "GT" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue > param.GetDate()) || (param.IsNumeric() && f.NumericValue > param.GetNumeric())))),
+                "LE" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue <= param.GetDate()) || (param.IsNumeric() && f.NumericValue <= param.GetNumeric())))),
+                "LT" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue < param.GetDate()) || (param.IsNumeric() && f.NumericValue < param.GetNumeric())))),
                 _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
             };
         }
