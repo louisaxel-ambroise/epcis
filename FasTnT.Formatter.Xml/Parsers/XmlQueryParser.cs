@@ -14,11 +14,7 @@ namespace FasTnT.Formatter.Xml
             var queryName = element.Element("queryName").Value;
             var parameters = ParsePollParameters(element.Element("params")?.Elements()).ToArray();
 
-            return new()
-            {
-                QueryName = queryName,
-                Parameters = parameters
-            };
+            return new(queryName, parameters);
         }
 
         public static GetVendorVersionQuery ParseGetVendorVersion() => new();
@@ -31,11 +27,7 @@ namespace FasTnT.Formatter.Xml
                 var name = element.Element("name")?.Value?.Trim();
                 var values = element.Element("value")?.HasElements ?? false ? element.Element("value").Elements().Select(x => x.Value) : new[] { element.Element("value")?.Value };
 
-                yield return new()
-                {
-                    Name = name,
-                    Values = values.ToArray()
-                };
+                yield return new(name, values.ToArray());
             }
         }
     }

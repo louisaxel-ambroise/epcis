@@ -1,13 +1,14 @@
-﻿using System.Threading;
+﻿using MediatR;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FasTnT.Application.Queries.GetStandardVersion
 {
-    public class GetVendorVersionQueryHandler : IQueryHandler<GetVendorVersionQuery, GetVendorVersionResponse>
+    public class GetVendorVersionQueryHandler : IRequestHandler<GetVendorVersionQuery, GetVendorVersionResponse>
     {
         public Task<GetVendorVersionResponse> Handle(GetVendorVersionQuery request, CancellationToken cancellationToken)
         {
-            return Task.FromResult<GetVendorVersionResponse>(new() { Version = "0.5" });
+            return Task.FromResult<GetVendorVersionResponse>(new("0.5"));
         }
     }
 }
