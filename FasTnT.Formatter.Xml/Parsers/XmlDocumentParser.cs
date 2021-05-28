@@ -51,7 +51,7 @@ namespace FasTnT.Formatter.Xml.Parsers
             }
             catch
             {
-                throw new FormatException("XML is invalud");
+                throw new FormatException("XML is invalid");
             }
         }
 

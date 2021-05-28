@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FasTnT.Application.Behaviors
+namespace FasTnT.Domain.Infrastructure.Behaviors
 {
 	public class CommandValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 	{

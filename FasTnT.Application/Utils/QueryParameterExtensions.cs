@@ -9,7 +9,7 @@ namespace FasTnT.Domain.Utils
     public static class QueryParameterExtensions
     {
         public static int GetIntValue(this QueryParameter parameter) => int.Parse(parameter.Value());
-        public static double GetNumeric(this QueryParameter parameter) => double.Parse(parameter.Value());
+        public static double GetNumeric(this QueryParameter parameter) => double.Parse(parameter.Value(), CultureInfo.InvariantCulture);
         public static DateTime GetDate(this QueryParameter parameter) => DateTime.Parse(parameter.Value(), null, DateTimeStyles.AdjustToUniversal);
 
         public static bool IsDateTime(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), "^([0-9]{4})-([0-9]{2})-([0-9]{2})");

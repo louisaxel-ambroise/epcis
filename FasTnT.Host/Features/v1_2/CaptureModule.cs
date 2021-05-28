@@ -23,7 +23,7 @@ namespace FasTnT.Host.Features.v1_2
                 {
                     res.StatusCode = 400;
                 }
-                catch(EpcisException)
+                catch (EpcisException)
                 {
                     res.StatusCode = 422;
                 }

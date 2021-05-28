@@ -1,5 +1,6 @@
 ﻿using FasTnT.Application.Services;
 using FasTnT.Domain.Exceptions;
+using MediatR;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,14 +8,11 @@ using System.Threading.Tasks;
 
 namespace FasTnT.Application.Queries.Poll
 {
-    public class PollQueryHandler : IQueryHandler<PollQuery, PollResponse>
+    public class PollQueryHandler : IRequestHandler<PollQuery, PollResponse>
     {
         private readonly IEnumerable<IEpcisQuery> _queries;
 
-        public PollQueryHandler(IEnumerable<IEpcisQuery> queries)
-        {
-            _queries = queries;
-        }
+        public PollQueryHandler(IEnumerable<IEpcisQuery> queries) => _queries = queries;
 
         public Task<PollResponse> Handle(PollQuery request, CancellationToken cancellationToken)
         {

@@ -57,7 +57,7 @@ namespace FasTnT.Application.Queries.Poll
                 .Where(evt => eventIds.Contains(evt.Id))
                 .ToListAsync(cancellationToken);
 
-            return new() { QueryName = Name, EventList = result.ToList() };
+            return new(Name, default, result.ToList(), new());
         }
 
         private IQueryable<Event> ApplyParameter(QueryParameter param, IQueryable<Event> query)
