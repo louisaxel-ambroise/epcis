@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.Commands;
+﻿using FasTnT.Domain.Commands;
 using FasTnT.Domain.Exceptions;
 using System.IO;
 using System.Threading;

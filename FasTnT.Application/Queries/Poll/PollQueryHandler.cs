@@ -1,5 +1,6 @@
 ﻿using FasTnT.Application.Services;
 using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Queries.Poll;
 using MediatR;
 using System.Collections.Generic;
 using System.Linq;

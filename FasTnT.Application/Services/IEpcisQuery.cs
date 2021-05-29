@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.Queries.Poll;
+﻿using FasTnT.Domain.Queries.Poll;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

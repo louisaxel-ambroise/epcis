@@ -1,7 +1,7 @@
-﻿using FasTnT.Application.Commands;
-using FasTnT.Application.Queries.GetStandardVersion;
-using FasTnT.Application.Queries.Poll;
+﻿using FasTnT.Domain.Commands;
 using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.Poll;
 using FasTnT.Formatter.Xml.Utils;
 using System.Xml.Linq;
 

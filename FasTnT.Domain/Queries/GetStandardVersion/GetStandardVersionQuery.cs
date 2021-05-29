@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace FasTnT.Application.Queries.GetStandardVersion
+namespace FasTnT.Domain.Queries.GetStandardVersion
 {
     public record GetStandardVersionQuery : IRequest<GetStandardVersionResponse>
     {

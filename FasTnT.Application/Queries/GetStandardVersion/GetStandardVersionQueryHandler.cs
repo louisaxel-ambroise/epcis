@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FasTnT.Domain.Queries.GetStandardVersion;
+using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 

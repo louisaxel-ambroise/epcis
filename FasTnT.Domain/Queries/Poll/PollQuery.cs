@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.Collections.Generic;
 
-namespace FasTnT.Application.Queries.Poll
+namespace FasTnT.Domain.Queries.Poll
 {
     public record PollQuery(string QueryName, IEnumerable<QueryParameter> Parameters) : IRequest<PollResponse>;
 

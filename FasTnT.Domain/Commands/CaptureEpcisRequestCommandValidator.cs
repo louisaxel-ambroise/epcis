@@ -3,16 +3,23 @@ using FasTnT.Domain.Model;
 using FluentValidation;
 using System.Linq;
 
-namespace FasTnT.Application.Commands
+namespace FasTnT.Domain.Commands
 {
     public class CaptureEpcisRequestCommandValidator : AbstractValidator<CaptureEpcisRequestCommand>
     {
         const string AggregationEventMissingParentId = "Aggregation Event is missing ParentID EPC value";
         const string RequestMustContainEventOrMasterdata = "Request must contain Event or Masterdata";
+
         public CaptureEpcisRequestCommandValidator()
         {
-            RuleFor(x => x.Request).Must(HaveEventOrMasterdata).WithMessage(RequestMustContainEventOrMasterdata);
-            RuleForEach(x => x.Request.Events).Where(IsAddOrDeleteAggregation).Must(HaveAParentIdEpc).WithMessage(AggregationEventMissingParentId);
+            RuleFor(x => x.Request)
+                .Must(HaveEventOrMasterdata)
+                .WithMessage(RequestMustContainEventOrMasterdata);
+
+            RuleForEach(x => x.Request.Events)
+                .Where(IsAddOrDeleteAggregation)
+                .Must(HaveAParentIdEpc)
+                .WithMessage(AggregationEventMissingParentId);
         }
 
         private bool HaveEventOrMasterdata(Request request) => request.Events.Count + request.Masterdata.Count > 0;

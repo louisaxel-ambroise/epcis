@@ -13,7 +13,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 {
     public class XmlDocumentParser
     {
-        public static XmlDocumentParser Instance { get; } = new XmlDocumentParser();
+        public static XmlDocumentParser Instance { get; } = new ();
         private readonly XmlSchemaSet _schema;
 
         private XmlDocumentParser()

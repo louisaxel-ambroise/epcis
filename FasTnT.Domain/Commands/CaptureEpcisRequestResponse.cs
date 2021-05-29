@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Application.Commands
+﻿namespace FasTnT.Domain.Commands
 {
     public record CaptureEpcisRequestResponse(string CommandId);
 }

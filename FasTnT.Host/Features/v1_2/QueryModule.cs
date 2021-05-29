@@ -3,9 +3,9 @@ using MediatR;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Extensions;
 using System.Reflection;
-using FasTnT.Application.Queries.Poll;
-using FasTnT.Application.Queries.GetStandardVersion;
 using System.IO;
+using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.Poll;
 
 namespace FasTnT.Host.Features.v1_2
 {

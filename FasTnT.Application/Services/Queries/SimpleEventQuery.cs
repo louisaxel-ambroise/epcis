@@ -2,6 +2,7 @@
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
+using FasTnT.Domain.Queries.Poll;
 using FasTnT.Domain.Utils;
 using FasTnT.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -113,7 +114,8 @@ namespace FasTnT.Application.Queries.Poll
                 // Regex HasAttr/EqAttr filters
                 var r when Regex.IsMatch(r, $"^EQATTR_")  => throw new EpcisException(ExceptionType.ImplementationException, "EQATTR_ parameter family is not implemented"),
                 var r when Regex.IsMatch(r, $"^HASATTR_") => throw new EpcisException(ExceptionType.ImplementationException, "HASATTR_ parameter family is not implemented"),
-                // Any other case is an unknown parameter
+
+                // Any other case is an unknown parameter and should raise a QueryParameter Exception
                 _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is not implemented: {param.Name}")
             };
         }

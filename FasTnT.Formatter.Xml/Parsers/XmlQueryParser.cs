@@ -1,5 +1,5 @@
-﻿using FasTnT.Application.Queries.GetStandardVersion;
-using FasTnT.Application.Queries.Poll;
+﻿using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.Poll;
 using System;
 using System.Collections.Generic;
 using System.Linq;

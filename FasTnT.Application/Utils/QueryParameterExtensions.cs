@@ -1,5 +1,5 @@
-﻿using FasTnT.Application.Queries.Poll;
-using FasTnT.Domain.Enumerations;
+﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Queries.Poll;
 using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
