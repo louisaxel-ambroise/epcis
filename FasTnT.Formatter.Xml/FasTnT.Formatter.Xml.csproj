@@ -6,6 +6,32 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Schemas\BasicTypes.xsd" />
+    <None Remove="Schemas\BusinessScope.xsd" />
+    <None Remove="Schemas\DocumentIdentification.xsd" />
+    <None Remove="Schemas\EPCglobal-epcis-1_2.xsd" />
+    <None Remove="Schemas\EPCglobal-epcis-masterdata-1_2.xsd" />
+    <None Remove="Schemas\EPCglobal-epcis-query-1_2.xsd" />
+    <None Remove="Schemas\EPCglobal.xsd" />
+    <None Remove="Schemas\Manifest.xsd" />
+    <None Remove="Schemas\Partner.xsd" />
+    <None Remove="Schemas\StandardBusinessDocumentHeader.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Schemas\BasicTypes.xsd" />
+    <EmbeddedResource Include="Schemas\BusinessScope.xsd" />
+    <EmbeddedResource Include="Schemas\DocumentIdentification.xsd" />
+    <EmbeddedResource Include="Schemas\EPCglobal-epcis-1_2.xsd" />
+    <EmbeddedResource Include="Schemas\EPCglobal-epcis-masterdata-1_2.xsd" />
+    <EmbeddedResource Include="Schemas\EPCglobal-epcis-query-1_2.xsd" />
+    <EmbeddedResource Include="Schemas\EPCglobal.xsd" />
+    <EmbeddedResource Include="Schemas\Manifest.xsd" />
+    <EmbeddedResource Include="Schemas\Partner.xsd" />
+    <EmbeddedResource Include="Schemas\StandardBusinessDocumentHeader.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />
   </ItemGroup>
 

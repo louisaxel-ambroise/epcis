@@ -19,13 +19,9 @@ namespace FasTnT.Host.Features.v1_2
 
                     res.StatusCode = 201;
                 }
-                catch (FormatException)
+                catch (Exception ex) when (ex is FormatException || ex is EpcisException)
                 {
                     res.StatusCode = 400;
-                }
-                catch (EpcisException)
-                {
-                    res.StatusCode = 422;
                 }
                 catch
                 {
