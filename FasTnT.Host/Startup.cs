@@ -28,7 +28,6 @@ namespace FasTnT.Host
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = _configuration.GetConnectionString("FasTnT.Database");
-            var contextOptions = new DbContextOptionsBuilder<EpcisContext>().UseSqlServer(connectionString);
 
             services.AddScoped<IdentityGenerator>();
             services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString));
