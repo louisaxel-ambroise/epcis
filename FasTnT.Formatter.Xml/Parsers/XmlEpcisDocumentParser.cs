@@ -29,7 +29,7 @@ namespace FasTnT.Formatter.Xml.Parsers
             switch (element.Name.LocalName)
             {
                 case "EventList":
-                    request.Events = XmlEventParser.ParseEvents(element).ToList(); 
+                    request.Events = XmlEventParser.ParseEvents(element).ToList();
                     break;
                 case "MasterdataList":
                     request.Masterdata = default;

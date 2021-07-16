@@ -13,7 +13,7 @@ namespace FasTnT.Formatter.Xml
         {
             var (resultName, resultList) = response.MasterdataList.Count switch
             {
-                > 0  => ("VocabularyList", default), //XmlMasterdataFormatter.FormatMasterData(response.MasterdataList);
+                > 0 => ("VocabularyList", default), //XmlMasterdataFormatter.FormatMasterData(response.MasterdataList);
                 <= 0 => ("EventList", XmlEventFormatter.FormatList(response.EventList))
             };
 

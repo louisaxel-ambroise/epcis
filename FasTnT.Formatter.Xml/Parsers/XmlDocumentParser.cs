@@ -13,7 +13,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 {
     public class XmlDocumentParser
     {
-        public static XmlDocumentParser Instance { get; } = new ();
+        public static XmlDocumentParser Instance { get; } = new();
         private readonly XmlSchemaSet _schema;
 
         private XmlDocumentParser()
@@ -34,7 +34,9 @@ namespace FasTnT.Formatter.Xml.Parsers
         public async Task<XDocument> ParseAsync(Stream input, CancellationToken cancellationToken)
         {
             var document = await LoadDocument(input, cancellationToken).ConfigureAwait(false);
-            document.Validate(_schema, (e, t) => { if (t.Exception != null)
+            document.Validate(_schema, (e, t) =>
+            {
+                if (t.Exception != null)
                 {
                     throw new EpcisException(ExceptionType.ValidationException, t.Message);
                 }

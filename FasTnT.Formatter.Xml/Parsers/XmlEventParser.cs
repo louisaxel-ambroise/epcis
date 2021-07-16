@@ -304,7 +304,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         internal static void ParseSources(XElement element, Event Event)
         {
-            if (element == null || element.IsEmpty) 
+            if (element == null || element.IsEmpty)
             {
                 return;
             }

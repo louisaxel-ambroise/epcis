@@ -52,16 +52,16 @@ namespace FasTnT.Domain.Utils
 
             return parameter.Name[6..] switch
             {
-                "anyEPC"         => new[] { EpcType.List, EpcType.ChildEpc, EpcType.ParentId, EpcType.InputEpc, EpcType.OutputEpc },
-                "epc"            => new[] { EpcType.List, EpcType.ChildEpc },
-                "parentID"       => new[] { EpcType.ParentId },
-                "inputEPC"       => new[] { EpcType.InputEpc },
-                "outputEPC"      => new[] { EpcType.OutputEpc },
-                "epcClass"       => new[] { EpcType.Quantity, EpcType.ChildQuantity },
-                "inputEpcClass"  => new[] { EpcType.InputQuantity },
+                "anyEPC" => new[] { EpcType.List, EpcType.ChildEpc, EpcType.ParentId, EpcType.InputEpc, EpcType.OutputEpc },
+                "epc" => new[] { EpcType.List, EpcType.ChildEpc },
+                "parentID" => new[] { EpcType.ParentId },
+                "inputEPC" => new[] { EpcType.InputEpc },
+                "outputEPC" => new[] { EpcType.OutputEpc },
+                "epcClass" => new[] { EpcType.Quantity, EpcType.ChildQuantity },
+                "inputEpcClass" => new[] { EpcType.InputQuantity },
                 "outputEpcClass" => new[] { EpcType.OutputQuantity },
-                "anyEpcClass"    => new[] { EpcType.Quantity, EpcType.InputQuantity, EpcType.OutputQuantity },
-                _                => throw new ArgumentException($"Unknown 'MATCH_*' parameter: '{parameter.Name}'")
+                "anyEpcClass" => new[] { EpcType.Quantity, EpcType.InputQuantity, EpcType.OutputQuantity },
+                _ => throw new ArgumentException($"Unknown 'MATCH_*' parameter: '{parameter.Name}'")
             };
         }
     }

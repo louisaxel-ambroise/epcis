@@ -8,7 +8,7 @@ namespace FasTnT.Domain.Enumerations
         public static readonly EpcType ParentId = new(1, "parentID");
         public static readonly EpcType InputQuantity = new(2, "inputQuantity");
         public static readonly EpcType OutputQuantity = new(3, "outputQuantity");
-        public static readonly EpcType InputEpc = new  (4, "inputEPC");
+        public static readonly EpcType InputEpc = new(4, "inputEPC");
         public static readonly EpcType OutputEpc = new(5, "outputEPC");
         public static readonly EpcType Quantity = new(6, "quantity");
         public static readonly EpcType ChildEpc = new(7, "childEPC");

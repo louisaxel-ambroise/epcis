@@ -1,6 +1,6 @@
-﻿using MediatR;
+﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Formatter.Xml.Parsers;
-using FasTnT.Domain.Exceptions;
+using MediatR;
 using System;
 
 namespace FasTnT.Host.Features.v1_2
@@ -25,7 +25,7 @@ namespace FasTnT.Host.Features.v1_2
                 }
                 catch
                 {
-                    res.StatusCode =  500;
+                    res.StatusCode = 500;
                 }
             });
         }
