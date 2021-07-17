@@ -17,4 +17,9 @@
     <ProjectReference Include="..\FasTnT.Domain\FasTnT.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="Store\Migrations\" />
+  </ItemGroup>
+
 </Project>

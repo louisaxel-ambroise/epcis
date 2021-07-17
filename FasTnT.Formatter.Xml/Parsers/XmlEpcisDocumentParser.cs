@@ -31,8 +31,8 @@ namespace FasTnT.Formatter.Xml.Parsers
                 case "EventList":
                     request.Events = XmlEventParser.ParseEvents(element).ToList();
                     break;
-                case "MasterdataList":
-                    request.Masterdata = default;
+                case "VocabularyList":
+                    request.Masterdata = XmlMasterdataParser.ParseMasterdata(element).ToList();
                     break;
                 default:
                     throw new EpcisException(ExceptionType.ValidationException, $"Invalid element: {element.Name.LocalName}");

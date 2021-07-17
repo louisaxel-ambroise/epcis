@@ -2,7 +2,7 @@
 
 namespace FasTnT.Domain.Queries.GetStandardVersion
 {
-    public record GetStandardVersionQuery : IRequest<GetStandardVersionResponse>
+    public record GetStandardVersionQuery : IRequest<GetStandardVersionResult>
     {
     }
 }

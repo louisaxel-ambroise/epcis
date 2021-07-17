@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace FasTnT.Application.Queries.GetStandardVersion
 {
-    public class GetVendorVersionQueryHandler : IRequestHandler<GetVendorVersionQuery, GetVendorVersionResponse>
+    public class GetVendorVersionQueryHandler : IRequestHandler<GetVendorVersionQuery, GetVendorVersionResult>
     {
-        public Task<GetVendorVersionResponse> Handle(GetVendorVersionQuery request, CancellationToken cancellationToken)
+        public Task<GetVendorVersionResult> Handle(GetVendorVersionQuery request, CancellationToken cancellationToken)
         {
-            return Task.FromResult<GetVendorVersionResponse>(new("0.5"));
+            return Task.FromResult<GetVendorVersionResult>(new("0.5"));
         }
     }
 }

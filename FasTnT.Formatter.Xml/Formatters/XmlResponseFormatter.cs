@@ -11,11 +11,9 @@ namespace FasTnT.Formatter.Xml
     {
         public static XElement FormatPoll(PollResponse response)
         {
-            var (resultName, resultList) = response.MasterdataList.Count switch
-            {
-                > 0 => ("VocabularyList", default), //XmlMasterdataFormatter.FormatMasterData(response.MasterdataList);
-                <= 0 => ("EventList", XmlEventFormatter.FormatList(response.EventList))
-            };
+            var (resultName, resultList) = response.VocabularyList != default 
+                ? (nameof(response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.VocabularyList)) 
+                : (nameof(response.EventList), XmlEventFormatter.FormatList(response.EventList));
 
             var queryResults = new XElement(XName.Get("QueryResults", Namespaces.Query),
                 new XElement("queryName", response.QueryName),
@@ -26,22 +24,32 @@ namespace FasTnT.Formatter.Xml
             return queryResults;
         }
 
+        public static XElement FormatUnexpectedError()
+        {
+            return FormatError(ExceptionType.ImplementationException, "An unexpected error occured", ExceptionSeverity.Error);
+        }
+
         public static XElement FormatError(EpcisException exception)
         {
-            var reason = !string.IsNullOrEmpty(exception.Message) ? new XElement("reason", exception.Message) : null;
-            var severity = (exception.Severity != null) ? new XElement("severity", exception.Severity.DisplayName) : null;
-
-            return new XElement(exception.ExceptionType.DisplayName, reason, severity);
+            return FormatError(exception.ExceptionType, exception.Message, exception.Severity);
         }
 
-        public static XElement FormatVendorVersion(GetVendorVersionResponse response)
+        private static XElement FormatError(ExceptionType type, string reason, ExceptionSeverity severity)
         {
-            return new XElement(XName.Get("GetVendorVersionResult", Namespaces.Query), response.Version);
+            var reasonElt = !string.IsNullOrEmpty(reason) ? new XElement("reason", reason) : default;
+            var severityElt = !string.IsNullOrEmpty(reason) ? new XElement("severity", severity) : default;
+
+            return new XElement(type.DisplayName, reasonElt, severityElt);
         }
 
-        public static XElement FormatStandardVersion(GetStandardVersionResponse response)
+        public static XElement FormatVendorVersion(GetVendorVersionResult response)
         {
-            return new XElement(XName.Get("GetStandardVersionResult", Namespaces.Query), response.Version);
+            return new XElement(XName.Get(nameof(GetVendorVersionResult), Namespaces.Query), response.Version);
+        }
+
+        public static XElement FormatStandardVersion(GetStandardVersionResult response)
+        {
+            return new XElement(XName.Get(nameof(GetStandardVersionResult), Namespaces.Query), response.Version);
         }
 
         public static XElement FormatCaptureResponse(CaptureEpcisRequestResponse _) => default;
