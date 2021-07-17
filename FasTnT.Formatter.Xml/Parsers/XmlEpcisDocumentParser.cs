@@ -3,6 +3,7 @@ using FasTnT.Domain.Model;
 using System;
 using System.Linq;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace FasTnT.Formatter.Xml.Parsers
 {
@@ -17,9 +18,22 @@ namespace FasTnT.Formatter.Xml.Parsers
                 SchemaVersion = root.Attribute("schemaVersion").Value
             };
 
+            ParseHeaderIntoRequest(root.Element("EPCISHeader"), request);
             ParseBodyIntoRequest(root.Element("EPCISBody"), request);
 
             return request;
+        }
+
+        private static void ParseHeaderIntoRequest(XElement epcisHeader, Request request)
+        {
+            if (epcisHeader == default || epcisHeader.IsEmpty) return;
+
+            var masterData = epcisHeader.XPathSelectElement("extension/EPCISMasterData/VocabularyList");
+
+            if (masterData != default)
+            {
+                request.Masterdata.AddRange(XmlMasterdataParser.ParseMasterdata(masterData));
+            }
         }
 
         private static void ParseBodyIntoRequest(XElement epcisBody, Request request)
