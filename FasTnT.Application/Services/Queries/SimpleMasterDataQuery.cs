@@ -22,14 +22,10 @@ namespace FasTnT.Application.Queries.Poll
         public string Name => nameof(SimpleMasterDataQuery);
         public bool AllowSubscription => false;
 
+        // TODO: apply parameters
         public async Task<PollResponse> HandleAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
         {
             var query = _context.MasterData.AsNoTracking();
-
-            foreach (var parameter in parameters)
-            {
-                query = ApplyParameter(parameter, query);
-            }
 
             var result = await query
                 .Include(x => x.Attributes)
@@ -37,11 +33,6 @@ namespace FasTnT.Application.Queries.Poll
                 .ToListAsync(cancellationToken);
 
             return new(Name) { VocabularyList = result };
-        }
-
-        private IQueryable<MasterData> ApplyParameter(QueryParameter param, IQueryable<MasterData> query)
-        {
-            return query;
         }
     }
 }

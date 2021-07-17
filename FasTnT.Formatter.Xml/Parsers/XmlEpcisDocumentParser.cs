@@ -26,9 +26,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         private static void ParseHeaderIntoRequest(XElement epcisHeader, Request request)
         {
-            if (epcisHeader == default || epcisHeader.IsEmpty) return;
-
-            var masterData = epcisHeader.XPathSelectElement("extension/EPCISMasterData/VocabularyList");
+            var masterData = epcisHeader?.XPathSelectElement("extension/EPCISMasterData/VocabularyList");
 
             if (masterData != default)
             {

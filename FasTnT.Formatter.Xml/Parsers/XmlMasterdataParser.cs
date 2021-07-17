@@ -42,9 +42,7 @@ namespace FasTnT.Formatter.Xml
 
         private static List<string> ParseChildren(XElement element)
         {
-            if (element == null || element.IsEmpty) return new ();
-
-            return element.Elements("id").Select(x => x.Value).ToList();
+            return element?.Elements("id")?.Select(x => x.Value)?.ToList() ?? new();
         }
 
         private static MasterDataAttribute ParseAttribute(XElement element)
