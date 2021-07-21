@@ -4,8 +4,10 @@ using FasTnT.Domain.Queries.Poll;
 using FasTnT.Formatter.Xml;
 using FasTnT.Host.Extensions;
 using MediatR;
+using System;
 using System.IO;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace FasTnT.Host.Features.v1_2
 {
@@ -25,12 +27,13 @@ namespace FasTnT.Host.Features.v1_2
 
             Post("query.svc", async (req, res) =>
             {
-                res.ContentType = "application/xml";
+                var response = default(XElement);
 
                 try
                 {
                     var query = await req.ParseSoapEnvelope(req.HttpContext.RequestAborted);
-                    var response = query switch
+
+                    response = query switch
                     {
                         PollQuery poll
                             => XmlResponseFormatter.FormatPoll(await mediator.Send(poll)),
@@ -42,20 +45,26 @@ namespace FasTnT.Host.Features.v1_2
                         _
                             => throw new EpcisException(ExceptionType.ValidationException, $"Invalid query: {query.GetType().Name}")
                     };
-
-                    await res.FormatSoap(response, req.HttpContext.RequestAborted);
                 }
-                catch (EpcisException ex)
+                catch(Exception ex)
                 {
-                    await res.FormatSoap(XmlResponseFormatter.FormatError(ex), req.HttpContext.RequestAborted);
+                    response = ex is EpcisException epcisEx
+                        ? XmlResponseFormatter.FormatError(epcisEx)
+                        : XmlResponseFormatter.FormatUnexpectedError();
+                }
+                finally
+                {
+                    await res.FormatSoap(response, req.HttpContext.RequestAborted);
                 }
             });
         }
 
-        private Stream GetWsdlContent()
+        private static Stream GetWsdlContent()
         {
+            var wsdlPath = @"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
+
             return Assembly.GetExecutingAssembly()
-                           .GetManifestResourceStream(@"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl");
+                           .GetManifestResourceStream(wsdlPath);
         }
     }
 }

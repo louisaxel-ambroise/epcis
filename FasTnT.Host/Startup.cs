@@ -34,13 +34,14 @@ namespace FasTnT.Host
             services.AddMediatR(typeof(PollQueryHandler).Assembly);
             services.AddValidatorsFromAssembly(typeof(CommandValidationBehavior<,>).Assembly);
             services.AddTransient<IEpcisQuery, SimpleEventQuery>();
+            services.AddTransient<IEpcisQuery, SimpleMasterDataQuery>();
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
             services.AddCarter(o => o.OpenApi.Enabled = true);
 
             var constantsSection = _configuration.GetSection("Constants");
             if (constantsSection.Exists())
             {
-                Constants.MaxEventsReturnedInQuery = constantsSection.GetValue<int>(nameof(Constants.MaxEventsReturnedInQuery), Constants.MaxEventsReturnedInQuery);
+                Constants.MaxEventsReturnedInQuery = constantsSection.GetValue(nameof(Constants.MaxEventsReturnedInQuery), Constants.MaxEventsReturnedInQuery);
             }
         }
 

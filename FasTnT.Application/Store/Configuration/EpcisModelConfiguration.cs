@@ -56,6 +56,8 @@ namespace FasTnT.Infrastructure.Configuration
                 entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
                 entity.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
                 entity.Ignore(x => x.Children); // TODO: map
+
+                entity.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM epcis.MasterData GROUP BY type, id");
             }
             {
                 var entity = modelBuilder.Entity<MasterDataAttribute>();

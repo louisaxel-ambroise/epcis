@@ -5,7 +5,6 @@ using System;
 
 namespace FasTnT.Host.Features.v1_2
 {
-
     public class CaptureModule : Epcis12Module
     {
         public CaptureModule(IMediator mediator)
@@ -19,13 +18,11 @@ namespace FasTnT.Host.Features.v1_2
 
                     res.StatusCode = 201;
                 }
-                catch (Exception ex) when (ex is FormatException || ex is EpcisException)
+                catch (Exception ex) 
                 {
-                    res.StatusCode = 400;
-                }
-                catch
-                {
-                    res.StatusCode = 500;
+                    res.StatusCode = (ex is FormatException or EpcisException)
+                        ? 400
+                        : 500;
                 }
             });
         }

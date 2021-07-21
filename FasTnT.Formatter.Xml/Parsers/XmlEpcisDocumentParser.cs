@@ -3,6 +3,7 @@ using FasTnT.Domain.Model;
 using System;
 using System.Linq;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace FasTnT.Formatter.Xml.Parsers
 {
@@ -17,9 +18,20 @@ namespace FasTnT.Formatter.Xml.Parsers
                 SchemaVersion = root.Attribute("schemaVersion").Value
             };
 
+            ParseHeaderIntoRequest(root.Element("EPCISHeader"), request);
             ParseBodyIntoRequest(root.Element("EPCISBody"), request);
 
             return request;
+        }
+
+        private static void ParseHeaderIntoRequest(XElement epcisHeader, Request request)
+        {
+            var masterData = epcisHeader?.XPathSelectElement("extension/EPCISMasterData/VocabularyList");
+
+            if (masterData != default)
+            {
+                request.Masterdata.AddRange(XmlMasterdataParser.ParseMasterdata(masterData));
+            }
         }
 
         private static void ParseBodyIntoRequest(XElement epcisBody, Request request)
@@ -31,8 +43,8 @@ namespace FasTnT.Formatter.Xml.Parsers
                 case "EventList":
                     request.Events = XmlEventParser.ParseEvents(element).ToList();
                     break;
-                case "MasterdataList":
-                    request.Masterdata = default;
+                case "VocabularyList":
+                    request.Masterdata = XmlMasterdataParser.ParseMasterdata(element).ToList();
                     break;
                 default:
                     throw new EpcisException(ExceptionType.ValidationException, $"Invalid element: {element.Name.LocalName}");

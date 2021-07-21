@@ -260,18 +260,15 @@ namespace FasTnT.Formatter.Xml
 
         private static IEnumerable<XElement> CreateCustomFields(Event evt, FieldType type)
         {
-            return evt.CustomFields.Where(x => x.Type == type && x.Parent == default).Select(FormatField);
+            return evt.CustomFields.Where(x => x.Type == type && x.Parent is null).Select(FormatField);
         }
 
         private static XElement FormatField(CustomField field)
         {
-            var element = new XElement(XName.Get(field.Name, field.Namespace ?? string.Empty), field.TextValue);
-            element.AddIfNotNull(field.Children.Where(x => x.Type != FieldType.Attribute).Select(FormatField));
+            var attributes = field.Children.Where(x => x.Type == FieldType.Attribute).Select(x => new XAttribute(XName.Get(x.Name, x.Namespace), x.TextValue));
+            var element = new XElement(XName.Get(field.Name, field.Namespace ?? string.Empty), field.TextValue, attributes);
 
-            foreach (var attribute in field.Children.Where(x => x.Type == FieldType.Attribute))
-            {
-                element.Add(new XAttribute(XName.Get(attribute.Name, attribute.Namespace), attribute.TextValue));
-            }
+            element.AddIfNotNull(field.Children.Where(x => x.Type != FieldType.Attribute).Select(FormatField));
 
             return element;
         }
