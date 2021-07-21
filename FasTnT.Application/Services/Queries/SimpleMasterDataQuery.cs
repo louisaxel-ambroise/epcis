@@ -27,7 +27,7 @@ namespace FasTnT.Application.Queries.Poll
         {
             var query = _context.MasterData.AsNoTracking();
 
-            var result = await query
+            var result = await query.AsSplitQuery().AsNoTrackingWithIdentityResolution()
                 .Include(x => x.Attributes)
                 .ThenInclude(x => x.Fields)
                 .ToListAsync(cancellationToken);

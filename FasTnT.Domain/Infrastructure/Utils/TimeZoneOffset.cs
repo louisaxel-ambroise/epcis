@@ -4,7 +4,7 @@ namespace FasTnT.Domain.Utils
 {
     public class TimeZoneOffset
     {
-        public static TimeZoneOffset Default => new TimeZoneOffset();
+        public static TimeZoneOffset Default => new ();
 
         public string Representation { get { return ComputeRepresentation(Value); } set { Value = ComputeValue(value); } }
         public short Value { get; set; }
@@ -13,17 +13,17 @@ namespace FasTnT.Domain.Utils
         {
             var sign = value >= 0 ? "+" : "-";
             var hours = (Math.Abs(value) / 60).ToString("D2");
-            var minutes = (Math.Abs(value % 60)).ToString("D2");
+            var minutes = (Math.Abs(value) % 60).ToString("D2");
 
             return string.Format("{0}{1}:{2}", sign, hours, minutes);
         }
 
         private static short ComputeValue(string value)
         {
-            var sign = (value[0] == '-') ? -1 : +1;
-            var parts = value.Split(':');
+            var sign = (value[0] is '-') ? -1 : +1;
+            var parts = value.TrimStart('+', '-').Split(':');
 
-            return (short)(sign * (Math.Abs(int.Parse(parts[0])) * 60 + int.Parse(parts[1])));
+            return (short)(sign * (int.Parse(parts[0]) * 60 + int.Parse(parts[1])));
         }
     }
 }

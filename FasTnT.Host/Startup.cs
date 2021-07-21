@@ -41,7 +41,7 @@ namespace FasTnT.Host
             var constantsSection = _configuration.GetSection("Constants");
             if (constantsSection.Exists())
             {
-                Constants.MaxEventsReturnedInQuery = constantsSection.GetValue<int>(nameof(Constants.MaxEventsReturnedInQuery), Constants.MaxEventsReturnedInQuery);
+                Constants.MaxEventsReturnedInQuery = constantsSection.GetValue(nameof(Constants.MaxEventsReturnedInQuery), Constants.MaxEventsReturnedInQuery);
             }
         }
 

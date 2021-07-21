@@ -27,7 +27,6 @@ namespace FasTnT.Host.Features.v1_2
 
             Post("query.svc", async (req, res) =>
             {
-                res.ContentType = "application/xml";
                 var response = default(XElement);
 
                 try
@@ -47,13 +46,11 @@ namespace FasTnT.Host.Features.v1_2
                             => throw new EpcisException(ExceptionType.ValidationException, $"Invalid query: {query.GetType().Name}")
                     };
                 }
-                catch(EpcisException ex)
+                catch(Exception ex)
                 {
-                    response = XmlResponseFormatter.FormatError(ex);
-                }
-                catch
-                {
-                    response = XmlResponseFormatter.FormatUnexpectedError();
+                    response = ex is EpcisException epcisEx
+                        ? XmlResponseFormatter.FormatError(epcisEx)
+                        : XmlResponseFormatter.FormatUnexpectedError();
                 }
                 finally
                 {
@@ -62,10 +59,12 @@ namespace FasTnT.Host.Features.v1_2
             });
         }
 
-        private Stream GetWsdlContent()
+        private static Stream GetWsdlContent()
         {
+            var wsdlPath = @"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
+
             return Assembly.GetExecutingAssembly()
-                           .GetManifestResourceStream(@"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl");
+                           .GetManifestResourceStream(wsdlPath);
         }
     }
 }
