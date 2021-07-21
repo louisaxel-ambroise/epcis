@@ -29,9 +29,9 @@ namespace FasTnT.Formatter.Xml
         public static XElement FormatError(EpcisException exception)
         {
             var reason = !string.IsNullOrEmpty(exception.Message) ? new XElement("reason", exception.Message) : null;
-            var severity = (exception.Severity != null) ? new XElement("severity", exception.Severity.DisplayName) : null;
+            var severity = new XElement("severity", exception.Severity.ToString().ToUpper());
 
-            return new XElement(exception.ExceptionType.DisplayName, reason, severity);
+            return new XElement(exception.ExceptionType.ToString().ToUpper(), reason, severity);
         }
 
         public static XElement FormatVendorVersion(GetVendorVersionResponse response)

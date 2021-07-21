@@ -71,14 +71,14 @@ namespace FasTnT.Application.Queries.Poll
             return param.Name switch
             {
                 // Simple filters
-                "eventType" => query.Where(x => param.Values.Select(Enumeration.GetByDisplayName<EventType>).Contains(x.Type)),
+                "eventType" => query.Where(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)),
                 "eventCountLimit" => query.Take(param.GetIntValue()),
                 "maxEventCount" => ParseMaxEventCount(param, query),
                 "GE_eventTime" => query.Where(x => x.EventTime >= param.GetDate()),
                 "LT_eventTime" => query.Where(x => x.EventTime < param.GetDate()),
                 "GE_recordTime" => query.Where(x => x.Request.CaptureDate >= param.GetDate()),
                 "LT_recordTime" => query.Where(x => x.Request.CaptureDate < param.GetDate()),
-                "EQ_action" => query.Where(x => param.Values.Select(Enumeration.GetByDisplayName<EventAction>).Contains(x.Action)),
+                "EQ_action" => query.Where(x => param.Values.Select(x => Enum.Parse<EventAction>(x, true)).Contains(x.Action)),
                 "EQ_bizLocation" => query.Where(x => param.Values.Contains(x.BusinessLocation)),
                 "EQ_bizStep" => query.Where(x => param.Values.Contains(x.BusinessStep)),
                 "EQ_disposition" => query.Where(x => param.Values.Contains(x.Disposition)),
