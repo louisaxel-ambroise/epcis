@@ -8,6 +8,7 @@ namespace FasTnT.Infrastructure.Database
     {
         public DbSet<Request> Requests { get; init; }
         public DbSet<Event> Events { get; init; }
+        public DbSet<MasterData> MasterData { get; set; }
 
         public EpcisContext(DbContextOptions<EpcisContext> options) : base(options) { }
 

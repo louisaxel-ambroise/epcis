@@ -16,12 +16,13 @@ namespace FasTnT.Host.Extensions
 
         public static async Task FormatSoap(this HttpResponse response, XElement element, CancellationToken cancellationToken)
         {
+            response.ContentType = "application/xml";
             var envelope = new XDocument(
                 new XElement(XName.Get("Envelope", Namespaces.SoapEnvelop), CommonAttributes,
                 new XElement(XName.Get("Body", Namespaces.SoapEnvelop), element)
             ));
 
-            using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true });
+            using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates, WriteEndDocumentOnClose = false });
 
             await envelope.WriteToAsync(xmlWriter, cancellationToken);
         }
