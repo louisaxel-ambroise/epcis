@@ -1,4 +1,5 @@
-﻿using FasTnT.Formatter.Xml;
+﻿using FasTnT.Domain.Exceptions;
+using FasTnT.Formatter.Xml;
 using FasTnT.Formatter.Xml.Utils;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -7,30 +8,31 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace FasTnT.Host.Extensions
 {
     public static class SoapExtensions
     {
-        private static readonly XAttribute[] CommonAttributes = { new(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new(XNamespace.Xmlns + "epcisq", Namespaces.Query) };
-
         public static async Task FormatSoap(this HttpResponse response, XElement element, CancellationToken cancellationToken)
         {
             response.ContentType = "application/xml";
-            var envelope = new XDocument(
-                new XElement(XName.Get("Envelope", Namespaces.SoapEnvelop), CommonAttributes,
-                new XElement(XName.Get("Body", Namespaces.SoapEnvelop), element)
-            ));
 
-            using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates, WriteEndDocumentOnClose = false });
+            var body = new XElement(XName.Get("Body", Namespaces.SoapEnvelop), element);
+            var envelope = new XElement(XName.Get("Envelope", Namespaces.SoapEnvelop), body);
+            var xmlResponse = new XDocument(envelope);
 
-            await envelope.WriteToAsync(xmlWriter, cancellationToken);
+            envelope.Add(new XAttribute(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new XAttribute(XNamespace.Xmlns + "epcisq", Namespaces.Query));
+
+            using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates });
+
+            await xmlResponse.WriteToAsync(xmlWriter, cancellationToken);
         }
 
         public static async Task<object> ParseSoapEnvelope(this HttpRequest request, CancellationToken cancellationToken)
         {
             var document = await XDocument.LoadAsync(request.Body, LoadOptions.None, cancellationToken);
-            var envelopBody = document.Element(XName.Get("Envelope", Namespaces.SoapEnvelop))?.Element(XName.Get("Body", Namespaces.SoapEnvelop));
+            var envelopBody = document.XPathSelectElement("SoapEnvelop:Envelope/SoapEnvelop:Body", Namespaces.Resolver);
 
             if (envelopBody == null || !envelopBody.HasElements)
             {
@@ -44,7 +46,7 @@ namespace FasTnT.Host.Extensions
                 "Poll" => XmlQueryParser.ParsePollQuery(queryElement),
                 "GetVendorVersion" => XmlQueryParser.ParseGetVendorVersion(),
                 "GetStandardVersion" => XmlQueryParser.ParseGetStandardVersion(),
-                _ => throw new Exception()
+                _ => throw new EpcisException(ExceptionType.ValidationException, $"Query with name {queryElement.Name.LocalName} does not exist")
             };
         }
     }
