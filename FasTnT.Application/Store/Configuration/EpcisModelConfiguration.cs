@@ -1,5 +1,4 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model;
+﻿using FasTnT.Domain.Model;
 using FasTnT.Domain.Utils;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,7 +38,7 @@ namespace FasTnT.Infrastructure.Configuration
                 entity.ToTable(nameof(ContactInformation), nameof(EpcisSchema.Epcis));
                 entity.HasKey("RequestId", nameof(ContactInformation.Type), nameof(ContactInformation.Identifier));
                 entity.Property<int>("RequestId");
-                entity.Property(x => x.Type).HasMaxLength(256).HasConversion(x => x.Id, x => Enumeration.GetById<ContactInformationType>(x)).IsRequired(true);
+                entity.Property(x => x.Type).HasMaxLength(256).HasConversion<short>().IsRequired(true);
                 entity.Property(x => x.Identifier).HasMaxLength(256).IsRequired(true);
                 entity.Property(x => x.Contact).HasMaxLength(256).IsRequired(false);
                 entity.Property(x => x.EmailAddress).HasMaxLength(256).IsRequired(false);
@@ -92,9 +91,9 @@ namespace FasTnT.Infrastructure.Configuration
                 entity.HasKey(x => x.Id);
                 entity.Property(x => x.Id).IsRequired(true).UseIdentityColumn(1, 1);
                 entity.Property(x => x.EventTime).IsRequired(true);
-                entity.Property(x => x.Type).IsRequired(true).HasConversion(x => x.Id, x => Enumeration.GetById<EventType>(x));
+                entity.Property(x => x.Type).IsRequired(true).HasConversion<short>();
                 entity.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => new TimeZoneOffset { Value = x });
-                entity.Property(x => x.Action).IsRequired(true).HasConversion(x => x.Id, x => Enumeration.GetById<EventAction>(x));
+                entity.Property(x => x.Action).IsRequired(true).HasConversion<short>();
                 entity.Property(x => x.EventId).HasMaxLength(256).IsRequired(false);
                 entity.Property(x => x.ReadPoint).HasMaxLength(256).IsRequired(false);
                 entity.Property(x => x.BusinessLocation).HasMaxLength(256).IsRequired(false);
@@ -116,7 +115,7 @@ namespace FasTnT.Infrastructure.Configuration
                 entity.ToTable(nameof(Epc), nameof(EpcisSchema.Epcis));
                 entity.HasKey("EventId", nameof(Epc.Type), nameof(Epc.Id));
                 entity.Property<long>("EventId");
-                entity.Property(x => x.Type).IsRequired(true).HasConversion(x => x.Id, x => Enumeration.GetById<EpcType>(x));
+                entity.Property(x => x.Type).IsRequired(true).HasConversion<short>();
                 entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
                 entity.Property(x => x.IsQuantity).IsRequired(true).HasDefaultValue(false);
                 entity.Property(x => x.Quantity).IsRequired(false);
@@ -162,7 +161,7 @@ namespace FasTnT.Infrastructure.Configuration
                 entity.Property<long>("EventId");
                 entity.Property<int?>("ParentId").IsRequired(false);
                 entity.HasKey("EventId", "FieldId");
-                entity.Property(x => x.Type).IsRequired(true).HasConversion(x => x.Id, x => Enumeration.GetById<FieldType>(x));
+                entity.Property(x => x.Type).IsRequired(true).HasConversion<short>();
                 entity.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
                 entity.Property(x => x.Namespace).HasMaxLength(256).IsRequired(false);
                 entity.Property(x => x.TextValue).IsRequired(false);

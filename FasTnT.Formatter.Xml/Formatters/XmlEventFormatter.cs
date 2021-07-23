@@ -27,7 +27,7 @@ namespace FasTnT.Formatter.Xml
         {
             return Formatters.TryGetValue(evt.Type, out Func<Event, XElement> formatter)
                     ? formatter(evt)
-                    : throw new Exception($"Unknown event type to format {evt?.Type?.DisplayName}");
+                    : throw new Exception($"Unknown event type to format {evt?.Type}");
         }
 
         private static XElement FormatObjectEvent(Event evt)
@@ -36,7 +36,7 @@ namespace FasTnT.Formatter.Xml
 
             AddCommonEventFields(evt, xmlEvent);
             xmlEvent.Add(CreateEpcList(evt, EpcType.List, "epcList"));
-            xmlEvent.Add(new XElement("action", evt.Action.DisplayName));
+            xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
             AddV1_1Fields(evt, xmlEvent);
             xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
             xmlEvent.AddIfNotNull(FormatObjectEventExtension(evt));
@@ -87,7 +87,7 @@ namespace FasTnT.Formatter.Xml
             AddCommonEventFields(evt, xmlEvent);
             xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
             xmlEvent.Add(CreateEpcList(evt, EpcType.ChildEpc, "childEPCs"));
-            xmlEvent.Add(new XElement("action", evt.Action.DisplayName));
+            xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
             AddV1_1Fields(evt, xmlEvent);
             xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
             xmlEvent.AddIfNotNull(FormatAggregationEventExtension(evt));
@@ -115,7 +115,7 @@ namespace FasTnT.Formatter.Xml
             xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
             xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
             xmlEvent.Add(CreateEpcList(evt, EpcType.List, "epcList"));
-            xmlEvent.Add(new XElement("action", evt.Action.DisplayName));
+            xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
             AddV1_1Fields(evt, xmlEvent);
             xmlEvent.AddIfNotNull(FormatTransactionEventExtension(evt));
             xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));

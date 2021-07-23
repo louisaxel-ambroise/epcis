@@ -13,16 +13,16 @@ namespace FasTnT.Formatter.Xml.Parsers
     {
         readonly static IDictionary<string, Func<XElement, Event>> RootParsers = new Dictionary<string, Func<XElement, Event>>
         {
-            { EventType.Object.DisplayName, ParseObjectEvent },
-            { EventType.Transaction.DisplayName, ParseTransactionEvent },
-            { EventType.Aggregation.DisplayName, ParseAggregationEvent },
-            { EventType.Quantity.DisplayName, ParseQuantityEvent },
+            { "ObjectEvent", ParseObjectEvent },
+            { "TransactionEvent", ParseTransactionEvent },
+            { "AggregationEvent", ParseAggregationEvent },
+            { "QuantityEvent", ParseQuantityEvent },
             { "extension", ParseEventListExtension }
         };
 
         readonly static IDictionary<string, Func<XElement, Event>> ExtensionParsers = new Dictionary<string, Func<XElement, Event>>
         {
-            { EventType.Transformation.DisplayName, ParseTransformationEvent }
+            { "TransformationEvent", ParseTransformationEvent }
         };
 
         public static IEnumerable<Event> ParseEvents(XElement root)
@@ -54,7 +54,7 @@ namespace FasTnT.Formatter.Xml.Parsers
         {
             var Event = ParseBase(eventRoot, EventType.Object);
 
-            Event.Action = Enumeration.GetByDisplayName<EventAction>(eventRoot.Element("action").Value);
+            Event.Action = Enum.Parse<EventAction>(eventRoot.Element("action").Value, true);
             ParseTransactions(eventRoot.Element("bizTransactionList"), Event);
             ParseEpcList(eventRoot.Element("epcList"), Event, EpcType.List);
             ParseObjectExtension(eventRoot.Element("extension"), Event);
@@ -80,7 +80,7 @@ namespace FasTnT.Formatter.Xml.Parsers
         {
             var Event = ParseBase(eventRoot, EventType.Aggregation);
 
-            Event.Action = Enumeration.GetByDisplayName<EventAction>(eventRoot.Element("action").Value);
+            Event.Action = Enum.Parse<EventAction>(eventRoot.Element("action").Value, true);
             ParseParentId(eventRoot.Element("parentID"), Event);
             ParseEpcList(eventRoot.Element("childEPCs"), Event, EpcType.ChildEpc);
             ParseTransactions(eventRoot.Element("bizTransactionList"), Event);
@@ -106,7 +106,7 @@ namespace FasTnT.Formatter.Xml.Parsers
         {
             var Event = ParseBase(eventRoot, EventType.Transaction);
 
-            Event.Action = Enumeration.GetByDisplayName<EventAction>(eventRoot.Element("action").Value);
+            Event.Action = Enum.Parse<EventAction>(eventRoot.Element("action").Value, true);
             ParseParentId(eventRoot.Element("parentID"), Event);
             ParseTransactions(eventRoot.Element("bizTransactionList"), Event);
             ParseEpcList(eventRoot.Element("epcList"), Event, EpcType.List);

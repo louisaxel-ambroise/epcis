@@ -37,9 +37,9 @@ namespace FasTnT.Formatter.Xml
         private static XElement FormatError(ExceptionType type, string reason, ExceptionSeverity severity)
         {
             var reasonElt = !string.IsNullOrEmpty(reason) ? new XElement("reason", reason) : default;
-            var severityElt = !string.IsNullOrEmpty(reason) ? new XElement("severity", severity) : default;
+            var severityElt = new XElement("severity", severity.ToString().ToUpper());
 
-            return new XElement(type.DisplayName, reasonElt, severityElt);
+            return new XElement(type.ToString(), reasonElt, severityElt);
         }
 
         public static XElement FormatVendorVersion(GetVendorVersionResult response)
