@@ -72,7 +72,10 @@ namespace FasTnT.Formatter.Xml
 
         private static QuerySchedule ParseQuerySchedule(XElement element)
         {
-            if (element == null || element.IsEmpty) return default;
+            if (element == null || element.IsEmpty)
+            {
+                return default;
+            }
 
             return new()
             {

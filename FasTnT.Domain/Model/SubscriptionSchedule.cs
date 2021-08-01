@@ -1,9 +1,8 @@
-﻿using System.Text.RegularExpressions;
-
-namespace FasTnT.Domain.Commands.Subscribe
+﻿namespace FasTnT.Domain.Model
 {
-    public class QuerySchedule
+    public class SubscriptionSchedule
     {
+        public Subscription Subscription { get; set; }
         public string Second { get; set; }
         public string Minute { get; set; }
         public string Hour { get; set; }

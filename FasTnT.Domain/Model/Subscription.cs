@@ -6,16 +6,9 @@ namespace FasTnT.Domain.Model
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        //public SubscriptionSchedule Schedule { get; set; }
+        public SubscriptionSchedule Schedule { get; set; }
         public string Trigger { get; set; }
         public bool RecordIfEmpty { get; set; }
         public List<SubscriptionParameter> Parameters { get; set; } = new();
-    }
-
-    public class SubscriptionParameter
-    {
-        public Subscription Subscription { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
     }
 }
