@@ -1,5 +1,10 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Domain.Commands.Subscribe;
+using FasTnT.Domain.Commands.Unsubscribe;
+using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Queries.GetQueryNames;
 using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.GetSubscriptionIds;
+using FasTnT.Domain.Queries.GetVendorVersion;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Formatter.Xml;
 using FasTnT.Host.Extensions;
@@ -41,7 +46,14 @@ namespace FasTnT.Host.Features.v1_2
                             => XmlResponseFormatter.FormatVendorVersion(await mediator.Send(getVendorVersion)),
                         GetStandardVersionQuery getStandardVersion
                             => XmlResponseFormatter.FormatStandardVersion(await mediator.Send(getStandardVersion)),
-                        // TODO: subscription queries
+                        GetQueryNamesQuery getQueryNames
+                            => XmlResponseFormatter.FormatGetQueryNames(await mediator.Send(getQueryNames)),
+                        GetSubscriptionIdsQuery getSubscriptionIds
+                            => XmlResponseFormatter.FormatSubscriptionIds(await mediator.Send(getSubscriptionIds)),
+                        SubscribeCommand subscribeCommand
+                            => XmlResponseFormatter.FormatSubscribeResponse(await mediator.Send(subscribeCommand)),
+                        UnsubscribeCommand unsubscribeCommand
+                            => XmlResponseFormatter.FormatUnsubscribeResponse(await mediator.Send(unsubscribeCommand)),
                         _
                             => throw new EpcisException(ExceptionType.ValidationException, $"Invalid query: {query.GetType().Name}")
                     };

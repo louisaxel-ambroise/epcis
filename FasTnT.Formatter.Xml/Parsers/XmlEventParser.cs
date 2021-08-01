@@ -11,7 +11,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 {
     public static class XmlEventParser
     {
-        readonly static IDictionary<string, Func<XElement, Event>> RootParsers = new Dictionary<string, Func<XElement, Event>>
+        private readonly static Dictionary<string, Func<XElement, Event>> RootParsers = new ()
         {
             { "ObjectEvent", ParseObjectEvent },
             { "TransactionEvent", ParseTransactionEvent },
@@ -20,7 +20,7 @@ namespace FasTnT.Formatter.Xml.Parsers
             { "extension", ParseEventListExtension }
         };
 
-        readonly static IDictionary<string, Func<XElement, Event>> ExtensionParsers = new Dictionary<string, Func<XElement, Event>>
+        private readonly static Dictionary<string, Func<XElement, Event>> ExtensionParsers = new ()
         {
             { "TransformationEvent", ParseTransformationEvent }
         };

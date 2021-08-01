@@ -8,168 +8,162 @@ namespace FasTnT.Infrastructure.Configuration
     {
         internal static void Apply(ModelBuilder modelBuilder)
         {
-            {
-                var entity = modelBuilder.Entity<Request>();
-                entity.ToTable(nameof(Request), nameof(EpcisSchema.Epcis));
-                entity.HasKey(x => x.Id);
-                entity.Property(x => x.DocumentTime);
-                entity.Property(x => x.CaptureDate);
-                entity.Property(x => x.SchemaVersion).IsRequired(true);
-                entity.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("RequestId");
-                entity.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId");
-                entity.HasOne(x => x.StandardBusinessHeader).WithOne(x => x.Request).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(false);
-            }
-            {
-                var entity = modelBuilder.Entity<StandardBusinessHeader>();
-                entity.ToTable(nameof(StandardBusinessHeader), nameof(EpcisSchema.Epcis));
-                entity.HasKey("RequestId");
-                entity.Property<int>("RequestId");
-                entity.Property(x => x.Version).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.Standard).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.TypeVersion).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.InstanceIdentifier).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.CreationDateTime).IsRequired(false);
-                entity.HasOne(x => x.Request).WithOne(x => x.StandardBusinessHeader).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(true);
-                entity.HasMany(x => x.ContactInformations).WithOne(x => x.Header).HasForeignKey("RequestId");
-            }
-            {
-                var entity = modelBuilder.Entity<ContactInformation>();
-                entity.ToTable(nameof(ContactInformation), nameof(EpcisSchema.Epcis));
-                entity.HasKey("RequestId", nameof(ContactInformation.Type), nameof(ContactInformation.Identifier));
-                entity.Property<int>("RequestId");
-                entity.Property(x => x.Type).HasMaxLength(256).HasConversion<short>().IsRequired(true);
-                entity.Property(x => x.Identifier).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.Contact).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.EmailAddress).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.FaxNumber).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.TelephoneNumber).IsRequired(false);
-                entity.Property(x => x.ContactTypeIdentifier).IsRequired(false);
-                entity.HasOne(x => x.Header).WithMany(x => x.ContactInformations).HasForeignKey("RequestId");
-            }
-            {
-                var entity = modelBuilder.Entity<MasterData>();
-                entity.ToTable(nameof(MasterData), nameof(EpcisSchema.Epcis));
-                entity.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
-                entity.Property<int>("RequestId");
-                entity.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-                entity.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
-                entity.Ignore(x => x.Children); // TODO: map
+            var request = modelBuilder.Entity<Request>();
+            request.ToTable(nameof(Request), nameof(EpcisSchema.Epcis));
+            request.HasKey(x => x.Id);
+            request.Property(x => x.DocumentTime);
+            request.Property(x => x.CaptureDate);
+            request.Property(x => x.SchemaVersion).IsRequired(true);
+            request.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("RequestId");
+            request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId");
+            request.HasOne(x => x.StandardBusinessHeader).WithOne(x => x.Request).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(false);
 
-                entity.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM epcis.MasterData GROUP BY type, id");
-            }
-            {
-                var entity = modelBuilder.Entity<MasterDataAttribute>();
-                entity.ToTable(nameof(MasterDataAttribute), nameof(EpcisSchema.Epcis));
-                entity.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataAttribute.Id));
-                entity.Property<int>("RequestId");
-                entity.Property<string>("MasterdataType").HasMaxLength(256);
-                entity.Property<string>("MasterdataId").HasMaxLength(256);
-                entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
-                entity.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
-                entity.HasMany(x => x.Fields).WithOne(x => x.Attribute).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
-            }
-            {
-                var entity = modelBuilder.Entity<MasterDataField>();
-                entity.ToTable(nameof(MasterDataField), nameof(EpcisSchema.Epcis));
-                entity.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", nameof(MasterDataField.Namespace), nameof(MasterDataField.Name));
-                entity.Property<int>("RequestId");
-                entity.Property<string>("MasterdataType").HasMaxLength(256);
-                entity.Property<string>("MasterdataId").HasMaxLength(256);
-                entity.Property<string>("AttributeId").HasMaxLength(256);
-                entity.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
-                entity.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
-                entity.Ignore(x => x.Children); // TODO: map
-            }
-            {
-                var entity = modelBuilder.Entity<Event>();
-                entity.ToTable(nameof(Event), nameof(EpcisSchema.Epcis));
-                entity.HasKey(x => x.Id);
-                entity.Property(x => x.Id).IsRequired(true).UseIdentityColumn(1, 1);
-                entity.Property(x => x.EventTime).IsRequired(true);
-                entity.Property(x => x.Type).IsRequired(true).HasConversion<short>();
-                entity.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => new TimeZoneOffset { Value = x });
-                entity.Property(x => x.Action).IsRequired(true).HasConversion<short>();
-                entity.Property(x => x.EventId).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.ReadPoint).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.BusinessLocation).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.BusinessStep).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.Disposition).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.TransformationId).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.CorrectiveDeclarationTime).IsRequired(false);
-                entity.Property(x => x.CorrectiveReason).HasMaxLength(256).IsRequired(false);
-                entity.HasMany(x => x.Epcs).WithOne(x => x.Event).HasForeignKey("EventId");
-                entity.HasMany(x => x.Sources).WithOne(x => x.Event).HasForeignKey("EventId");
-                entity.HasMany(x => x.Destinations).WithOne(x => x.Event).HasForeignKey("EventId");
-                entity.HasMany(x => x.Transactions).WithOne(x => x.Event).HasForeignKey("EventId");
-                entity.HasMany(x => x.CustomFields).WithOne(x => x.Event).HasForeignKey("EventId");
-                entity.HasMany(x => x.CorrectiveEventIds).WithOne(x => x.Event).HasForeignKey("EventId");
-                entity.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId");
-            }
-            {
-                var entity = modelBuilder.Entity<Epc>();
-                entity.ToTable(nameof(Epc), nameof(EpcisSchema.Epcis));
-                entity.HasKey("EventId", nameof(Epc.Type), nameof(Epc.Id));
-                entity.Property<long>("EventId");
-                entity.Property(x => x.Type).IsRequired(true).HasConversion<short>();
-                entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.IsQuantity).IsRequired(true).HasDefaultValue(false);
-                entity.Property(x => x.Quantity).IsRequired(false);
-                entity.Property(x => x.UnitOfMeasure).IsRequired(false).HasMaxLength(10);
-                entity.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("EventId");
-            }
-            {
-                var entity = modelBuilder.Entity<CorrectiveEventId>();
-                entity.ToTable(nameof(CorrectiveEventId), nameof(EpcisSchema.Epcis));
-                entity.HasKey("EventId", nameof(CorrectiveEventId.CorrectiveId));
-                entity.Property<long>("EventId");
-                entity.Property(x => x.CorrectiveId).IsRequired(true).HasMaxLength(256);
-            }
-            {
-                var entity = modelBuilder.Entity<Source>();
-                entity.ToTable(nameof(Source), nameof(EpcisSchema.Epcis));
-                entity.Property<long>("EventId");
-                entity.HasKey("EventId", nameof(Source.Type), nameof(Source.Id));
-                entity.Property(x => x.Type).IsRequired(true);
-                entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-            }
-            {
-                var entity = modelBuilder.Entity<Destination>();
-                entity.ToTable(nameof(Destination), nameof(EpcisSchema.Epcis));
-                entity.Property<long>("EventId");
-                entity.HasKey("EventId", nameof(Destination.Type), nameof(Destination.Id));
-                entity.Property(x => x.Type).IsRequired(true);
-                entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-            }
-            {
-                var entity = modelBuilder.Entity<BusinessTransaction>();
-                entity.ToTable(nameof(BusinessTransaction), nameof(EpcisSchema.Epcis));
-                entity.HasKey("EventId", nameof(BusinessTransaction.Type), nameof(BusinessTransaction.Id));
-                entity.Property<long>("EventId");
-                entity.Property(x => x.Type).HasConversion<short>().IsRequired(true);
-                entity.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-                entity.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId");
-            }
-            {
-                var entity = modelBuilder.Entity<CustomField>();
-                entity.ToTable(nameof(CustomField), nameof(EpcisSchema.Epcis));
-                entity.Property<int>("FieldId").IsRequired(true).HasValueGenerator<CustomFieldValueGenerator>();
-                entity.Property<long>("EventId");
-                entity.Property<int?>("ParentId").IsRequired(false);
-                entity.HasKey("EventId", "FieldId");
-                entity.Property(x => x.Type).IsRequired(true).HasConversion<short>();
-                entity.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
-                entity.Property(x => x.Namespace).HasMaxLength(256).IsRequired(false);
-                entity.Property(x => x.TextValue).IsRequired(false);
-                entity.Property(x => x.NumericValue).IsRequired(false);
-                entity.Property(x => x.DateValue).IsRequired(false);
-                entity.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId");
-                entity.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey("EventId", "ParentId").OnDelete(DeleteBehavior.NoAction).IsRequired(false);
-            }
+            var header = modelBuilder.Entity<StandardBusinessHeader>();
+            header.ToTable(nameof(StandardBusinessHeader), nameof(EpcisSchema.Epcis));
+            header.HasKey("RequestId");
+            header.Property<int>("RequestId");
+            header.Property(x => x.Version).HasMaxLength(256).IsRequired(true);
+            header.Property(x => x.Standard).HasMaxLength(256).IsRequired(true);
+            header.Property(x => x.TypeVersion).HasMaxLength(256).IsRequired(true);
+            header.Property(x => x.InstanceIdentifier).HasMaxLength(256).IsRequired(true);
+            header.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
+            header.Property(x => x.CreationDateTime).IsRequired(false);
+            header.HasOne(x => x.Request).WithOne(x => x.StandardBusinessHeader).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(true);
+            header.HasMany(x => x.ContactInformations).WithOne(x => x.Header).HasForeignKey("RequestId");
+
+            var contactInfo = modelBuilder.Entity<ContactInformation>();
+            contactInfo.ToTable(nameof(ContactInformation), nameof(EpcisSchema.Epcis));
+            contactInfo.HasKey("RequestId", nameof(ContactInformation.Type), nameof(ContactInformation.Identifier));
+            contactInfo.Property<int>("RequestId");
+            contactInfo.Property(x => x.Type).HasMaxLength(256).HasConversion<short>().IsRequired(true);
+            contactInfo.Property(x => x.Identifier).HasMaxLength(256).IsRequired(true);
+            contactInfo.Property(x => x.Contact).HasMaxLength(256).IsRequired(false);
+            contactInfo.Property(x => x.EmailAddress).HasMaxLength(256).IsRequired(false);
+            contactInfo.Property(x => x.FaxNumber).HasMaxLength(256).IsRequired(false);
+            contactInfo.Property(x => x.TelephoneNumber).IsRequired(false);
+            contactInfo.Property(x => x.ContactTypeIdentifier).IsRequired(false);
+            contactInfo.HasOne(x => x.Header).WithMany(x => x.ContactInformations).HasForeignKey("RequestId");
+
+            var masterData = modelBuilder.Entity<MasterData>();
+            masterData.ToTable(nameof(MasterData), nameof(EpcisSchema.Epcis));
+            masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
+            masterData.Property<int>("RequestId");
+            masterData.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
+            masterData.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
+            masterData.Ignore(x => x.Children); // TODO: map
+            masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM epcis.MasterData GROUP BY type, id");
+
+            var mdAttribute = modelBuilder.Entity<MasterDataAttribute>();
+            mdAttribute.ToTable(nameof(MasterDataAttribute), nameof(EpcisSchema.Epcis));
+            mdAttribute.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataAttribute.Id));
+            mdAttribute.Property<int>("RequestId");
+            mdAttribute.Property<string>("MasterdataType").HasMaxLength(256);
+            mdAttribute.Property<string>("MasterdataId").HasMaxLength(256);
+            mdAttribute.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            mdAttribute.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
+            mdAttribute.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
+            mdAttribute.HasMany(x => x.Fields).WithOne(x => x.Attribute).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
+
+            var mdField = modelBuilder.Entity<MasterDataField>();
+            mdField.ToTable(nameof(MasterDataField), nameof(EpcisSchema.Epcis));
+            mdField.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", nameof(MasterDataField.Namespace), nameof(MasterDataField.Name));
+            mdField.Property<int>("RequestId");
+            mdField.Property<string>("MasterdataType").HasMaxLength(256);
+            mdField.Property<string>("MasterdataId").HasMaxLength(256);
+            mdField.Property<string>("AttributeId").HasMaxLength(256);
+            mdField.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
+            mdField.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
+            mdField.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
+            mdField.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
+            mdField.Ignore(x => x.Children); // TODO: map
+
+            var evt = modelBuilder.Entity<Event>();
+            evt.ToTable(nameof(Event), nameof(EpcisSchema.Epcis));
+            evt.HasKey(x => x.Id);
+            evt.Property(x => x.Id).IsRequired(true).UseIdentityColumn(1, 1);
+            evt.Property(x => x.EventTime).IsRequired(true);
+            evt.Property(x => x.Type).IsRequired(true).HasConversion<short>();
+            evt.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => new TimeZoneOffset { Value = x });
+            evt.Property(x => x.Action).IsRequired(true).HasConversion<short>();
+            evt.Property(x => x.EventId).HasMaxLength(256).IsRequired(false);
+            evt.Property(x => x.ReadPoint).HasMaxLength(256).IsRequired(false);
+            evt.Property(x => x.BusinessLocation).HasMaxLength(256).IsRequired(false);
+            evt.Property(x => x.BusinessStep).HasMaxLength(256).IsRequired(false);
+            evt.Property(x => x.Disposition).HasMaxLength(256).IsRequired(false);
+            evt.Property(x => x.TransformationId).HasMaxLength(256).IsRequired(false);
+            evt.Property(x => x.CorrectiveDeclarationTime).IsRequired(false);
+            evt.Property(x => x.CorrectiveReason).HasMaxLength(256).IsRequired(false);
+            evt.HasMany(x => x.Epcs).WithOne(x => x.Event).HasForeignKey("EventId");
+            evt.HasMany(x => x.Sources).WithOne(x => x.Event).HasForeignKey("EventId");
+            evt.HasMany(x => x.Destinations).WithOne(x => x.Event).HasForeignKey("EventId");
+            evt.HasMany(x => x.Transactions).WithOne(x => x.Event).HasForeignKey("EventId");
+            evt.HasMany(x => x.CustomFields).WithOne(x => x.Event).HasForeignKey("EventId");
+            evt.HasMany(x => x.CorrectiveEventIds).WithOne(x => x.Event).HasForeignKey("EventId");
+            evt.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId");
+
+            var epc = modelBuilder.Entity<Epc>();
+            epc.ToTable(nameof(Epc), nameof(EpcisSchema.Epcis));
+            epc.HasKey("EventId", nameof(Epc.Type), nameof(Epc.Id));
+            epc.Property<long>("EventId");
+            epc.Property(x => x.Type).IsRequired(true).HasConversion<short>();
+            epc.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            epc.Property(x => x.IsQuantity).IsRequired(true).HasDefaultValue(false);
+            epc.Property(x => x.Quantity).IsRequired(false);
+            epc.Property(x => x.UnitOfMeasure).IsRequired(false).HasMaxLength(10);
+            epc.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("EventId");
+
+            var eventId = modelBuilder.Entity<CorrectiveEventId>();
+            eventId.ToTable(nameof(CorrectiveEventId), nameof(EpcisSchema.Epcis));
+            eventId.HasKey("EventId", nameof(CorrectiveEventId.CorrectiveId));
+            eventId.Property<long>("EventId");
+            eventId.Property(x => x.CorrectiveId).IsRequired(true).HasMaxLength(256);
+
+            var source = modelBuilder.Entity<Source>();
+            source.ToTable(nameof(Source), nameof(EpcisSchema.Epcis));
+            source.Property<long>("EventId");
+            source.HasKey("EventId", nameof(Source.Type), nameof(Source.Id));
+            source.Property(x => x.Type).IsRequired(true);
+            source.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+
+            var dest = modelBuilder.Entity<Destination>();
+            dest.ToTable(nameof(Destination), nameof(EpcisSchema.Epcis));
+            dest.Property<long>("EventId");
+            dest.HasKey("EventId", nameof(Destination.Type), nameof(Destination.Id));
+            dest.Property(x => x.Type).IsRequired(true);
+            dest.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+
+            var bizTrans = modelBuilder.Entity<BusinessTransaction>();
+            bizTrans.ToTable(nameof(BusinessTransaction), nameof(EpcisSchema.Epcis));
+            bizTrans.HasKey("EventId", nameof(BusinessTransaction.Type), nameof(BusinessTransaction.Id));
+            bizTrans.Property<long>("EventId");
+            bizTrans.Property(x => x.Type).HasConversion<short>().IsRequired(true);
+            bizTrans.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            bizTrans.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId");
+
+            var customField = modelBuilder.Entity<CustomField>();
+            customField.ToTable(nameof(CustomField), nameof(EpcisSchema.Epcis));
+            customField.Property<int>("FieldId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
+            customField.Property<long>("EventId");
+            customField.Property<int?>("ParentId").IsRequired(false);
+            customField.HasKey("EventId", "FieldId");
+            customField.Property(x => x.Type).IsRequired(true).HasConversion<short>();
+            customField.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
+            customField.Property(x => x.Namespace).HasMaxLength(256).IsRequired(false);
+            customField.Property(x => x.TextValue).IsRequired(false);
+            customField.Property(x => x.NumericValue).IsRequired(false);
+            customField.Property(x => x.DateValue).IsRequired(false);
+            customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId");
+            customField.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey("EventId", "ParentId").OnDelete(DeleteBehavior.NoAction).IsRequired(false);
+
+            var subscription = modelBuilder.Entity<Subscription>();
+            subscription.ToTable(nameof(Subscription), nameof(EpcisSchema.Subscription));
+            subscription.HasMany(x => x.Parameters).WithOne(x => x.Subscription).HasForeignKey("SubscriptionId");
+
+            var subscriptionParam = modelBuilder.Entity<SubscriptionParameter>();
+            subscriptionParam.ToTable(nameof(SubscriptionParameter), nameof(EpcisSchema.Subscription));
+            subscriptionParam.HasKey("SubscriptionId", nameof(SubscriptionParameter.Name));
+            subscriptionParam.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionId");
         }
     }
 }

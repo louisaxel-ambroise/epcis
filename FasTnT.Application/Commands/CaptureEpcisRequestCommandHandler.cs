@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Commands;
+﻿using FasTnT.Domain.Commands.Capture;
 using FasTnT.Infrastructure.Database;
 using MediatR;
 using System.Threading;

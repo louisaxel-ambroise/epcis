@@ -3,7 +3,7 @@ using FasTnT.Domain.Model;
 using FluentValidation;
 using System.Linq;
 
-namespace FasTnT.Domain.Commands
+namespace FasTnT.Domain.Commands.Capture
 {
     public class CaptureEpcisRequestCommandValidator : AbstractValidator<CaptureEpcisRequestCommand>
     {

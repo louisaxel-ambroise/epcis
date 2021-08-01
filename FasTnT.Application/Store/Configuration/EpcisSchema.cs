@@ -2,6 +2,8 @@
 {
     enum EpcisSchema
     {
-        Epcis
+        Epcis,
+        Cbv,
+        Subscription
     }
 }

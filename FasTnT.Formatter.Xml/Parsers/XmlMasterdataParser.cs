@@ -9,24 +9,17 @@ namespace FasTnT.Formatter.Xml
     {
         public static IEnumerable<MasterData> ParseMasterdata(XElement root)
         {
-            var list = new List<MasterData>();
-
-            foreach (var element in root.Elements("Vocabulary"))
-            {
-                list.AddRange(ParseVocabulary(element));
-            }
-
-            return list;
+            return root.Elements("Vocabulary").SelectMany(ParseVocabulary);
         }
 
         private static IEnumerable<MasterData> ParseVocabulary(XElement element)
         {
             var type = element.Attribute("type").Value;
 
-            foreach (var vocElement in element.Element("VocabularyElementList")?.Elements("VocabularyElement"))
-            {
-                yield return ParseVocabularyElement(vocElement, type);
-            }
+            return element
+                .Element("VocabularyElementList")
+                ?.Elements("VocabularyElement")
+                ?.Select(x => ParseVocabularyElement(x, type));
         }
 
         private static MasterData ParseVocabularyElement(XElement element, string type)
@@ -47,29 +40,23 @@ namespace FasTnT.Formatter.Xml
 
         private static MasterDataAttribute ParseAttribute(XElement element)
         {
-            var attribute = new MasterDataAttribute
+            return new()
             {
                 Id = element.Attribute("id").Value,
-                Value = element.HasElements ? string.Empty : element.Value
+                Value = element.HasElements ? string.Empty : element.Value,
+                Fields = element.Elements().Select(ParseField).ToList()
             };
-
-            attribute.Fields.AddRange(element.Elements().Select(ParseField));
-
-            return attribute;
         }
 
         private static MasterDataField ParseField(XElement element)
         {
-            var field = new MasterDataField
+            return new()
             {
                 Value = element.HasElements ? element.Value : null,
                 Name = element.Name.LocalName,
-                Namespace = element.Name.NamespaceName
+                Namespace = element.Name.NamespaceName,
+                Children = element.Elements().Select(ParseField).ToList()
             };
-
-            field.Children.AddRange(element.Elements().Select(ParseField));
-
-            return field;
         }
     }
 }

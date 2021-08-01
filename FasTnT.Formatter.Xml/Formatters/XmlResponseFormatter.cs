@@ -1,8 +1,13 @@
-﻿using FasTnT.Domain.Commands;
+﻿using FasTnT.Domain.Commands.Subscribe;
+using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Queries.GetQueryNames;
 using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.GetSubscriptionIds;
+using FasTnT.Domain.Queries.GetVendorVersion;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Formatter.Xml.Utils;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace FasTnT.Formatter.Xml
@@ -36,10 +41,24 @@ namespace FasTnT.Formatter.Xml
 
         private static XElement FormatError(ExceptionType type, string reason, ExceptionSeverity severity)
         {
-            var reasonElt = !string.IsNullOrEmpty(reason) ? new XElement("reason", reason) : default;
-            var severityElt = new XElement("severity", severity.ToString().ToUpper());
+            var reasonElt = !string.IsNullOrEmpty(reason) ? new XElement(nameof(reason), reason) : default;
+            var severityElt = new XElement(nameof(severity), severity);
 
             return new XElement(type.ToString(), reasonElt, severityElt);
+        }
+
+        public static XElement FormatSubscriptionIds(GetSubscriptionIdsResult response)
+        {
+            var subscriptions = response.SubscriptionIDs.Select(x => new XElement("string", x));
+
+            return new(XName.Get(nameof(GetSubscriptionIdsResult), Namespaces.Query), subscriptions);
+        }
+
+        public static XElement FormatGetQueryNames(GetQueryNamesResult response)
+        {
+            var queryNames = response.QueryNames.Select(x => new XElement("string", x));
+
+            return new (XName.Get(nameof(GetQueryNamesResult), Namespaces.Query), queryNames);
         }
 
         public static XElement FormatVendorVersion(GetVendorVersionResult response)
@@ -52,6 +71,14 @@ namespace FasTnT.Formatter.Xml
             return new XElement(XName.Get(nameof(GetStandardVersionResult), Namespaces.Query), response.Version);
         }
 
-        public static XElement FormatCaptureResponse(CaptureEpcisRequestResponse _) => default;
+        public static XElement FormatUnsubscribeResponse(UnsubscribeResult _)
+        {
+            return new(XName.Get(nameof(UnsubscribeResult), Namespaces.Query));
+        }
+
+        public static XElement FormatSubscribeResponse(SubscribeResult _)
+        {
+            return new(XName.Get(nameof(SubscribeResult), Namespaces.Query));
+        }
     }
 }
