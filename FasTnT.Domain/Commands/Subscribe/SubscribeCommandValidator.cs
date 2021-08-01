@@ -16,7 +16,7 @@ namespace FasTnT.Domain.Commands.Subscribe
 
         private bool BeAValidSchedule(QuerySchedule schedule) => QueryScheduleValidator.IsValid(schedule);
 
-        internal class QueryScheduleValidator
+        internal static class QueryScheduleValidator
         {
             public static bool IsValid(QuerySchedule schedule)
             {
