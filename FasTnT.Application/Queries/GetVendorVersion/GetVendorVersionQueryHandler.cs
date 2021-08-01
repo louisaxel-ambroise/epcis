@@ -1,9 +1,9 @@
-﻿using FasTnT.Domain.Queries.GetStandardVersion;
+﻿using FasTnT.Domain.Queries.GetVendorVersion;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FasTnT.Application.Queries.GetStandardVersion
+namespace FasTnT.Application.Queries.GetVendorVersion
 {
     public class GetVendorVersionQueryHandler : IRequestHandler<GetVendorVersionQuery, GetVendorVersionResult>
     {

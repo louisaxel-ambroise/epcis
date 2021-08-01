@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Model;
 using MediatR;
 
-namespace FasTnT.Domain.Commands
+namespace FasTnT.Domain.Commands.Capture
 {
     public class CaptureEpcisRequestCommand : IRequest<CaptureEpcisRequestResponse>
     {

@@ -46,7 +46,11 @@ namespace FasTnT.Host.Extensions
                 "Poll" => XmlQueryParser.ParsePollQuery(queryElement),
                 "GetVendorVersion" => XmlQueryParser.ParseGetVendorVersion(),
                 "GetStandardVersion" => XmlQueryParser.ParseGetStandardVersion(),
-                _ => throw new EpcisException(ExceptionType.ValidationException, $"Query with name {queryElement.Name.LocalName} does not exist")
+                "GetQueryNames" => XmlQueryParser.ParseGetQueryNames(),
+                "Subscribe" => XmlQueryParser.ParseSubscribe(queryElement),
+                "Unsubscribe" => XmlQueryParser.ParseUnsubscribe(queryElement),
+                "GetSubscriptionIDs" => XmlQueryParser.ParseGetSubscriptionIds(queryElement),
+                _ => throw new EpcisException(ExceptionType.ValidationException, "Unknown Query element")
             };
         }
     }

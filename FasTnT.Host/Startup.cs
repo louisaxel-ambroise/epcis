@@ -29,7 +29,7 @@ namespace FasTnT.Host
         {
             var connectionString = _configuration.GetConnectionString("FasTnT.Database");
 
-            services.AddScoped<IdentityGenerator>();
+            services.AddScoped<IncrementGenerator.Identity>();
             services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString));
             services.AddMediatR(typeof(PollQueryHandler).Assembly);
             services.AddValidatorsFromAssembly(typeof(CommandValidationBehavior<,>).Assembly);
@@ -38,7 +38,7 @@ namespace FasTnT.Host
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
             services.AddCarter(o => o.OpenApi.Enabled = true);
 
-            var constantsSection = _configuration.GetSection("Constants");
+            var constantsSection = _configuration.GetSection(nameof(Constants));
             if (constantsSection.Exists())
             {
                 Constants.MaxEventsReturnedInQuery = constantsSection.GetValue(nameof(Constants.MaxEventsReturnedInQuery), Constants.MaxEventsReturnedInQuery);

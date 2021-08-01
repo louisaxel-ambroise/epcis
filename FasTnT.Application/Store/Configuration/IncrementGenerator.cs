@@ -5,10 +5,16 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FasTnT.Infrastructure.Configuration
 {
-    internal class CustomFieldValueGenerator : ValueGenerator<int>
+    public sealed class IncrementGenerator : ValueGenerator<int>
     {
         public override bool GeneratesTemporaryValues => false;
+        public override int Next([NotNull] EntityEntry entry) => entry.Context.GetService<Identity>().NextValue;
 
-        public override int Next([NotNull] EntityEntry entry) => entry.Context.GetService<IdentityGenerator>().NextValue;
+        public sealed class Identity
+        {
+            private int _lastValue;
+
+            public int NextValue => _lastValue += 1;
+        }
     }
 }
