@@ -60,7 +60,7 @@ This is the list of planned and implemented features in the repository:
 # Authors
 
 External contributions on FasTnT EPCIS repository are welcome from anyone.
-This project was created an is primarily maintained by (Louis-Axel Ambroise)[https://github.com/louisaxel-ambroise].
+This project was created an is primarily maintained by [Louis-Axel Ambroise](https://github.com/louisaxel-ambroise).
 
 # License
 
