@@ -19,9 +19,13 @@ namespace FasTnT.Application.Queries.GetQueryNames
 
         public async Task<GetSubscriptionIdsResult> Handle(GetSubscriptionIdsQuery request, CancellationToken cancellationToken)
         {
-            var subscriptions = await _context.Subscriptions.Select(x => x.Name).ToListAsync(cancellationToken);
+            var subscriptionIds = await _context.Subscriptions
+                .AsNoTracking()
+                .Where(x => x.QueryName == request
+                .QueryName).Select(x => x.Name)
+                .ToListAsync(cancellationToken);
 
-            return new(subscriptions);
+            return new(subscriptionIds);
         }
     }
 }

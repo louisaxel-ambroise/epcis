@@ -4,14 +4,16 @@ using FasTnT.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FasTnT.Infrastructure.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    partial class EpcisContextModelSnapshot : ModelSnapshot
+    [Migration("20210903155038_AddSubscriptionCallbackTables")]
+    partial class AddSubscriptionCallbackTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -404,14 +406,7 @@ namespace FasTnT.Infrastructure.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("QueryName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("RecordIfEmpty")
                         .HasColumnType("bit");
@@ -420,8 +415,7 @@ namespace FasTnT.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Trigger")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
