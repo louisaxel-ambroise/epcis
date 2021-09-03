@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using System;
 using System.Linq;
@@ -40,6 +41,15 @@ namespace FasTnT.Formatter.Xml.Parsers
 
             switch (element.Name.LocalName)
             {
+                case "QueryResults":
+                    ParseCallbackResult(element, request); 
+                    break;
+                case "QueryTooLargeException":
+                    ParseCallbackError(element, QueryCallbackType.QueryTooLargeException, request); 
+                    break;
+                case "ImplementationException":
+                    ParseCallbackError(element, QueryCallbackType.ImplementationException, request); 
+                    break;
                 case "EventList":
                     request.Events = XmlEventParser.ParseEvents(element).ToList();
                     break;
@@ -49,6 +59,29 @@ namespace FasTnT.Formatter.Xml.Parsers
                 default:
                     throw new EpcisException(ExceptionType.ValidationException, $"Invalid element: {element.Name.LocalName}");
             }
+        }
+
+        private static void ParseCallbackResult(XElement queryResults, Request request)
+        {
+            var subscriptionId = queryResults.Element("subscriptionID")?.Value;
+            var eventList = queryResults.Element("resultsBody").Element("EventList");
+
+            request.Events.AddRange(XmlEventParser.ParseEvents(eventList));
+            request.SubscriptionCallback = new SubscriptionCallback
+            {
+                CallbackType = QueryCallbackType.Success,
+                SubscriptionId = subscriptionId
+            };
+        }
+
+        private static void ParseCallbackError(XElement element, QueryCallbackType errorType, Request request)
+        {
+            request.SubscriptionCallback = new SubscriptionCallback
+            {
+                CallbackType = errorType,
+                Reason = element.Element("reason")?.Value,
+                SubscriptionId = element.Element("subscriptionID")?.Value
+            };
         }
     }
 }

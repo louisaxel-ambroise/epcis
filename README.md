@@ -44,14 +44,14 @@ This is the list of planned and implemented features in the repository:
   - [x] GetVendorVersion
   - [x] GetStandardVersion
   - [x] GetQueryNames
-  - [ ] GetSubsciptionIDs
+  - [x] GetSubsciptionIDs
   - Poll
     - [x] SimpleEventQuery
     - [ ] SimpleMasterDataQuery - exists, but query parameters are not applied
 - Query Callback:
-  - [ ] CallbackResults
-  - [ ] CallbackQueryTooLargeException
-  - [ ] CallbackImplementationException
+  - [x] CallbackResults
+  - [x] CallbackQueryTooLargeException
+  - [x] CallbackImplementationException
 - Subscriptions:
   - [ ] Subscribe to an EPCIS request
   - [ ] Unsubscribe from EPCIS repository
