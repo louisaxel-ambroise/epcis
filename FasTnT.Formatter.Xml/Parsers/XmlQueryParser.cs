@@ -1,5 +1,6 @@
 ﻿using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Commands.Unsubscribe;
+using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries.GetQueryNames;
 using FasTnT.Domain.Queries.GetStandardVersion;
 using FasTnT.Domain.Queries.GetSubscriptionIds;
@@ -17,7 +18,7 @@ namespace FasTnT.Formatter.Xml
         public static PollQuery ParsePollQuery(XElement element)
         {
             var queryName = element.Element("queryName").Value;
-            var parameters = ParsePollParameters(element.Element("params")?.Elements()).ToArray();
+            var parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToArray();
 
             return new(queryName, parameters);
         }
@@ -26,7 +27,7 @@ namespace FasTnT.Formatter.Xml
         {
             return new()
             {
-                SubscriptionId = element.Element("SubscriptionID").Value
+                SubscriptionId = element.Element("subscriptionID").Value
             };
         }
 
@@ -40,7 +41,7 @@ namespace FasTnT.Formatter.Xml
                 Trigger = element.Element("controls")?.Element("trigger")?.Value,
                 ReportIfEmpty = bool.Parse(element.Element("controls").Element("reportIfEmpty").Value),
                 InitialRecordTime = DateTime.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, out DateTime date) ? date : default(DateTime?),
-                Parameters = ParsePollParameters(element.Element("params")?.Elements()).ToList(),
+                Parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToList(),
                 Schedule = ParseQuerySchedule(element.Element("controls")?.Element("schedule"))
             };
         }
@@ -49,7 +50,7 @@ namespace FasTnT.Formatter.Xml
         public static GetStandardVersionQuery ParseGetStandardVersion() => new();
         public static GetQueryNamesQuery ParseGetQueryNames() => new();
 
-        private static IEnumerable<QueryParameter> ParsePollParameters(IEnumerable<XElement> elements)
+        private static IEnumerable<QueryParameter> ParseQueryParameters(IEnumerable<XElement> elements)
         {
             foreach (var element in elements ?? Array.Empty<XElement>())
             {
