@@ -71,7 +71,7 @@ namespace FasTnT.Application.Subscriptions
                 Name = request.SubscriptionId,
                 QueryName = request.QueryName,
                 RecordIfEmpty = request.ReportIfEmpty,
-                Schedule = MapSchedule(request.Schedule),
+                Schedule = request.Schedule != default ? MapSchedule(request.Schedule) : null,
                 Trigger = request.Trigger,
                 Parameters = MapParameters(request.Parameters)
             };
@@ -88,8 +88,6 @@ namespace FasTnT.Application.Subscriptions
 
         private static SubscriptionSchedule MapSchedule(QuerySchedule schedule)
         {
-            if (schedule == default) return default;
-
             return new()
             {
                 DayOfMonth = schedule.DayOfMonth,
