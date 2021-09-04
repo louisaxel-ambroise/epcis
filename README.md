@@ -9,11 +9,11 @@ FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 repository written in C# using .NET 
 ## Setup
 
 Prerequisites:
-- PostGreSQL 9.5 or higher
+- SQL Server 2016 or +
 - .NET 5 SDK
 
 Steps:
-1. Download the source code, and create a new user/database in PostGreSQL for FasTnT ;
+1. Download the source code, and create a new user/database in SQL Server for FasTnT ;
 2. Start the repository with the command `$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}"` ;
 
 That's it! You have a properly working EPCIS 1.2 repository.
@@ -53,9 +53,10 @@ This is the list of planned and implemented features in the repository:
   - [x] CallbackQueryTooLargeException
   - [x] CallbackImplementationException
 - Subscriptions:
-  - [ ] Subscribe to an EPCIS request
-  - [ ] Unsubscribe from EPCIS repository
+  - [x] Subscribe to an EPCIS request
+  - [x] Unsubscribe from EPCIS repository
   - [ ] Trigger subscriptions that register to specific trigger name
+  - [ ] Execute subscription based on schedule
 
 # Authors
 
