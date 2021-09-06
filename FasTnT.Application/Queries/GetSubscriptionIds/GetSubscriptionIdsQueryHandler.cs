@@ -21,8 +21,7 @@ namespace FasTnT.Application.Queries.GetQueryNames
         {
             var subscriptionIds = await _context.Subscriptions
                 .AsNoTracking()
-                .Where(x => x.QueryName == request
-                .QueryName).Select(x => x.Name)
+                .Where(x => x.QueryName == request.QueryName).Select(x => x.Name)
                 .ToListAsync(cancellationToken);
 
             return new(subscriptionIds);
