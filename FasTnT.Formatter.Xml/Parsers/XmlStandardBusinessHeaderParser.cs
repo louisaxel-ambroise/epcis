@@ -6,7 +6,7 @@ using System.Xml.Linq;
 
 namespace FasTnT.Formatter.Xml.Parsers
 {
-    internal class XmlStandardBusinessHeaderParser
+    internal static class XmlStandardBusinessHeaderParser
     {
         const string Namespace = "http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader";
         public static StandardBusinessHeader ParseHeader(XElement sbdh)
