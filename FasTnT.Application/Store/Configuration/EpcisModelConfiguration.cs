@@ -24,7 +24,7 @@ namespace FasTnT.Infrastructure.Configuration
             request.HasOne(x => x.SubscriptionCallback).WithOne(x => x.Request).HasForeignKey<SubscriptionCallback>("RequestId").IsRequired(false);
 
             var header = modelBuilder.Entity<StandardBusinessHeader>();
-            header.ToTable(nameof(StandardBusinessHeader), nameof(EpcisSchema.Epcis));
+            header.ToTable(nameof(StandardBusinessHeader), nameof(EpcisSchema.Sbdh));
             header.HasKey("RequestId");
             header.Property<int>("RequestId");
             header.Property(x => x.Version).HasMaxLength(256).IsRequired(true);
@@ -37,7 +37,7 @@ namespace FasTnT.Infrastructure.Configuration
             header.HasMany(x => x.ContactInformations).WithOne(x => x.Header).HasForeignKey("RequestId");
 
             var contactInfo = modelBuilder.Entity<ContactInformation>();
-            contactInfo.ToTable(nameof(ContactInformation), nameof(EpcisSchema.Epcis));
+            contactInfo.ToTable(nameof(ContactInformation), nameof(EpcisSchema.Sbdh));
             contactInfo.HasKey("RequestId", nameof(ContactInformation.Type), nameof(ContactInformation.Identifier));
             contactInfo.Property<int>("RequestId");
             contactInfo.Property(x => x.Type).HasMaxLength(256).HasConversion<short>().IsRequired(true);
@@ -50,17 +50,29 @@ namespace FasTnT.Infrastructure.Configuration
             contactInfo.HasOne(x => x.Header).WithMany(x => x.ContactInformations).HasForeignKey("RequestId");
 
             var masterData = modelBuilder.Entity<MasterData>();
-            masterData.ToTable(nameof(MasterData), nameof(EpcisSchema.Epcis));
+            masterData.ToTable(nameof(MasterData), nameof(EpcisSchema.Cbv));
             masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
             masterData.Property<int>("RequestId");
             masterData.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
             masterData.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
             masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
-            masterData.Ignore(x => x.Children); // TODO: map
-            masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM epcis.MasterData GROUP BY type, id");
+            masterData.HasMany(x => x.Children).WithOne(x => x.MasterData).IsRequired(false);
+            masterData.HasMany(x => x.Hierarchies).WithOne(x => x.MasterData).IsRequired(false);
+            masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
+
+            var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
+            mdHierarchy.ToView(nameof(MasterDataHierarchy), nameof(EpcisSchema.Cbv));
+            mdHierarchy.HasOne(x => x.MasterData).WithMany(x => x.Hierarchies).HasForeignKey("RequestId", "Type", "Id");
+            mdHierarchy.Property(x => x.ParentId);
+
+            var mdChildren = modelBuilder.Entity<MasterDataChildren>();
+            mdChildren.ToTable(nameof(MasterDataChildren), nameof(EpcisSchema.Cbv));
+            mdChildren.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
+            mdChildren.HasOne(x => x.MasterData).WithMany(x => x.Children);
+            mdChildren.Property(x => x.ChildrenId).HasMaxLength(256);
 
             var mdAttribute = modelBuilder.Entity<MasterDataAttribute>();
-            mdAttribute.ToTable(nameof(MasterDataAttribute), nameof(EpcisSchema.Epcis));
+            mdAttribute.ToTable(nameof(MasterDataAttribute), nameof(EpcisSchema.Cbv));
             mdAttribute.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataAttribute.Id));
             mdAttribute.Property<int>("RequestId");
             mdAttribute.Property<string>("MasterdataType").HasMaxLength(256);
@@ -71,15 +83,17 @@ namespace FasTnT.Infrastructure.Configuration
             mdAttribute.HasMany(x => x.Fields).WithOne(x => x.Attribute).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
 
             var mdField = modelBuilder.Entity<MasterDataField>();
-            mdField.ToTable(nameof(MasterDataField), nameof(EpcisSchema.Epcis));
+            mdField.ToTable(nameof(MasterDataField), nameof(EpcisSchema.Cbv));
             mdField.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", nameof(MasterDataField.Namespace), nameof(MasterDataField.Name));
             mdField.Property<int>("RequestId");
             mdField.Property<string>("MasterdataType").HasMaxLength(256);
             mdField.Property<string>("MasterdataId").HasMaxLength(256);
             mdField.Property<string>("AttributeId").HasMaxLength(256);
+            mdField.Property(x => x.ParentName).HasMaxLength(256).IsRequired(false);
+            mdField.Property(x => x.ParentNamespace).HasMaxLength(256).IsRequired(false);
             mdField.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
             mdField.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
-            mdField.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
+            mdField.Property(x => x.Value).HasMaxLength(256).IsRequired(false);
             mdField.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
             mdField.Ignore(x => x.Children); // TODO: map
 

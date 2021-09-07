@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace FasTnT.Infrastructure.Migrations
+namespace FasTnT.Application.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20210903155038_AddSubscriptionCallbackTables")]
-    partial class AddSubscriptionCallbackTables
+    [Migration("20210907150322_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -71,7 +71,7 @@ namespace FasTnT.Infrastructure.Migrations
 
                     b.HasKey("RequestId", "Type", "Identifier");
 
-                    b.ToTable("ContactInformation", "Epcis");
+                    b.ToTable("ContactInformation", "Sbdh");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.CorrectiveEventId", b =>
@@ -253,10 +253,10 @@ namespace FasTnT.Infrastructure.Migrations
 
                     b.HasKey("RequestId", "Type", "Id");
 
-                    b.ToTable("MasterData", "Epcis");
+                    b.ToTable("MasterData", "Cbv");
 
                     b
-                        .HasAnnotation("Relational:SqlQuery", "SELECT MAX(RequestId) AS RequestId, type, id FROM epcis.MasterData GROUP BY type, id");
+                        .HasAnnotation("Relational:SqlQuery", "SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.MasterDataAttribute", b =>
@@ -283,7 +283,27 @@ namespace FasTnT.Infrastructure.Migrations
 
                     b.HasKey("RequestId", "MasterdataType", "MasterdataId", "Id");
 
-                    b.ToTable("MasterDataAttribute", "Epcis");
+                    b.ToTable("MasterDataAttribute", "Cbv");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataChildren", b =>
+                {
+                    b.Property<int?>("MasterDataRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MasterDataType")
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("MasterDataId")
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ChildrenId")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
+
+                    b.ToTable("MasterDataChildren", "Cbv");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.MasterDataField", b =>
@@ -311,14 +331,42 @@ namespace FasTnT.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("ParentName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ParentNamespace")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<string>("Value")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", "Namespace", "Name");
 
-                    b.ToTable("MasterDataField", "Epcis");
+                    b.ToTable("MasterDataField", "Cbv");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataHierarchy", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ParentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId", "Type", "Id");
+
+                    b.ToView("MasterDataHierarchy", "Cbv");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
@@ -395,7 +443,7 @@ namespace FasTnT.Infrastructure.Migrations
 
                     b.HasKey("RequestId");
 
-                    b.ToTable("StandardBusinessHeader", "Epcis");
+                    b.ToTable("StandardBusinessHeader", "Sbdh");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscription", b =>
@@ -406,7 +454,14 @@ namespace FasTnT.Infrastructure.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("QueryName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("RecordIfEmpty")
                         .HasColumnType("bit");
@@ -415,7 +470,8 @@ namespace FasTnT.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Trigger")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
@@ -603,6 +659,15 @@ namespace FasTnT.Infrastructure.Migrations
                     b.Navigation("MasterData");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataChildren", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.MasterData", "MasterData")
+                        .WithMany("Children")
+                        .HasForeignKey("MasterDataRequestId", "MasterDataType", "MasterDataId");
+
+                    b.Navigation("MasterData");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.MasterDataField", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.MasterDataAttribute", "Attribute")
@@ -612,6 +677,15 @@ namespace FasTnT.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Attribute");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataHierarchy", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.MasterData", "MasterData")
+                        .WithMany("Hierarchies")
+                        .HasForeignKey("RequestId", "Type", "Id");
+
+                    b.Navigation("MasterData");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Source", b =>
@@ -688,6 +762,10 @@ namespace FasTnT.Infrastructure.Migrations
             modelBuilder.Entity("FasTnT.Domain.Model.MasterData", b =>
                 {
                     b.Navigation("Attributes");
+
+                    b.Navigation("Children");
+
+                    b.Navigation("Hierarchies");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.MasterDataAttribute", b =>

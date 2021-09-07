@@ -9,6 +9,7 @@ namespace FasTnT.Domain.Utils
     public static class QueryParameterExtensions
     {
         public static int GetIntValue(this QueryParameter parameter) => int.Parse(parameter.Value());
+        public static bool GetBoolValue(this QueryParameter parameter) => bool.Parse(parameter.Value());
         public static double GetNumeric(this QueryParameter parameter) => double.Parse(parameter.Value(), CultureInfo.InvariantCulture);
         public static DateTime GetDate(this QueryParameter parameter) => DateTime.Parse(parameter.Value(), null, DateTimeStyles.AdjustToUniversal);
 
