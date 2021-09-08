@@ -26,4 +26,5 @@ jobs:
       
     - name: Upload Coverage
       run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r Tests/FasTnT.Formatters.Xml.Tests/coverage.opencover.xml
-      shell: bash
+      env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
