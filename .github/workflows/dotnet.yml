@@ -22,4 +22,8 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal -c Debug /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      
+    - name: Upload Coverage
+      run: <(curl -Ls https://coverage.codacy.com/get.sh) report -r Tests/FasTnT.Formatters.Xml.Tests/coverage.opencover.xml
+      shell: bash
