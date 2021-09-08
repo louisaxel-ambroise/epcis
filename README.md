@@ -15,7 +15,7 @@ Prerequisites:
 
 Steps:
 1. Download the source code, and create a new user/database in SQL Server for FasTnT ;
-2. Start the repository with the command `$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}"` ;
+2. Start the repository with the command `$ dotnet run -p FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}"` ;
 
 That's it! You have a properly working EPCIS 1.2 repository.
 
