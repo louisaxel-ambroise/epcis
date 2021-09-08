@@ -8,7 +8,7 @@ namespace FasTnT.Formatters.Xml.Tests
     [TestClass]
     public class WhenParsingAQueryTooLargeException : XmlParsingTestCase
     {
-        public const string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.CallbackRequests.QueryTooLargeRequest.xml";
+        public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.CallbackRequests.QueryTooLargeRequest.xml";
 
         public Request Request { get; set; }
 
