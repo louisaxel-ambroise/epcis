@@ -2,6 +2,7 @@
 {
     public enum EventType
     {
+        None,
         Object,
         Aggregation,
         Transaction,

@@ -2,6 +2,7 @@
 {
     public enum EpcType
     {
+        None,
         List,
         ParentId,
         InputQuantity,

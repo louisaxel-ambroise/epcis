@@ -2,6 +2,7 @@
 {
     public enum FieldType
     {
+        None,
         Ilmd,
         CustomField,
         Extension,

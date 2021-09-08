@@ -1,0 +1,44 @@
+﻿<ObjectEvent
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<eventTime>2021-02-15T14:00:00+00:00</eventTime>
+	<eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+	<epcList>
+		<epc>urn:epc:id:sscc:4001356.5900000817</epc>
+		<epc>urn:epc:id:sscc:4001356.5900000822</epc>
+	</epcList>
+	<action>OBSERVE</action>
+	<bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
+	<disposition>urn:epcglobal:cbv:disp:active</disposition>
+	<readPoint>
+		<id>urn:epc:id:sgln:4012345.00005.0</id>
+	</readPoint>
+	<bizLocation>
+		<id>urn:epc:id:sgln:409876.500001.0</id>
+	</bizLocation>
+	<bizTransactionList>
+		<bizTransaction type="urn:epcglobal:cbv:btt:desadv">urn:epcglobal:cbv:bt:8779891013658:H9022413</bizTransaction>
+		<bizTransaction type="urn:epcglobal:cbv:btt:po">urn:epcglobal:cbv:bt:8811891013778:PO654321</bizTransaction>
+	</bizTransactionList>
+	<extension>
+		<quantityList>
+			<quantityElement>
+				<epcClass>urn:epc:class:lgtin:409876.0000001.L1</epcClass>
+				<quantity>3500</quantity>
+				<uom>KGM</uom>
+			</quantityElement>
+		</quantityList>
+		<extension>
+			<sensorElementList>
+				<sensorElement>
+					<furtherSensorData
+					  xmlns="http://ns.example.com/epcis">
+						<measure1>123.5</measure1>
+						<measure2>0.987</measure2>
+					</furtherSensorData>
+				</sensorElement>
+			</sensorElementList>
+			<testField id="4" />
+		</extension>
+	</extension>
+</ObjectEvent>

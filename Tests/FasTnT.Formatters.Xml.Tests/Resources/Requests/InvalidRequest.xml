@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<epcis:EPCISDocument xmlns:cbvmda="urn:epcglobal:cbv:mda" xmlns:epcis="urn:epcglobal:epcis:xsd:1" schemaVersion="1.2" creationDate="2018-06-12T06:31:32Z">
+	<EPCISBody>
+		<test></test>
+	</EPCISBody>
+</epcis:EPCISDocument>

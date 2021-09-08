@@ -56,6 +56,5 @@ namespace FasTnT.Formatter.Xml.Parsers
                 throw new FormatException("XML is invalid");
             }
         }
-
     }
 }
