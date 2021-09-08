@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace FasTnT.Application.Tests
 {
     [TestClass]
-    public class WhenHandlingGetStandardVersionHandlerRequest
+    public class WhenHandlingGetStandardVersionQuery
     {
         [TestMethod]
         public void ItShouldReturnV1_2()

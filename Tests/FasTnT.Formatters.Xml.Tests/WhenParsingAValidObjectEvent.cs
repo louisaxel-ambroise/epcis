@@ -10,7 +10,7 @@ using System.Linq;
 namespace FasTnT.Formatters.Xml.Tests
 {
     [TestClass]
-    public class WhenParsingAValidObserveObjectEvent : XmlParsingTestCase
+    public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     {
         public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.Events.ObjectEvent_Full.xml";
 

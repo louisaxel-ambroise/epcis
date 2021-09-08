@@ -10,7 +10,9 @@
     <None Remove="Resources\CallbackRequests\ImplementationExceptionRequest.xml" />
     <None Remove="Resources\CallbackRequests\QueryTooLargeRequest.xml" />
     <None Remove="Resources\CallbackRequests\SuccessfulRequest.xml" />
+    <None Remove="Resources\Events\AggregationEvent_Full.xml" />
     <None Remove="Resources\Events\ObjectEvent_Full.xml" />
+    <None Remove="Resources\Events\TransformationEvent_Full.xml" />
     <None Remove="Resources\Requests\InvalidRequest.xml" />
   </ItemGroup>
 
@@ -18,6 +20,8 @@
     <EmbeddedResource Include="Resources\CallbackRequests\SuccessfulRequest.xml" />
     <EmbeddedResource Include="Resources\CallbackRequests\ImplementationExceptionRequest.xml" />
     <EmbeddedResource Include="Resources\CallbackRequests\QueryTooLargeRequest.xml" />
+    <EmbeddedResource Include="Resources\Events\TransformationEvent_Full.xml" />
+    <EmbeddedResource Include="Resources\Events\AggregationEvent_Full.xml" />
     <EmbeddedResource Include="Resources\Events\ObjectEvent_Full.xml" />
     <EmbeddedResource Include="Resources\Requests\InvalidRequest.xml" />
   </ItemGroup>
