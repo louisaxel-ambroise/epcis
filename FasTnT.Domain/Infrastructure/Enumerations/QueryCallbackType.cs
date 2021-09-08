@@ -2,6 +2,7 @@
 {
     public enum QueryCallbackType
     {
+        None,
         Success,
         QueryTooLargeException,
         ImplementationException

@@ -2,6 +2,7 @@
 {
     public enum ContactInformationType
     {
+        None,
         Sender,
         Receiver
     }

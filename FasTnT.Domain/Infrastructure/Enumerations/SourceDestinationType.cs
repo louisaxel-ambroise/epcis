@@ -2,6 +2,7 @@
 {
     public enum SourceDestinationType
     {
+        None,
         Source,
         Destination
     }

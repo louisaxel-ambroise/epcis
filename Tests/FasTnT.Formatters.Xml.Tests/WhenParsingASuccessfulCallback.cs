@@ -1,4 +1,4 @@
-using FasTnT.Domain.Enumerations;
+﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FasTnT.Formatter.Xml.Parsers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -6,9 +6,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace FasTnT.Formatters.Xml.Tests
 {
     [TestClass]
-    public class WhenParsingAQueryTooLargeException : XmlParsingTestCase
+    public class WhenParsingASuccessfulCallback : XmlParsingTestCase
     {
-        public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.CallbackRequests.QueryTooLargeRequest.xml";
+        public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.CallbackRequests.SuccessfulRequest.xml";
 
         public Request Request { get; set; }
 
@@ -32,21 +32,21 @@ namespace FasTnT.Formatters.Xml.Tests
         }
 
         [TestMethod]
-        public void SubscriptionCallbackTypeShouldBeQueryTooLargeException()
+        public void SubscriptionCallbackTypeShouldBeSuccess()
         {
-            Assert.AreEqual(QueryCallbackType.QueryTooLargeException, Request.SubscriptionCallback.CallbackType);
+            Assert.AreEqual(QueryCallbackType.Success, Request.SubscriptionCallback.CallbackType);
         }
 
         [TestMethod]
-        public void SubscriptionCallbackReasonShouldMatchTheRequestValue()
+        public void SubscriptionCallbackReasonShouldBeNull()
         {
-            Assert.AreEqual("This is a reason", Request.SubscriptionCallback.Reason);
+            Assert.AreEqual(null, Request.SubscriptionCallback.Reason);
         }
 
         [TestMethod]
         public void SubscriptionIdShouldMatchTheRequestValue()
         {
-            Assert.AreEqual("TestSubscription1", Request.SubscriptionCallback.SubscriptionId);
+            Assert.AreEqual("SubscriptionID", Request.SubscriptionCallback.SubscriptionId);
         }
     }
 }
