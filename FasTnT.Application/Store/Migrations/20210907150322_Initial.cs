@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
-using System;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace FasTnT.Infrastructure.Migrations
+namespace FasTnT.Application.Migrations
 {
     public partial class Initial : Migration
     {
@@ -9,6 +9,15 @@ namespace FasTnT.Infrastructure.Migrations
         {
             migrationBuilder.EnsureSchema(
                 name: "Epcis");
+
+            migrationBuilder.EnsureSchema(
+                name: "Sbdh");
+
+            migrationBuilder.EnsureSchema(
+                name: "Cbv");
+
+            migrationBuilder.EnsureSchema(
+                name: "Subscription");
 
             migrationBuilder.CreateTable(
                 name: "Request",
@@ -24,6 +33,25 @@ namespace FasTnT.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Request", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubscriptionSchedule",
+                schema: "Subscription",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Second = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Minute = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Hour = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    DayOfMonth = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Month = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    DayOfWeek = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionSchedule", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,7 +90,7 @@ namespace FasTnT.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "MasterData",
-                schema: "Epcis",
+                schema: "Cbv",
                 columns: table => new
                 {
                     Type = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -83,7 +111,7 @@ namespace FasTnT.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "StandardBusinessHeader",
-                schema: "Epcis",
+                schema: "Sbdh",
                 columns: table => new
                 {
                     RequestId = table.Column<int>(type: "int", nullable: false),
@@ -104,6 +132,53 @@ namespace FasTnT.Infrastructure.Migrations
                         principalTable: "Request",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubscriptionCallback",
+                schema: "Epcis",
+                columns: table => new
+                {
+                    RequestId = table.Column<int>(type: "int", nullable: false),
+                    SubscriptionId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CallbackType = table.Column<short>(type: "smallint", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionCallback", x => x.RequestId);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionCallback_Request_RequestId",
+                        column: x => x.RequestId,
+                        principalSchema: "Epcis",
+                        principalTable: "Request",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscription",
+                schema: "Subscription",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    QueryName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    ScheduleId = table.Column<int>(type: "int", nullable: true),
+                    Trigger = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    RecordIfEmpty = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscription", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subscription_SubscriptionSchedule_ScheduleId",
+                        column: x => x.ScheduleId,
+                        principalSchema: "Subscription",
+                        principalTable: "SubscriptionSchedule",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -181,6 +256,27 @@ namespace FasTnT.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Destination",
+                schema: "Epcis",
+                columns: table => new
+                {
+                    Type = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Destination", x => new { x.EventId, x.Type, x.Id });
+                    table.ForeignKey(
+                        name: "FK_Destination_Event_EventId",
+                        column: x => x.EventId,
+                        principalSchema: "Epcis",
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Epc",
                 schema: "Epcis",
                 columns: table => new
@@ -205,20 +301,19 @@ namespace FasTnT.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SourceDestination",
+                name: "Source",
                 schema: "Epcis",
                 columns: table => new
                 {
                     Type = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    EventId = table.Column<long>(type: "bigint", nullable: false),
-                    Direction = table.Column<short>(type: "smallint", nullable: false)
+                    EventId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SourceDestination", x => new { x.EventId, x.Type, x.Id });
+                    table.PrimaryKey("PK_Source", x => new { x.EventId, x.Type, x.Id });
                     table.ForeignKey(
-                        name: "FK_SourceDestination_Event_EventId",
+                        name: "FK_Source_Event_EventId",
                         column: x => x.EventId,
                         principalSchema: "Epcis",
                         principalTable: "Event",
@@ -228,7 +323,7 @@ namespace FasTnT.Infrastructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "MasterDataAttribute",
-                schema: "Epcis",
+                schema: "Cbv",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -243,15 +338,37 @@ namespace FasTnT.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_MasterDataAttribute_MasterData_RequestId_MasterdataType_MasterdataId",
                         columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId },
-                        principalSchema: "Epcis",
+                        principalSchema: "Cbv",
                         principalTable: "MasterData",
                         principalColumns: new[] { "RequestId", "Type", "Id" },
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
+                name: "MasterDataChildren",
+                schema: "Cbv",
+                columns: table => new
+                {
+                    ChildrenId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    MasterDataRequestId = table.Column<int>(type: "int", nullable: false),
+                    MasterDataType = table.Column<string>(type: "nvarchar(256)", nullable: false),
+                    MasterDataId = table.Column<string>(type: "nvarchar(256)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MasterDataChildren", x => new { x.MasterDataRequestId, x.MasterDataType, x.MasterDataId, x.ChildrenId });
+                    table.ForeignKey(
+                        name: "FK_MasterDataChildren_MasterData_MasterDataRequestId_MasterDataType_MasterDataId",
+                        columns: x => new { x.MasterDataRequestId, x.MasterDataType, x.MasterDataId },
+                        principalSchema: "Cbv",
+                        principalTable: "MasterData",
+                        principalColumns: new[] { "RequestId", "Type", "Id" },
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ContactInformation",
-                schema: "Epcis",
+                schema: "Sbdh",
                 columns: table => new
                 {
                     Type = table.Column<short>(type: "smallint", maxLength: 256, nullable: false),
@@ -269,15 +386,36 @@ namespace FasTnT.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_ContactInformation_StandardBusinessHeader_RequestId",
                         column: x => x.RequestId,
-                        principalSchema: "Epcis",
+                        principalSchema: "Sbdh",
                         principalTable: "StandardBusinessHeader",
                         principalColumn: "RequestId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
+                name: "SubscriptionParameter",
+                schema: "Subscription",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionParameter", x => new { x.SubscriptionId, x.Name });
+                    table.ForeignKey(
+                        name: "FK_SubscriptionParameter_Subscription_SubscriptionId",
+                        column: x => x.SubscriptionId,
+                        principalSchema: "Subscription",
+                        principalTable: "Subscription",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MasterDataField",
-                schema: "Epcis",
+                schema: "Cbv",
                 columns: table => new
                 {
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -286,7 +424,9 @@ namespace FasTnT.Infrastructure.Migrations
                     MasterdataType = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     MasterdataId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     AttributeId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
+                    ParentName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ParentNamespace = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Value = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -294,7 +434,7 @@ namespace FasTnT.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_MasterDataField_MasterDataAttribute_RequestId_MasterdataType_MasterdataId_AttributeId",
                         columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeId },
-                        principalSchema: "Epcis",
+                        principalSchema: "Cbv",
                         principalTable: "MasterDataAttribute",
                         principalColumns: new[] { "RequestId", "MasterdataType", "MasterdataId", "Id" },
                         onDelete: ReferentialAction.Cascade);
@@ -311,17 +451,46 @@ namespace FasTnT.Infrastructure.Migrations
                 schema: "Epcis",
                 table: "Event",
                 column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscription_ScheduleId",
+                schema: "Subscription",
+                table: "Subscription",
+                column: "ScheduleId",
+                unique: true,
+                filter: "[ScheduleId] IS NOT NULL");
+
+            migrationBuilder.Sql(@"CREATE VIEW [Cbv].[MasterdataHierarchy] AS
+WITH [hierarchy](requestId, type, Id, parentId) AS (
+	-- Top level hierarchy
+	SELECT MasterDataRequestId AS RequestId, MasterDataType as Type, ChildrenId AS Id, MasterdataId AS ParentId
+    FROM Cbv.MasterDataChildren c
+	WHERE NOT EXISTS (SELECT 1 FROM Cbv.MasterDataChildren WHERE MasterDataRequestId = c.MasterDataRequestId and MasterDataType = c.MasterDataType and ChildrenId = c.MasterDataId)
+    UNION ALL
+	-- Children with top-level
+    SELECT MasterDataRequestId AS RequestId, MasterDataType as Type, ChildrenId AS Id, [hierarchy].parentId AS ParentId
+    FROM [hierarchy]
+    INNER JOIN Cbv.MasterDataChildren ON [hierarchy].Id = MasterDataId AND [hierarchy].Type = MasterDataType AND [hierarchy].requestId = MasterDataRequestId
+	UNION ALL
+	-- Children with intermediate level
+    SELECT MasterDataRequestId AS RequestId, MasterDataType as Type, ChildrenId AS Id, [hierarchy].Id AS ParentId
+    FROM [hierarchy]
+    INNER JOIN Cbv.MasterDataChildren ON [hierarchy].Id = MasterDataId AND [hierarchy].Type = MasterDataType AND [hierarchy].requestId = MasterDataRequestId
+) 
+SELECT DISTINCT requestId, type, Id, parentId
+FROM [hierarchy];");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"DROP VIEW [Cbv].[MasterdataHierarchy];");
             migrationBuilder.DropTable(
                 name: "BusinessTransaction",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
                 name: "ContactInformation",
-                schema: "Epcis");
+                schema: "Sbdh");
 
             migrationBuilder.DropTable(
                 name: "CorrectiveEventId",
@@ -332,32 +501,56 @@ namespace FasTnT.Infrastructure.Migrations
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
+                name: "Destination",
+                schema: "Epcis");
+
+            migrationBuilder.DropTable(
                 name: "Epc",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
+                name: "MasterDataChildren",
+                schema: "Cbv");
+
+            migrationBuilder.DropTable(
                 name: "MasterDataField",
+                schema: "Cbv");
+
+            migrationBuilder.DropTable(
+                name: "Source",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
-                name: "SourceDestination",
+                name: "SubscriptionCallback",
                 schema: "Epcis");
+
+            migrationBuilder.DropTable(
+                name: "SubscriptionParameter",
+                schema: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "StandardBusinessHeader",
-                schema: "Epcis");
+                schema: "Sbdh");
 
             migrationBuilder.DropTable(
                 name: "MasterDataAttribute",
-                schema: "Epcis");
+                schema: "Cbv");
 
             migrationBuilder.DropTable(
                 name: "Event",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
+                name: "Subscription",
+                schema: "Subscription");
+
+            migrationBuilder.DropTable(
                 name: "MasterData",
-                schema: "Epcis");
+                schema: "Cbv");
+
+            migrationBuilder.DropTable(
+                name: "SubscriptionSchedule",
+                schema: "Subscription");
 
             migrationBuilder.DropTable(
                 name: "Request",

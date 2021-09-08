@@ -27,8 +27,13 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         private static void ParseHeaderIntoRequest(XElement epcisHeader, Request request)
         {
+            var sbdh = epcisHeader?.Element(XName.Get("StandardBusinessDocumentHeader", "http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader"));
             var masterData = epcisHeader?.XPathSelectElement("extension/EPCISMasterData/VocabularyList");
 
+            if(sbdh != default)
+            {
+                request.StandardBusinessHeader = XmlStandardBusinessHeaderParser.ParseHeader(sbdh);
+            }
             if (masterData != default)
             {
                 request.Masterdata.AddRange(XmlMasterdataParser.ParseMasterdata(masterData));

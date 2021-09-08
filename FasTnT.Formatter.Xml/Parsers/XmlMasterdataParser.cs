@@ -28,35 +28,46 @@ namespace FasTnT.Formatter.Xml
             {
                 Type = type,
                 Id = element.Attribute("id").Value,
-                Attributes = element.Elements("attribute").Select(ParseAttribute).ToList(),
+                Attributes = element.Elements("attribute").Select(ParseVocabularyAttribute).ToList(),
                 Children = ParseChildren(element.Element("children"))
             };
         }
 
-        private static List<string> ParseChildren(XElement element)
+        private static List<MasterDataChildren> ParseChildren(XElement element)
         {
-            return element?.Elements("id")?.Select(x => x.Value)?.ToList() ?? new();
+            return element?.Elements("id")?.Select(x => new MasterDataChildren { ChildrenId = x.Value })?.ToList() ?? new();
         }
 
-        private static MasterDataAttribute ParseAttribute(XElement element)
+        private static MasterDataAttribute ParseVocabularyAttribute(XElement element)
         {
             return new()
             {
                 Id = element.Attribute("id").Value,
                 Value = element.HasElements ? string.Empty : element.Value,
-                Fields = element.Elements().Select(ParseField).ToList()
+                Fields = element.Elements().SelectMany(x => ParseField(x)).ToList()
             };
         }
 
-        private static MasterDataField ParseField(XElement element)
+        private static IEnumerable<MasterDataField> ParseField(XElement element, XName parentName = default)
         {
-            return new()
+            var result = new List<MasterDataField>
             {
-                Value = element.HasElements ? element.Value : null,
-                Name = element.Name.LocalName,
-                Namespace = element.Name.NamespaceName,
-                Children = element.Elements().Select(ParseField).ToList()
+                new()
+                {
+                    Value = element.HasElements ? null : element.Value,
+                    Name = element.Name.LocalName,
+                    Namespace = element.Name.NamespaceName,
+                    ParentName = parentName?.LocalName,
+                    ParentNamespace = parentName?.NamespaceName,
+                }
             };
+
+            if (element.HasElements)
+            {
+                result.AddRange(element.Elements().SelectMany(x => ParseField(x, element.Name)));
+            }
+
+            return result;
         }
     }
 }

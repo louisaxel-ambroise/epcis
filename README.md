@@ -39,7 +39,7 @@ This is the list of planned and implemented features in the repository:
 
 - Capture
   - [x] Events
-  - [x] Capture Master Data (CBV) - Hierarchy is not yet supported
+  - [x] Capture Master Data (CBV)
 - Queries:
   - [x] GetVendorVersion
   - [x] GetStandardVersion
@@ -47,7 +47,7 @@ This is the list of planned and implemented features in the repository:
   - [x] GetSubsciptionIDs
   - Poll
     - [x] SimpleEventQuery
-    - [ ] SimpleMasterDataQuery - exists, but query parameters are not applied
+    - [x] SimpleMasterDataQuery
 - Query Callback:
   - [x] CallbackResults
   - [x] CallbackQueryTooLargeException
