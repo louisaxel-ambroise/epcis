@@ -2,7 +2,6 @@
 using FasTnT.Formatter.Xml;
 using FasTnT.Formatter.Xml.Utils;
 using Microsoft.AspNetCore.Http;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace FasTnT.Host.Extensions
 
             envelope.Add(new XAttribute(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new XAttribute(XNamespace.Xmlns + "epcisq", Namespaces.Query));
 
-            using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates });
+            await using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates });
 
             await xmlResponse.WriteToAsync(xmlWriter, cancellationToken);
         }
