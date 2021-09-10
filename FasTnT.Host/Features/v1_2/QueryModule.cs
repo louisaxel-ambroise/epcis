@@ -6,7 +6,8 @@ using FasTnT.Domain.Queries.GetStandardVersion;
 using FasTnT.Domain.Queries.GetSubscriptionIds;
 using FasTnT.Domain.Queries.GetVendorVersion;
 using FasTnT.Domain.Queries.Poll;
-using FasTnT.Formatter.Xml;
+using FasTnT.Formatter.Xml.Formatters;
+using FasTnT.Formatter.Xml.Parsers;
 using FasTnT.Host.Extensions;
 using MediatR;
 using System;
@@ -36,7 +37,8 @@ namespace FasTnT.Host.Features.v1_2
 
                 try
                 {
-                    var query = await req.ParseSoapEnvelope(req.HttpContext.RequestAborted);
+                    var queryElement = await req.ParseSoapEnvelope(req.HttpContext.RequestAborted);
+                    var query = XmlQueryParser.Parse(queryElement);
 
                     response = query switch
                     {

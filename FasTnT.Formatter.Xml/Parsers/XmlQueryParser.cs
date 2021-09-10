@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Commands.Unsubscribe;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Queries.GetQueryNames;
 using FasTnT.Domain.Queries.GetStandardVersion;
 using FasTnT.Domain.Queries.GetSubscriptionIds;
@@ -11,10 +11,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace FasTnT.Formatter.Xml
+namespace FasTnT.Formatter.Xml.Parsers
 {
     public static class XmlQueryParser
     {
+        public static object Parse(XElement queryElement)
+        {
+            return queryElement?.Name?.LocalName switch
+            {
+                "Poll" => ParsePollQuery(queryElement),
+                "GetVendorVersion" => ParseGetVendorVersion(),
+                "GetStandardVersion" => ParseGetStandardVersion(),
+                "GetQueryNames" => ParseGetQueryNames(),
+                "Subscribe" => ParseSubscribe(queryElement),
+                "Unsubscribe" => ParseUnsubscribe(queryElement),
+                "GetSubscriptionIDs" => ParseGetSubscriptionIds(queryElement),
+                _ => throw new EpcisException(ExceptionType.ValidationException, "Unknown Query element")
+            };
+        }
+
         public static PollQuery ParsePollQuery(XElement element)
         {
             var queryName = element.Element("queryName").Value;

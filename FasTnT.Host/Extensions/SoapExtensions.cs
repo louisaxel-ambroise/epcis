@@ -28,7 +28,7 @@ namespace FasTnT.Host.Extensions
             await xmlResponse.WriteToAsync(xmlWriter, cancellationToken);
         }
 
-        public static async Task<object> ParseSoapEnvelope(this HttpRequest request, CancellationToken cancellationToken)
+        public static async Task<XElement> ParseSoapEnvelope(this HttpRequest request, CancellationToken cancellationToken)
         {
             var document = await XDocument.LoadAsync(request.Body, LoadOptions.None, cancellationToken);
             var envelopBody = document.XPathSelectElement("SoapEnvelop:Envelope/SoapEnvelop:Body", Namespaces.Resolver);
@@ -38,19 +38,7 @@ namespace FasTnT.Host.Extensions
                 return null;
             }
 
-            var queryElement = envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query);
-
-            return queryElement.Name.LocalName switch
-            {
-                "Poll" => XmlQueryParser.ParsePollQuery(queryElement),
-                "GetVendorVersion" => XmlQueryParser.ParseGetVendorVersion(),
-                "GetStandardVersion" => XmlQueryParser.ParseGetStandardVersion(),
-                "GetQueryNames" => XmlQueryParser.ParseGetQueryNames(),
-                "Subscribe" => XmlQueryParser.ParseSubscribe(queryElement),
-                "Unsubscribe" => XmlQueryParser.ParseUnsubscribe(queryElement),
-                "GetSubscriptionIDs" => XmlQueryParser.ParseGetSubscriptionIds(queryElement),
-                _ => throw new EpcisException(ExceptionType.ValidationException, "Unknown Query element")
-            };
+            return envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query);
         }
     }
 }
