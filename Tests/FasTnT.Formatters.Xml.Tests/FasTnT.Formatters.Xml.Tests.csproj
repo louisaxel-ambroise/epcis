@@ -13,6 +13,12 @@
     <None Remove="Resources\Events\AggregationEvent_Full.xml" />
     <None Remove="Resources\Events\ObjectEvent_Full.xml" />
     <None Remove="Resources\Events\TransformationEvent_Full.xml" />
+    <None Remove="Resources\Queries\GetQueryNames.xml" />
+    <None Remove="Resources\Queries\GetStandardVersion.xml" />
+    <None Remove="Resources\Queries\GetSubscriptionIDs.xml" />
+    <None Remove="Resources\Queries\GetVendorVersion.xml" />
+    <None Remove="Resources\Queries\InvalidQuery.xml" />
+    <None Remove="Resources\Queries\Unsubscribe.xml" />
     <None Remove="Resources\Requests\InvalidRequest.xml" />
   </ItemGroup>
 
@@ -23,6 +29,12 @@
     <EmbeddedResource Include="Resources\Events\TransformationEvent_Full.xml" />
     <EmbeddedResource Include="Resources\Events\AggregationEvent_Full.xml" />
     <EmbeddedResource Include="Resources\Events\ObjectEvent_Full.xml" />
+    <EmbeddedResource Include="Resources\Queries\GetSubscriptionIDs.xml" />
+    <EmbeddedResource Include="Resources\Queries\InvalidQuery.xml" />
+    <EmbeddedResource Include="Resources\Queries\Unsubscribe.xml" />
+    <EmbeddedResource Include="Resources\Queries\GetVendorVersion.xml" />
+    <EmbeddedResource Include="Resources\Queries\GetStandardVersion.xml" />
+    <EmbeddedResource Include="Resources\Queries\GetQueryNames.xml" />
     <EmbeddedResource Include="Resources\Requests\InvalidRequest.xml" />
   </ItemGroup>
 

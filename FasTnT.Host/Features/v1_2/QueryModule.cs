@@ -6,11 +6,11 @@ using FasTnT.Domain.Queries.GetStandardVersion;
 using FasTnT.Domain.Queries.GetSubscriptionIds;
 using FasTnT.Domain.Queries.GetVendorVersion;
 using FasTnT.Domain.Queries.Poll;
-using FasTnT.Formatter.Xml;
+using FasTnT.Formatter.Xml.Formatters;
+using FasTnT.Formatter.Xml.Parsers;
 using FasTnT.Host.Extensions;
 using MediatR;
 using System;
-using System.IO;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -18,16 +18,16 @@ namespace FasTnT.Host.Features.v1_2
 {
     public class QueryModule : Epcis12Module
     {
+        internal const string WsdlPath = "FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
+
         public QueryModule(IMediator mediator)
         {
             Get("query.svc", async (req, res) =>
             {
                 res.ContentType = "text/xml";
 
-                using var wsdl = GetWsdlContent();
-
-                await wsdl.CopyToAsync(res.Body)
-                          .ConfigureAwait(false);
+                await using var wsdl = Assembly.GetExecutingAssembly().GetManifestResourceStream(WsdlPath);
+                await wsdl.CopyToAsync(res.Body).ConfigureAwait(false);
             });
 
             Post("query.svc", async (req, res) =>
@@ -36,7 +36,8 @@ namespace FasTnT.Host.Features.v1_2
 
                 try
                 {
-                    var query = await req.ParseSoapEnvelope(req.HttpContext.RequestAborted);
+                    var queryElement = await req.ParseSoapEnvelope(req.HttpContext.RequestAborted);
+                    var query = XmlQueryParser.Parse(queryElement);
 
                     response = query switch
                     {
@@ -69,14 +70,6 @@ namespace FasTnT.Host.Features.v1_2
                     await res.FormatSoap(response, req.HttpContext.RequestAborted);
                 }
             });
-        }
-
-        private static Stream GetWsdlContent()
-        {
-            var wsdlPath = @"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
-
-            return Assembly.GetExecutingAssembly()
-                           .GetManifestResourceStream(wsdlPath);
         }
     }
 }

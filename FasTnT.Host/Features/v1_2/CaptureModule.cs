@@ -9,7 +9,7 @@ namespace FasTnT.Host.Features.v1_2
     {
         public CaptureModule(IMediator mediator)
         {
-            Post("capture.svc", async (req, res) =>
+            Post("capture", async (req, res) =>
             {
                 try
                 {

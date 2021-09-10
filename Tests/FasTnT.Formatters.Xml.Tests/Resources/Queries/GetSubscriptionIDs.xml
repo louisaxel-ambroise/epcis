@@ -1,0 +1,3 @@
+﻿<urn:GetSubscriptionIDs xmlns:urn="urn:epcglobal:epcis-query:xsd:1">
+	<queryName>SimpleEventQuery</queryName>
+</urn:GetSubscriptionIDs>
