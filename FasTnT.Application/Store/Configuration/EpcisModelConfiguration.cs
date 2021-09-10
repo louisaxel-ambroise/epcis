@@ -165,7 +165,7 @@ namespace FasTnT.Infrastructure.Configuration
             bizTrans.ToTable(nameof(BusinessTransaction), nameof(EpcisSchema.Epcis));
             bizTrans.HasKey("EventId", nameof(BusinessTransaction.Type), nameof(BusinessTransaction.Id));
             bizTrans.Property<long>("EventId");
-            bizTrans.Property(x => x.Type).HasConversion<short>().IsRequired(true);
+            bizTrans.Property(x => x.Type).IsRequired(true);
             bizTrans.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
             bizTrans.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId");
 

@@ -7,7 +7,7 @@ namespace FasTnT.Domain.Model
     {
         public int Id { get; set; }
         public StandardBusinessHeader StandardBusinessHeader { get; set; }
-        public DateTime CaptureDate { get; set; }
+        public DateTime CaptureDate { get; set; } = DateTime.UtcNow;
         public DateTime DocumentTime { get; set; }
         public string SchemaVersion { get; set; }
         public SubscriptionCallback SubscriptionCallback { get; set; }

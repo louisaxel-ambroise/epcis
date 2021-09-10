@@ -24,8 +24,8 @@ namespace FasTnT.Application.Migrations
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
 
-                    b.Property<short>("Type")
-                        .HasColumnType("smallint");
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Id")
                         .HasMaxLength(256)

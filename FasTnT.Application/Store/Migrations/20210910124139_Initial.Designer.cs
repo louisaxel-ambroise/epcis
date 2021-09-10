@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FasTnT.Application.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20210907150322_Initial")]
+    [Migration("20210910124139_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,8 +26,8 @@ namespace FasTnT.Application.Migrations
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
 
-                    b.Property<short>("Type")
-                        .HasColumnType("smallint");
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Id")
                         .HasMaxLength(256)
