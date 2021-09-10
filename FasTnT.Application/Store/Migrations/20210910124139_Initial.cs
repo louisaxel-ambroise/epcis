@@ -186,7 +186,7 @@ namespace FasTnT.Application.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<short>(type: "smallint", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     EventId = table.Column<long>(type: "bigint", nullable: false)
                 },
@@ -459,31 +459,10 @@ namespace FasTnT.Application.Migrations
                 column: "ScheduleId",
                 unique: true,
                 filter: "[ScheduleId] IS NOT NULL");
-
-            migrationBuilder.Sql(@"CREATE VIEW [Cbv].[MasterdataHierarchy] AS
-WITH [hierarchy](requestId, type, Id, parentId) AS (
-	-- Top level hierarchy
-	SELECT MasterDataRequestId AS RequestId, MasterDataType as Type, ChildrenId AS Id, MasterdataId AS ParentId
-    FROM Cbv.MasterDataChildren c
-	WHERE NOT EXISTS (SELECT 1 FROM Cbv.MasterDataChildren WHERE MasterDataRequestId = c.MasterDataRequestId and MasterDataType = c.MasterDataType and ChildrenId = c.MasterDataId)
-    UNION ALL
-	-- Children with top-level
-    SELECT MasterDataRequestId AS RequestId, MasterDataType as Type, ChildrenId AS Id, [hierarchy].parentId AS ParentId
-    FROM [hierarchy]
-    INNER JOIN Cbv.MasterDataChildren ON [hierarchy].Id = MasterDataId AND [hierarchy].Type = MasterDataType AND [hierarchy].requestId = MasterDataRequestId
-	UNION ALL
-	-- Children with intermediate level
-    SELECT MasterDataRequestId AS RequestId, MasterDataType as Type, ChildrenId AS Id, [hierarchy].Id AS ParentId
-    FROM [hierarchy]
-    INNER JOIN Cbv.MasterDataChildren ON [hierarchy].Id = MasterDataId AND [hierarchy].Type = MasterDataType AND [hierarchy].requestId = MasterDataRequestId
-) 
-SELECT DISTINCT requestId, type, Id, parentId
-FROM [hierarchy];");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"DROP VIEW [Cbv].[MasterdataHierarchy];");
             migrationBuilder.DropTable(
                 name: "BusinessTransaction",
                 schema: "Epcis");
