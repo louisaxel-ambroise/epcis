@@ -10,6 +10,7 @@ using FasTnT.Formatter.Xml.Formatters;
 using FasTnT.Formatter.Xml.Parsers;
 using FasTnT.Host.Extensions;
 using MediatR;
+using Microsoft.AspNetCore.Builder;
 using System;
 using System.Reflection;
 using System.Xml.Linq;
@@ -69,7 +70,7 @@ namespace FasTnT.Host.Features.v1_2
                 {
                     await res.FormatSoap(response, req.HttpContext.RequestAborted);
                 }
-            });
+            }).RequireAuthorization();
         }
     }
 }

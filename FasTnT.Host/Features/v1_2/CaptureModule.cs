@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Formatter.Xml.Parsers;
 using MediatR;
+using Microsoft.AspNetCore.Builder;
 using System;
 
 namespace FasTnT.Host.Features.v1_2
@@ -24,7 +25,7 @@ namespace FasTnT.Host.Features.v1_2
                         ? 400
                         : 500;
                 }
-            });
+            }).RequireAuthorization();
         }
     }
 }

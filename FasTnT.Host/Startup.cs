@@ -3,10 +3,12 @@ using FasTnT.Application.Queries.Poll;
 using FasTnT.Application.Services;
 using FasTnT.Domain;
 using FasTnT.Domain.Infrastructure.Behaviors;
+using FasTnT.Host.Authorization;
 using FasTnT.Infrastructure.Configuration;
 using FasTnT.Infrastructure.Database;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,10 @@ namespace FasTnT.Host
         {
             var connectionString = _configuration.GetConnectionString("FasTnT.Database");
 
+            services.AddAuthentication("BasicAuthentication")
+                    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
+            services.AddAuthorization();
             services.AddScoped<IncrementGenerator.Identity>();
             services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString));
             services.AddMediatR(typeof(PollQueryHandler).Assembly);
@@ -60,6 +66,8 @@ namespace FasTnT.Host
 
             app.UseExceptionHandler("/epciserror");
             app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(builder => builder.MapCarter());
         }
     }
