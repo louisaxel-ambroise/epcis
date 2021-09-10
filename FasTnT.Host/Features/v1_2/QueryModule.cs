@@ -11,7 +11,6 @@ using FasTnT.Formatter.Xml.Parsers;
 using FasTnT.Host.Extensions;
 using MediatR;
 using System;
-using System.IO;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -19,16 +18,16 @@ namespace FasTnT.Host.Features.v1_2
 {
     public class QueryModule : Epcis12Module
     {
+        internal const string WsdlPath = "FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
+
         public QueryModule(IMediator mediator)
         {
             Get("query.svc", async (req, res) =>
             {
                 res.ContentType = "text/xml";
 
-                using var wsdl = GetWsdlContent();
-
-                await wsdl.CopyToAsync(res.Body)
-                          .ConfigureAwait(false);
+                await using var wsdl = Assembly.GetExecutingAssembly().GetManifestResourceStream(WsdlPath);
+                await wsdl.CopyToAsync(res.Body).ConfigureAwait(false);
             });
 
             Post("query.svc", async (req, res) =>
@@ -71,14 +70,6 @@ namespace FasTnT.Host.Features.v1_2
                     await res.FormatSoap(response, req.HttpContext.RequestAborted);
                 }
             });
-        }
-
-        private static Stream GetWsdlContent()
-        {
-            var wsdlPath = @"FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
-
-            return Assembly.GetExecutingAssembly()
-                           .GetManifestResourceStream(wsdlPath);
         }
     }
 }
