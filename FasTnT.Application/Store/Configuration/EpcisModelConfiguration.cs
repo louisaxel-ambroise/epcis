@@ -12,6 +12,25 @@ namespace FasTnT.Infrastructure.Configuration
     {
         internal static void Apply(ModelBuilder modelBuilder)
         {
+            var user = modelBuilder.Entity<User>();
+            user.ToTable(nameof(User), nameof(EpcisSchema.Users));
+            user.HasKey(x => x.Id);
+            user.Property(x => x.Username).IsRequired(true);
+            user.Property(x => x.Salt).IsRequired(true).HasMaxLength(20);
+            user.Property(x => x.SecuredKey).IsRequired(true);
+            user.Property(x => x.RegisteredOn).IsRequired(true);
+            user.HasMany(x => x.DefaultQueryParameters).WithOne(x => x.User);
+
+            var userParameter = modelBuilder.Entity<UserDefaultQueryParameter>();
+            userParameter.ToTable(nameof(UserDefaultQueryParameter), nameof(EpcisSchema.Users));
+            userParameter.HasKey("UserId", "Name");
+            userParameter.Property(x => x.Name).IsRequired(true);
+            userParameter.Property(x => x.Values).IsRequired(false).HasConversion(
+                x => JsonConvert.SerializeObject(x),
+                x => JsonConvert.DeserializeObject<string[]>(x),
+                new ValueComparer<string[]>((c1, c2) => c1.SequenceEqual(c2), c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), c => c.ToArray()));
+            userParameter.HasOne(x => x.User).WithMany(x => x.DefaultQueryParameters);
+
             var request = modelBuilder.Entity<Request>();
             request.ToTable(nameof(Request), nameof(EpcisSchema.Epcis));
             request.HasKey(x => x.Id);
@@ -22,6 +41,7 @@ namespace FasTnT.Infrastructure.Configuration
             request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId");
             request.HasOne(x => x.StandardBusinessHeader).WithOne(x => x.Request).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(false);
             request.HasOne(x => x.SubscriptionCallback).WithOne(x => x.Request).HasForeignKey<SubscriptionCallback>("RequestId").IsRequired(false);
+            request.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
 
             var header = modelBuilder.Entity<StandardBusinessHeader>();
             header.ToTable(nameof(StandardBusinessHeader), nameof(EpcisSchema.Sbdh));
@@ -95,7 +115,6 @@ namespace FasTnT.Infrastructure.Configuration
             mdField.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
             mdField.Property(x => x.Value).HasMaxLength(256).IsRequired(false);
             mdField.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
-            mdField.Ignore(x => x.Children); // TODO: map
 
             var callback = modelBuilder.Entity<SubscriptionCallback>();
             callback.ToTable(nameof(SubscriptionCallback), nameof(EpcisSchema.Epcis));
@@ -201,18 +220,6 @@ namespace FasTnT.Infrastructure.Configuration
                 x => JsonConvert.SerializeObject(x), 
                 x => JsonConvert.DeserializeObject<string[]>(x), 
                 new ValueComparer<string[]>((c1, c2) => c1.SequenceEqual(c2), c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), c => c.ToArray()));
-
-            var subscriptionSchedule = modelBuilder.Entity<SubscriptionSchedule>();
-            subscriptionSchedule.ToTable(nameof(SubscriptionSchedule), nameof(EpcisSchema.Subscription));
-            subscriptionSchedule.Property<int>("Id").IsRequired(true);
-            subscriptionSchedule.HasKey("Id");
-            subscriptionSchedule.Property(x => x.Second).HasMaxLength(256).IsRequired(false);
-            subscriptionSchedule.Property(x => x.Minute).HasMaxLength(256).IsRequired(false);
-            subscriptionSchedule.Property(x => x.Hour).HasMaxLength(256).IsRequired(false);
-            subscriptionSchedule.Property(x => x.DayOfWeek).HasMaxLength(256).IsRequired(false);
-            subscriptionSchedule.Property(x => x.DayOfMonth).HasMaxLength(256).IsRequired(false);
-            subscriptionSchedule.Property(x => x.Month).HasMaxLength(256).IsRequired(false);
-            subscriptionSchedule.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<Subscription>("ScheduleId");
         }
     }
 }

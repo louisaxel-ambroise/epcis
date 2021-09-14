@@ -70,7 +70,7 @@ namespace FasTnT.Host.Features.v1_2
                 {
                     await res.FormatSoap(response, req.HttpContext.RequestAborted);
                 }
-            }).RequireAuthorization();
+            }).RequireAuthorization(policyNames: "Query");
         }
     }
 }

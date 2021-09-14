@@ -25,7 +25,7 @@ namespace FasTnT.Host.Features.v1_2
                         ? 400
                         : 500;
                 }
-            }).RequireAuthorization();
+            }).RequireAuthorization(policyNames: "Capture");
         }
     }
 }

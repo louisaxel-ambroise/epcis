@@ -6,6 +6,7 @@ namespace FasTnT.Infrastructure.Database
 {
     public class EpcisContext : DbContext
     {
+        public DbSet<User> Users { get; init; }
         public DbSet<Request> Requests { get; init; }
         public DbSet<Event> Events { get; init; }
         public DbSet<MasterData> MasterData { get; init; }
