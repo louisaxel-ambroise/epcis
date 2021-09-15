@@ -22,7 +22,7 @@ namespace FasTnT.Formatters.Xml.Tests
         public void RequestShouldNotSpecifyUser()
         {
             Assert.IsNull(Request.User);
-            Assert.IsNull(Request.UserId);
+            Assert.AreEqual(default, Request.UserId);
         }
 
         [TestMethod]
