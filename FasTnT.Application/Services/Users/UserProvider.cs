@@ -30,7 +30,7 @@ namespace FasTnT.Application.Services.Users
 
             if(user == default && _environment.IsDevelopment())
             {
-                user = await CreateUser(username, password, cancellationToken);
+                user = await CreateUser(username, password, cancellationToken).ConfigureAwait(false);
             }
             else if(user != default && !PasswordUtils.GetSecuredKey(password, user.Salt).Equals(user.SecuredKey))
             {

@@ -65,7 +65,9 @@ namespace FasTnT.Host.Authorization
         private async Task<AuthenticateResult> AuthenticateUser(string username, string password, CancellationToken cancellationToken)
         {
             var userProvider = Request.HttpContext.RequestServices.GetService<IUserProvider>();
-            var user = await userProvider.GetByUsernameAndPasswordAsync(username, password, cancellationToken);
+            var user = await userProvider
+                .GetByUsernameAndPasswordAsync(username, password, cancellationToken)
+                .ConfigureAwait(false);
 
             if (user != null)
             {
