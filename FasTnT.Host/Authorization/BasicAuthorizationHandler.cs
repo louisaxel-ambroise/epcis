@@ -44,7 +44,7 @@ namespace FasTnT.Host.Authorization
             {
                 var (username, password) = ParseAuthenticationHeader(authHeader);
 
-                return await AuthenticateUser(username, password, Request.HttpContext.RequestAborted);
+                return await AuthenticateUser(username, password, Request.HttpContext.RequestAborted).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
