@@ -1,4 +1,5 @@
-﻿using FasTnT.Infrastructure.Database;
+﻿using FasTnT.Domain.Model;
+using FasTnT.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
@@ -18,12 +19,14 @@ namespace FasTnT.Application.Services.Users
             _environment = environment;
         }
 
-        public async Task<Domain.Model.User> GetByUsernameAndPasswordAsync(string username, string password, CancellationToken cancellationToken)
+        public async Task<User> GetByUsernameAndPasswordAsync(string username, string password, CancellationToken cancellationToken)
         {
             var user = await _context.Users
                 .AsNoTracking()
                 .Include(x => x.DefaultQueryParameters)
-                .SingleOrDefaultAsync(x => x.Username == username, cancellationToken);
+                .Where(x => x.Username == username)
+                .SingleOrDefaultAsync(cancellationToken)
+                .ConfigureAwait(false);
 
             if(user == default && _environment.IsDevelopment())
             {
@@ -37,21 +40,21 @@ namespace FasTnT.Application.Services.Users
             return user;
         }
 
-        private async Task<Domain.Model.User> CreateUser(string username, string password, CancellationToken cancellationToken)
+        private async Task<User> CreateUser(string username, string password, CancellationToken cancellationToken)
         {
             var salt = PasswordUtils.GetSalt();
-            var user = new Domain.Model.User
+            var user = new User
             {
                 Username = username,
                 Salt = salt,
                 SecuredKey = PasswordUtils.GetSecuredKey(password, salt),
                 CanCapture = true,
                 CanQuery = true,
-                DefaultQueryParameters = new[] { new Domain.Model.UserDefaultQueryParameter { Name = "EQ_username", Values = new[] { username } } }.ToList()
+                DefaultQueryParameters = new[] { new UserDefaultQueryParameter { Name = "EQ_username", Values = new[] { username } } }.ToList()
             };
 
             _context.Users.Add(user);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             return user;
         }

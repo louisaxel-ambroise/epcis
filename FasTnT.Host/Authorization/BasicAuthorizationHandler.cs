@@ -69,27 +69,32 @@ namespace FasTnT.Host.Authorization
 
             if (user != null)
             {
-                var claims = new[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, username),
-                    new Claim(ClaimTypes.Name, username),
-                    new Claim("UserId", user.Id.ToString()),
-                    new Claim("CanQuery", user.CanQuery.ToString()),
-                    new Claim("CanCapture", user.CanCapture.ToString()),
-                    new Claim("DefaultQueryParameters", JsonConvert.SerializeObject(user.DefaultQueryParameters.Select(p => new QueryParameter(p.Name, p.Values))))
-                };
-
-                var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
-                var ticket = new AuthenticationTicket(principal, Scheme.Name);
-
-                Request.HttpContext.User = principal;
-                
-                return AuthenticateResult.Success(ticket);
+                return Authenticated(username, user);
             }
             else
             {
                 return AuthenticateResult.Fail($"Invalid {HeaderKey} Header");
             }
+        }
+
+        private AuthenticateResult Authenticated(string username, Domain.Model.User user)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, username),
+                new Claim(ClaimTypes.Name, username),
+                new Claim("UserId", user.Id.ToString()),
+                new Claim("CanQuery", user.CanQuery.ToString()),
+                new Claim("CanCapture", user.CanCapture.ToString()),
+                new Claim("DefaultQueryParameters", JsonConvert.SerializeObject(user.DefaultQueryParameters.Select(p => new QueryParameter(p.Name, p.Values))))
+            };
+
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
+            var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+            Request.HttpContext.User = principal;
+
+            return AuthenticateResult.Success(ticket);
         }
     }
 }

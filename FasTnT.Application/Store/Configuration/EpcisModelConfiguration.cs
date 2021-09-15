@@ -220,6 +220,18 @@ namespace FasTnT.Infrastructure.Configuration
                 x => JsonConvert.SerializeObject(x), 
                 x => JsonConvert.DeserializeObject<string[]>(x), 
                 new ValueComparer<string[]>((c1, c2) => c1.SequenceEqual(c2), c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), c => c.ToArray()));
+
+            var subscriptionSchedule = modelBuilder.Entity<SubscriptionSchedule>();
+            subscriptionSchedule.ToTable(nameof(SubscriptionSchedule), nameof(EpcisSchema.Subscription));
+            subscriptionSchedule.Property<int>("Id").IsRequired(true);
+            subscriptionSchedule.HasKey("Id");
+            subscriptionSchedule.Property(x => x.Second).HasMaxLength(256).IsRequired(false);
+            subscriptionSchedule.Property(x => x.Minute).HasMaxLength(256).IsRequired(false);
+            subscriptionSchedule.Property(x => x.Hour).HasMaxLength(256).IsRequired(false);
+            subscriptionSchedule.Property(x => x.DayOfWeek).HasMaxLength(256).IsRequired(false);
+            subscriptionSchedule.Property(x => x.DayOfMonth).HasMaxLength(256).IsRequired(false);
+            subscriptionSchedule.Property(x => x.Month).HasMaxLength(256).IsRequired(false);
+            subscriptionSchedule.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<Subscription>("ScheduleId");
         }
     }
 }
