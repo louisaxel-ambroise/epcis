@@ -2,6 +2,7 @@
 {
     enum EpcisSchema
     {
+        Users,
         Sbdh,
         Epcis,
         Cbv,

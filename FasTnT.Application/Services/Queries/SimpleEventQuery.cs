@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Services;
+using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
@@ -21,11 +22,13 @@ namespace FasTnT.Application.Queries.Poll
         const string Comparison = "(GE|GT|LE|LT)";
 
         private readonly EpcisContext _context;
+        private readonly ICurrentUser _currentUser;
         private int? _maxEventCount = default;
 
-        public SimpleEventQuery(EpcisContext context)
+        public SimpleEventQuery(EpcisContext context, ICurrentUser currentUser)
         {
             _context = context;
+            _currentUser = currentUser;
         }
 
         public string Name => nameof(SimpleEventQuery);
@@ -36,7 +39,7 @@ namespace FasTnT.Application.Queries.Poll
             var query = _context.Events.AsNoTracking();
 
             // TODO: handle orderBy and orderDirection filters.
-            foreach (var parameter in parameters)
+            foreach (var parameter in parameters.Union(_currentUser.DefaultQueryParameters))
             {
                 query = ApplyParameter(parameter, query);
             }
@@ -85,6 +88,7 @@ namespace FasTnT.Application.Queries.Poll
                 "EQ_eventID" => query.Where(x => param.Values.Contains(x.EventId)),
                 "EQ_transformationID" => query.Where(x => param.Values.Contains(x.TransformationId)),
                 "EQ_readPoint" => query.Where(x => param.Values.Contains(x.ReadPoint)),
+                "EQ_username" => query.Where(x => param.Values.Contains(x.Request.User.Username)),
                 "EXISTS_errorDeclaration" => query.Where(x => x.CorrectiveDeclarationTime.HasValue),
                 "EQ_errorReason" => query.Where(x => param.Values.Contains(x.CorrectiveReason)),
                 "EQ_correctiveEventID" => query.Where(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))),
