@@ -7,10 +7,12 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Domain.Utils;
 using FasTnT.Infrastructure.Database;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +26,8 @@ namespace FasTnT.Application.Queries.Poll
         private readonly EpcisContext _context;
         private readonly ICurrentUser _currentUser;
         private int? _maxEventCount = default;
+        private OrderDirection _orderDirection = OrderDirection.Ascending;
+        private Expression<Func<Event, object>> _orderExpression = (Event e) => e.CaptureTime;
 
         public SimpleEventQuery(EpcisContext context, ICurrentUser currentUser)
         {
@@ -38,41 +42,59 @@ namespace FasTnT.Application.Queries.Poll
         {
             var query = _context.Events.AsNoTracking();
 
-            // TODO: handle orderBy and orderDirection filters.
             foreach (var parameter in parameters.Union(_currentUser.DefaultQueryParameters))
             {
                 query = ApplyParameter(parameter, query);
             }
 
-            var eventIds = await query
-                .Select(evt => evt.Id)
-                .ToListAsync(cancellationToken);
-
-            if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount)
+            try
             {
-                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned more than the {_maxEventCount} events allowed.");
+                var eventIds = await ApplyOrderBy(query)
+                    .Select(evt => evt.Id)
+                    .ToListAsync(cancellationToken);
+
+                if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount)
+                {
+                    throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned more than the {_maxEventCount} events allowed.");
+                }
+                if (eventIds.Count > Constants.MaxEventsReturnedInQuery)
+                {
+                    throw new EpcisException(ExceptionType.QueryTooComplexException, $"Query is too complex.");
+                }
+
+                query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
+                    .Include(x => x.Epcs)
+                    .Include(x => x.Sources)
+                    .Include(x => x.Destinations)
+                    .Include(x => x.CustomFields).ThenInclude(x => x.Children)
+                    .Include(x => x.Transactions)
+                    .Where(evt => eventIds.Contains(evt.Id));
+
+                var result = await ApplyOrderBy(query)
+                    .ToListAsync(cancellationToken);
+
+                return new(Name) { EventList = result };
             }
-            if (eventIds.Count > Constants.MaxEventsReturnedInQuery)
+            catch(SqlException e) when (e.Number == -2)
             {
-                throw new EpcisException(ExceptionType.QueryTooComplexException, $"Query is too complex.");
+                throw new EpcisException(ExceptionType.QueryTooComplexException, "Query is too complex.");
             }
+        }
 
-            var result = await _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
-                .Include(x => x.Epcs)
-                .Include(x => x.Sources)
-                .Include(x => x.Destinations)
-                .Include(x => x.CustomFields).ThenInclude(x => x.Children)
-                .Include(x => x.Transactions)
-                .Where(evt => eventIds.Contains(evt.Id))
-                .ToListAsync(cancellationToken);
-
-            return new(Name) { EventList = result };
+        private IQueryable<Event> ApplyOrderBy(IQueryable<Event> query)
+        {
+            return _orderDirection == OrderDirection.Ascending
+                ? query.OrderBy(_orderExpression)
+                : query.OrderByDescending(_orderExpression);
         }
 
         private IQueryable<Event> ApplyParameter(QueryParameter param, IQueryable<Event> query)
         {
             return param.Name switch
             {
+                // Order Parameters
+                "orderBy" => ParseOrderField(param, query),
+                "orderDirection" => ParseOrderDirection(param, query),
                 // Simple filters
                 "eventType" => query.Where(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)),
                 "eventCountLimit" => query.Take(param.GetIntValue()),
@@ -100,7 +122,6 @@ namespace FasTnT.Application.Queries.Poll
                 "GE_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity >= param.GetNumeric())),
                 "LT_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity < param.GetNumeric())),
                 "LE_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity <= param.GetNumeric())),
-
                 // Family filters
                 var s when s.StartsWith("MATCH_") => ApplyMatchParameter(param, query),
                 var s when s.StartsWith("EQ_source_") => query.Where(x => x.Sources.Any(s => s.Id == param.GetSimpleId() && param.Values.Contains(s.Type))),
@@ -113,20 +134,41 @@ namespace FasTnT.Application.Queries.Poll
                 var s when s.StartsWith("EXISTS_INNER_") => ApplyExistsCustomFieldParameter(query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
                 var s when s.StartsWith("EQ_INNER_") => ApplyCustomFieldParameter(param.Values, query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
                 var s when s.StartsWith("EQ_") => ApplyCustomFieldParameter(param.Values, query, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()),
-
                 // Regex filters (Date/Numeric value comparison)
                 var r when Regex.IsMatch(r, $"^{Comparison}_INNER_ILMD") => ApplyComparison(param, query, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true),
                 var r when Regex.IsMatch(r, $"^{Comparison}_ILMD") => ApplyComparison(param, query, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false),
                 var r when Regex.IsMatch(r, $"^{Comparison}_INNER") => ApplyComparison(param, query, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true),
                 var r when Regex.IsMatch(r, $"^{Comparison}_") => ApplyComparison(param, query, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false),
-
                 // Regex HasAttr/EqAttr filters
                 var r when Regex.IsMatch(r, $"^EQATTR_") => throw new EpcisException(ExceptionType.ImplementationException, "EQATTR_ parameter family is not implemented"),
                 var r when Regex.IsMatch(r, $"^HASATTR_") => throw new EpcisException(ExceptionType.ImplementationException, "HASATTR_ parameter family is not implemented"),
-
                 // Any other case is an unknown parameter and should raise a QueryParameter Exception
                 _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is not implemented: {param.Name}")
             };
+        }
+
+        private IQueryable<Event> ParseOrderField(QueryParameter param, IQueryable<Event> query)
+        {
+           _orderExpression = param.Value() switch
+            {
+                "eventTime" => (Event x) => x.EventTime,
+                "recordTime" => (Event x) => x.CaptureTime,
+                _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order field: {param.Value()}")
+            };
+
+            return query;
+        }
+
+        private IQueryable<Event> ParseOrderDirection(QueryParameter param, IQueryable<Event> query)
+        {
+            _orderDirection = param.Value() switch
+            {
+                "ASC" => OrderDirection.Ascending,
+                "DESC" => OrderDirection.Descending,
+                _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order direction: {param.Value()}")
+            };
+
+            return query;
         }
 
         private static IQueryable<Event> ApplyExistsCustomFieldParameter(IQueryable<Event> query, FieldType type, bool inner, string name, string ns)
@@ -156,6 +198,15 @@ namespace FasTnT.Application.Queries.Poll
 
         private static IQueryable<Event> ApplyMatchParameter(QueryParameter param, IQueryable<Event> query)
         {
+            // TODO: allow for multiple values.
+            // The current implementation uses an "AND" operand between each value, which is not the expected behavior.
+            // When multiple values are specified, the result should be: WHERE (epc.type = type AND (epc.id LIKE id1 OR epc.id LIKE id2 ...))
+            // Having this check ensures that at most one value is pecified.
+            if (param.Values.Length > 1)
+            {
+                throw new EpcisException(ExceptionType.ImplementationException, "Multiple values for MATCH_* parameter are not yet supported");
+            }
+
             foreach (var value in param.Values)
             {
                 query = query.Where(x => x.Epcs.Any(e => param.GetMatchEpcTypes().Contains(e.Type) && EF.Functions.Like(e.Id, value.Replace("*", "%"))));

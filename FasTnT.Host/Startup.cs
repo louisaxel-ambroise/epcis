@@ -42,10 +42,10 @@ namespace FasTnT.Host
                 options.AddPolicy("Capture", policy => policy.RequireClaim("CanCapture", "True"));
             });
             services.AddHttpContextAccessor();
-            services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString));
+            services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt.CommandTimeout(1)));
             services.AddMediatR(typeof(PollQueryHandler).Assembly);
             services.AddCarter(o => o.OpenApi.Enabled = true);
-            services.AddValidatorsFromAssembly(typeof(CommandValidationBehavior<,>).Assembly);
+            services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
             services.AddScoped<IncrementGenerator.Identity>();
             services.AddTransient<IUserProvider, UserProvider>();
             services.AddTransient<IEpcisQuery, SimpleEventQuery>();
