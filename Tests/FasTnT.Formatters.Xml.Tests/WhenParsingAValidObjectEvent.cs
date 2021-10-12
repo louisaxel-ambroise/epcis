@@ -1,5 +1,4 @@
 ﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Utils;
 using FasTnT.Formatter.Xml.Parsers;

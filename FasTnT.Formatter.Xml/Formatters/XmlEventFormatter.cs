@@ -11,11 +11,11 @@ namespace FasTnT.Formatter.Xml.Formatters
     {
         static readonly IDictionary<EventType, Func<Event, XElement>> Formatters = new Dictionary<EventType, Func<Event, XElement>>
         {
-            { EventType.Object, FormatObjectEvent },
-            { EventType.Quantity, FormatQuantityEvent },
-            { EventType.Aggregation, FormatAggregationEvent },
-            { EventType.Transaction, FormatTransactionEvent },
-            { EventType.Transformation, FormatTransformationEvent },
+            { EventType.ObjectEvent, FormatObjectEvent },
+            { EventType.QuantityEvent, FormatQuantityEvent },
+            { EventType.AggregationEvent, FormatAggregationEvent },
+            { EventType.TransactionEvent, FormatTransactionEvent },
+            { EventType.TransformationEvent, FormatTransformationEvent },
         };
 
         public static IEnumerable<XElement> FormatList(IList<Event> eventList)

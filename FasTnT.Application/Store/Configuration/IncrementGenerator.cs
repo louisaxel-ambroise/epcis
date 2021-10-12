@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace FasTnT.Infrastructure.Configuration
 {
@@ -14,7 +15,7 @@ namespace FasTnT.Infrastructure.Configuration
         {
             private int _lastValue;
 
-            public int NextValue => _lastValue += 1;
+            public int NextValue => Interlocked.Increment(ref _lastValue);
         }
     }
 }

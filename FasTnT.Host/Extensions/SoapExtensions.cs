@@ -1,6 +1,4 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Formatter.Xml;
-using FasTnT.Formatter.Xml.Utils;
+﻿using FasTnT.Formatter.Xml.Utils;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading;

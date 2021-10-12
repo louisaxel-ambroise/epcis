@@ -3,10 +3,10 @@
     public enum EventType
     {
         None,
-        Object,
-        Aggregation,
-        Transaction,
-        Transformation,
-        Quantity
+        ObjectEvent,
+        AggregationEvent,
+        TransactionEvent,
+        TransformationEvent,
+        QuantityEvent
     }
 }

@@ -12,11 +12,16 @@ namespace FasTnT.Host.Services.User
     {
         public int Id { get; init; }
         public string Username { get; init; }
-        public List<QueryParameter> DefaultQueryParameters { get; init; }
+        public List<QueryParameter> DefaultQueryParameters { get; init; } = new();
 
         public HttpContextCurrentUser(IHttpContextAccessor contextAccessor)
         {
-            var user = contextAccessor.HttpContext.User;
+            var user = contextAccessor?.HttpContext?.User;
+
+            if(user == default)
+            {
+                return;
+            }
 
             Id = int.Parse(user.Claims.SingleOrDefault(x => x.Type == "UserId").Value);
             Username = user.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name).Value;

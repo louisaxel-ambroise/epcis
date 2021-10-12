@@ -11,6 +11,7 @@ namespace FasTnT.Infrastructure.Database
         public DbSet<Event> Events { get; init; }
         public DbSet<MasterData> MasterData { get; init; }
         public DbSet<Subscription> Subscriptions { get; init; }
+        public DbSet<PendingRequest> PendingRequests { get; init; }
 
         public EpcisContext(DbContextOptions<EpcisContext> options) : base(options) { }
 

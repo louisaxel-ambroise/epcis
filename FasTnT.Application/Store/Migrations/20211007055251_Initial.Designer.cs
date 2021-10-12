@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FasTnT.Application.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20210910124139_Initial")]
+    [Migration("20211007055251_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -18,7 +18,7 @@ namespace FasTnT.Application.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.9")
+                .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("FasTnT.Domain.Model.BusinessTransaction", b =>
@@ -386,7 +386,12 @@ namespace FasTnT.Application.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Request", "Epcis");
                 });
@@ -453,6 +458,9 @@ namespace FasTnT.Application.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Destination")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -501,6 +509,28 @@ namespace FasTnT.Application.Migrations
                     b.HasKey("RequestId");
 
                     b.ToTable("SubscriptionCallback", "Epcis");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionExecutionRecord", b =>
+                {
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExecutionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ResultsSent")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Successful")
+                        .HasColumnType("bit");
+
+                    b.HasKey("SubscriptionId", "ExecutionTime");
+
+                    b.ToTable("SubscriptionExecutionRecord", "Subscription");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionParameter", b =>
@@ -553,6 +583,71 @@ namespace FasTnT.Application.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SubscriptionSchedule", "Subscription");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("CanCapture")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("CanQuery")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("RegisteredOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("Salt")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varbinary(20)");
+
+                    b.Property<string>("SecuredKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User", "Users");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.UserDefaultQueryParameter", b =>
+                {
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Values")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "Name");
+
+                    b.ToTable("UserDefaultQueryParameter", "Users");
+                });
+
+            modelBuilder.Entity("RequestSubscription", b =>
+                {
+                    b.Property<int>("PendingRequestsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PendingSubscriptionsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PendingRequestsId", "PendingSubscriptionsId");
+
+                    b.HasIndex("PendingSubscriptionsId");
+
+                    b.ToTable("RequestSubscription");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.BusinessTransaction", b =>
@@ -688,6 +783,17 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("MasterData");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.Source", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.Event", "Event")
@@ -728,6 +834,17 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Request");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionExecutionRecord", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Subscription", "Subscription")
+                        .WithMany("ExecutionRecords")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscription");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionParameter", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.Subscription", "Subscription")
@@ -737,6 +854,32 @@ namespace FasTnT.Application.Migrations
                         .IsRequired();
 
                     b.Navigation("Subscription");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.UserDefaultQueryParameter", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.User", "User")
+                        .WithMany("DefaultQueryParameters")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RequestSubscription", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Request", null)
+                        .WithMany()
+                        .HasForeignKey("PendingRequestsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FasTnT.Domain.Model.Subscription", null)
+                        .WithMany()
+                        .HasForeignKey("PendingSubscriptionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.CustomField", b =>
@@ -791,12 +934,19 @@ namespace FasTnT.Application.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscription", b =>
                 {
+                    b.Navigation("ExecutionRecords");
+
                     b.Navigation("Parameters");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionSchedule", b =>
                 {
                     b.Navigation("Subscription");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.User", b =>
+                {
+                    b.Navigation("DefaultQueryParameters");
                 });
 #pragma warning restore 612, 618
         }
