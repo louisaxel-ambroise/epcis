@@ -1,13 +1,11 @@
 ﻿using FasTnT.Application.Services;
 using FasTnT.Domain.Commands.Subscribe;
-using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Notifications;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Infrastructure.Database;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -98,35 +96,6 @@ namespace FasTnT.Application.Subscriptions
                 Month = schedule.Month,
                 Second = schedule.Second
             };
-        }
-    }
-
-    public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, UnsubscribeResult>
-    {
-        private readonly EpcisContext _context;
-        private readonly IMediator _mediator;
-
-        public UnsubscribeCommandHandler(EpcisContext context, IMediator mediator)
-        {
-            _context = context;
-            _mediator = mediator;
-        }
-
-        public async Task<UnsubscribeResult> Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
-        {
-            var subscription = await _context.Subscriptions.SingleOrDefaultAsync(x => x.Name == request.SubscriptionId, cancellationToken);
-
-            if(subscription == default)
-            {
-                throw new EpcisException(ExceptionType.NoSuchSubscriptionException, "Subscription does not exist");
-            }
-
-            _context.Subscriptions.Remove(subscription);
-
-            await _context.SaveChangesAsync(cancellationToken);
-            await _mediator.Publish(new SubscriptionRemovedNotification(subscription.Id), cancellationToken);
-
-            return new();
         }
     }
 }

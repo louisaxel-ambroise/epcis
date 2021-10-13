@@ -4,7 +4,7 @@ namespace FasTnT.Domain.Notifications
 {
     public class SubscriptionCreatedNotification : INotification
     {
-        public int SubscriptionId { get; init; }
+        public int SubscriptionId { get; }
 
         public SubscriptionCreatedNotification(int subscriptionId)
         {

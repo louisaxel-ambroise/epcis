@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Notifications;
 using FasTnT.Domain.Queries.GetQueryNames;
 using FasTnT.Domain.Queries.GetStandardVersion;
 using FasTnT.Domain.Queries.GetSubscriptionIds;
@@ -11,6 +12,7 @@ using FasTnT.Formatter.Xml.Parsers;
 using FasTnT.Host.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Reflection;
 using System.Xml.Linq;
@@ -69,6 +71,20 @@ namespace FasTnT.Host.Features.v1_2
                 finally
                 {
                     await res.FormatSoap(response, req.HttpContext.RequestAborted);
+                }
+            }).RequireAuthorization(policyNames: "Query");
+
+            Get("Trigger", async (req, res) => 
+            {
+                if(req.Query.TryGetValue("triggers", out StringValues value))
+                {
+                    await mediator.Publish(new TriggerSubscriptionNotification(value.ToArray()));
+
+                    res.StatusCode = 201;
+                }
+                else
+                {
+                    res.StatusCode = 400;
                 }
             }).RequireAuthorization(policyNames: "Query");
         }
