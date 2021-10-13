@@ -44,7 +44,7 @@ namespace FasTnT.Subscriptions
 
             response.SubscriptionId = subscription.Name;
 
-            var resultsSent = await SendSubscriptionResults(subscription, response, cancellationToken);
+            var resultsSent = await SendSubscriptionResults(subscription, response, cancellationToken).ConfigureAwait(false);
 
             if (resultsSent)
             {

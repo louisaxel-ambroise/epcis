@@ -20,9 +20,9 @@ namespace FasTnT.Subscriptions
             request.Method = "POST";
             TrySetBasicAuthorization(request);
 
-            await WriteRequestPayload(request, epcisResponse, cancellationToken);
+            await WriteRequestPayload(request, epcisResponse, cancellationToken).ConfigureAwait(false);
 
-            return await SendRequestAsync(request, cancellationToken);
+            return await SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
         private static async Task<bool> SendRequestAsync(HttpWebRequest request, CancellationToken cancellationToken)

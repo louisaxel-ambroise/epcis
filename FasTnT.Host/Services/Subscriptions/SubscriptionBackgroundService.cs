@@ -29,7 +29,7 @@ namespace FasTnT.Host.Services.Subscriptions
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
             return Task.Run(async () => {
-                await Initialize(cancellationToken);
+                await Initialize(cancellationToken).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();
 
                 while (!cancellationToken.IsCancellationRequested)
@@ -55,7 +55,7 @@ namespace FasTnT.Host.Services.Subscriptions
                             triggeredSubscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out IList<Subscription> sub) ? sub : Array.Empty<Subscription>());
                         }
 
-                        await Execute(triggeredSubscriptions, cancellationToken);
+                        await Execute(triggeredSubscriptions, cancellationToken).ConfigureAwait(false);
                     }
                     finally
                     {
@@ -96,7 +96,7 @@ namespace FasTnT.Host.Services.Subscriptions
                 }
                 catch
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(10000), cancellationToken);
+                    await Task.Delay(TimeSpan.FromMilliseconds(10000), cancellationToken).ConfigureAwait(false);
                 }
             }
         }
