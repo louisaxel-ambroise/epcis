@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
     <ProjectReference Include="..\FasTnT.Formatter.Xml\FasTnT.Formatter.Xml.csproj" />
   </ItemGroup>

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace FasTnT.Host.Services.Subscriptions
 {
-    public sealed class SubscriptionBackgroundService : BackgroundService
+    public sealed class SubscriptionBackgroundService : BackgroundService, ISubscriptionService
     {
         private readonly IServiceProvider _services;
         private readonly object _monitor = new object();
@@ -121,27 +121,30 @@ namespace FasTnT.Host.Services.Subscriptions
             });
         }
 
-        public void Remove(Subscription subscription)
+        public void Remove(int subscriptionId)
         {
             Pulse(() =>
             {
-                if (string.IsNullOrEmpty(subscription.Trigger))
+                if (_scheduledExecutions.Any(x => x.Key.Id == subscriptionId))
                 {
-                    if (_scheduledExecutions.Any(x => x.Key.Id == subscription.Id))
-                    {
-                        _scheduledExecutions.TryRemove(_scheduledExecutions.FirstOrDefault(x => x.Key.Id == subscription.Id).Key, out DateTime value);
-                    }
+                    _scheduledExecutions.TryRemove(_scheduledExecutions.FirstOrDefault(x => x.Key.Id == subscriptionId).Key, out DateTime value);
                 }
                 else
                 {
-                    _triggeredSubscriptions[subscription.Trigger].Remove(_triggeredSubscriptions[subscription.Trigger].FirstOrDefault(x => x.Id == subscription.Id));
+                    _triggeredSubscriptions.Select(x => x.Value.Remove(x.Value.SingleOrDefault(s => s.Id == subscriptionId)));
                 }
             });
         }
-
-        public void Trigger(string triggerName)
+            
+        public void Trigger(params string[] triggers)
         {
-            Pulse(() => _triggeredValues.Enqueue(triggerName));
+            Pulse(() =>
+            {
+                for(var i=0; i<triggers.Length; i++)
+                {
+                    _triggeredValues.Enqueue(triggers[i]);
+                }
+            });
         }
 
         private void Pulse(Action action)

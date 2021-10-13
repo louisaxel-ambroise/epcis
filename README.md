@@ -56,8 +56,8 @@ This is the list of planned and implemented features in the repository:
 - Subscriptions:
   - [x] Subscribe to an EPCIS request
   - [x] Unsubscribe from EPCIS repository
-  - [ ] Trigger subscriptions that register to specific trigger name
-  - [ ] Execute subscription based on schedule
+  - [x] Trigger subscriptions that register to specific trigger name
+  - [x] Execute subscription based on schedule
 
 # Authors
 

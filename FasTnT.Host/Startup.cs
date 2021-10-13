@@ -10,6 +10,7 @@ using FasTnT.Host.Services.User;
 using FasTnT.Infrastructure.Configuration;
 using FasTnT.Infrastructure.Database;
 using FasTnT.Subscriptions;
+using FasTnT.Subscriptions.Notifications;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
@@ -46,7 +47,7 @@ namespace FasTnT.Host
             services.AddHttpContextAccessor();
             services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt.CommandTimeout(1)));
 
-            services.AddMediatR(typeof(PollQueryHandler).Assembly);
+            services.AddMediatR(typeof(PollQueryHandler), typeof(SubscriptionCreatedNotificationHandler));
             services.AddCarter(o => o.OpenApi.Enabled = true);
             services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
             services.AddScoped<IncrementGenerator.Identity>();
@@ -56,8 +57,8 @@ namespace FasTnT.Host
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
             services.AddTransient<ICurrentUser, HttpContextCurrentUser>();
             services.AddScoped<SubscriptionRunner>();
-            services.AddSingleton<SubscriptionBackgroundService>();
-            services.AddHostedService(s => s.GetRequiredService<SubscriptionBackgroundService>());
+            services.AddSingleton<ISubscriptionService, SubscriptionBackgroundService>();
+            services.AddHostedService(s => s.GetRequiredService<ISubscriptionService>() as SubscriptionBackgroundService);
             services.AddScoped<ISubscriptionResultSender, HttpSubscriptionResultSender>();
 
             var constantsSection = _configuration.GetSection(nameof(Constants));
