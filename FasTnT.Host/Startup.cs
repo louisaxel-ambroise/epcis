@@ -5,9 +5,11 @@ using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Domain.Infrastructure.Behaviors;
 using FasTnT.Host.Authorization;
+using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
 using FasTnT.Infrastructure.Configuration;
 using FasTnT.Infrastructure.Database;
+using FasTnT.Subscriptions;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
@@ -43,6 +45,7 @@ namespace FasTnT.Host
             });
             services.AddHttpContextAccessor();
             services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt.CommandTimeout(1)));
+
             services.AddMediatR(typeof(PollQueryHandler).Assembly);
             services.AddCarter(o => o.OpenApi.Enabled = true);
             services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
@@ -52,6 +55,10 @@ namespace FasTnT.Host
             services.AddTransient<IEpcisQuery, SimpleMasterDataQuery>();
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
             services.AddTransient<ICurrentUser, HttpContextCurrentUser>();
+            services.AddScoped<SubscriptionRunner>();
+            services.AddSingleton<SubscriptionBackgroundService>();
+            services.AddHostedService(s => s.GetRequiredService<SubscriptionBackgroundService>());
+            services.AddScoped<ISubscriptionResultSender, HttpSubscriptionResultSender>();
 
             var constantsSection = _configuration.GetSection(nameof(Constants));
             if (constantsSection.Exists())
@@ -65,12 +72,6 @@ namespace FasTnT.Host
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            }
-            if (_configuration.GetValue<bool>("FasTnT.Database.ApplyMigrations"))
-            {
-                using var scope = app.ApplicationServices.CreateScope();
-
-                scope.ServiceProvider.GetService<EpcisContext>().Database.Migrate();
             }
 
             app.UseExceptionHandler("/epciserror");

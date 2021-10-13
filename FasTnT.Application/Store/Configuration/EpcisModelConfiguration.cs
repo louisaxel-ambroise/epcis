@@ -211,6 +211,7 @@ namespace FasTnT.Infrastructure.Configuration
             subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
             subscription.HasMany(x => x.Parameters).WithOne(x => x.Subscription).HasForeignKey("SubscriptionId");
             subscription.HasOne(x => x.Schedule).WithOne(x => x.Subscription).HasForeignKey<Subscription>("ScheduleId").IsRequired(false);
+            subscription.HasMany(x => x.ExecutionRecords).WithOne(x => x.Subscription);
 
             var subscriptionParam = modelBuilder.Entity<SubscriptionParameter>();
             subscriptionParam.ToTable(nameof(SubscriptionParameter), nameof(EpcisSchema.Subscription));
@@ -232,6 +233,19 @@ namespace FasTnT.Infrastructure.Configuration
             subscriptionSchedule.Property(x => x.DayOfMonth).HasMaxLength(256).IsRequired(false);
             subscriptionSchedule.Property(x => x.Month).HasMaxLength(256).IsRequired(false);
             subscriptionSchedule.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<Subscription>("ScheduleId");
+
+            var subscriptionExecutionRecord = modelBuilder.Entity<SubscriptionExecutionRecord>();
+            subscriptionExecutionRecord.ToTable(nameof(SubscriptionExecutionRecord), nameof(EpcisSchema.Subscription));
+            subscriptionExecutionRecord.HasKey("SubscriptionId", "ExecutionTime");
+            subscriptionExecutionRecord.Property(x => x.ExecutionTime).IsRequired(true);
+            subscriptionExecutionRecord.Property(x => x.ResultsSent).IsRequired(true);
+            subscriptionExecutionRecord.Property(x => x.Successful).IsRequired(true);
+            subscriptionExecutionRecord.Property(x => x.Reason).IsRequired(false);
+            subscriptionExecutionRecord.HasOne(x => x.Subscription).WithMany(x => x.ExecutionRecords).HasForeignKey("SubscriptionId");
+
+            var pendingRequest = modelBuilder.Entity<PendingRequest>();
+            pendingRequest.ToTable(nameof(PendingRequest), nameof(EpcisSchema.Subscription));
+            pendingRequest.HasKey(x => new { x.RequestId, x.SubscriptionId });
         }
     }
 }

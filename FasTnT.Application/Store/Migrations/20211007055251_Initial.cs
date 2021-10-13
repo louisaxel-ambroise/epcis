@@ -19,21 +19,8 @@ namespace FasTnT.Application.Migrations
             migrationBuilder.EnsureSchema(
                 name: "Subscription");
 
-            migrationBuilder.CreateTable(
-                name: "Request",
-                schema: "Epcis",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CaptureDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DocumentTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SchemaVersion = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Request", x => x.Id);
-                });
+            migrationBuilder.EnsureSchema(
+                name: "Users");
 
             migrationBuilder.CreateTable(
                 name: "SubscriptionSchedule",
@@ -52,6 +39,140 @@ namespace FasTnT.Application.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubscriptionSchedule", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "User",
+                schema: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Salt = table.Column<byte[]>(type: "varbinary(20)", maxLength: 20, nullable: false),
+                    SecuredKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RegisteredOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CanCapture = table.Column<bool>(type: "bit", nullable: false),
+                    CanQuery = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subscription",
+                schema: "Subscription",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    QueryName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    ScheduleId = table.Column<int>(type: "int", nullable: true),
+                    Trigger = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    RecordIfEmpty = table.Column<bool>(type: "bit", nullable: false),
+                    Destination = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscription", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Subscription_SubscriptionSchedule_ScheduleId",
+                        column: x => x.ScheduleId,
+                        principalSchema: "Subscription",
+                        principalTable: "SubscriptionSchedule",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Request",
+                schema: "Epcis",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CaptureDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DocumentTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SchemaVersion = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Request", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Request_User_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserDefaultQueryParameter",
+                schema: "Users",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Values = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDefaultQueryParameter", x => new { x.UserId, x.Name });
+                    table.ForeignKey(
+                        name: "FK_UserDefaultQueryParameter_User_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubscriptionExecutionRecord",
+                schema: "Subscription",
+                columns: table => new
+                {
+                    ExecutionTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
+                    Successful = table.Column<bool>(type: "bit", nullable: false),
+                    ResultsSent = table.Column<bool>(type: "bit", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionExecutionRecord", x => new { x.SubscriptionId, x.ExecutionTime });
+                    table.ForeignKey(
+                        name: "FK_SubscriptionExecutionRecord_Subscription_SubscriptionId",
+                        column: x => x.SubscriptionId,
+                        principalSchema: "Subscription",
+                        principalTable: "Subscription",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubscriptionParameter",
+                schema: "Subscription",
+                columns: table => new
+                {
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionParameter", x => new { x.SubscriptionId, x.Name });
+                    table.ForeignKey(
+                        name: "FK_SubscriptionParameter_Subscription_SubscriptionId",
+                        column: x => x.SubscriptionId,
+                        principalSchema: "Subscription",
+                        principalTable: "Subscription",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,6 +231,32 @@ namespace FasTnT.Application.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RequestSubscription",
+                columns: table => new
+                {
+                    PendingRequestsId = table.Column<int>(type: "int", nullable: false),
+                    PendingSubscriptionsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestSubscription", x => new { x.PendingRequestsId, x.PendingSubscriptionsId });
+                    table.ForeignKey(
+                        name: "FK_RequestSubscription_Request_PendingRequestsId",
+                        column: x => x.PendingRequestsId,
+                        principalSchema: "Epcis",
+                        principalTable: "Request",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RequestSubscription_Subscription_PendingSubscriptionsId",
+                        column: x => x.PendingSubscriptionsId,
+                        principalSchema: "Subscription",
+                        principalTable: "Subscription",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "StandardBusinessHeader",
                 schema: "Sbdh",
                 columns: table => new
@@ -152,31 +299,6 @@ namespace FasTnT.Application.Migrations
                         column: x => x.RequestId,
                         principalSchema: "Epcis",
                         principalTable: "Request",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Subscription",
-                schema: "Subscription",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    QueryName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    ScheduleId = table.Column<int>(type: "int", nullable: true),
-                    Trigger = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    RecordIfEmpty = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Subscription", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Subscription_SubscriptionSchedule_ScheduleId",
-                        column: x => x.ScheduleId,
-                        principalSchema: "Subscription",
-                        principalTable: "SubscriptionSchedule",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -393,27 +515,6 @@ namespace FasTnT.Application.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubscriptionParameter",
-                schema: "Subscription",
-                columns: table => new
-                {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubscriptionParameter", x => new { x.SubscriptionId, x.Name });
-                    table.ForeignKey(
-                        name: "FK_SubscriptionParameter_Subscription_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalSchema: "Subscription",
-                        principalTable: "Subscription",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MasterDataField",
                 schema: "Cbv",
                 columns: table => new
@@ -453,12 +554,25 @@ namespace FasTnT.Application.Migrations
                 column: "RequestId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Request_UserId",
+                schema: "Epcis",
+                table: "Request",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestSubscription_PendingSubscriptionsId",
+                table: "RequestSubscription",
+                column: "PendingSubscriptionsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Subscription_ScheduleId",
                 schema: "Subscription",
                 table: "Subscription",
                 column: "ScheduleId",
                 unique: true,
                 filter: "[ScheduleId] IS NOT NULL");
+
+            migrationBuilder.Sql("CREATE TRIGGER Epcis.InsertPendingRequests ON Epcis.Request AFTER INSERT AS INSERT INTO RequestSubscription(RequestId, SubscriptionId) SELECT i.Id, s.Id FROM inserted i JOIN Subscription.Subscription s;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -496,6 +610,9 @@ namespace FasTnT.Application.Migrations
                 schema: "Cbv");
 
             migrationBuilder.DropTable(
+                name: "RequestSubscription");
+
+            migrationBuilder.DropTable(
                 name: "Source",
                 schema: "Epcis");
 
@@ -504,8 +621,16 @@ namespace FasTnT.Application.Migrations
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
+                name: "SubscriptionExecutionRecord",
+                schema: "Subscription");
+
+            migrationBuilder.DropTable(
                 name: "SubscriptionParameter",
                 schema: "Subscription");
+
+            migrationBuilder.DropTable(
+                name: "UserDefaultQueryParameter",
+                schema: "Users");
 
             migrationBuilder.DropTable(
                 name: "StandardBusinessHeader",
@@ -534,6 +659,10 @@ namespace FasTnT.Application.Migrations
             migrationBuilder.DropTable(
                 name: "Request",
                 schema: "Epcis");
+
+            migrationBuilder.DropTable(
+                name: "User",
+                schema: "Users");
         }
     }
 }

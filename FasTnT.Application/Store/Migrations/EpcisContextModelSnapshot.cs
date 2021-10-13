@@ -16,7 +16,7 @@ namespace FasTnT.Application.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.9")
+                .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("FasTnT.Domain.Model.BusinessTransaction", b =>
@@ -367,6 +367,19 @@ namespace FasTnT.Application.Migrations
                     b.ToView("MasterDataHierarchy", "Cbv");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.PendingRequest", b =>
+                {
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RequestId", "SubscriptionId");
+
+                    b.ToTable("PendingRequest", "Subscription");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
                 {
                     b.Property<int>("Id")
@@ -456,6 +469,9 @@ namespace FasTnT.Application.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Destination")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -504,6 +520,28 @@ namespace FasTnT.Application.Migrations
                     b.HasKey("RequestId");
 
                     b.ToTable("SubscriptionCallback", "Epcis");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionExecutionRecord", b =>
+                {
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExecutionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ResultsSent")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Successful")
+                        .HasColumnType("bit");
+
+                    b.HasKey("SubscriptionId", "ExecutionTime");
+
+                    b.ToTable("SubscriptionExecutionRecord", "Subscription");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionParameter", b =>
@@ -575,7 +613,9 @@ namespace FasTnT.Application.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("Salt")
-                        .HasColumnType("varbinary(max)");
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varbinary(20)");
 
                     b.Property<string>("SecuredKey")
                         .IsRequired()
@@ -790,6 +830,17 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Request");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionExecutionRecord", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Subscription", "Subscription")
+                        .WithMany("ExecutionRecords")
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subscription");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionParameter", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.Subscription", "Subscription")
@@ -864,6 +915,8 @@ namespace FasTnT.Application.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscription", b =>
                 {
+                    b.Navigation("ExecutionRecords");
+
                     b.Navigation("Parameters");
                 });
 

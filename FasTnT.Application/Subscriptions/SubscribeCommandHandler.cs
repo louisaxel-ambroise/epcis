@@ -73,6 +73,7 @@ namespace FasTnT.Application.Subscriptions
                 RecordIfEmpty = request.ReportIfEmpty,
                 Schedule = request.Schedule != default ? MapSchedule(request.Schedule) : null,
                 Trigger = request.Trigger,
+                Destination = request.Destination,
                 Parameters = MapParameters(request.Parameters)
             };
         }

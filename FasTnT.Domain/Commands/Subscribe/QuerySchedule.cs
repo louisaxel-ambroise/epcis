@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace FasTnT.Domain.Commands.Subscribe
+﻿namespace FasTnT.Domain.Commands.Subscribe
 {
     public class QuerySchedule
     {

@@ -6,7 +6,7 @@ namespace FasTnT.Domain.Queries.Poll
     public class PollResponse 
     {
         public string QueryName { get; init; }
-        public string SubscriptionId { get; init; }
+        public string SubscriptionId { get; set; }
         public List<Event> EventList { get; init; }
         public List<MasterData> VocabularyList { get; init; }
 

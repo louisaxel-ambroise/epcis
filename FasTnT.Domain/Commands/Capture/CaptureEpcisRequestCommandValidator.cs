@@ -13,7 +13,7 @@ namespace FasTnT.Domain.Commands.Capture
         public CaptureEpcisRequestCommandValidator()
         {
             RuleFor(x => x.Request)
-                .Must(HaveEventOrMasterdataOrBeAnUnsuccessfulCallback)
+                .Must(HaveEventOrMasterdataOrBeACallback)
                 .WithMessage(RequestMustContainEventOrMasterdata);
 
             RuleForEach(x => x.Request.Events)
@@ -22,10 +22,10 @@ namespace FasTnT.Domain.Commands.Capture
                 .WithMessage(AggregationEventMissingParentId);
         }
 
-        private bool HaveEventOrMasterdataOrBeAnUnsuccessfulCallback(Request request) 
+        private bool HaveEventOrMasterdataOrBeACallback(Request request) 
             => request.Events.Count + request.Masterdata.Count > 0 
-            || request.SubscriptionCallback != null && request.SubscriptionCallback.CallbackType != QueryCallbackType.Success;
-        private bool IsAddOrDeleteAggregation(Event evt) => evt.Type == EventType.Aggregation && (evt.Action == EventAction.Add || evt.Action == EventAction.Delete);
+            || request.SubscriptionCallback != null;
+        private bool IsAddOrDeleteAggregation(Event evt) => evt.Type == EventType.AggregationEvent && (evt.Action == EventAction.Add || evt.Action == EventAction.Delete);
         private bool HaveAParentIdEpc(Event evt) => evt.Epcs.Any(epc => epc.Type == EpcType.ParentId);
     }
 }

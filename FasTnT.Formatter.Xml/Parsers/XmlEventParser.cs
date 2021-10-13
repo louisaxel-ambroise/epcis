@@ -52,7 +52,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         public static Event ParseObjectEvent(XElement eventRoot)
         {
-            var Event = ParseBase(eventRoot, EventType.Object);
+            var Event = ParseBase(eventRoot, EventType.ObjectEvent);
 
             Event.Action = Enum.Parse<EventAction>(eventRoot.Element("action").Value, true);
             ParseTransactions(eventRoot.Element("bizTransactionList"), Event);
@@ -78,7 +78,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         public static Event ParseAggregationEvent(XElement eventRoot)
         {
-            var Event = ParseBase(eventRoot, EventType.Aggregation);
+            var Event = ParseBase(eventRoot, EventType.AggregationEvent);
 
             Event.Action = Enum.Parse<EventAction>(eventRoot.Element("action").Value, true);
             ParseParentId(eventRoot.Element("parentID"), Event);
@@ -104,7 +104,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         public static Event ParseTransactionEvent(XElement eventRoot)
         {
-            var Event = ParseBase(eventRoot, EventType.Transaction);
+            var Event = ParseBase(eventRoot, EventType.TransactionEvent);
 
             Event.Action = Enum.Parse<EventAction>(eventRoot.Element("action").Value, true);
             ParseParentId(eventRoot.Element("parentID"), Event);
@@ -130,7 +130,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         public static Event ParseQuantityEvent(XElement eventRoot)
         {
-            var Event = ParseBase(eventRoot, EventType.Quantity);
+            var Event = ParseBase(eventRoot, EventType.QuantityEvent);
             var epcQuantity = new Epc
             {
                 Id = eventRoot.Element("epcClass").Value,
@@ -147,7 +147,7 @@ namespace FasTnT.Formatter.Xml.Parsers
 
         public static Event ParseTransformationEvent(XElement eventRoot)
         {
-            var Event = ParseBase(eventRoot, EventType.Transformation);
+            var Event = ParseBase(eventRoot, EventType.TransformationEvent);
 
             Event.TransformationId = eventRoot.Element("transformationID")?.Value;
             ParseTransactions(eventRoot.Element("bizTransactionList"), Event);
