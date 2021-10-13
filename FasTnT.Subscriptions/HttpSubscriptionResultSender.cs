@@ -2,7 +2,6 @@
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Formatter.Xml.Formatters;
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -38,7 +37,7 @@ namespace FasTnT.Subscriptions
 
                 requestWasSent = responseMessage.IsSuccessStatusCode;
             }
-            catch (WebException ex)
+            catch (WebException)
             {
                 requestWasSent = false;
             }
@@ -49,6 +48,7 @@ namespace FasTnT.Subscriptions
         private static async Task WriteRequestPayload<T>(HttpWebRequest request, T response, CancellationToken cancellationToken)
         {
             using var stream = await request.GetRequestStreamAsync();
+            using var writer = XmlWriter.Create(stream, new XmlWriterSettings { Async = true });
 
             var content = response switch
             {
@@ -57,13 +57,10 @@ namespace FasTnT.Subscriptions
                 _ => throw new ArgumentException(null, nameof(response))
             };
 
-            var payload = new XDocument(new XElement(XName.Get("EPCISQueryDocument", "urn:epcglobal:epcis-query:xsd:1"), 
-                new XAttribute("creationDate", DateTime.UtcNow), new XAttribute("schemaVersion", "1"),
-                new XElement("EPCISBody", content)));
+            var requestPayload = FormatResponse(content);
 
             request.ContentType = "application/text+xml";
-            var requestPayload = payload.ToString();
-            request.GetRequestStream().Write(Encoding.UTF8.GetBytes(requestPayload), 0, requestPayload.Length);
+            await requestPayload.WriteToAsync(writer, cancellationToken);
         }
 
         private static void TrySetBasicAuthorization(HttpWebRequest request)
@@ -73,6 +70,18 @@ namespace FasTnT.Subscriptions
                 var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(WebUtility.UrlDecode(request.RequestUri.UserInfo)));
                 request.Headers.Add("Authorization", $"Basic {token}");
             }
+        }
+
+        private static XDocument FormatResponse(XElement content)
+        {
+            var rootName = XName.Get("EPCISQueryDocument", "urn:epcglobal:epcis-query:xsd:1");
+            var attributes = new[]
+            {
+                new XAttribute("creationDate", DateTime.UtcNow),
+                new XAttribute("schemaVersion", "1")
+            };
+
+            return new (new XElement(rootName, attributes, new XElement("EPCISBody", content)));
         }
     }
 }

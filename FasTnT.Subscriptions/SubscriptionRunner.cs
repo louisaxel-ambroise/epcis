@@ -36,7 +36,7 @@ namespace FasTnT.Subscriptions
             {
                 var parameters = subscription.Parameters
                     .Select(s => new QueryParameter(s.Name, s.Value))
-                    .Append(new QueryParameter("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
+                    .Append(new ("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
                     .ToArray();
 
                 response = await query.HandleAsync(parameters, cancellationToken);
