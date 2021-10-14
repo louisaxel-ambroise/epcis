@@ -80,7 +80,7 @@ namespace FasTnT.Host.Features.v1_2
                 {
                     await mediator.Publish(new TriggerSubscriptionNotification(value.ToArray()));
 
-                    res.StatusCode = 201;
+                    res.StatusCode = 202;
                 }
                 else
                 {

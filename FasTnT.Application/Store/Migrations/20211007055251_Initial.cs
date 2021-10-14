@@ -571,8 +571,6 @@ namespace FasTnT.Application.Migrations
                 column: "ScheduleId",
                 unique: true,
                 filter: "[ScheduleId] IS NOT NULL");
-
-            migrationBuilder.Sql("CREATE TRIGGER Epcis.InsertPendingRequests ON Epcis.Request AFTER INSERT AS INSERT INTO RequestSubscription(RequestId, SubscriptionId) SELECT i.Id, s.Id FROM inserted i JOIN Subscription.Subscription s;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -21,10 +21,20 @@ namespace FasTnT.Application.Migrations
                 {
                     table.PrimaryKey("PK_PendingRequest", x => new { x.RequestId, x.SubscriptionId });
                 });
+
+            migrationBuilder.Sql(@"CREATE TRIGGER [Epcis].[InsertPendingRequests] 
+ON [Epcis].[Request] 
+AFTER INSERT 
+AS 
+	INSERT INTO [Subscription].[PendingRequest]([RequestId], [SubscriptionId]) 
+	SELECT i.[Id], s.[Id] 
+	FROM inserted i, [Subscription].[Subscription] s;");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql(@"DROP TRIGGER [Epcis].[InsertPendingRequests];");
+
             migrationBuilder.DropTable(
                 name: "PendingRequest",
                 schema: "Subscription");
@@ -60,13 +70,6 @@ namespace FasTnT.Application.Migrations
                 table: "RequestSubscription",
                 column: "PendingSubscriptionsId");
 
-            migrationBuilder.Sql(@"CREATE TRIGGER [Epcis].[InsertPendingRequests] 
-ON [Epcis].[Request] 
-AFTER INSERT 
-AS 
-	INSERT INTO [Subscription].[PendingRequest]([RequestId], [SubscriptionId]) 
-	SELECT i.[Id], s.[Id] 
-	FROM inserted i, [Subscription].[Subscription] s;");
         }
     }
 }
