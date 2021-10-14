@@ -59,6 +59,14 @@ namespace FasTnT.Application.Migrations
                 name: "IX_RequestSubscription_PendingSubscriptionsId",
                 table: "RequestSubscription",
                 column: "PendingSubscriptionsId");
+
+            migrationBuilder.Sql(@"CREATE TRIGGER [Epcis].[InsertPendingRequests] 
+ON [Epcis].[Request] 
+AFTER INSERT 
+AS 
+	INSERT INTO [Subscription].[PendingRequest]([RequestId], [SubscriptionId]) 
+	SELECT i.[Id], s.[Id] 
+	FROM inserted i, [Subscription].[Subscription] s;");
         }
     }
 }
