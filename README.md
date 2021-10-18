@@ -2,10 +2,12 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/2c8ff479623d4cfc82a24523bf3dee6d)](https://www.codacy.com/gh/FasTnT/epcis-ef-core/dashboard?utm_source=github.com&utm_medium=referral&utm_content=FasTnT/epcis-ef-core&utm_campaign=Badge_Coverage)
 [![.NET](https://github.com/FasTnT/epcis-ef-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/FasTnT/epcis-ef-core/actions/workflows/dotnet.yml)
 
-# epcis-ef-core
+# [EPCIS](https://fastnt.github.io/)
 EF Core version of EPCIS repository
 
 FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 repository written in C# using .NET 5 and backed using EntityFramework Core.
+
+There is a [sandbox](https://fastnt.github.io/sandbox.html) available if you want to quickly test this repository capabilities.
 
 ## Setup
 
