@@ -73,13 +73,17 @@ namespace FasTnT.Host
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDefaultFiles().UseStaticFiles();
             }
 
             app.UseExceptionHandler("/epciserror");
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(builder => builder.MapCarter());
+            app.UseEndpoints(builder =>
+            {
+                builder.MapCarter();
+            });
         }
     }
 }

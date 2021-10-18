@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Features\v1_2\Artifacts\epcis1_2.wsdl" />
+    <None Remove="Features\v1_2\Artifacts\index.html" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +29,16 @@
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
     <ProjectReference Include="..\FasTnT.Formatter.Xml\FasTnT.Formatter.Xml.csproj" />
     <ProjectReference Include="..\FasTnT.Subscriptions\FasTnT.Subscriptions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Program.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="wwwroot\index.html" />
   </ItemGroup>
 
 </Project>

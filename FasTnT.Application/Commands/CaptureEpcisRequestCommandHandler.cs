@@ -20,7 +20,7 @@ namespace FasTnT.Application.Commands
 
         public async Task<CaptureEpcisRequestResponse> Handle(CaptureEpcisRequestCommand request, CancellationToken cancellationToken)
         {
-            request.Request.UserId = _currentUser.Id;
+            request.Request.UserId = _currentUser.UserId;
             _context.Requests.Add(request.Request);
 
             await _context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);

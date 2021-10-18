@@ -10,7 +10,7 @@ namespace FasTnT.Host.Services.User
 {
     public class HttpContextCurrentUser : ICurrentUser
     {
-        public int Id { get; init; }
+        public int UserId { get; init; }
         public string Username { get; init; }
         public List<QueryParameter> DefaultQueryParameters { get; init; } = new();
 
@@ -23,9 +23,9 @@ namespace FasTnT.Host.Services.User
                 return;
             }
 
-            Id = int.Parse(user.Claims.SingleOrDefault(x => x.Type == "UserId").Value);
+            UserId = int.Parse(user.Claims.SingleOrDefault(x => x.Type == nameof(UserId)).Value);
             Username = user.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name).Value;
-            DefaultQueryParameters = JsonConvert.DeserializeObject<List<QueryParameter>>(user.Claims.SingleOrDefault(x => x.Type == "DefaultQueryParameters").Value);
+            DefaultQueryParameters = JsonConvert.DeserializeObject<List<QueryParameter>>(user.Claims.SingleOrDefault(x => x.Type == nameof(DefaultQueryParameters)).Value);
         }
     }
 }
