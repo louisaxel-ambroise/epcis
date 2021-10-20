@@ -4,14 +4,16 @@ using FasTnT.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FasTnT.Application.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    partial class EpcisContextModelSnapshot : ModelSnapshot
+    [Migration("20211020144338_SubscriptionTriggerRecordTime")]
+    partial class SubscriptionTriggerRecordTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
