@@ -69,6 +69,7 @@ namespace FasTnT.Application.Subscriptions
                 Name = request.SubscriptionId,
                 QueryName = request.QueryName,
                 RecordIfEmpty = request.ReportIfEmpty,
+                InitialRecordTime = request.InitialRecordTime,
                 Schedule = request.Schedule != default ? MapSchedule(request.Schedule) : null,
                 Trigger = request.Trigger,
                 Destination = request.Destination,

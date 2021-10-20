@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FasTnT.Domain.Model
 {
@@ -13,6 +14,7 @@ namespace FasTnT.Domain.Model
         public string Destination { get; set; }
         public List<SubscriptionParameter> Parameters { get; set; } = new();
         public List<SubscriptionExecutionRecord> ExecutionRecords { get; set; } = new();
+        public DateTime? InitialRecordTime { get; set; }
     }
 
     public class PendingRequest
