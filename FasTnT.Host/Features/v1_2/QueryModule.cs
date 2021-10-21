@@ -25,7 +25,7 @@ namespace FasTnT.Host.Features.v1_2
 
         public QueryModule(IMediator mediator)
         {
-            Get("query.svc", async (req, res) =>
+            Get("query.svc", async (_, res) =>
             {
                 res.ContentType = "text/xml";
 

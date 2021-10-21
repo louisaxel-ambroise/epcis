@@ -62,18 +62,18 @@ namespace FasTnT.Formatter.Xml.Parsers
             return Event;
         }
 
-        private static void ParseObjectExtension(XElement element, Event Event)
+        private static void ParseObjectExtension(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            ParseEpcQuantityList(element.Element("quantityList"), Event, EpcType.Quantity);
-            ParseSources(element.Element("sourceList"), Event);
-            ParseDestinations(element.Element("destinationList"), Event);
-            ParseIlmd(element.Element("ilmd"), Event);
-            ParseExtension(element.Element("extension"), Event, FieldType.Extension);
+            ParseEpcQuantityList(element.Element("quantityList"), evt, EpcType.Quantity);
+            ParseSources(element.Element("sourceList"), evt);
+            ParseDestinations(element.Element("destinationList"), evt);
+            ParseIlmd(element.Element("ilmd"), evt);
+            ParseExtension(element.Element("extension"), evt, FieldType.Extension);
         }
 
         public static Event ParseAggregationEvent(XElement eventRoot)
@@ -89,17 +89,17 @@ namespace FasTnT.Formatter.Xml.Parsers
             return Event;
         }
 
-        private static void ParseAggregationExtension(XElement element, Event Event)
+        private static void ParseAggregationExtension(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            ParseEpcQuantityList(element.Element("childQuantityList"), Event, EpcType.ChildQuantity);
-            ParseSources(element.Element("sourceList"), Event);
-            ParseDestinations(element.Element("destinationList"), Event);
-            ParseExtension(element.Element("extension"), Event, FieldType.Extension);
+            ParseEpcQuantityList(element.Element("childQuantityList"), evt, EpcType.ChildQuantity);
+            ParseSources(element.Element("sourceList"), evt);
+            ParseDestinations(element.Element("destinationList"), evt);
+            ParseExtension(element.Element("extension"), evt, FieldType.Extension);
         }
 
         public static Event ParseTransactionEvent(XElement eventRoot)
@@ -115,17 +115,17 @@ namespace FasTnT.Formatter.Xml.Parsers
             return Event;
         }
 
-        private static void ParseTransactionExtension(XElement element, Event Event)
+        private static void ParseTransactionExtension(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            ParseEpcQuantityList(element.Element("quantityList"), Event, EpcType.Quantity);
-            ParseSources(element.Element("sourceList"), Event);
-            ParseDestinations(element.Element("destinationList"), Event);
-            ParseExtension(element.Element("extension"), Event, FieldType.Extension);
+            ParseEpcQuantityList(element.Element("quantityList"), evt, EpcType.Quantity);
+            ParseSources(element.Element("sourceList"), evt);
+            ParseDestinations(element.Element("destinationList"), evt);
+            ParseExtension(element.Element("extension"), evt, FieldType.Extension);
         }
 
         public static Event ParseQuantityEvent(XElement eventRoot)
@@ -182,69 +182,69 @@ namespace FasTnT.Formatter.Xml.Parsers
             return Event;
         }
 
-        private static void ParseReadPoint(XElement readPoint, Event Event)
+        private static void ParseReadPoint(XElement readPoint, Event evt)
         {
             if (readPoint == null || readPoint.IsEmpty)
             {
                 return;
             }
 
-            Event.ReadPoint = readPoint.Element("id")?.Value;
-            ParseExtension(readPoint.Element("extension"), Event, FieldType.ReadPointExtension);
-            ParseFields(readPoint, Event, FieldType.ReadPointCustomField);
+            evt.ReadPoint = readPoint.Element("id")?.Value;
+            ParseExtension(readPoint.Element("extension"), evt, FieldType.ReadPointExtension);
+            ParseFields(readPoint, evt, FieldType.ReadPointCustomField);
         }
 
-        private static void ParseBusinessLocation(XElement bizLocation, Event Event)
+        private static void ParseBusinessLocation(XElement bizLocation, Event evt)
         {
             if (bizLocation == null || bizLocation.IsEmpty)
             {
                 return;
             }
 
-            Event.BusinessLocation = bizLocation.Element("id")?.Value;
-            ParseExtension(bizLocation.Element("extension"), Event, FieldType.BusinessLocationExtension);
-            ParseFields(bizLocation, Event, FieldType.BusinessLocationCustomField);
+            evt.BusinessLocation = bizLocation.Element("id")?.Value;
+            ParseExtension(bizLocation.Element("extension"), evt, FieldType.BusinessLocationExtension);
+            ParseFields(bizLocation, evt, FieldType.BusinessLocationCustomField);
         }
 
-        private static void ParseParentId(XElement element, Event Event)
+        private static void ParseParentId(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            Event.Epcs.Add(new Epc { Id = element.Value, Type = EpcType.ParentId });
+            evt.Epcs.Add(new Epc { Id = element.Value, Type = EpcType.ParentId });
         }
 
-        private static void ParseIlmd(XElement element, Event Event)
+        private static void ParseIlmd(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            ParseFields(element, Event, FieldType.Ilmd);
-            ParseExtension(element.Element("extension"), Event, FieldType.IlmdExtension);
+            ParseFields(element, evt, FieldType.Ilmd);
+            ParseExtension(element.Element("extension"), evt, FieldType.IlmdExtension);
         }
 
-        private static void ParseEpcList(XElement element, Event Event, EpcType type)
+        private static void ParseEpcList(XElement element, Event evt, EpcType type)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            Event.Epcs.AddRange(element.Elements("epc").Select(x => new Epc { Id = x.Value, Type = type }));
+            evt.Epcs.AddRange(element.Elements("epc").Select(x => new Epc { Id = x.Value, Type = type }));
         }
 
-        private static void ParseEpcQuantityList(XElement element, Event Event, EpcType type)
+        private static void ParseEpcQuantityList(XElement element, Event evt, EpcType type)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            Event.Epcs.AddRange(element.Elements("quantityElement").Select(x => new Epc
+            evt.Epcs.AddRange(element.Elements("quantityElement").Select(x => new Epc
             {
                 Id = x.Element("epcClass").Value,
                 IsQuantity = true,
@@ -254,30 +254,30 @@ namespace FasTnT.Formatter.Xml.Parsers
             }));
         }
 
-        private static void ParseBaseExtension(XElement element, Event Event)
+        private static void ParseBaseExtension(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            Event.EventId = element.Element("eventID")?.Value;
-            ParseErrorDeclaration(element.Element("errorDeclaration"), Event);
-            ParseExtension(element.Element("extension"), Event, FieldType.BaseExtension);
+            evt.EventId = element.Element("eventID")?.Value;
+            ParseErrorDeclaration(element.Element("errorDeclaration"), evt);
+            ParseExtension(element.Element("extension"), evt, FieldType.BaseExtension);
         }
 
-        private static void ParseErrorDeclaration(XElement element, Event Event)
+        private static void ParseErrorDeclaration(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            Event.CorrectiveDeclarationTime = DateTime.Parse(element.Element("declarationTime").Value);
-            Event.CorrectiveReason = element.Element("reason")?.Value;
-            Event.CorrectiveEventIds.AddRange(element.Element("correctiveEventIDs")?.Elements("correctiveEventID")?.Select(x => new CorrectiveEventId { CorrectiveId = x.Value }));
-            ParseExtension(element.Element("extension"), Event, FieldType.ErrorDeclarationExtension);
-            ParseFields(element, Event, FieldType.ErrorDeclarationCustomField);
+            evt.CorrectiveDeclarationTime = DateTime.Parse(element.Element("declarationTime").Value);
+            evt.CorrectiveReason = element.Element("reason")?.Value;
+            evt.CorrectiveEventIds.AddRange(element.Element("correctiveEventIDs")?.Elements("correctiveEventID")?.Select(x => new CorrectiveEventId { CorrectiveId = x.Value }));
+            ParseExtension(element.Element("extension"), evt, FieldType.ErrorDeclarationExtension);
+            ParseFields(element, evt, FieldType.ErrorDeclarationCustomField);
         }
 
         internal static void ParseFields(XElement element, Event Event, FieldType type)
@@ -291,7 +291,7 @@ namespace FasTnT.Formatter.Xml.Parsers
             Event.CustomFields.AddRange(customFields.Select(x => ParseCustomFields(x, type)));
         }
 
-        internal static void ParseExtension(XElement element, Event Event, FieldType type)
+        internal static void ParseExtension(XElement element, Event evt, FieldType type)
         {
             if (element == null || element.IsEmpty)
             {
@@ -299,37 +299,37 @@ namespace FasTnT.Formatter.Xml.Parsers
             }
 
             var customFields = element.Elements().Where(x => string.IsNullOrEmpty(x.Name.NamespaceName));
-            Event.CustomFields.AddRange(customFields.Select(x => ParseCustomFields(x, type)));
+            evt.CustomFields.AddRange(customFields.Select(x => ParseCustomFields(x, type)));
         }
 
-        internal static void ParseSources(XElement element, Event Event)
+        internal static void ParseSources(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            Event.Sources.AddRange(element.Elements("source").Select(CreateSource));
+            evt.Sources.AddRange(element.Elements("source").Select(CreateSource));
         }
 
-        internal static void ParseDestinations(XElement element, Event Event)
+        internal static void ParseDestinations(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            Event.Destinations.AddRange(element.Elements("destination").Select(CreateDest));
+            evt.Destinations.AddRange(element.Elements("destination").Select(CreateDest));
         }
 
-        internal static void ParseTransactions(XElement element, Event Event)
+        internal static void ParseTransactions(XElement element, Event evt)
         {
             if (element == null || element.IsEmpty)
             {
                 return;
             }
 
-            Event.Transactions.AddRange(element.Elements("bizTransaction").Select(CreateBusinessTransaction));
+            evt.Transactions.AddRange(element.Elements("bizTransaction").Select(CreateBusinessTransaction));
         }
 
         private static BusinessTransaction CreateBusinessTransaction(XElement element)
