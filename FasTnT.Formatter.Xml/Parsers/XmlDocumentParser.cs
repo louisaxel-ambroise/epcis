@@ -34,7 +34,7 @@ namespace FasTnT.Formatter.Xml.Parsers
         public async Task<XDocument> ParseAsync(Stream input, CancellationToken cancellationToken)
         {
             var document = await LoadDocument(input, cancellationToken).ConfigureAwait(false);
-            document.Validate(_schema, (e, t) =>
+            document.Validate(_schema, (_, t) =>
             {
                 if (t.Exception != null)
                 {
