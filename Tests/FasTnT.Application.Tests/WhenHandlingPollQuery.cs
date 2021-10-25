@@ -19,8 +19,8 @@ namespace FasTnT.Application.Tests
         [TestMethod]
         public void ItShouldReturnAllTheQueryNames()
         {
-            var queries = new IEpcisQuery[] { new SimpleEventQuery(Context, UserContext), new SimpleMasterDataQuery(Context) };
-            var handler = new PollQueryHandler(queries);
+            var queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
+            var handler = new PollQueryHandler(queries, UserContext);
             var request = new PollQuery("SimpleEventQuery", new List<QueryParameter>());
             var result = handler.Handle(request, default).Result;
 
@@ -30,8 +30,8 @@ namespace FasTnT.Application.Tests
         [TestMethod]
         public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
         {
-            var queries = new IEpcisQuery[] { new SimpleEventQuery(Context, UserContext), new SimpleMasterDataQuery(Context) };
-            var handler = new PollQueryHandler(queries);
+            var queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
+            var handler = new PollQueryHandler(queries, UserContext);
             var request = new PollQuery("UnknownQuery", new List<QueryParameter>());
 
             Assert.ThrowsExceptionAsync<EpcisException>(() => handler.Handle(request, default));

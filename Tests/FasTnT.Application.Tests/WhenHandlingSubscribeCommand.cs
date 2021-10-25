@@ -21,7 +21,7 @@ namespace FasTnT.Application.Tests
     public class WhenHandlingSubscribeCommand
     {
         readonly static EpcisContext Context = Tests.Context.TestContext.GetContext(nameof(Tests.WhenHandlingSubscribeCommand));
-        readonly static IEnumerable<IEpcisQuery> Queries = new IEpcisQuery[] { new SimpleEventQuery(Context, default), new SimpleMasterDataQuery(Context) };
+        readonly static IEnumerable<IEpcisQuery> Queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
         readonly static Mock<IMediator> Mediator = new (MockBehavior.Loose);
 
         [ClassInitialize]
@@ -48,7 +48,7 @@ namespace FasTnT.Application.Tests
             var result = handler.Handle(subscription, CancellationToken.None).Result;
             
             Assert.IsNotNull(result);
-            Mediator.Verify(x => x.Publish(It.IsAny<SubscriptionCreatedNotification>(), It.IsAny<CancellationToken>()));
+            Mediator.Verify(x => x.Publish(It.Is<SubscriptionCreatedNotification>(x => x.SubscriptionId == Context.Subscriptions.Single(x => x.Name == "NewSubscription").Id), It.IsAny<CancellationToken>()));
         }
 
         [TestMethod]
@@ -71,6 +71,19 @@ namespace FasTnT.Application.Tests
             {
                 SubscriptionId = "InvalidSubscription",
                 QueryName = "UnknownQuery"
+            };
+            var handler = new SubscribeCommandHandler(Context, Queries, Mediator.Object);
+
+            Assert.ThrowsExceptionAsync<EpcisException>(() => handler.Handle(subscription, CancellationToken.None));
+        }
+
+        [TestMethod]
+        public void ItShouldThrowAnExceptionIfTheSpecifiedQueryDoesNotAllowSubscription()
+        {
+            var subscription = new SubscribeCommand
+            {
+                SubscriptionId = "MasterdataTestSubscription",
+                QueryName = "SimpleMasterdataQuery"
             };
             var handler = new SubscribeCommandHandler(Context, Queries, Mediator.Object);
 

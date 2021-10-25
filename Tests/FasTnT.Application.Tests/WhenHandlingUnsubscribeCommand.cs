@@ -22,7 +22,7 @@ namespace FasTnT.Application.Tests
     public class WhenHandlingUnsubscribeCommand
     {
         readonly static EpcisContext Context = Tests.Context.TestContext.GetContext(nameof(Tests.WhenHandlingUnsubscribeCommand));
-        readonly static IEnumerable<IEpcisQuery> Queries = new IEpcisQuery[] { new SimpleEventQuery(Context, default), new SimpleMasterDataQuery(Context) };
+        readonly static IEnumerable<IEpcisQuery> Queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
         readonly static Mock<IMediator> Mediator = new (MockBehavior.Loose);
 
         [ClassInitialize]
@@ -40,6 +40,7 @@ namespace FasTnT.Application.Tests
         [TestMethod]
         public void ItShouldReturnAnUnubscribeResultAndSendANotification()
         {
+            var subscriptionId = Context.Subscriptions.First().Id;
             var subscription = new UnsubscribeCommand
             {
                 SubscriptionId = "TestSubscription"
@@ -48,7 +49,7 @@ namespace FasTnT.Application.Tests
             var result = handler.Handle(subscription, CancellationToken.None).Result;
             
             Assert.IsNotNull(result);
-            Mediator.Verify(x => x.Publish(It.IsAny<SubscriptionRemovedNotification>(), It.IsAny<CancellationToken>()));
+            Mediator.Verify(x => x.Publish(It.Is<SubscriptionRemovedNotification>(x => x.SubscriptionId == subscriptionId), It.IsAny<CancellationToken>()));
         }
 
         [TestMethod]
