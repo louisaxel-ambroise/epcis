@@ -13,7 +13,7 @@ namespace FasTnT.Application.Tests
         [TestMethod]
         public void ItShouldReturnAllTheQueryNames()
         {
-            var queries = new IEpcisQuery[] { new SimpleEventQuery(default, default), new SimpleMasterDataQuery(default) };
+            var queries = new IEpcisQuery[] { new SimpleEventQuery(default), new SimpleMasterDataQuery(default) };
             var handler = new GetQueryNamesQueryHandler(queries);
             var result = handler.Handle(new GetQueryNamesQuery(), default).Result;
             

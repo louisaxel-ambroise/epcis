@@ -24,15 +24,13 @@ namespace FasTnT.Application.Queries.Poll
         const string Comparison = "(GE|GT|LE|LT)";
 
         private readonly EpcisContext _context;
-        private readonly ICurrentUser _currentUser;
         private int? _maxEventCount = default;
         private OrderDirection _orderDirection = OrderDirection.Ascending;
         private Expression<Func<Event, object>> _orderExpression = (Event e) => e.CaptureTime;
 
-        public SimpleEventQuery(EpcisContext context, ICurrentUser currentUser)
+        public SimpleEventQuery(EpcisContext context)
         {
             _context = context;
-            _currentUser = currentUser;
         }
 
         public string Name => nameof(SimpleEventQuery);
@@ -42,7 +40,7 @@ namespace FasTnT.Application.Queries.Poll
         {
             var query = _context.Events.AsNoTracking();
 
-            foreach (var parameter in parameters.Union(_currentUser.DefaultQueryParameters))
+            foreach (var parameter in parameters)
             {
                 query = ApplyParameter(parameter, query);
             }
