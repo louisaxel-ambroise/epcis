@@ -7,6 +7,7 @@ using FasTnT.Domain.Queries.GetSubscriptionIds;
 using FasTnT.Domain.Queries.GetVendorVersion;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Formatter.Xml.Utils;
+using System;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -16,9 +17,12 @@ namespace FasTnT.Formatter.Xml.Formatters
     {
         public static XElement FormatPoll(PollResponse response)
         {
-            var (resultName, resultList) = response.VocabularyList != default 
-                ? (nameof(response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.VocabularyList)) 
-                : (nameof(response.EventList), XmlEventFormatter.FormatList(response.EventList));
+            var (resultName, resultList) = response switch
+            {
+                PollEventResponse => (nameof(response.EventList), XmlEventFormatter.FormatList(response.EventList)),
+                PollMasterdataResponse => (nameof(response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.VocabularyList)),
+                _ => throw new NotImplementedException()
+            };
 
             var queryResults = new XElement(XName.Get("QueryResults", Namespaces.Query),
                 new XElement("queryName", response.QueryName),

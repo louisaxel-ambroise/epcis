@@ -42,7 +42,7 @@ namespace FasTnT.Application.Queries.Poll
                 throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned more than the {_maxEventCount} elements allowed.");
             }
 
-            return new(Name) { VocabularyList = result };
+            return new PollMasterdataResponse(Name, result);
         }
 
         private IQueryable<MasterData> ApplyParameter(QueryParameter param, IQueryable<MasterData> query)

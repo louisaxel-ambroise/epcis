@@ -71,7 +71,7 @@ namespace FasTnT.Application.Queries.Poll
                 var result = await ApplyOrderBy(query)
                     .ToListAsync(cancellationToken);
 
-                return new(Name) { EventList = result };
+                return new PollEventResponse(Name, result);
             }
             catch(SqlException e) when (e.Number == -2)
             {

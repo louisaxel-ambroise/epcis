@@ -29,8 +29,8 @@ namespace FasTnT.Subscriptions
 
             var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = System.DateTime.UtcNow, ResultsSent = true, Successful = true };
             var query = _epcisQueries.Single(x => x.Name == subscription.QueryName);
-            var response = new PollResponse(query.Name) { EventList = new() };
             var pendingRequests = await _context.PendingRequests.Where(x => x.SubscriptionId == subscription.Id).ToListAsync(cancellationToken);
+            PollResponse response = new PollEventResponse(query.Name, new());
 
             if (pendingRequests.Any())
             {
