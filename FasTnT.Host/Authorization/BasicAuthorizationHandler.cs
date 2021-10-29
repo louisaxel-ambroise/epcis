@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using FasTnT.Application.Services.Users;
-using System.Threading;
-using System.Linq;
 using FasTnT.Domain.Queries.Poll;
 
 namespace FasTnT.Host.Authorization

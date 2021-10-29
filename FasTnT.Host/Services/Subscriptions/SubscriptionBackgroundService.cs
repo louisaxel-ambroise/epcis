@@ -2,14 +2,7 @@
 using FasTnT.Infrastructure.Database;
 using FasTnT.Subscriptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Host.Services.Subscriptions
 {

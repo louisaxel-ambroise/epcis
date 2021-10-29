@@ -1,8 +1,6 @@
 ﻿using FasTnT.Formatter.Xml.Parsers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace FasTnT.Formatters.Xml.Tests
 {

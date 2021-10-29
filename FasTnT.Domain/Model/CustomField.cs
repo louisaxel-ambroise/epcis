@@ -1,6 +1,4 @@
 ﻿using FasTnT.Domain.Enumerations;
-using System;
-using System.Collections.Generic;
 
 namespace FasTnT.Domain.Model
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace FasTnT.Domain.Model
+﻿namespace FasTnT.Domain.Model
 {
     public class SubscriptionSchedule
     {

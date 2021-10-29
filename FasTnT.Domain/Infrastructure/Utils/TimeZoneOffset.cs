@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FasTnT.Domain.Utils
+﻿namespace FasTnT.Domain.Utils
 {
     public class TimeZoneOffset
     {
@@ -20,10 +18,17 @@ namespace FasTnT.Domain.Utils
 
         private static short ComputeValue(string value)
         {
-            var sign = (value[0] is '-') ? -1 : +1;
-            var parts = value.TrimStart('+', '-').Split(':');
+            try
+            {
+                var sign = (value[0] is '-') ? -1 : +1;
+                var parts = value.TrimStart('+', '-').Split(':');
 
-            return (short)(sign * (int.Parse(parts[0]) * 60 + int.Parse(parts[1])));
+                return (short)(sign * (int.Parse(parts[0]) * 60 + int.Parse(parts[1])));
+            }
+            catch
+            {
+                throw new FormatException($"Invalid format for TimeZoneOffset: {value}");
+            }
         }
     }
 }

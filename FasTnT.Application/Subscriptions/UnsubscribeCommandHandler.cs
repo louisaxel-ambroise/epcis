@@ -4,8 +4,6 @@ using FasTnT.Domain.Notifications;
 using FasTnT.Infrastructure.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Subscriptions
 {

@@ -1,7 +1,5 @@
 ﻿using FasTnT.Domain.Queries.Poll;
 using MediatR;
-using System;
-using System.Collections.Generic;
 
 namespace FasTnT.Domain.Commands.Subscribe
 {

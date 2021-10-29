@@ -1,7 +1,6 @@
 ﻿using FasTnT.Domain.Queries.GetQueryNames;
 using FasTnT.Formatter.Xml.Formatters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace FasTnT.Formatters.Xml.Tests

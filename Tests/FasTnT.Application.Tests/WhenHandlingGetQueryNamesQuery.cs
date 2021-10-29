@@ -3,7 +3,6 @@ using FasTnT.Application.Queries.Poll;
 using FasTnT.Application.Services;
 using FasTnT.Domain.Queries.GetQueryNames;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace FasTnT.Application.Tests
 {

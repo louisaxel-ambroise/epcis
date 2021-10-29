@@ -1,5 +1,4 @@
 ﻿using FasTnT.Domain.Model;
-using System.Collections.Generic;
 
 namespace FasTnT.Domain.Queries.Poll
 {

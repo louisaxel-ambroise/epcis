@@ -1,9 +1,6 @@
-﻿using FasTnT.Application.Queries.GetQueryNames;
-using FasTnT.Application.Queries.Poll;
+﻿using FasTnT.Application.Queries.Poll;
 using FasTnT.Application.Services;
 using FasTnT.Application.Subscriptions;
-using FasTnT.Application.Tests.Context;
-using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Notifications;
@@ -11,10 +8,6 @@ using FasTnT.Infrastructure.Database;
 using MediatR;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace FasTnT.Application.Tests
 {

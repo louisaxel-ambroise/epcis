@@ -14,12 +14,7 @@ using FasTnT.Subscriptions.Notifications;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace FasTnT.Host
 {
@@ -48,7 +43,7 @@ namespace FasTnT.Host
             services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt.CommandTimeout(1)));
 
             services.AddMediatR(typeof(PollQueryHandler), typeof(SubscriptionCreatedNotificationHandler));
-            services.AddCarter(o => o.OpenApi.Enabled = true);
+            services.AddCarter();
             services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
             services.AddScoped<IncrementGenerator.Identity>();
             services.AddTransient<IUserProvider, UserProvider>();

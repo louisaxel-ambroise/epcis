@@ -1,7 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FluentValidation;
-using System.Linq;
 
 namespace FasTnT.Domain.Commands.Capture
 {

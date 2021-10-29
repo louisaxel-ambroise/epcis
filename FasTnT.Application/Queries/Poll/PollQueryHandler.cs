@@ -3,10 +3,6 @@ using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Queries.Poll;
 using MediatR;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Queries.Poll
 {

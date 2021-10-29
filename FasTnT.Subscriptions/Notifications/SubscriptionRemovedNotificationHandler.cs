@@ -1,8 +1,5 @@
 ﻿using FasTnT.Domain.Notifications;
-using FasTnT.Infrastructure.Database;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Subscriptions.Notifications
 {

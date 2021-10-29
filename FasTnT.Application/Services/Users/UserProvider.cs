@@ -2,9 +2,6 @@
 using FasTnT.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Services.Users
 {

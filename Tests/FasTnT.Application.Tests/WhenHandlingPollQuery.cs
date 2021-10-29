@@ -6,7 +6,6 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Infrastructure.Database;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
 namespace FasTnT.Application.Tests
 {

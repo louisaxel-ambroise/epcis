@@ -1,8 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
-using System;
-using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 

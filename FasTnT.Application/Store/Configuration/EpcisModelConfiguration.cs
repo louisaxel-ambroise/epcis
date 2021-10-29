@@ -3,8 +3,6 @@ using FasTnT.Domain.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
-using System;
-using System.Linq;
 
 namespace FasTnT.Infrastructure.Configuration
 {

@@ -1,9 +1,6 @@
 ﻿using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Queries.Poll;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 
 namespace FasTnT.Host.Services.User

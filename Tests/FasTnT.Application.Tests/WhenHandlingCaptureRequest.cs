@@ -5,7 +5,6 @@ using FasTnT.Domain.Commands.Capture;
 using FasTnT.Domain.Model;
 using FasTnT.Infrastructure.Database;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace FasTnT.Application.Tests
 {

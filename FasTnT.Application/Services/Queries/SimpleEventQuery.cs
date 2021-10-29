@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Services;
-using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
@@ -9,13 +8,8 @@ using FasTnT.Domain.Utils;
 using FasTnT.Infrastructure.Database;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Queries.Poll
 {

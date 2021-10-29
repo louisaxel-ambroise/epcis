@@ -1,10 +1,7 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Utils;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace FasTnT.Formatter.Xml.Parsers

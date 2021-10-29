@@ -1,10 +1,6 @@
 ﻿using FasTnT.Application.Services;
 using FasTnT.Domain.Queries.GetQueryNames;
 using MediatR;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Queries.GetQueryNames
 {

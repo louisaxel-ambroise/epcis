@@ -3,10 +3,6 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Subscriptions
 {

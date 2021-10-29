@@ -1,9 +1,7 @@
 ﻿using FasTnT.Application.Queries.GetQueryNames;
-using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Queries.GetSubscriptionIds;
 using FasTnT.Infrastructure.Database;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace FasTnT.Application.Tests
 {

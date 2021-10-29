@@ -6,10 +6,6 @@ using FasTnT.Domain.Notifications;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Infrastructure.Database;
 using MediatR;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Subscriptions
 {

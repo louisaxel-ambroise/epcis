@@ -2,8 +2,6 @@
 using FasTnT.Domain.Commands.Capture;
 using FasTnT.Infrastructure.Database;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Commands
 {

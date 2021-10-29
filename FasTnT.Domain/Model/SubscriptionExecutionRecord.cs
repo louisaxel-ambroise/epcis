@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FasTnT.Domain.Model
+﻿namespace FasTnT.Domain.Model
 {
     public class SubscriptionExecutionRecord
     {

@@ -3,8 +3,6 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Utils;
 using FasTnT.Formatter.Xml.Parsers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
 
 namespace FasTnT.Formatters.Xml.Tests
 {

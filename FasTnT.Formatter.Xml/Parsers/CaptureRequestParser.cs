@@ -1,8 +1,5 @@
 ﻿using FasTnT.Domain.Commands.Capture;
 using FasTnT.Domain.Exceptions;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FasTnT.Formatter.Xml.Parsers
 {

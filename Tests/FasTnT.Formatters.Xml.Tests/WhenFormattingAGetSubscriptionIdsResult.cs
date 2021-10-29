@@ -1,7 +1,6 @@
 ﻿using FasTnT.Domain.Queries.GetSubscriptionIds;
 using FasTnT.Formatter.Xml.Formatters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace FasTnT.Formatters.Xml.Tests

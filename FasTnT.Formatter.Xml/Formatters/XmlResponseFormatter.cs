@@ -7,8 +7,6 @@ using FasTnT.Domain.Queries.GetSubscriptionIds;
 using FasTnT.Domain.Queries.GetVendorVersion;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Formatter.Xml.Utils;
-using System;
-using System.Linq;
 using System.Xml.Linq;
 
 namespace FasTnT.Formatter.Xml.Formatters

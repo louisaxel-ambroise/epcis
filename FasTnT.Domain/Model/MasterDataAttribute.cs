@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FasTnT.Domain.Model
+﻿namespace FasTnT.Domain.Model
 {
     public class MasterDataAttribute
     {

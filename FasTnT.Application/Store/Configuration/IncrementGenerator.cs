@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 
 namespace FasTnT.Infrastructure.Configuration
 {

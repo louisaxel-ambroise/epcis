@@ -1,8 +1,4 @@
 ﻿using FasTnT.Formatter.Xml.Utils;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
