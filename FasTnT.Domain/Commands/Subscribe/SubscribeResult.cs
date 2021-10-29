@@ -1,6 +1,5 @@
-﻿namespace FasTnT.Domain.Commands.Subscribe
+﻿namespace FasTnT.Domain.Commands.Subscribe;
+
+public class SubscribeResult
 {
-    public class SubscribeResult
-    {
-    }
 }

@@ -1,7 +1,6 @@
-﻿namespace FasTnT.Subscriptions
+﻿namespace FasTnT.Subscriptions;
+
+public interface ISubscriptionResultSender
 {
-    public interface ISubscriptionResultSender
-    {
-        Task<bool> Send<T>(string destination, T epcisResponse, CancellationToken cancellationToken);
-    }
+    Task<bool> Send<T>(string destination, T epcisResponse, CancellationToken cancellationToken);
 }

@@ -1,8 +1,7 @@
-﻿namespace FasTnT.Domain.Exceptions
+﻿namespace FasTnT.Domain.Exceptions;
+
+public enum ExceptionSeverity
 {
-    public enum ExceptionSeverity
-    {
-        Error,
-        Severe
-    }
+    Error,
+    Severe
 }

@@ -3,36 +3,35 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace FasTnT.Host.Extensions
+namespace FasTnT.Host.Extensions;
+
+public static class SoapExtensions
 {
-    public static class SoapExtensions
+    public static async Task FormatSoap(this HttpResponse response, XElement element, CancellationToken cancellationToken)
     {
-        public static async Task FormatSoap(this HttpResponse response, XElement element, CancellationToken cancellationToken)
+        response.ContentType = "application/xml";
+
+        var body = new XElement(XName.Get("Body", Namespaces.SoapEnvelop), element);
+        var envelope = new XElement(XName.Get("Envelope", Namespaces.SoapEnvelop), body);
+        var xmlResponse = new XDocument(envelope);
+
+        envelope.Add(new XAttribute(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new XAttribute(XNamespace.Xmlns + "epcisq", Namespaces.Query));
+
+        await using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates });
+
+        await xmlResponse.WriteToAsync(xmlWriter, cancellationToken);
+    }
+
+    public static async Task<XElement> ParseSoapEnvelope(this HttpRequest request, CancellationToken cancellationToken)
+    {
+        var document = await XDocument.LoadAsync(request.Body, LoadOptions.None, cancellationToken);
+        var envelopBody = document.XPathSelectElement("SoapEnvelop:Envelope/SoapEnvelop:Body", Namespaces.Resolver);
+
+        if (envelopBody == null || !envelopBody.HasElements)
         {
-            response.ContentType = "application/xml";
-
-            var body = new XElement(XName.Get("Body", Namespaces.SoapEnvelop), element);
-            var envelope = new XElement(XName.Get("Envelope", Namespaces.SoapEnvelop), body);
-            var xmlResponse = new XDocument(envelope);
-
-            envelope.Add(new XAttribute(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new XAttribute(XNamespace.Xmlns + "epcisq", Namespaces.Query));
-
-            await using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates });
-
-            await xmlResponse.WriteToAsync(xmlWriter, cancellationToken);
+            return null;
         }
 
-        public static async Task<XElement> ParseSoapEnvelope(this HttpRequest request, CancellationToken cancellationToken)
-        {
-            var document = await XDocument.LoadAsync(request.Body, LoadOptions.None, cancellationToken);
-            var envelopBody = document.XPathSelectElement("SoapEnvelop:Envelope/SoapEnvelop:Body", Namespaces.Resolver);
-
-            if (envelopBody == null || !envelopBody.HasElements)
-            {
-                return null;
-            }
-
-            return envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query);
-        }
+        return envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query);
     }
 }

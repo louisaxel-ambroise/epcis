@@ -1,16 +1,15 @@
-﻿namespace FasTnT.Domain.Enumerations
+﻿namespace FasTnT.Domain.Enumerations;
+
+public enum EpcType
 {
-    public enum EpcType
-    {
-        None,
-        List,
-        ParentId,
-        InputQuantity,
-        OutputQuantity,
-        InputEpc,
-        OutputEpc,
-        Quantity,
-        ChildEpc,
-        ChildQuantity
-    }
+    None,
+    List,
+    ParentId,
+    InputQuantity,
+    OutputQuantity,
+    InputEpc,
+    OutputEpc,
+    Quantity,
+    ChildEpc,
+    ChildQuantity
 }

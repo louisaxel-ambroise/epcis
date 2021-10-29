@@ -1,11 +1,10 @@
 ﻿using FasTnT.Domain.Model;
 
-namespace FasTnT.Subscriptions
+namespace FasTnT.Subscriptions;
+
+public interface ISubscriptionService
 {
-    public interface ISubscriptionService
-    {
-        void Register(Subscription subscription);
-        void Remove(int subscriptionId);
-        void Trigger(params string[] triggers);
-    }
+    void Register(Subscription subscription);
+    void Remove(int subscriptionId);
+    void Trigger(params string[] triggers);
 }

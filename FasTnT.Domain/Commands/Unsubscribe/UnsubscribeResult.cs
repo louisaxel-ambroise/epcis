@@ -1,6 +1,5 @@
-﻿namespace FasTnT.Domain.Commands.Unsubscribe
+﻿namespace FasTnT.Domain.Commands.Unsubscribe;
+
+public class UnsubscribeResult
 {
-    public class UnsubscribeResult
-    {
-    }
 }

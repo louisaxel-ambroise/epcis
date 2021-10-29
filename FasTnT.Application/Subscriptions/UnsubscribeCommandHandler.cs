@@ -5,35 +5,34 @@ using FasTnT.Infrastructure.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Subscriptions
+namespace FasTnT.Application.Subscriptions;
+
+public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, UnsubscribeResult>
 {
-    public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, UnsubscribeResult>
+    private readonly EpcisContext _context;
+    private readonly IMediator _mediator;
+
+    public UnsubscribeCommandHandler(EpcisContext context, IMediator mediator)
     {
-        private readonly EpcisContext _context;
-        private readonly IMediator _mediator;
+        _context = context;
+        _mediator = mediator;
+    }
 
-        public UnsubscribeCommandHandler(EpcisContext context, IMediator mediator)
+    public async Task<UnsubscribeResult> Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
+    {
+        var subscription = await _context.Subscriptions.SingleOrDefaultAsync(x => x.Name == request.SubscriptionId, cancellationToken);
+
+        if(subscription == default)
         {
-            _context = context;
-            _mediator = mediator;
+            throw new EpcisException(ExceptionType.NoSuchSubscriptionException, "Subscription does not exist");
         }
 
-        public async Task<UnsubscribeResult> Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
-        {
-            var subscription = await _context.Subscriptions.SingleOrDefaultAsync(x => x.Name == request.SubscriptionId, cancellationToken);
+        await _mediator.Publish(new SubscriptionRemovedNotification(subscription.Id), cancellationToken);
 
-            if(subscription == default)
-            {
-                throw new EpcisException(ExceptionType.NoSuchSubscriptionException, "Subscription does not exist");
-            }
+        _context.Subscriptions.Remove(subscription);
 
-            await _mediator.Publish(new SubscriptionRemovedNotification(subscription.Id), cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
 
-            _context.Subscriptions.Remove(subscription);
-
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return new();
-        }
+        return new();
     }
 }

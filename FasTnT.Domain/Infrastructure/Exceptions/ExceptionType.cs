@@ -1,17 +1,16 @@
-﻿namespace FasTnT.Domain.Exceptions
+﻿namespace FasTnT.Domain.Exceptions;
+
+public enum ExceptionType
 {
-    public enum ExceptionType
-    {
-        SubscribeNotPermittedException,
-        ImplementationException,
-        NoSuchNameException,
-        QueryTooLargeException,
-        QueryParameterException,
-        ValidationException,
-        SubscriptionControlsException,
-        NoSuchSubscriptionException,
-        DuplicateSubscriptionException,
-        QueryTooComplexException,
-        InvalidURIException
-    }
+    SubscribeNotPermittedException,
+    ImplementationException,
+    NoSuchNameException,
+    QueryTooLargeException,
+    QueryParameterException,
+    ValidationException,
+    SubscriptionControlsException,
+    NoSuchSubscriptionException,
+    DuplicateSubscriptionException,
+    QueryTooComplexException,
+    InvalidURIException
 }

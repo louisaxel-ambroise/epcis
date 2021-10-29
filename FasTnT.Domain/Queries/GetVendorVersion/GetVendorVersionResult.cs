@@ -1,4 +1,3 @@
-﻿namespace FasTnT.Domain.Queries.GetVendorVersion
-{
-    public record GetVendorVersionResult(string Version);
-}
+﻿namespace FasTnT.Domain.Queries;
+
+public record GetVendorVersionResult(string Version);

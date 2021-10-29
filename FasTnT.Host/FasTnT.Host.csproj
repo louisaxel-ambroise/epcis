@@ -5,6 +5,7 @@
 	  <LangVersion>10</LangVersion>
     <UserSecretsId>3811061c-32dd-4c7c-98bc-d8f955a5b911</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

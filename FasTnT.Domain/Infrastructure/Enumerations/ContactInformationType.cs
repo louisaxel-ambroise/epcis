@@ -1,9 +1,8 @@
-﻿namespace FasTnT.Domain.Enumerations
+﻿namespace FasTnT.Domain.Enumerations;
+
+public enum ContactInformationType
 {
-    public enum ContactInformationType
-    {
-        None,
-        Sender,
-        Receiver
-    }
+    None,
+    Sender,
+    Receiver
 }

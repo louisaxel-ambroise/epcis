@@ -1,76 +1,75 @@
 ﻿using FasTnT.Application.Services;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Queries;
 using FasTnT.Domain.Utils;
 using FasTnT.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Queries.Poll
+namespace FasTnT.Application.Queries;
+
+public class SimpleMasterDataQuery : IEpcisQuery
 {
-    public class SimpleMasterDataQuery : IEpcisQuery
+    private readonly EpcisContext _context;
+    private int? _maxEventCount;
+
+    public SimpleMasterDataQuery(EpcisContext context)
     {
-        private readonly EpcisContext _context;
-        private int? _maxEventCount;
+        _context = context;
+    }
 
-        public SimpleMasterDataQuery(EpcisContext context)
+    public string Name => nameof(SimpleMasterDataQuery);
+    public bool AllowSubscription => false;
+
+    public async Task<PollResponse> HandleAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+    {
+        var query = _context.MasterData.AsSplitQuery().AsNoTrackingWithIdentityResolution();
+
+        foreach(var parameter in parameters)
         {
-            _context = context;
+            query = ApplyParameter(parameter, query);
         }
 
-        public string Name => nameof(SimpleMasterDataQuery);
-        public bool AllowSubscription => false;
+        var result = await query.ToListAsync(cancellationToken);
 
-        public async Task<PollResponse> HandleAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+        if (_maxEventCount.HasValue && result.Count > _maxEventCount)
         {
-            var query = _context.MasterData.AsSplitQuery().AsNoTrackingWithIdentityResolution();
-
-            foreach(var parameter in parameters)
-            {
-                query = ApplyParameter(parameter, query);
-            }
-
-            var result = await query.ToListAsync(cancellationToken);
-
-            if (_maxEventCount.HasValue && result.Count > _maxEventCount)
-            {
-                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned more than the {_maxEventCount} elements allowed.");
-            }
-
-            return new PollMasterdataResponse(Name, result);
+            throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned more than the {_maxEventCount} elements allowed.");
         }
 
-        private IQueryable<MasterData> ApplyParameter(QueryParameter param, IQueryable<MasterData> query)
+        return new PollMasterdataResponse(Name, result);
+    }
+
+    private IQueryable<MasterData> ApplyParameter(QueryParameter param, IQueryable<MasterData> query)
+    {
+        return param.Name switch
         {
-            return param.Name switch
-            {
-                "maxElementCount" => ParseMaxElementCount(param, query),
-                "includeAttributes" => param.GetBoolValue() ? query.Include(x => x.Attributes).ThenInclude(x => x.Fields) : query,
-                "includeChildren" => param.GetBoolValue() ? query.Include(x => x.Children) : query,
-                "vocabularyName" => query.Where(x => x.Type == param.Value()),
-                "EQ_name" => query.Where(x => param.Values.Any(v => v == x.Id)),
-                "WD_name" => query.Where(x => param.Values.Any(v => v == x.Id) || x.Hierarchies.Any(h => param.Values.Any(v => v == h.ParentId))),
-                "attributeNames" => query.Include(x => x.Attributes.Where(a => param.Values.Contains(a.Id))).ThenInclude(x => x.Fields),
-                "HASATTR" => query.Where(x => x.Attributes.Any(a => a.Id == param.Value())),
+            "maxElementCount" => ParseMaxElementCount(param, query),
+            "includeAttributes" => param.GetBoolValue() ? query.Include(x => x.Attributes).ThenInclude(x => x.Fields) : query,
+            "includeChildren" => param.GetBoolValue() ? query.Include(x => x.Children) : query,
+            "vocabularyName" => query.Where(x => x.Type == param.Value()),
+            "EQ_name" => query.Where(x => param.Values.Any(v => v == x.Id)),
+            "WD_name" => query.Where(x => param.Values.Any(v => v == x.Id) || x.Hierarchies.Any(h => param.Values.Any(v => v == h.ParentId))),
+            "attributeNames" => query.Include(x => x.Attributes.Where(a => param.Values.Contains(a.Id))).ThenInclude(x => x.Fields),
+            "HASATTR" => query.Where(x => x.Attributes.Any(a => a.Id == param.Value())),
                 
-                var s when s.StartsWith("EQATTR_") => ApplyEqAttrParameter(param, query),
+            var s when s.StartsWith("EQATTR_") => ApplyEqAttrParameter(param, query),
 
-               _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is invalid for simplemasterdata query: {param.Name}")
-            };
-        }
+            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is invalid for simplemasterdata query: {param.Name}")
+        };
+    }
 
-        private IQueryable<MasterData> ParseMaxElementCount(QueryParameter param, IQueryable<MasterData> query)
-        {
-            _maxEventCount = param.GetIntValue();
+    private IQueryable<MasterData> ParseMaxElementCount(QueryParameter param, IQueryable<MasterData> query)
+    {
+        _maxEventCount = param.GetIntValue();
 
-            return query.Take(1 + _maxEventCount.Value);
-        }
+        return query.Take(1 + _maxEventCount.Value);
+    }
 
-        private static IQueryable<MasterData> ApplyEqAttrParameter(QueryParameter param, IQueryable<MasterData> query)
-        {
-            var attributeName = param.Name["EQATTR_".Length..];
+    private static IQueryable<MasterData> ApplyEqAttrParameter(QueryParameter param, IQueryable<MasterData> query)
+    {
+        var attributeName = param.Name["EQATTR_".Length..];
 
-            return query.Where(x => x.Attributes.Any(x => x.Id == attributeName && param.Values.Any(v => v == x.Value)));
-        }
+        return query.Where(x => x.Attributes.Any(x => x.Id == attributeName && param.Values.Any(v => v == x.Value)));
     }
 }

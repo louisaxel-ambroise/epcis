@@ -1,12 +1,11 @@
-﻿namespace FasTnT.Domain.Enumerations
+﻿namespace FasTnT.Domain.Enumerations;
+
+public enum EventType
 {
-    public enum EventType
-    {
-        None,
-        ObjectEvent,
-        AggregationEvent,
-        TransactionEvent,
-        TransformationEvent,
-        QuantityEvent
-    }
+    None,
+    ObjectEvent,
+    AggregationEvent,
+    TransactionEvent,
+    TransformationEvent,
+    QuantityEvent
 }

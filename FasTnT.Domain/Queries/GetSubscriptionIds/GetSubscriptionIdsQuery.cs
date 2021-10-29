@@ -1,9 +1,8 @@
 ﻿using MediatR;
 
-namespace FasTnT.Domain.Queries.GetSubscriptionIds
+namespace FasTnT.Domain.Queries;
+
+public record GetSubscriptionIdsQuery : IRequest<GetSubscriptionIdsResult>
 {
-    public record GetSubscriptionIdsQuery : IRequest<GetSubscriptionIdsResult>
-    {
-        public string QueryName { get; init; }
-    }
+    public string QueryName { get; init; }
 }
