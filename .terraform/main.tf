@@ -34,15 +34,6 @@ resource "azurerm_resource_group" "fastnt_main" {
   tags     = local.tags
 }
 
-resource "azurerm_storage_account" "assetstracking_storage" {
-  name                     = replace("${local.base_resource_name}", "-", "")
-  location                 = var.location
-  resource_group_name      = azurerm_resource_group.fastnt_main.name
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  tags                     = local.tags
-}
-
 resource "azurerm_mssql_server" "sql-db-server" {
   name                         = "${local.base_resource_name}-sql-server"
   resource_group_name          = azurerm_resource_group.fastnt_main.name

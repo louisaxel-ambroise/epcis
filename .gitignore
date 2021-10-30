@@ -1,35 +1,5 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# =========================
-# CUSTOM FILES
-# =========================
-.DS_Store
-.AppleDouble
-.LSOverride
 .vs
 .vscode
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
 
 # Csharp files
 bin
@@ -41,3 +11,10 @@ test/*.dll
 
 # Test files
 *.opencover.xml
+
+# Terraform files
+*.tfvars
+*.tfplan
+*.tfstate
+.terraform/.terraform/*
+*.hcl
