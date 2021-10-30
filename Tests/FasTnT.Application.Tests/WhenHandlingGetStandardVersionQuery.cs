@@ -1,19 +1,17 @@
-﻿using FasTnT.Application.Queries.GetStandardVersion;
-using FasTnT.Domain.Queries.GetStandardVersion;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FasTnT.Application.Queries;
+using FasTnT.Domain.Queries;
 
-namespace FasTnT.Application.Tests
+namespace FasTnT.Application.Tests;
+
+[TestClass]
+public class WhenHandlingGetStandardVersionQuery
 {
-    [TestClass]
-    public class WhenHandlingGetStandardVersionQuery
+    [TestMethod]
+    public void ItShouldReturnV1_2()
     {
-        [TestMethod]
-        public void ItShouldReturnV1_2()
-        {
-            var handler = new GetStandardVersionQueryHandler();
-            var result = handler.Handle(new GetStandardVersionQuery(), default).Result;
+        var handler = new GetStandardVersionQueryHandler();
+        var result = handler.Handle(new GetStandardVersionQuery(), default).Result;
             
-            Assert.AreEqual("1.2", result.Version);
-        }
+        Assert.AreEqual("1.2", result.Version);
     }
 }

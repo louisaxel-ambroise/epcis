@@ -2,16 +2,15 @@
 using System.Reflection;
 using System.Xml.Linq;
 
-namespace FasTnT.Formatters.Xml.Tests
+namespace FasTnT.Formatters.Xml.Tests;
+
+public abstract class XmlParsingTestCase
 {
-    public abstract class XmlParsingTestCase
+    protected static XDocument ParseResource(string resourceName)
     {
-        protected XDocument ParseResource(string resourceName)
-        {
-            var manifest = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-            using var resourceStream = XmlDocumentParser.Instance.ParseAsync(manifest, default);
+        var manifest = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+        using var resourceStream = XmlDocumentParser.Instance.ParseAsync(manifest, default);
          
-            return resourceStream.Result;
-        }
+        return resourceStream.Result;
     }
 }

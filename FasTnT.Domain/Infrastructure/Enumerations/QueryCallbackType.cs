@@ -1,10 +1,9 @@
-﻿namespace FasTnT.Domain.Enumerations
+﻿namespace FasTnT.Domain.Enumerations;
+
+public enum QueryCallbackType
 {
-    public enum QueryCallbackType
-    {
-        None,
-        Success,
-        QueryTooLargeException,
-        ImplementationException
-    }
+    None,
+    Success,
+    QueryTooLargeException,
+    ImplementationException
 }

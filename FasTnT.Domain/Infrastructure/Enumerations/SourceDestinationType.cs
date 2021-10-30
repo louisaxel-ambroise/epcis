@@ -1,9 +1,8 @@
-﻿namespace FasTnT.Domain.Enumerations
+﻿namespace FasTnT.Domain.Enumerations;
+
+public enum SourceDestinationType
 {
-    public enum SourceDestinationType
-    {
-        None,
-        Source,
-        Destination
-    }
+    None,
+    Source,
+    Destination
 }

@@ -1,8 +1,7 @@
-﻿namespace FasTnT.Domain.Enumerations
+﻿namespace FasTnT.Domain.Enumerations;
+
+public enum OrderDirection
 {
-    public enum OrderDirection
-    {
-        Ascending,
-        Descending
-    }
+    Ascending,
+    Descending
 }

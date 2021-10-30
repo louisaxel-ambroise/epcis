@@ -1,11 +1,10 @@
-﻿namespace FasTnT.Infrastructure.Configuration
+﻿namespace FasTnT.Infrastructure.Configuration;
+
+enum EpcisSchema
 {
-    enum EpcisSchema
-    {
-        Users,
-        Sbdh,
-        Epcis,
-        Cbv,
-        Subscription
-    }
+    Users,
+    Sbdh,
+    Epcis,
+    Cbv,
+    Subscription
 }

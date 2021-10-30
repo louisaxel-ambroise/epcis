@@ -5,7 +5,7 @@
 # [EPCIS](https://fastnt.github.io/)
 EF Core version of EPCIS repository
 
-FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 repository written in C# using .NET 5 and backed using EntityFramework Core.
+FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 repository written in C# using .NET 6 and backed using EntityFramework Core.
 
 There is a [sandbox](https://fastnt.github.io/sandbox.html) available if you want to quickly test this repository capabilities.
 
@@ -13,7 +13,7 @@ There is a [sandbox](https://fastnt.github.io/sandbox.html) available if you wan
 
 Prerequisites:
 - SQL Server 2016 or +
-- .NET 5 SDK
+- .NET 6 SDK
 
 Steps:
 1. Download the source code, and create a new user/database in SQL Server for FasTnT ;

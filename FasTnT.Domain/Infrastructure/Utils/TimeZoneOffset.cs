@@ -1,29 +1,33 @@
-﻿using System;
-
-namespace FasTnT.Domain.Utils
+﻿namespace FasTnT.Domain.Utils;
+ 
+public class TimeZoneOffset
 {
-    public class TimeZoneOffset
+    public static TimeZoneOffset Default => new ();
+
+    public string Representation { get { return ComputeRepresentation(Value); } set { Value = ComputeValue(value); } }
+    public short Value { get; set; }
+
+    private static string ComputeRepresentation(int value)
     {
-        public static TimeZoneOffset Default => new ();
+        var sign = value >= 0 ? "+" : "-";
+        var hours = (Math.Abs(value) / 60).ToString("D2");
+        var minutes = (Math.Abs(value) % 60).ToString("D2");
 
-        public string Representation { get { return ComputeRepresentation(Value); } set { Value = ComputeValue(value); } }
-        public short Value { get; set; }
+        return string.Format("{0}{1}:{2}", sign, hours, minutes);
+    }
 
-        private static string ComputeRepresentation(int value)
-        {
-            var sign = value >= 0 ? "+" : "-";
-            var hours = (Math.Abs(value) / 60).ToString("D2");
-            var minutes = (Math.Abs(value) % 60).ToString("D2");
-
-            return string.Format("{0}{1}:{2}", sign, hours, minutes);
-        }
-
-        private static short ComputeValue(string value)
+    private static short ComputeValue(string value)
+    {
+        try
         {
             var sign = (value[0] is '-') ? -1 : +1;
             var parts = value.TrimStart('+', '-').Split(':');
 
             return (short)(sign * (int.Parse(parts[0]) * 60 + int.Parse(parts[1])));
+        }
+        catch
+        {
+            throw new FormatException($"Invalid format for TimeZoneOffset: {value}");
         }
     }
 }

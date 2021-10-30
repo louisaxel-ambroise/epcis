@@ -1,14 +1,13 @@
 ﻿using MediatR;
 
-namespace FasTnT.Domain.Notifications
-{
-    public class TriggerSubscriptionNotification : INotification
-    {
-        public string[] Triggers { get; }
+namespace FasTnT.Domain.Notifications;
 
-        public TriggerSubscriptionNotification(string[] triggers)
-        {
-            Triggers = triggers;
-        }
+public class TriggerSubscriptionNotification : INotification
+{
+    public string[] Triggers { get; }
+
+    public TriggerSubscriptionNotification(string[] triggers)
+    {
+        Triggers = triggers;
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace FasTnT.Domain.Model
+﻿namespace FasTnT.Domain.Model;
+
+public class MasterDataChildren
 {
-    public class MasterDataChildren
-    {
-        public MasterData MasterData { get; set; }
-        public string ChildrenId { get; set; }
-    }
+    public MasterData MasterData { get; set; }
+    public string ChildrenId { get; set; }
 }

@@ -1,25 +1,20 @@
 ﻿using FasTnT.Application.Services;
-using FasTnT.Domain.Queries.GetQueryNames;
+using FasTnT.Domain.Queries;
 using MediatR;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace FasTnT.Application.Queries.GetQueryNames
+namespace FasTnT.Application.Queries;
+
+public class GetQueryNamesQueryHandler : IRequestHandler<GetQueryNamesQuery, GetQueryNamesResult>
 {
-    public class GetQueryNamesQueryHandler : IRequestHandler<GetQueryNamesQuery, GetQueryNamesResult>
+    private readonly IEnumerable<IEpcisQuery> _queries;
+
+    public GetQueryNamesQueryHandler(IEnumerable<IEpcisQuery> queries)
     {
-        private readonly IEnumerable<IEpcisQuery> _queries;
+        _queries = queries;
+    }
 
-        public GetQueryNamesQueryHandler(IEnumerable<IEpcisQuery> queries)
-        {
-            _queries = queries;
-        }
-
-        public Task<GetQueryNamesResult> Handle(GetQueryNamesQuery request, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<GetQueryNamesResult>(new(_queries.Select(x => x.Name)));
-        }
+    public Task<GetQueryNamesResult> Handle(GetQueryNamesQuery request, CancellationToken cancellationToken)
+    {
+        return Task.FromResult<GetQueryNamesResult>(new(_queries.Select(x => x.Name)));
     }
 }

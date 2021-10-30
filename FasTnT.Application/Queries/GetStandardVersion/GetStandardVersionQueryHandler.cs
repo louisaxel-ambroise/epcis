@@ -1,15 +1,12 @@
-﻿using FasTnT.Domain.Queries.GetStandardVersion;
+﻿using FasTnT.Domain.Queries;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace FasTnT.Application.Queries.GetStandardVersion
+namespace FasTnT.Application.Queries;
+
+public class GetStandardVersionQueryHandler : IRequestHandler<GetStandardVersionQuery, GetStandardVersionResult>
 {
-    public class GetStandardVersionQueryHandler : IRequestHandler<GetStandardVersionQuery, GetStandardVersionResult>
+    public Task<GetStandardVersionResult> Handle(GetStandardVersionQuery request, CancellationToken cancellationToken)
     {
-        public Task<GetStandardVersionResult> Handle(GetStandardVersionQuery request, CancellationToken cancellationToken)
-        {
-            return Task.FromResult<GetStandardVersionResult>(new("1.2"));
-        }
+        return Task.FromResult<GetStandardVersionResult>(new("1.2"));
     }
 }

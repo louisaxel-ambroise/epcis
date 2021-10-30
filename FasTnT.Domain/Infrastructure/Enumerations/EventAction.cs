@@ -1,10 +1,9 @@
-﻿namespace FasTnT.Domain.Enumerations
+﻿namespace FasTnT.Domain.Enumerations;
+
+public enum EventAction
 {
-    public enum EventAction
-    {
-        None,
-        Add,
-        Observe,
-        Delete
-    }
+    None,
+    Add,
+    Observe,
+    Delete
 }

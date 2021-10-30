@@ -3,100 +3,95 @@ using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Notifications;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Queries;
 using FasTnT.Infrastructure.Database;
 using MediatR;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace FasTnT.Application.Subscriptions
+namespace FasTnT.Application.Subscriptions;
+
+public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, SubscribeResult>
 {
-    public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, SubscribeResult>
+    private readonly EpcisContext _context;
+    private readonly IEnumerable<IEpcisQuery> _queries;
+    private readonly IMediator _mediator;
+
+    public SubscribeCommandHandler(EpcisContext context, IEnumerable<IEpcisQuery> queries, IMediator mediator)
     {
-        private readonly EpcisContext _context;
-        private readonly IEnumerable<IEpcisQuery> _queries;
-        private readonly IMediator _mediator;
+        _context = context;
+        _queries = queries;
+        _mediator = mediator;
+    }
 
-        public SubscribeCommandHandler(EpcisContext context, IEnumerable<IEpcisQuery> queries, IMediator mediator)
+    public async Task<SubscribeResult> Handle(SubscribeCommand request, CancellationToken cancellationToken)
+    {
+        EnsureSubscriptionDoesNotExist(request);
+        EnsureQueryAllowsSubscription(request);
+
+        var subscription = MapToSubscription(request);
+        _context.Subscriptions.Add(subscription);
+
+        await _context.SaveChangesAsync(cancellationToken);
+        await _mediator.Publish(new SubscriptionCreatedNotification(subscription.Id), cancellationToken);
+
+        return new();
+    }
+
+    private void EnsureSubscriptionDoesNotExist(SubscribeCommand request)
+    {
+        if(_context.Subscriptions.Any(x => x.Name == request.SubscriptionId))
         {
-            _context = context;
-            _queries = queries;
-            _mediator = mediator;
+            throw new EpcisException(ExceptionType.SubscribeNotPermittedException, "Subscription already exist");
         }
+    }
 
-        public async Task<SubscribeResult> Handle(SubscribeCommand request, CancellationToken cancellationToken)
+    private void EnsureQueryAllowsSubscription(SubscribeCommand request)
+    {
+        var query = _queries.SingleOrDefault(x => x.Name == request.QueryName);
+
+        if(query == default)
         {
-            EnsureSubscriptionDoesNotExist(request);
-            EnsureQueryAllowsSubscription(request);
-
-            var subscription = MapToSubscription(request);
-            _context.Subscriptions.Add(subscription);
-
-            await _context.SaveChangesAsync(cancellationToken);
-            await _mediator.Publish(new SubscriptionCreatedNotification(subscription.Id), cancellationToken);
-
-            return new();
+            throw new EpcisException(ExceptionType.NoSuchNameException, "Query does not exist");
         }
-
-        private void EnsureSubscriptionDoesNotExist(SubscribeCommand request)
+        if(!query.AllowSubscription)
         {
-            if(_context.Subscriptions.Any(x => x.Name == request.SubscriptionId))
-            {
-                throw new EpcisException(ExceptionType.SubscribeNotPermittedException, "Subscription already exist");
-            }
+            throw new EpcisException(ExceptionType.SubscribeNotPermittedException, "Query does not allow subscription");
         }
+    }
 
-        private void EnsureQueryAllowsSubscription(SubscribeCommand request)
+    private static Subscription MapToSubscription(SubscribeCommand request)
+    {
+        return new()
         {
-            var query = _queries.SingleOrDefault(x => x.Name == request.QueryName);
+            Name = request.SubscriptionId,
+            QueryName = request.QueryName,
+            RecordIfEmpty = request.ReportIfEmpty,
+            InitialRecordTime = request.InitialRecordTime,
+            Schedule = request.Schedule != default ? MapSchedule(request.Schedule) : null,
+            Trigger = request.Trigger,
+            Destination = request.Destination,
+            Parameters = MapParameters(request.Parameters)
+        };
+    }
 
-            if(query == default)
-            {
-                throw new EpcisException(ExceptionType.NoSuchNameException, "Query does not exist");
-            }
-            if(!query.AllowSubscription)
-            {
-                throw new EpcisException(ExceptionType.SubscribeNotPermittedException, "Query does not allow subscription");
-            }
-        }
-
-        private static Subscription MapToSubscription(SubscribeCommand request)
+    private static List<SubscriptionParameter> MapParameters(List<QueryParameter> parameters)
+    {
+        return parameters.Select(x => new SubscriptionParameter
         {
-            return new()
-            {
-                Name = request.SubscriptionId,
-                QueryName = request.QueryName,
-                RecordIfEmpty = request.ReportIfEmpty,
-                InitialRecordTime = request.InitialRecordTime,
-                Schedule = request.Schedule != default ? MapSchedule(request.Schedule) : null,
-                Trigger = request.Trigger,
-                Destination = request.Destination,
-                Parameters = MapParameters(request.Parameters)
-            };
-        }
+            Name = x.Name,
+            Value = x.Values
+        }).ToList();
+    }
 
-        private static List<SubscriptionParameter> MapParameters(List<QueryParameter> parameters)
+    private static SubscriptionSchedule MapSchedule(QuerySchedule schedule)
+    {
+        return new()
         {
-            return parameters.Select(x => new SubscriptionParameter
-            {
-                Name = x.Name,
-                Value = x.Values
-            }).ToList();
-        }
-
-        private static SubscriptionSchedule MapSchedule(QuerySchedule schedule)
-        {
-            return new()
-            {
-                DayOfMonth = schedule.DayOfMonth,
-                DayOfWeek = schedule.DayOfWeek,
-                Hour = schedule.Hour,
-                Minute = schedule.Minute,
-                Month = schedule.Month,
-                Second = schedule.Second
-            };
-        }
+            DayOfMonth = schedule.DayOfMonth,
+            DayOfWeek = schedule.DayOfWeek,
+            Hour = schedule.Hour,
+            Minute = schedule.Minute,
+            Month = schedule.Month,
+            Second = schedule.Second
+        };
     }
 }
