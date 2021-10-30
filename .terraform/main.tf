@@ -73,7 +73,7 @@ resource "azurerm_mssql_firewall_rule" "sql-db-server-allow-azure" {
 resource "azurerm_app_service_plan" "plan" {
   name                = "${local.base_resource_name}-app-plan"
   location            = var.location
-  resource_group_name = azurerm_resource_group.assetstracking_main.name
+  resource_group_name = azurerm_resource_group.fastnt_main.name
   sku {
     tier = var.app_tier
     size = var.app_size
