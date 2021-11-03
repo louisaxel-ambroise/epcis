@@ -34,6 +34,14 @@ resource "azurerm_resource_group" "fastnt_main" {
   tags     = local.tags
 }
 
+resource "azurerm_storage_account" "fastnt_storage" {
+  name                     = "${replace("${local.base_resource_name}"), "-", "")}st"
+  resource_group_name      = azurerm_resource_group.fastnt_main.name
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
 resource "azurerm_mssql_server" "sql-db-server" {
   name                         = "${local.base_resource_name}-sql-server"
   resource_group_name          = azurerm_resource_group.fastnt_main.name
@@ -52,6 +60,13 @@ resource "azurerm_mssql_database" "sqldb" {
   max_size_gb                 = var.sql_max_size_gb
   sku_name                    = var.sql_sku
   tags                        = local.tags
+  
+  extended_auditing_policy {
+    storage_endpoint                        = azurerm_storage_account.fastnt_storage.primary_blob_endpoint
+    storage_account_access_key              = azurerm_storage_account.fastnt_storage.primary_access_key
+    storage_account_access_key_is_secondary = true
+    retention_in_days                       = 90
+  }
 }
 
 resource "azurerm_mssql_firewall_rule" "sql-db-server-allow-azure" {
@@ -106,10 +121,16 @@ resource "azurerm_app_service" "api_app" {
   location            = var.location
   resource_group_name = azurerm_resource_group.fastnt_main.name
   app_service_plan_id = azurerm_app_service_plan.plan.id
+  client_cert_enabled = true
+  https_only          = true
   tags                = local.tags
   site_config {
-    dotnet_framework_version = "v6.0"
+    dotnet_framework_version  = "v6.0"
     use_32_bit_worker_process = true
+    http2_enabled             = true
+  }
+  auth_settings {
+    enabled = false
   }
   app_settings = {
     "ASPNETCORE_ENVIRONMENT" = "${var.aspnetcore_environment}"
