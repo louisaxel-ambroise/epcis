@@ -35,7 +35,7 @@ resource "azurerm_resource_group" "fastnt_main" {
 }
 
 resource "azurerm_storage_account" "fastnt_storage" {
-  name                     = "${replace("${local.base_resource_name}"), "-", "")}st"
+  name                     = "fastnt${var.environment}st"
   resource_group_name      = azurerm_resource_group.fastnt_main.name
   location                 = var.location
   account_tier             = "Standard"
@@ -60,13 +60,14 @@ resource "azurerm_mssql_database" "sqldb" {
   max_size_gb                 = var.sql_max_size_gb
   sku_name                    = var.sql_sku
   tags                        = local.tags
-  
-  extended_auditing_policy {
-    storage_endpoint                        = azurerm_storage_account.fastnt_storage.primary_blob_endpoint
-    storage_account_access_key              = azurerm_storage_account.fastnt_storage.primary_access_key
-    storage_account_access_key_is_secondary = true
-    retention_in_days                       = 90
-  }
+}
+
+resource "azurerm_mssql_database_extended_auditing_policy" "sqldb-audit-policy" {
+  database_id                             = azurerm_mssql_database.sqldb.id
+  storage_endpoint                        = azurerm_storage_account.fastnt_storage.primary_blob_endpoint
+  storage_account_access_key              = azurerm_storage_account.fastnt_storage.primary_access_key
+  storage_account_access_key_is_secondary = false
+  retention_in_days                       = 90
 }
 
 resource "azurerm_mssql_firewall_rule" "sql-db-server-allow-azure" {
@@ -121,7 +122,7 @@ resource "azurerm_app_service" "api_app" {
   location            = var.location
   resource_group_name = azurerm_resource_group.fastnt_main.name
   app_service_plan_id = azurerm_app_service_plan.plan.id
-  client_cert_enabled = true
+  client_cert_enabled = var.enable_cliet_cert
   https_only          = true
   tags                = local.tags
   site_config {

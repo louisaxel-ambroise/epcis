@@ -42,6 +42,11 @@ variable "app_size" {
   default = "B1"
 }
 
+variable "enable_cliet_cert" {
+  type = bool
+  default = true
+}
+
 variable "sql_max_size_gb" {
   type        = string
   description = "Max size of the database in GB. Defaults to 2."
