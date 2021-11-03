@@ -8,6 +8,11 @@ variable "environment" {
   default = "dev"
 }
 
+variable "aspnetcore_environment" {
+  type    = string
+  default = "production"
+}
+
 variable "location" {
   type    = string
   default = "westeurope"

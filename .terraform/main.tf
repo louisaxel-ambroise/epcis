@@ -107,7 +107,12 @@ resource "azurerm_app_service" "api_app" {
   resource_group_name = azurerm_resource_group.fastnt_main.name
   app_service_plan_id = azurerm_app_service_plan.plan.id
   tags                = local.tags
+  site_config {
+    dotnet_framework_version = "v6.0"
+    use_32_bit_worker_process = true
+  }
   app_settings = {
+    "ASPNETCORE_ENVIRONMENT" = "${var.aspnetcore_environment}"
     "APPINSIGHTS_INSTRUMENTATIONKEY" = "${azurerm_application_insights.api_appi.instrumentation_key}"
     "APPLICATIONINSIGHTS_CONNECTION_STRING" : "${azurerm_application_insights.api_appi.connection_string}"
     "ApplicationInsightsAgent_EXTENSION_VERSION" : "~2"
