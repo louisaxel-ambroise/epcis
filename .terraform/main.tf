@@ -43,17 +43,28 @@ resource "azurerm_storage_account" "fastnt_storage" {
   min_tls_version		    = "TLS1_2"
   enable_https_traffic_only = true
   queue_properties {
+   hour_metrics {
+      enabled               = true
+      include_apis          = true
+      retention_policy_days = 7
+      version               = "1.0"
+    }
+    minute_metrics {
+      enabled               = false
+      include_apis          = false
+      retention_policy_days = 7
+      version               = "1.0"
+    }
 	logging {
-	  write = true
-	  read = true
-	  delete = true
-	  version = 
-	  retention_policy_days = 30
+	  write                 = true
+	  read                  = true
+	  delete                = true
+	  retention_policy_days = 7
+	  version               = "1.0"
 	}
   }
   network_rules {
     default_action             = "Deny"
-    ip_rules                   = ["0.0.0.0"]
   }
 }
 
