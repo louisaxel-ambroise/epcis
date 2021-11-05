@@ -35,11 +35,26 @@ resource "azurerm_resource_group" "fastnt_main" {
 }
 
 resource "azurerm_storage_account" "fastnt_storage" {
-  name                     = "fastnt${var.environment}st"
-  resource_group_name      = azurerm_resource_group.fastnt_main.name
-  location                 = var.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
+  name                      = "fastnt${var.environment}st"
+  resource_group_name       = azurerm_resource_group.fastnt_main.name
+  location                  = var.location
+  account_tier              = "Standard"
+  account_replication_type  = "LRS"
+  min_tls_version		    = "TLS1_2"
+  enable_https_traffic_only = true
+  queue_properties {
+	logging {
+	  write = true
+	  read = true
+	  delete = true
+	  version = 
+	  retention_policy_days = 30
+	}
+  }
+  network_rules {
+    default_action             = "Deny"
+    ip_rules                   = ["0.0.0.0"]
+  }
 }
 
 resource "azurerm_mssql_server" "sql-db-server" {
