@@ -14,6 +14,7 @@ using FasTnT.Subscriptions.Notifications;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host;
@@ -39,6 +40,14 @@ public class Startup
             options.AddPolicy("Query", policy => policy.RequireClaim("CanQuery", "True"));
             options.AddPolicy("Capture", policy => policy.RequireClaim("CanCapture", "True"));
         });
+        services.AddHttpLogging(httpLogging =>
+        {
+            httpLogging.LoggingFields = HttpLoggingFields.All;
+            httpLogging.MediaTypeOptions.AddText("application/xml");
+            httpLogging.MediaTypeOptions.AddText("application/text+xml");
+            httpLogging.RequestBodyLogLimit = 4096;
+            httpLogging.ResponseBodyLogLimit = 4096;
+        });
         services.AddHttpContextAccessor();
         services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt.CommandTimeout(1)));
 
@@ -50,6 +59,7 @@ public class Startup
         services.AddTransient<IEpcisQuery, SimpleEventQuery>();
         services.AddTransient<IEpcisQuery, SimpleMasterDataQuery>();
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandLoggerBehavior<,>));
         services.AddTransient<ICurrentUser, HttpContextCurrentUser>();
         services.AddScoped<SubscriptionRunner>();
         services.AddSingleton<ISubscriptionService, SubscriptionBackgroundService>();
@@ -73,6 +83,7 @@ public class Startup
 
         app.UseExceptionHandler("/epciserror");
         app.UseRouting();
+        app.UseHttpLogging();
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(builder =>

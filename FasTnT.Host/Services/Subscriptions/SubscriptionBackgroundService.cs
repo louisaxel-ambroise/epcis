@@ -8,8 +8,9 @@ namespace FasTnT.Host.Services.Subscriptions;
 
 public sealed class SubscriptionBackgroundService : BackgroundService, ISubscriptionService
 {
-    private readonly IServiceProvider _services;
     private readonly object _monitor = new();
+    private readonly IServiceProvider _services;
+    private readonly ILogger<SubscriptionBackgroundService> _logger;
     private readonly ConcurrentDictionary<Subscription, DateTime> _scheduledExecutions = new();
     private readonly ConcurrentDictionary<string, IList<Subscription>> _triggeredSubscriptions = new();
     private readonly ConcurrentQueue<string> _triggeredValues = new();
@@ -17,6 +18,7 @@ public sealed class SubscriptionBackgroundService : BackgroundService, ISubscrip
     public SubscriptionBackgroundService(IServiceProvider services)
     {
         _services = services;
+        _logger = services.GetService<ILogger<SubscriptionBackgroundService>>();
     }
 
     protected override Task ExecuteAsync(CancellationToken cancellationToken)
@@ -27,28 +29,12 @@ public sealed class SubscriptionBackgroundService : BackgroundService, ISubscrip
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                var triggeredSubscriptions = new List<Subscription>();
                 try
                 {
-                    // Get all subscriptions where the next execution time is reached
-                    var subscriptions = _scheduledExecutions.Where(x => x.Value <= DateTime.UtcNow).ToArray();
+                    var executionDate = DateTime.UtcNow;
+                    var triggeredSubscriptions = GetScheduledSubscriptions(executionDate).Union(GetTriggeredSubscriptions());
 
-                    foreach(var subscription in subscriptions)
-                    {
-                        var nextOccurence = subscription.Key.Schedule.GetNextOccurence(DateTime.UtcNow);
-
-                        _scheduledExecutions.TryUpdate(subscription.Key, nextOccurence, subscription.Value);
-                    }
-
-                    triggeredSubscriptions.AddRange(subscriptions.Select(x => x.Key));
-
-                    // Get all subscriptions scheduled by a trigger
-                    while (_triggeredValues.TryDequeue(out string trigger))
-                    {
-                        triggeredSubscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out IList<Subscription> sub) ? sub : Array.Empty<Subscription>());
-                    }
-
-                    await Execute(triggeredSubscriptions, cancellationToken).ConfigureAwait(false);
+                    Execute(triggeredSubscriptions.ToArray(), cancellationToken);
                 }
                 finally
                 {
@@ -58,14 +44,51 @@ public sealed class SubscriptionBackgroundService : BackgroundService, ISubscrip
         }, cancellationToken);
     }
 
-    private async Task Execute(IEnumerable<Subscription> subscriptions, CancellationToken cancellationToken)
+    private IEnumerable<Subscription> GetTriggeredSubscriptions()
     {
-        using var scope = _services.CreateScope();
-        var subscriptionRunner = scope.ServiceProvider.GetService<SubscriptionRunner>();
+        var subscriptions = new List<Subscription>();
+
+        while (_triggeredValues.TryDequeue(out string trigger))
+        {
+            subscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out IList<Subscription> sub) ? sub : Array.Empty<Subscription>());
+        }
+
+        return subscriptions;
+    }
+
+    private IEnumerable<Subscription> GetScheduledSubscriptions(DateTime executionDate)
+    {
+        var subscriptions = _scheduledExecutions.Where(x => x.Value <= executionDate).ToArray();
 
         foreach (var subscription in subscriptions)
         {
-            await subscriptionRunner.Run(subscription, cancellationToken);
+            var nextOccurence = subscription.Key.Schedule.GetNextOccurence(executionDate);
+
+            _scheduledExecutions.TryUpdate(subscription.Key, nextOccurence, subscription.Value);
+        }
+
+        return subscriptions.Select(x => x.Key);
+    }
+
+    private void Execute(Subscription[] subscriptions, CancellationToken cancellationToken)
+    {
+        using var scope = _services.CreateScope();
+        var subscriptionRunner = scope.ServiceProvider.GetService<SubscriptionRunner>();
+        var subscriptionTasks = new Task[subscriptions.Length];
+
+        for (var i = 0; i < subscriptions.Length; i++)
+        {
+            subscriptionTasks[i] = subscriptionRunner.Run(subscriptions[i], cancellationToken);
+        }
+
+        try
+        {
+            Task.WaitAll(subscriptionTasks, cancellationToken);
+        }
+        catch(Exception ex)
+        {
+            _logger.LogError(ex, "An error occured while executing subscriptions");
+            // Don't throw the exception as we want the background process to continue
         }
     }
 
@@ -73,7 +96,7 @@ public sealed class SubscriptionBackgroundService : BackgroundService, ISubscrip
     {
         var initialized = false;
 
-        while (!initialized)
+        do
         {
             try
             {
@@ -92,6 +115,7 @@ public sealed class SubscriptionBackgroundService : BackgroundService, ISubscrip
                 await Task.Delay(TimeSpan.FromMilliseconds(10000), cancellationToken).ConfigureAwait(false);
             }
         }
+        while (!initialized);
     }
 
     public void Register(Subscription subscription)

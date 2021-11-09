@@ -3,6 +3,7 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries;
 using FasTnT.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace FasTnT.Subscriptions;
  
@@ -11,16 +12,19 @@ public class SubscriptionRunner
     private readonly IEnumerable<IEpcisQuery> _epcisQueries;
     private readonly EpcisContext _context;
     private readonly ISubscriptionResultSender _resultSender;
+    private readonly ILogger<SubscriptionRunner> _logger;
 
-    public SubscriptionRunner(IEnumerable<IEpcisQuery> epcisQueries, EpcisContext context, ISubscriptionResultSender resultSender)
+    public SubscriptionRunner(IEnumerable<IEpcisQuery> epcisQueries, EpcisContext context, ISubscriptionResultSender resultSender, ILogger<SubscriptionRunner> logger)
     {
         _epcisQueries = epcisQueries;
         _context = context;
         _resultSender = resultSender;
+        _logger = logger;
     }
 
     public async Task Run(Subscription subscription, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Running Subscription {Name} ({Id})", subscription.Name, subscription.Id);
         _context.Attach(subscription);
 
         var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = System.DateTime.UtcNow, ResultsSent = true, Successful = true };
@@ -44,10 +48,13 @@ public class SubscriptionRunner
 
         if (resultsSent)
         {
+            _logger.LogInformation("Results for subscription {Name} successfully sent", subscription.Name);
             _context.PendingRequests.RemoveRange(pendingRequests);
         }
         else
         {
+            _logger.LogInformation("Failed to send results for subscription {Name}", subscription.Name);
+
             executionRecord.Successful = false;
             executionRecord.Reason = "Failed to send subscription result";
         }
