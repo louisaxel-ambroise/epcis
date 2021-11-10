@@ -61,7 +61,7 @@ public class HttpSubscriptionResultSender : ISubscriptionResultSender
 
     private static HttpClient GetHttpClient(string destination)
     {
-        var client = new HttpClient() { BaseAddress = new Uri(destination) };
+        var client = new HttpClient { BaseAddress = new Uri(destination) };
 
         if (!string.IsNullOrEmpty(client.BaseAddress.UserInfo))
         {
