@@ -2,5 +2,5 @@
 
 public interface ISubscriptionResultSender
 {
-    Task<bool> Send<T>(string destination, T epcisResponse, CancellationToken cancellationToken);
+    Task<bool> Send<T>(SubscriptionExecutionContext context, T epcisResponse, CancellationToken cancellationToken);
 }

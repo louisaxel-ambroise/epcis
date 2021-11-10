@@ -44,33 +44,35 @@ public sealed class SubscriptionBackgroundService : BackgroundService, ISubscrip
         }, cancellationToken);
     }
 
-    private IEnumerable<Subscription> GetTriggeredSubscriptions()
+    private IEnumerable<SubscriptionExecutionContext> GetTriggeredSubscriptions()
     {
-        var subscriptions = new List<Subscription>();
+        var subscriptions = new List<SubscriptionExecutionContext>();
 
         while (_triggeredValues.TryDequeue(out string trigger))
         {
-            subscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out IList<Subscription> sub) ? sub : Array.Empty<Subscription>());
+            subscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out IList<Subscription> sub) 
+                ? sub.Select(x => new SubscriptionExecutionContext(x, DateTime.UtcNow))
+                : Array.Empty<SubscriptionExecutionContext>());
         }
 
         return subscriptions;
     }
 
-    private IEnumerable<Subscription> GetScheduledSubscriptions(DateTime executionDate)
+    private IEnumerable<SubscriptionExecutionContext> GetScheduledSubscriptions(DateTime executionDate)
     {
         var subscriptions = _scheduledExecutions.Where(x => x.Value <= executionDate).ToArray();
 
         foreach (var subscription in subscriptions)
         {
-            var nextOccurence = subscription.Key.Schedule.GetNextOccurence(executionDate);
+            var nextOccurence = subscription.Key.Schedule.GetNextOccurence(subscription.Value);
 
             _scheduledExecutions.TryUpdate(subscription.Key, nextOccurence, subscription.Value);
         }
 
-        return subscriptions.Select(x => x.Key);
+        return subscriptions.Select(x => new SubscriptionExecutionContext(x.Key, x.Value));
     }
 
-    private void Execute(Subscription[] subscriptions, CancellationToken cancellationToken)
+    private void Execute(SubscriptionExecutionContext[] subscriptions, CancellationToken cancellationToken)
     {
         using var scope = _services.CreateScope();
         var subscriptionRunner = scope.ServiceProvider.GetService<SubscriptionRunner>();
