@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Queries;
 using FasTnT.Formatter.Xml.Formatters;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
@@ -10,70 +11,73 @@ namespace FasTnT.Subscriptions;
 
 public class HttpSubscriptionResultSender : ISubscriptionResultSender
 {
-    public async Task<bool> Send<T>(string destination, T epcisResponse, CancellationToken cancellationToken)
+    public async Task<bool> Send<T>(SubscriptionExecutionContext context, T response, CancellationToken cancellationToken)
     {
-        var request = WebRequest.CreateHttp(destination);
-        request.Method = "POST";
-        TrySetBasicAuthorization(request);
+        using var client = GetHttpClient(context.Subscription.Destination);
+        using var stream = await GetResponseStream(response, context.DateTime, cancellationToken);
 
-        await WriteRequestPayload(request, epcisResponse, cancellationToken).ConfigureAwait(false);
-
-        return await SendRequestAsync(request, cancellationToken).ConfigureAwait(false);
+        return await SendRequestAsync(client, stream, cancellationToken).ConfigureAwait(false);
     }
 
-    private static async Task<bool> SendRequestAsync(HttpWebRequest request, CancellationToken cancellationToken)
+    private static async Task<bool> SendRequestAsync(HttpClient request, Stream stream, CancellationToken cancellationToken)
     {
-        var requestWasSent = default(bool);
+        var httpContent = new StreamContent(stream);
+        httpContent.Headers.Add("Content-Type", "application/text+xml");
 
         try
         {
-            using var registration = cancellationToken.Register(() => request.Abort(), false);
-            using var response = await request.GetResponseAsync() as HttpWebResponse;
-            using var responseMessage = new HttpResponseMessage(response.StatusCode);
+            var httpResponse = await request.PostAsync(string.Empty, httpContent, cancellationToken);
+            httpResponse.EnsureSuccessStatusCode();
 
-            requestWasSent = responseMessage.IsSuccessStatusCode;
+            return true;
         }
-        catch (WebException)
+        catch
         {
-            requestWasSent = false;
+            return false;
         }
-
-        return requestWasSent;
     }
 
-    private static async Task WriteRequestPayload<T>(HttpWebRequest request, T response, CancellationToken cancellationToken)
+    private static async Task<Stream> GetResponseStream<T>(T response, DateTime executionDate, CancellationToken cancellationToken)
     {
-        using var stream = await request.GetRequestStreamAsync();
-        using var writer = XmlWriter.Create(stream, new XmlWriterSettings { Async = true });
+        var stream = new MemoryStream();
+
+        using var writer = XmlWriter.Create(stream, new XmlWriterSettings { Async = true, CloseOutput = false });
 
         var content = response switch
         {
             PollResponse pollResult => XmlResponseFormatter.FormatPoll(pollResult),
             EpcisException exception => XmlResponseFormatter.FormatError(exception),
-            _ => throw new ArgumentException(null, nameof(response))
+            _ => throw new ArgumentException("Unexpected subscription response type", nameof(response))
         };
 
-        var requestPayload = FormatResponse(content);
-
-        request.ContentType = "application/text+xml";
+        var requestPayload = FormatResponse(content, executionDate);
         await requestPayload.WriteToAsync(writer, cancellationToken);
+        await writer.FlushAsync();
+
+        stream.Seek(0, SeekOrigin.Begin);
+
+        return stream;
     }
 
-    private static void TrySetBasicAuthorization(HttpWebRequest request)
+    private static HttpClient GetHttpClient(string destination)
     {
-        if (!string.IsNullOrEmpty(request.RequestUri.UserInfo))
+        var client = new HttpClient() { BaseAddress = new Uri(destination) };
+
+        if (!string.IsNullOrEmpty(client.BaseAddress.UserInfo))
         {
-            var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(WebUtility.UrlDecode(request.RequestUri.UserInfo)));
-            request.Headers.Add("Authorization", $"Basic {token}");
+            var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(WebUtility.UrlDecode(client.BaseAddress.UserInfo)));
+            client.DefaultRequestHeaders.Add("Authorization", $"Basic {token}");
         }
+
+        return client;
     }
 
-    private static XDocument FormatResponse(XElement content)
+    private static XDocument FormatResponse(XElement content, DateTime executionDate)
     {
         var rootName = XName.Get("EPCISQueryDocument", "urn:epcglobal:epcis-query:xsd:1");
         var attributes = new[]
         {
-            new XAttribute("creationDate", DateTime.UtcNow),
+            new XAttribute("creationDate", executionDate),
             new XAttribute("schemaVersion", "1")
         };
 

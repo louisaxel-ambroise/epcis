@@ -22,8 +22,10 @@ public class SubscriptionRunner
         _logger = logger;
     }
 
-    public async Task Run(Subscription subscription, CancellationToken cancellationToken)
+    public async Task Run(SubscriptionExecutionContext executionContext, CancellationToken cancellationToken)
     {
+        var subscription = executionContext.Subscription;
+
         _logger.LogInformation("Running Subscription {Name} ({Id})", subscription.Name, subscription.Id);
         _context.Attach(subscription);
 
@@ -44,7 +46,7 @@ public class SubscriptionRunner
 
         response.SubscriptionId = subscription.Name;
 
-        var resultsSent = await SendSubscriptionResults(subscription, response, cancellationToken).ConfigureAwait(false);
+        var resultsSent = await SendSubscriptionResults(executionContext, response, cancellationToken).ConfigureAwait(false);
 
         if (resultsSent)
         {
@@ -64,11 +66,11 @@ public class SubscriptionRunner
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task<bool> SendSubscriptionResults(Subscription subscription, PollResponse response, CancellationToken cancellationToken)
+    private async Task<bool> SendSubscriptionResults(SubscriptionExecutionContext context, PollResponse response, CancellationToken cancellationToken)
     {
-        if (response.EventList.Count > 0 || subscription.RecordIfEmpty)
+        if (response.EventList.Count > 0 || context.Subscription.RecordIfEmpty)
         {
-            return await _resultSender.Send(subscription.Destination, response, cancellationToken);
+            return await _resultSender.Send(context, response, cancellationToken);
         }
 
         return true;
