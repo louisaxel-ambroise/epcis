@@ -190,20 +190,15 @@ public class SimpleEventQuery : IEpcisQuery
 
     private static IQueryable<Event> ApplyMatchParameter(QueryParameter param, IQueryable<Event> query)
     {
-        // TODO: allow for multiple values.
-        // The current implementation uses an "AND" operand between each value, which is not the expected behavior.
-        // When multiple values are specified, the result should be: WHERE (epc.type = type AND (epc.id LIKE id1 OR epc.id LIKE id2 ...))
-        // Having this check ensures that at most one value is pecified.
-        if (param.Values.Length > 1)
-        {
-            throw new EpcisException(ExceptionType.ImplementationException, "Multiple values for MATCH_* parameter are not yet supported");
-        }
+        var typeExpression = (Expression<Func<Epc, bool>>)(e => param.GetMatchEpcTypes().Contains(e.Type));
+        var idExpressions = param.Values.Select(value => (Expression<Func<Epc, bool>>)(p => EF.Functions.Like(p.Id, value.Replace("*", "%"))));
+        var parameter = idExpressions.First().Parameters[0];
+        var orExpression = idExpressions.Aggregate(
+            Expression.OrElse(idExpressions.First().Body, 
+            Expression.Constant(false)), (x, y) => Expression.OrElse(x, Expression.Invoke(y, parameter))
+        );
+        var finalExpression = Expression.Lambda<Func<Epc, bool>>(Expression.AndAlso(orExpression, Expression.Invoke(typeExpression, parameter)), parameter);
 
-        foreach (var value in param.Values)
-        {
-            query = query.Where(x => x.Epcs.Any(e => param.GetMatchEpcTypes().Contains(e.Type) && EF.Functions.Like(e.Id, value.Replace("*", "%"))));
-        }
-
-        return query;
+        return query.Where(x => x.Epcs.AsQueryable().Where(finalExpression).Any());
     }
 }
