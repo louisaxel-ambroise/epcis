@@ -41,7 +41,8 @@ public static class XmlResponseFormatter
         var reasonElt = !string.IsNullOrEmpty(reason) ? new XElement(nameof(reason), reason) : default;
         var severityElt = new XElement(nameof(severity), severity);
 
-        return new XElement(type.ToString(), reasonElt, severityElt);
+        return new XElement(XName.Get("Fault", Namespaces.SoapEnvelop), 
+                new XElement("faultCode", "server"), new XElement("detail", new XElement(type.ToString(), reasonElt, severityElt)));
     }
 
     public static XElement FormatSubscriptionIds(GetSubscriptionIdsResult response)
