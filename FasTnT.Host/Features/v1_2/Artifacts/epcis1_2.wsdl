@@ -460,12 +460,4 @@
       </wsdl:fault>
     </wsdl:operation>
   </wsdl:binding>
-
-  <wsdl:service name="EPCglobalEPCISService">
-    <wsdl:port binding="impl:EPCISServiceBinding" name="EPCglobalEPCISServicePort">
-      <wsdlsoap:address
-         location="http://localhost:6060/axis/services/EPCglobalEPCISService"/>
-    </wsdl:port>
-  </wsdl:service>
-
 </wsdl:definitions>

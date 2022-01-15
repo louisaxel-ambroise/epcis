@@ -24,6 +24,8 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
     {
         if (!Request.Headers.ContainsKey(HeaderKey))
         {
+            Logger.LogError("Missing {headerKey} Header", HeaderKey);
+
             return AuthenticateResult.Fail($"Missing {HeaderKey} Header");
         }
             
@@ -31,17 +33,23 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
         if(authHeader.Scheme != AuthorizationScheme)
         {
-            return AuthenticateResult.Fail("Invalid Authorization scheme");
+            Logger.LogError("Invalid Authorization scheme: {scheme}", authHeader.Scheme);
+
+            return AuthenticateResult.Fail($"Invalid Authorization scheme {authHeader.Scheme}");
         }
 
         try
         {
             var (username, password) = ParseAuthenticationHeader(authHeader);
 
+            Logger.LogInformation("Retrieve user information for user {username}", username);
+
             return await AuthenticateUser(username, password, Request.HttpContext.RequestAborted).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
+            Logger.LogError(ex, "Invalid header format");
+
             return AuthenticateResult.Fail(ex.Message);
         }
     }
@@ -65,11 +73,15 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
         if (user != null)
         {
+            Logger.LogInformation("Authentication succeeded for user {username}", username);
+
             return Authenticated(username, user);
         }
         else
         {
-            return AuthenticateResult.Fail($"Invalid {HeaderKey} Header");
+            Logger.LogWarning("Invalid credentials");
+
+            return AuthenticateResult.Fail($"Invalid credentials.");
         }
     }
 
