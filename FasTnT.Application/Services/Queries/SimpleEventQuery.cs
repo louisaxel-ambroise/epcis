@@ -178,7 +178,7 @@ public class SimpleEventQuery : IEpcisQuery
 
     private static IQueryable<Event> ApplyComparison(QueryParameter param, IQueryable<Event> query, FieldType type, string ns, string name, bool inner)
     {
-        return param.Name.Substring(0, 2) switch
+        return param.Name[..2] switch
         {
             "GE" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue >= param.GetDate()) || (param.IsNumeric() && f.NumericValue >= param.GetNumeric())))),
             "GT" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue > param.GetDate()) || (param.IsNumeric() && f.NumericValue > param.GetNumeric())))),

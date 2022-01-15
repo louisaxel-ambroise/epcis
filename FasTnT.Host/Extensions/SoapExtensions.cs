@@ -7,6 +7,8 @@ namespace FasTnT.Host.Extensions;
 
 public static class SoapExtensions
 {
+    private static readonly XmlWriterSettings _soapsettings = new() { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates };
+
     public static async Task FormatSoap(this HttpResponse response, XElement element, CancellationToken cancellationToken)
     {
         response.ContentType = "application/xml";
@@ -17,7 +19,7 @@ public static class SoapExtensions
 
         envelope.Add(new XAttribute(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new XAttribute(XNamespace.Xmlns + "epcisq", Namespaces.Query));
 
-        await using var xmlWriter = XmlWriter.Create(response.Body, new XmlWriterSettings { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates });
+        await using var xmlWriter = XmlWriter.Create(response.Body, _soapsettings);
 
         await xmlResponse.WriteToAsync(xmlWriter, cancellationToken);
     }
