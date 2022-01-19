@@ -27,7 +27,7 @@ internal static class EpcisModelConfiguration
             x => JsonConvert.SerializeObject(x),
             x => JsonConvert.DeserializeObject<string[]>(x),
             new ValueComparer<string[]>((c1, c2) => c1.SequenceEqual(c2), c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), c => c.ToArray()));
-        userParameter.HasOne(x => x.User).WithMany(x => x.DefaultQueryParameters);
+        userParameter.HasOne(x => x.User).WithMany(x => x.DefaultQueryParameters).OnDelete(DeleteBehavior.Cascade);
 
         var request = modelBuilder.Entity<Request>();
         request.ToTable(nameof(Request), nameof(EpcisSchema.Epcis));
@@ -37,9 +37,9 @@ internal static class EpcisModelConfiguration
         request.Property(x => x.SchemaVersion).IsRequired(true);
         request.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("RequestId");
         request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId");
-        request.HasOne(x => x.StandardBusinessHeader).WithOne(x => x.Request).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(false);
-        request.HasOne(x => x.SubscriptionCallback).WithOne(x => x.Request).HasForeignKey<SubscriptionCallback>("RequestId").IsRequired(false);
-        request.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
+        request.HasOne(x => x.StandardBusinessHeader).WithOne(x => x.Request).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+        request.HasOne(x => x.SubscriptionCallback).WithOne(x => x.Request).HasForeignKey<SubscriptionCallback>("RequestId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+        request.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
 
         var header = modelBuilder.Entity<StandardBusinessHeader>();
         header.ToTable(nameof(StandardBusinessHeader), nameof(EpcisSchema.Sbdh));
@@ -51,7 +51,7 @@ internal static class EpcisModelConfiguration
         header.Property(x => x.InstanceIdentifier).HasMaxLength(256).IsRequired(true);
         header.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
         header.Property(x => x.CreationDateTime).IsRequired(false);
-        header.HasOne(x => x.Request).WithOne(x => x.StandardBusinessHeader).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(true);
+        header.HasOne(x => x.Request).WithOne(x => x.StandardBusinessHeader).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(true).OnDelete(DeleteBehavior.Cascade);
         header.HasMany(x => x.ContactInformations).WithOne(x => x.Header).HasForeignKey("RequestId");
 
         var contactInfo = modelBuilder.Entity<ContactInformation>();
@@ -65,7 +65,7 @@ internal static class EpcisModelConfiguration
         contactInfo.Property(x => x.FaxNumber).HasMaxLength(256).IsRequired(false);
         contactInfo.Property(x => x.TelephoneNumber).IsRequired(false);
         contactInfo.Property(x => x.ContactTypeIdentifier).IsRequired(false);
-        contactInfo.HasOne(x => x.Header).WithMany(x => x.ContactInformations).HasForeignKey("RequestId");
+        contactInfo.HasOne(x => x.Header).WithMany(x => x.ContactInformations).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
 
         var masterData = modelBuilder.Entity<MasterData>();
         masterData.ToTable(nameof(MasterData), nameof(EpcisSchema.Cbv));
@@ -80,13 +80,13 @@ internal static class EpcisModelConfiguration
 
         var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
         mdHierarchy.ToView(nameof(MasterDataHierarchy), nameof(EpcisSchema.Cbv));
-        mdHierarchy.HasOne(x => x.MasterData).WithMany(x => x.Hierarchies).HasForeignKey("RequestId", "Type", "Id");
+        mdHierarchy.HasOne(x => x.MasterData).WithMany(x => x.Hierarchies).HasForeignKey("RequestId", "Type", "Id").OnDelete(DeleteBehavior.Cascade);
         mdHierarchy.Property(x => x.ParentId);
 
         var mdChildren = modelBuilder.Entity<MasterDataChildren>();
         mdChildren.ToTable(nameof(MasterDataChildren), nameof(EpcisSchema.Cbv));
         mdChildren.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
-        mdChildren.HasOne(x => x.MasterData).WithMany(x => x.Children);
+        mdChildren.HasOne(x => x.MasterData).WithMany(x => x.Children).OnDelete(DeleteBehavior.Cascade);
         mdChildren.Property(x => x.ChildrenId).HasMaxLength(256);
 
         var mdAttribute = modelBuilder.Entity<MasterDataAttribute>();
@@ -97,7 +97,7 @@ internal static class EpcisModelConfiguration
         mdAttribute.Property<string>("MasterdataId").HasMaxLength(256);
         mdAttribute.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
         mdAttribute.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
-        mdAttribute.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
+        mdAttribute.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("RequestId", "MasterdataType", "MasterdataId").OnDelete(DeleteBehavior.Cascade);
         mdAttribute.HasMany(x => x.Fields).WithOne(x => x.Attribute).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
 
         var mdField = modelBuilder.Entity<MasterDataField>();
@@ -112,13 +112,13 @@ internal static class EpcisModelConfiguration
         mdField.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
         mdField.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
         mdField.Property(x => x.Value).HasMaxLength(256).IsRequired(false);
-        mdField.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
+        mdField.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId").OnDelete(DeleteBehavior.Cascade);
 
         var callback = modelBuilder.Entity<SubscriptionCallback>();
         callback.ToTable(nameof(SubscriptionCallback), nameof(EpcisSchema.Epcis));
         callback.Property<int>("RequestId");
         callback.HasKey("RequestId");
-        callback.HasOne(x => x.Request).WithOne(x => x.SubscriptionCallback).HasForeignKey<SubscriptionCallback>("RequestId");
+        callback.HasOne(x => x.Request).WithOne(x => x.SubscriptionCallback).HasForeignKey<SubscriptionCallback>("RequestId").OnDelete(DeleteBehavior.Cascade);
         callback.Property(x => x.CallbackType).IsRequired(true).HasConversion<short>();
         callback.Property(x => x.Reason).IsRequired(false);
         callback.Property(x => x.SubscriptionId).IsRequired(true).HasMaxLength(256);
@@ -145,7 +145,7 @@ internal static class EpcisModelConfiguration
         evt.HasMany(x => x.Transactions).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.CustomFields).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.CorrectiveEventIds).WithOne(x => x.Event).HasForeignKey("EventId");
-        evt.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId");
+        evt.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
 
         var epc = modelBuilder.Entity<Epc>();
         epc.ToTable(nameof(Epc), nameof(EpcisSchema.Epcis));
@@ -156,7 +156,7 @@ internal static class EpcisModelConfiguration
         epc.Property(x => x.IsQuantity).IsRequired(true).HasDefaultValue(false);
         epc.Property(x => x.Quantity).IsRequired(false);
         epc.Property(x => x.UnitOfMeasure).IsRequired(false).HasMaxLength(10);
-        epc.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("EventId");
+        epc.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
 
         var eventId = modelBuilder.Entity<CorrectiveEventId>();
         eventId.ToTable(nameof(CorrectiveEventId), nameof(EpcisSchema.Epcis));
@@ -184,7 +184,7 @@ internal static class EpcisModelConfiguration
         bizTrans.Property<long>("EventId");
         bizTrans.Property(x => x.Type).IsRequired(true);
         bizTrans.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-        bizTrans.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId");
+        bizTrans.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
 
         var customField = modelBuilder.Entity<CustomField>();
         customField.ToTable(nameof(CustomField), nameof(EpcisSchema.Epcis));
@@ -198,7 +198,7 @@ internal static class EpcisModelConfiguration
         customField.Property(x => x.TextValue).IsRequired(false);
         customField.Property(x => x.NumericValue).IsRequired(false);
         customField.Property(x => x.DateValue).IsRequired(false);
-        customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId");
+        customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
         customField.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey("EventId", "ParentId").OnDelete(DeleteBehavior.NoAction).IsRequired(false);
 
         var subscription = modelBuilder.Entity<Subscription>();
@@ -208,13 +208,13 @@ internal static class EpcisModelConfiguration
         subscription.Property(x => x.RecordIfEmpty).IsRequired(true);
         subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
         subscription.HasMany(x => x.Parameters).WithOne(x => x.Subscription).HasForeignKey("SubscriptionId");
-        subscription.HasOne(x => x.Schedule).WithOne(x => x.Subscription).HasForeignKey<Subscription>("ScheduleId").IsRequired(false);
+        subscription.HasOne(x => x.Schedule).WithOne(x => x.Subscription).HasForeignKey<Subscription>("ScheduleId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         subscription.HasMany(x => x.ExecutionRecords).WithOne(x => x.Subscription);
 
         var subscriptionParam = modelBuilder.Entity<SubscriptionParameter>();
         subscriptionParam.ToTable(nameof(SubscriptionParameter), nameof(EpcisSchema.Subscription));
         subscriptionParam.HasKey("SubscriptionId", nameof(SubscriptionParameter.Name));
-        subscriptionParam.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionId");
+        subscriptionParam.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
         subscriptionParam.Property(x => x.Value).IsRequired(false).HasConversion(
             x => JsonConvert.SerializeObject(x), 
             x => JsonConvert.DeserializeObject<string[]>(x), 
@@ -230,7 +230,7 @@ internal static class EpcisModelConfiguration
         subscriptionSchedule.Property(x => x.DayOfWeek).HasMaxLength(256).IsRequired(false);
         subscriptionSchedule.Property(x => x.DayOfMonth).HasMaxLength(256).IsRequired(false);
         subscriptionSchedule.Property(x => x.Month).HasMaxLength(256).IsRequired(false);
-        subscriptionSchedule.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<Subscription>("ScheduleId");
+        subscriptionSchedule.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<Subscription>("ScheduleId").OnDelete(DeleteBehavior.Cascade);
 
         var subscriptionExecutionRecord = modelBuilder.Entity<SubscriptionExecutionRecord>();
         subscriptionExecutionRecord.ToTable(nameof(SubscriptionExecutionRecord), nameof(EpcisSchema.Subscription));
@@ -239,7 +239,7 @@ internal static class EpcisModelConfiguration
         subscriptionExecutionRecord.Property(x => x.ResultsSent).IsRequired(true);
         subscriptionExecutionRecord.Property(x => x.Successful).IsRequired(true);
         subscriptionExecutionRecord.Property(x => x.Reason).IsRequired(false);
-        subscriptionExecutionRecord.HasOne(x => x.Subscription).WithMany(x => x.ExecutionRecords).HasForeignKey("SubscriptionId");
+        subscriptionExecutionRecord.HasOne(x => x.Subscription).WithMany(x => x.ExecutionRecords).HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
 
         var pendingRequest = modelBuilder.Entity<PendingRequest>();
         pendingRequest.ToTable(nameof(PendingRequest), nameof(EpcisSchema.Subscription));
