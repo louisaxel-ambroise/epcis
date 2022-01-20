@@ -6,6 +6,7 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries;
 using FasTnT.Domain.Utils;
 using FasTnT.Infrastructure.Database;
+using LinqKit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -190,15 +191,13 @@ public class SimpleEventQuery : IEpcisQuery
 
     private static IQueryable<Event> ApplyMatchParameter(QueryParameter param, IQueryable<Event> query)
     {
-        var typeExpression = (Expression<Func<Epc, bool>>)(e => param.GetMatchEpcTypes().Contains(e.Type));
-        var idExpressions = param.Values.Select(value => (Expression<Func<Epc, bool>>)(p => EF.Functions.Like(p.Id, value.Replace("*", "%"))));
-        var parameter = idExpressions.First().Parameters[0];
-        var orExpression = idExpressions.Aggregate(
-            Expression.OrElse(idExpressions.First().Body, 
-            Expression.Constant(false)), (x, y) => Expression.OrElse(x, Expression.Invoke(y, parameter))
-        );
-        var finalExpression = Expression.Lambda<Func<Epc, bool>>(Expression.AndAlso(orExpression, Expression.Invoke(typeExpression, parameter)), parameter);
+        var typePredicate = PredicateBuilder.New<Epc>(e => param.GetMatchEpcTypes().Contains(e.Type));
+        var likePredicate = PredicateBuilder.New<Epc>();
 
-        return query.Where(x => x.Epcs.AsQueryable().Where(finalExpression).Any());
+        param.Values.Select(p => p.Replace("*", "%")).ForEach(value => likePredicate.Or(e => EF.Functions.Like(e.Id, value)));
+
+        var finalPredicate = typePredicate.And(likePredicate);
+
+        return query.Where(x => x.Epcs.AsQueryable().Any(finalPredicate));
     }
 }
