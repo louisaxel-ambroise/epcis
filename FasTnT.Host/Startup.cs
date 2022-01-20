@@ -31,6 +31,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         var connectionString = _configuration.GetConnectionString("FasTnT.Database");
+        var commandTimeout = _configuration.GetValue("FasTnT.Database.ConnectionTimeout", 60);
 
         services.AddAuthentication("BasicAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
@@ -49,7 +50,7 @@ public class Startup
             httpLogging.ResponseBodyLogLimit = 4096;
         });
         services.AddHttpContextAccessor();
-        services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt.CommandTimeout(1)));
+        services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt.CommandTimeout(commandTimeout)));
 
         services.AddMediatR(typeof(PollQueryHandler), typeof(SubscriptionCreatedNotificationHandler));
         services.AddCarter();
