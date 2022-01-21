@@ -26,23 +26,19 @@ public static class XmlResponseFormatter
         return queryResults;
     }
 
-    public static XElement FormatUnexpectedError()
+    public static XElement FormatFault(EpcisException exception)
     {
-        return FormatError(ExceptionType.ImplementationException, "An unexpected error occured", ExceptionSeverity.Error);
+        return new(XName.Get("Fault", Namespaces.SoapEnvelop), new XElement("faultCode", "server"), new XElement("detail", FormatError(exception)));
     }
 
     public static XElement FormatError(EpcisException exception)
     {
-        return FormatError(exception.ExceptionType, exception.Message, exception.Severity);
-    }
+        var reason = !string.IsNullOrEmpty(exception.Message) ? new XElement("reason", exception.Message) : default;
+        var severity = exception.Severity != ExceptionSeverity.None ? new XElement("severity", exception.Severity.ToString()) : default;
+        var queryName = !string.IsNullOrEmpty(exception.QueryName) ? new XElement("queryName", exception.QueryName) : default;
+        var subscriptionId = !string.IsNullOrEmpty(exception.SubscriptionId) ? new XElement("subscriptionID", exception.SubscriptionId) : default;
 
-    private static XElement FormatError(ExceptionType type, string reason, ExceptionSeverity severity)
-    {
-        var reasonElt = !string.IsNullOrEmpty(reason) ? new XElement(nameof(reason), reason) : default;
-        var severityElt = new XElement(nameof(severity), severity);
-
-        return new XElement(XName.Get("Fault", Namespaces.SoapEnvelop), 
-                new XElement("faultCode", "server"), new XElement("detail", new XElement(type.ToString(), reasonElt, severityElt)));
+        return new(XName.Get(exception.ExceptionType.ToString(), Namespaces.Query), reason, severity, queryName, subscriptionId);
     }
 
     public static XElement FormatSubscriptionIds(GetSubscriptionIdsResult response)

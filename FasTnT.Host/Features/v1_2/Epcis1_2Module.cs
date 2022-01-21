@@ -92,8 +92,8 @@ public class Epcis1_2Module : ICarterModule
                 _logger.LogInformation(ex, "Unable to process query");
 
                 response = ex is EpcisException epcisEx
-                    ? XmlResponseFormatter.FormatError(epcisEx)
-                    : XmlResponseFormatter.FormatUnexpectedError();
+                    ? XmlResponseFormatter.FormatFault(epcisEx)
+                    : XmlResponseFormatter.FormatFault(EpcisException.Default);
             }
             finally
             {

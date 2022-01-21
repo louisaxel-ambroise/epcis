@@ -2,16 +2,15 @@
 
 public class EpcisException : Exception
 {
-    public static readonly EpcisException Default = new(ExceptionType.ImplementationException, string.Empty, ExceptionSeverity.Error);
+    public static readonly EpcisException Default = new (ExceptionType.ImplementationException, string.Empty) { Severity = ExceptionSeverity.Error };
 
     public ExceptionType ExceptionType { get; }
-    public ExceptionSeverity Severity { get; }
+    public ExceptionSeverity Severity { get; set; }
+    public string QueryName { get; set; }
+    public string SubscriptionId { get; set; }
 
-    public EpcisException(ExceptionType exceptionType, string message) : this(exceptionType, message, ExceptionSeverity.Error) { }
-
-    public EpcisException(ExceptionType exceptionType, string message, ExceptionSeverity severity) : base(message)
+    public EpcisException(ExceptionType exceptionType, string message) : base(message)
     {
         ExceptionType = exceptionType;
-        Severity = severity;
     }
 }

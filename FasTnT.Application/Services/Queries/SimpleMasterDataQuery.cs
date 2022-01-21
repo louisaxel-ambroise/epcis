@@ -34,7 +34,10 @@ public class SimpleMasterDataQuery : IEpcisQuery
 
         if (_maxEventCount.HasValue && result.Count > _maxEventCount)
         {
-            throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned more than the {_maxEventCount} elements allowed.");
+            throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
+            {
+                QueryName = Name
+            }; ;
         }
 
         return new PollMasterdataResponse(Name, result);

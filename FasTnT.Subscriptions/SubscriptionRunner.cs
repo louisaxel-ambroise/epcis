@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Services;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries;
 using FasTnT.Infrastructure.Database;
@@ -29,24 +30,35 @@ public class SubscriptionRunner
         _logger.LogInformation("Running Subscription {Name} ({Id})", subscription.Name, subscription.Id);
         _context.Attach(subscription);
 
-        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = System.DateTime.UtcNow, ResultsSent = true, Successful = true };
+        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = DateTime.UtcNow, ResultsSent = true, Successful = true };
         var query = _epcisQueries.Single(x => x.Name == subscription.QueryName);
         var pendingRequests = await _context.PendingRequests.Where(x => x.SubscriptionId == subscription.Id).ToListAsync(cancellationToken);
-        PollResponse response = new PollEventResponse(query.Name, new());
+        var resultsSent = false;
 
-        if (pendingRequests.Any())
+        try
         {
-            var parameters = subscription.Parameters
-                .Select(s => new QueryParameter(s.Name, s.Value))
-                .Append(new ("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
-                .ToArray();
+            PollResponse response = new PollEventResponse(query.Name, new());
 
-            response = await query.HandleAsync(parameters, cancellationToken);
+            if (pendingRequests.Any())
+            {
+                var parameters = subscription.Parameters
+                    .Select(s => new QueryParameter(s.Name, s.Value))
+                    .Append(new ("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
+                    .ToArray();
+
+                response = await query.HandleAsync(parameters, cancellationToken);
+            }
+
+            response.SubscriptionId = subscription.Name;
+            resultsSent = await SendQueryResults(executionContext, response, cancellationToken).ConfigureAwait(false);
+        }
+        catch(EpcisException ex)
+        {
+            ex.SubscriptionId = subscription.Name;
+
+            resultsSent = await SendExceptionResult(executionContext, ex, cancellationToken).ConfigureAwait(false);
         }
 
-        response.SubscriptionId = subscription.Name;
-
-        var resultsSent = await SendSubscriptionResults(executionContext, response, cancellationToken).ConfigureAwait(false);
 
         if (resultsSent)
         {
@@ -66,13 +78,15 @@ public class SubscriptionRunner
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task<bool> SendSubscriptionResults(SubscriptionExecutionContext context, PollResponse response, CancellationToken cancellationToken)
+    private async Task<bool> SendQueryResults(SubscriptionExecutionContext context, PollResponse response, CancellationToken cancellationToken)
     {
-        if (response.EventList.Count > 0 || context.Subscription.RecordIfEmpty)
-        {
-            return await _resultSender.Send(context, response, cancellationToken);
-        }
+        return response.EventList.Count > 0 || context.Subscription.RecordIfEmpty
+            ? await _resultSender.Send(context, response, cancellationToken).ConfigureAwait(false)
+            : true;
+    }
 
-        return true;
+    private async Task<bool> SendExceptionResult(SubscriptionExecutionContext context, EpcisException response, CancellationToken cancellationToken)
+    {
+        return await _resultSender.Send(context, response, cancellationToken);
     }
 }
