@@ -4,6 +4,7 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries;
 using FasTnT.Domain.Utils;
 using FasTnT.Infrastructure.Database;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Queries;
@@ -25,19 +26,44 @@ public class SimpleMasterDataQuery : IEpcisQuery
     {
         var query = _context.MasterData.AsSplitQuery().AsNoTrackingWithIdentityResolution();
 
-        foreach(var parameter in parameters)
+        foreach (var parameter in parameters)
         {
-            query = ApplyParameter(parameter, query);
+            try
+            {
+                query = ApplyParameter(parameter, query);
+            }
+            catch
+            {
+                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid Query Parameter or Value: {parameter.Name}");
+            }
         }
 
-        var result = await query.ToListAsync(cancellationToken);
-
-        if (_maxEventCount.HasValue && result.Count > _maxEventCount)
+        try
         {
-            throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned more than the {_maxEventCount} elements allowed.");
-        }
+            var result = await query.ToListAsync(cancellationToken);
 
-        return new PollMasterdataResponse(Name, result);
+            if (_maxEventCount.HasValue && result.Count > _maxEventCount)
+            {
+                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
+                {
+                    QueryName = Name
+                }; ;
+            }
+
+            return new PollMasterdataResponse(Name, result);
+        }
+        catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
+        {
+            throw new EpcisException(ExceptionType.QueryParameterException, "Invalid parameter value.");
+        }
+        catch (SqlException e) when (e.Number == -2)
+        {
+            throw new EpcisException(ExceptionType.ImplementationException, "Query took too long to execute")
+            {
+                Severity = ExceptionSeverity.Severe,
+                QueryName = Name
+            };
+        }
     }
 
     private IQueryable<MasterData> ApplyParameter(QueryParameter param, IQueryable<MasterData> query)

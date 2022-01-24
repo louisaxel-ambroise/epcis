@@ -2,6 +2,7 @@
 
 public enum ExceptionSeverity
 {
+    None,
     Error,
     Severe
 }

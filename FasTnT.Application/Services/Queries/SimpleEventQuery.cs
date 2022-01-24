@@ -37,7 +37,14 @@ public class SimpleEventQuery : IEpcisQuery
 
         foreach (var parameter in parameters)
         {
-            query = ApplyParameter(parameter, query);
+            try
+            {
+                query = ApplyParameter(parameter, query);
+            }
+            catch
+            {
+                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid Query Parameter or Value: {parameter.Name}");
+            }
         }
 
         try
@@ -46,13 +53,12 @@ public class SimpleEventQuery : IEpcisQuery
                 .Select(evt => evt.Id)
                 .ToListAsync(cancellationToken);
 
-            if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount)
+            if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount || eventIds.Count > Constants.MaxEventsReturnedInQuery)
             {
-                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned more than the {_maxEventCount} events allowed.");
-            }
-            if (eventIds.Count > Constants.MaxEventsReturnedInQuery)
-            {
-                throw new EpcisException(ExceptionType.QueryTooComplexException, $"Query is too complex.");
+                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
+                {
+                    QueryName = Name
+                }; ;
             }
 
             query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
@@ -68,9 +74,17 @@ public class SimpleEventQuery : IEpcisQuery
 
             return new PollEventResponse(Name, result);
         }
-        catch(SqlException e) when (e.Number == -2)
+        catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
         {
-            throw new EpcisException(ExceptionType.QueryTooComplexException, "Query is too complex.");
+            throw new EpcisException(ExceptionType.QueryParameterException, "Invalid parameter value.");
+        }
+        catch (SqlException e) when (e.Number == -2)
+        {
+            throw new EpcisException(ExceptionType.ImplementationException, "Query took too long to execute")
+            {
+                Severity = ExceptionSeverity.Severe,
+                QueryName = Name
+            };
         }
     }
 
