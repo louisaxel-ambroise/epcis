@@ -1,4 +1,6 @@
-﻿using FasTnT.Formatter.Xml.Utils;
+﻿using FasTnT.Domain.Exceptions;
+using FasTnT.Formatter.Xml.Formatters;
+using FasTnT.Formatter.Xml.Utils;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -35,5 +37,10 @@ public static class SoapExtensions
         }
 
         return envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query);
+    }
+
+    public static XElement FormatFault(EpcisException exception)
+    {
+        return new(XName.Get("Fault", Namespaces.SoapEnvelop), new XElement("faultCode", "server"), new XElement("detail", XmlResponseFormatter.FormatError(exception)));
     }
 }

@@ -43,10 +43,9 @@ public class SimpleEventQuery : IEpcisQuery
             }
             catch
             {
-                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid Query Parameter: {parameter.Name}");
+                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid Query Parameter or Value: {parameter.Name}");
             }
         }
-        
 
         try
         {
@@ -75,13 +74,17 @@ public class SimpleEventQuery : IEpcisQuery
 
             return new PollEventResponse(Name, result);
         }
-        catch(SqlException e) when (e.Number == -2)
+        catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
+        {
+            throw new EpcisException(ExceptionType.QueryParameterException, "Invalid parameter value.");
+        }
+        catch (SqlException e) when (e.Number == -2)
         {
             throw new EpcisException(ExceptionType.ImplementationException, "Query took too long to execute")
             {
                 Severity = ExceptionSeverity.Severe,
                 QueryName = Name
-            }; ;
+            };
         }
     }
 

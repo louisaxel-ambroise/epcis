@@ -11,7 +11,6 @@ public static class QueryParameterExtensions
     public static bool GetBoolValue(this QueryParameter parameter) => bool.Parse(parameter.Value());
     public static double GetNumeric(this QueryParameter parameter) => double.Parse(parameter.Value(), CultureInfo.InvariantCulture);
     public static DateTime GetDate(this QueryParameter parameter) => DateTime.Parse(parameter.Value(), null, DateTimeStyles.AdjustToUniversal);
-
     public static bool IsDateTime(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), "^([0-9]{4})-([0-9]{2})-([0-9]{2})");
     public static bool IsNumeric(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), @"^-?\d+(?:\.\d+)?$");
 
@@ -31,7 +30,6 @@ public static class QueryParameterExtensions
     }
 
     public static string GetSimpleId(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
-
     public static string InnerIlmdName(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[1];
     public static string InnerIlmdNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[0];
     public static string IlmdName(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[1];
@@ -40,7 +38,6 @@ public static class QueryParameterExtensions
     public static string InnerFieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[0];
     public static string FieldName(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[1];
     public static string FieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[0];
-
     public static string GetAttributeName(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
 
     public static EpcType[] GetMatchEpcTypes(this QueryParameter parameter)

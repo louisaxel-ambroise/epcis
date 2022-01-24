@@ -26,11 +26,6 @@ public static class XmlResponseFormatter
         return queryResults;
     }
 
-    public static XElement FormatFault(EpcisException exception)
-    {
-        return new(XName.Get("Fault", Namespaces.SoapEnvelop), new XElement("faultCode", "server"), new XElement("detail", FormatError(exception)));
-    }
-
     public static XElement FormatError(EpcisException exception)
     {
         var reason = !string.IsNullOrEmpty(exception.Message) ? new XElement("reason", exception.Message) : default;
