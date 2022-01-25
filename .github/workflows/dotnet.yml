@@ -27,11 +27,6 @@ jobs:
 
     - name: Test
       run: dotnet test --no-build --verbosity normal -c Debug /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-      
-    - name: Upload Coverage
-      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r Tests/FasTnT.Formatters.Xml.Tests/coverage.opencover.xml -r Tests/FasTnT.Application.Tests/coverage.opencover.xml
-      env:
-        CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
           
     - name: Log in to the Container registry
       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
