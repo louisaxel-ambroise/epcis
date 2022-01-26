@@ -11,6 +11,7 @@ COPY ["FasTnT.Application/FasTnT.Application.csproj", "FasTnT.Application/"]
 COPY ["FasTnT.Domain/FasTnT.Domain.csproj", "FasTnT.Domain/"]
 COPY ["FasTnT.Subscriptions/FasTnT.Subscriptions.csproj", "FasTnT.Subscriptions/"]
 RUN dotnet restore "FasTnT.Host/FasTnT.Host.csproj"
+
 COPY . .
 WORKDIR "/src/FasTnT.Host"
 RUN dotnet build "FasTnT.Host.csproj" -c Release -o /app/build
