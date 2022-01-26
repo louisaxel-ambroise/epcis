@@ -18,8 +18,9 @@ public class GetSubscriptionIdsQueryHandler : IRequestHandler<GetSubscriptionIds
     {
         var subscriptionIds = await _context.Subscriptions
             .AsNoTracking()
-            .Where(x => x.QueryName == request.QueryName).Select(x => x.Name)
-            .ToListAsync(cancellationToken);
+            .Where(x => x.QueryName == request.QueryName)
+            .Select(x => x.Name)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         return new(subscriptionIds);
     }
