@@ -38,6 +38,6 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        file: FasTnT.Host/DockerFile
+        file: FasTnT.Host/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/epcis-ef-core:latest
