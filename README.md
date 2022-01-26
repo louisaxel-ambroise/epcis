@@ -21,11 +21,13 @@ Steps:
 
 That's it! You have a properly working EPCIS 1.2 repository.
 
+You can also setup FasTnT EPCIS using the Docker image or in Azure quite easily. Check the [wiki](https://github.com/FasTnT/epcis-ef-core/wiki/Installation) for more details.
+
 ## HTTP Endpoints
 
 ### EPCIS 1.2 endpoints:
 
-The API is secured using HTTP Basic authentication. The default username:password value is `admin:P@ssw0rd`
+The API is secured using HTTP Basic authentication. There is no default user, but when in Development environment the unknown users will be created autmatically. A user is limited to see only the events and masterdata he captured by default.
 
 - Capture: `POST /v1_2/Capture`
 - Queries : `POST /v1_2/Query.svc`
