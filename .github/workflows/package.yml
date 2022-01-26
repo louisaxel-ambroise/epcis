@@ -3,6 +3,9 @@ name: Package
 on:
   release:
     types: [published]
+    
+permissions:
+  packages: write
 
 jobs:
   build:
@@ -27,7 +30,7 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
-        username: ${{ github.actor }}
+        username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
@@ -37,5 +40,5 @@ jobs:
         file: FasTnT.Host/Dockerfile
         push: true
         tags: |
-          ghcr.io/${{ github.actor }}/epcis-ef-core/epcis:${{ github.event.release.tag_name }}
-          ghcr.io/${{ github.actor }}/epcis-ef-core/epcis:latest
+          ghcr.io/${{ github.repository }}/epcis:${{ github.event.release.tag_name }}
+          ghcr.io/${{ github.repository }}/epcis:latest
