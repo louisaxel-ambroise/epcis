@@ -41,4 +41,4 @@ jobs:
         context: .
         file: FasTnT.Host/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/epcis-ef-core:latest
+        tags: louisaxel-ambroise/epcis-ef-core:latest
