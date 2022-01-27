@@ -6,6 +6,9 @@ on:
     
 permissions:
   packages: write
+  
+env:
+  REPO: fastnt/epcis-ef-core
 
 jobs:
   build:
@@ -40,5 +43,5 @@ jobs:
         file: FasTnT.Host/Dockerfile
         push: true
         tags: |
-          ghcr.io/${{ github.repository }}/epcis:${{ github.event.release.tag_name }}
-          ghcr.io/${{ github.repository }}/epcis:latest
+          ghcr.io/${{ env.REPO }}/epcis:${{ github.event.release.tag_name }}
+          ghcr.io/${{ env.REPO }}/epcis:latest
