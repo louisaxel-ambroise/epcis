@@ -103,7 +103,7 @@ namespace FasTnT.Application.Migrations
                     b.Property<bool>("HasParent")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bit")
-                        .HasComputedColumnSql("[ParentId] IS NOT NULL", false);
+                        .HasComputedColumnSql("(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", true);
 
                     b.Property<string>("Name")
                         .IsRequired()
