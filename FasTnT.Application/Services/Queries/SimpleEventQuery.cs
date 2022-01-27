@@ -58,7 +58,7 @@ public class SimpleEventQuery : IEpcisQuery
                 throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
                 {
                     QueryName = Name
-                }; ;
+                };
             }
 
             query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()

@@ -49,7 +49,7 @@ public class SimpleMasterDataQuery : IEpcisQuery
                 throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
                 {
                     QueryName = Name
-                }; ;
+                };
             }
 
             return new PollMasterdataResponse(Name, result);
