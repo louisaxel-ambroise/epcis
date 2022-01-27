@@ -40,7 +40,9 @@ public class SimpleMasterDataQuery : IEpcisQuery
 
         try
         {
-            var result = await query.ToListAsync(cancellationToken);
+            var result = await query
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
 
             if (_maxEventCount.HasValue && result.Count > _maxEventCount)
             {

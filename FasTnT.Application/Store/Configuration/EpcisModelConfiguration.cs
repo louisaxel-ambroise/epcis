@@ -190,7 +190,7 @@ internal static class EpcisModelConfiguration
         customField.ToTable(nameof(CustomField), nameof(EpcisSchema.Epcis));
         customField.Property<int>("FieldId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
         customField.Property<long>("EventId");
-        customField.Property<int?>("ParentId").IsRequired(false);
+        customField.Property<int?>("ParentId");
         customField.HasKey("EventId", "FieldId");
         customField.Property(x => x.Type).IsRequired(true).HasConversion<short>();
         customField.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
@@ -198,6 +198,7 @@ internal static class EpcisModelConfiguration
         customField.Property(x => x.TextValue).IsRequired(false);
         customField.Property(x => x.NumericValue).IsRequired(false);
         customField.Property(x => x.DateValue).IsRequired(false);
+        customField.Property(x => x.HasParent).HasComputedColumnSql("[ParentId] IS NOT NULL", stored: false);
         customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
         customField.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey("EventId", "ParentId").OnDelete(DeleteBehavior.NoAction).IsRequired(false);
 
