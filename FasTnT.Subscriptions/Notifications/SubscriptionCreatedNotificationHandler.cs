@@ -22,24 +22,9 @@ public class SubscriptionCreatedNotificationHandler : INotificationHandler<Subsc
             .AsNoTracking()
             .Include(x => x.Parameters)
             .Include(x => x.Schedule)
-            .SingleOrDefaultAsync(x => x.Id == notification.SubscriptionId, cancellationToken);
+            .SingleOrDefaultAsync(x => x.Id == notification.SubscriptionId, cancellationToken)
+            .ConfigureAwait(false);
 
         _subscriptionService.Register(subscription);
-    }
-}
-
-public class TriggerSubscriptionNotificationHandler : INotificationHandler<TriggerSubscriptionNotification>
-{
-    private readonly ISubscriptionService _subscriptionService;
-
-    public TriggerSubscriptionNotificationHandler(ISubscriptionService subscriptionService)
-    {
-        _subscriptionService = subscriptionService;
-    }
-
-    public Task Handle(TriggerSubscriptionNotification notification, CancellationToken cancellationToken)
-    {
-        _subscriptionService.Trigger(notification.Triggers);
-        return Task.CompletedTask;
     }
 }

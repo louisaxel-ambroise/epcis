@@ -14,8 +14,6 @@ public class SubscriptionRemovedNotificationHandler : INotificationHandler<Subsc
 
     public Task Handle(SubscriptionRemovedNotification notification, CancellationToken cancellationToken)
     {
-        _subscriptionService.Remove(notification.SubscriptionId);
-
-        return Task.CompletedTask;
+        return Task.Run(() => _subscriptionService.Remove(notification.SubscriptionId), cancellationToken);
     }
 }
