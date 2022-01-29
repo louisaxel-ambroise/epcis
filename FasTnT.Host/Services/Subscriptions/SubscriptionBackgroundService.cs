@@ -8,7 +8,7 @@ namespace FasTnT.Host.Services.Subscriptions;
 
 public sealed class SubscriptionBackgroundService : BackgroundService, ISubscriptionService
 {
-    private readonly object _monitor = new();
+    private static readonly object _monitor = new();
     private readonly IServiceProvider _services;
     private readonly ILogger<SubscriptionBackgroundService> _logger;
     private readonly ConcurrentDictionary<Subscription, DateTime> _scheduledExecutions = new();
@@ -60,16 +60,16 @@ public sealed class SubscriptionBackgroundService : BackgroundService, ISubscrip
 
     private IEnumerable<SubscriptionExecutionContext> GetScheduledSubscriptions(DateTime executionDate)
     {
-        var subscriptions = _scheduledExecutions.Where(x => x.Value <= executionDate).ToArray();
+        var plannedExecutions = _scheduledExecutions.Where(x => x.Value <= executionDate).ToArray();
 
-        foreach (var subscription in subscriptions)
+        foreach (var plannedExecution in plannedExecutions)
         {
-            var nextOccurence = subscription.Key.Schedule.GetNextOccurence(subscription.Value);
+            var nextOccurence = plannedExecution.Key.Schedule.GetNextOccurence(plannedExecution.Value);
 
-            _scheduledExecutions.TryUpdate(subscription.Key, nextOccurence, subscription.Value);
+            _scheduledExecutions.TryUpdate(plannedExecution.Key, nextOccurence, plannedExecution.Value);
         }
 
-        return subscriptions.Select(x => new SubscriptionExecutionContext(x.Key, x.Value));
+        return plannedExecutions.Select(x => new SubscriptionExecutionContext(x.Key, x.Value));
     }
 
     private void Execute(SubscriptionExecutionContext[] subscriptions, CancellationToken cancellationToken)
