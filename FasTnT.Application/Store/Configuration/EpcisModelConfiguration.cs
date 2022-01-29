@@ -126,7 +126,7 @@ internal static class EpcisModelConfiguration
         var evt = modelBuilder.Entity<Event>();
         evt.ToTable(nameof(Event), nameof(EpcisSchema.Epcis));
         evt.HasKey(x => x.Id);
-        evt.Property(x => x.Id).IsRequired(true).UseIdentityColumn(1, 1);
+        evt.Property(x => x.Id).IsRequired(true).UseIdentityColumn(1, 1).HasColumnType("bigint");
         evt.Property(x => x.EventTime).IsRequired(true);
         evt.Property(x => x.Type).IsRequired(true).HasConversion<short>();
         evt.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => new TimeZoneOffset { Value = x });
@@ -150,7 +150,7 @@ internal static class EpcisModelConfiguration
         var epc = modelBuilder.Entity<Epc>();
         epc.ToTable(nameof(Epc), nameof(EpcisSchema.Epcis));
         epc.HasKey("EventId", nameof(Epc.Type), nameof(Epc.Id));
-        epc.Property<long>("EventId");
+        epc.Property<long>("EventId").HasColumnType("bigint");
         epc.Property(x => x.Type).IsRequired(true).HasConversion<short>();
         epc.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
         epc.Property(x => x.IsQuantity).IsRequired(true).HasDefaultValue(false);
@@ -161,19 +161,19 @@ internal static class EpcisModelConfiguration
         var eventId = modelBuilder.Entity<CorrectiveEventId>();
         eventId.ToTable(nameof(CorrectiveEventId), nameof(EpcisSchema.Epcis));
         eventId.HasKey("EventId", nameof(CorrectiveEventId.CorrectiveId));
-        eventId.Property<long>("EventId");
+        eventId.Property<long>("EventId").HasColumnType("bigint");
         eventId.Property(x => x.CorrectiveId).IsRequired(true).HasMaxLength(256);
 
         var source = modelBuilder.Entity<Source>();
         source.ToTable(nameof(Source), nameof(EpcisSchema.Epcis));
-        source.Property<long>("EventId");
+        source.Property<long>("EventId").HasColumnType("bigint");
         source.HasKey("EventId", nameof(Source.Type), nameof(Source.Id));
         source.Property(x => x.Type).IsRequired(true);
         source.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
 
         var dest = modelBuilder.Entity<Destination>();
         dest.ToTable(nameof(Destination), nameof(EpcisSchema.Epcis));
-        dest.Property<long>("EventId");
+        dest.Property<long>("EventId").HasColumnType("bigint");
         dest.HasKey("EventId", nameof(Destination.Type), nameof(Destination.Id));
         dest.Property(x => x.Type).IsRequired(true);
         dest.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
@@ -181,7 +181,7 @@ internal static class EpcisModelConfiguration
         var bizTrans = modelBuilder.Entity<BusinessTransaction>();
         bizTrans.ToTable(nameof(BusinessTransaction), nameof(EpcisSchema.Epcis));
         bizTrans.HasKey("EventId", nameof(BusinessTransaction.Type), nameof(BusinessTransaction.Id));
-        bizTrans.Property<long>("EventId");
+        bizTrans.Property<long>("EventId").HasColumnType("bigint");
         bizTrans.Property(x => x.Type).IsRequired(true);
         bizTrans.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
         bizTrans.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
@@ -189,7 +189,7 @@ internal static class EpcisModelConfiguration
         var customField = modelBuilder.Entity<CustomField>();
         customField.ToTable(nameof(CustomField), nameof(EpcisSchema.Epcis));
         customField.Property<int>("FieldId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
-        customField.Property<long>("EventId");
+        customField.Property<long>("EventId").HasColumnType("bigint");
         customField.Property<int?>("ParentId");
         customField.HasKey("EventId", "FieldId");
         customField.Property(x => x.Type).IsRequired(true).HasConversion<short>();

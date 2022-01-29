@@ -41,6 +41,7 @@ public class SimpleMasterDataQuery : IEpcisQuery
         try
         {
             var result = await query
+                .Take(_maxEventCount ?? int.MaxValue)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
@@ -72,7 +73,7 @@ public class SimpleMasterDataQuery : IEpcisQuery
     {
         return param.Name switch
         {
-            "maxElementCount" => ParseMaxElementCount(param, query),
+            "maxElementCount" => ParseLimitEventCount(param, query, ref _maxEventCount),
             "includeAttributes" => param.GetBoolValue() ? query.Include(x => x.Attributes).ThenInclude(x => x.Fields) : query,
             "includeChildren" => param.GetBoolValue() ? query.Include(x => x.Children) : query,
             "vocabularyName" => query.Where(x => x.Type == param.Value()),
@@ -88,11 +89,11 @@ public class SimpleMasterDataQuery : IEpcisQuery
         };
     }
 
-    private IQueryable<MasterData> ParseMaxElementCount(QueryParameter param, IQueryable<MasterData> query)
+    private static IQueryable<MasterData> ParseLimitEventCount(QueryParameter param, IQueryable<MasterData> query, ref int? destination)
     {
-        _maxEventCount = param.GetIntValue();
+        destination = param.GetIntValue();
 
-        return query.Take(1 + _maxEventCount.Value);
+        return query;
     }
 
     private static IQueryable<MasterData> ApplyEqAttrParameter(QueryParameter param, IQueryable<MasterData> query)
