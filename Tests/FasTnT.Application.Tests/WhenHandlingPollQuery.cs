@@ -15,7 +15,7 @@ public class WhenHandlingPollQuery
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [TestMethod]
-    public void ItShouldReturnAllTheQueryNames()
+    public void ItShouldReturnAPollResponse()
     {
         var queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
         var handler = new PollQueryHandler(queries, UserContext);

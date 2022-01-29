@@ -21,7 +21,7 @@ public class SimpleEventQuery : IEpcisQuery
     private readonly EpcisContext _context;
     private int? _maxEventCount = default;
     private OrderDirection _orderDirection = OrderDirection.Ascending;
-    private Expression<Func<Event, object>> _orderExpression = (Event e) => e.CaptureTime;
+    private Expression<Func<Event, object>> _orderExpression = e => e.CaptureTime;
 
     public SimpleEventQuery(EpcisContext context)
     {
@@ -58,19 +58,18 @@ public class SimpleEventQuery : IEpcisQuery
                 throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
                 {
                     QueryName = Name
-                }; ;
+                };
             }
 
             query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
                 .Include(x => x.Epcs)
                 .Include(x => x.Sources)
                 .Include(x => x.Destinations)
-                .Include(x => x.CustomFields).ThenInclude(x => x.Children)
+                .Include(x => x.CustomFields)
                 .Include(x => x.Transactions)
                 .Where(evt => eventIds.Contains(evt.Id));
 
-            var result = await ApplyOrderBy(query)
-                .ToListAsync(cancellationToken);
+            var result = await ApplyOrderBy(query).ToListAsync(cancellationToken);
 
             return new PollEventResponse(Name, result);
         }
@@ -193,14 +192,17 @@ public class SimpleEventQuery : IEpcisQuery
 
     private static IQueryable<Event> ApplyComparison(QueryParameter param, IQueryable<Event> query, FieldType type, string ns, string name, bool inner)
     {
-        return param.Name[..2] switch
+        var customFieldPredicate = PredicateBuilder.New<CustomField>(f => f.Type == type && f.Name == name && f.Namespace == ns && f.HasParent == inner);
+        var fieldValuePredicate = param.Name[..2] switch
         {
-            "GE" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue >= param.GetDate()) || (param.IsNumeric() && f.NumericValue >= param.GetNumeric())))),
-            "GT" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue > param.GetDate()) || (param.IsNumeric() && f.NumericValue > param.GetNumeric())))),
-            "LE" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue <= param.GetDate()) || (param.IsNumeric() && f.NumericValue <= param.GetNumeric())))),
-            "LT" => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && f.Name == name && f.Namespace == ns && ((param.IsDateTime() && f.DateValue < param.GetDate()) || (param.IsNumeric() && f.NumericValue < param.GetNumeric())))),
+            "GE" => PredicateBuilder.New<CustomField>(param.IsDateTime() ? f => f.DateValue >= param.GetDate() : f => f.NumericValue >= param.GetNumeric()),
+            "GT" => PredicateBuilder.New<CustomField>(param.IsDateTime() ? f => f.DateValue > param.GetDate() : f => f.NumericValue > param.GetNumeric()),
+            "LE" => PredicateBuilder.New<CustomField>(param.IsDateTime() ? f => f.DateValue <= param.GetDate() : f => f.NumericValue <= param.GetNumeric()),
+            "LT" => PredicateBuilder.New<CustomField>(param.IsDateTime() ? f => f.DateValue < param.GetDate() : f => f.NumericValue < param.GetNumeric()),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
         };
+
+        return query.Where(x => x.CustomFields.AsQueryable().Any(customFieldPredicate.And(fieldValuePredicate)));
     }
 
     private static IQueryable<Event> ApplyMatchParameter(QueryParameter param, IQueryable<Event> query)

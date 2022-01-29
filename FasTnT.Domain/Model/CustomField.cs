@@ -12,5 +12,6 @@ public class CustomField
     public double? NumericValue { get; set; }
     public DateTime? DateValue { get; set; }
     public CustomField Parent { get; set; }
+    public bool HasParent { get; set; }
     public List<CustomField> Children { get; set; } = new();
 }
