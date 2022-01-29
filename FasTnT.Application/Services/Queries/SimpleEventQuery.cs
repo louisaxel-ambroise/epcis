@@ -33,8 +33,7 @@ public class SimpleEventQuery : IEpcisQuery
 
     public async Task<PollResponse> HandleAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var query = _context.Events
-            .AsNoTracking();
+        var query = _context.Events.AsNoTracking();
 
         foreach (var parameter in parameters)
         {
