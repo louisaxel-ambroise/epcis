@@ -19,7 +19,7 @@ public class SimpleEventQuery : IEpcisQuery
     const string Comparison = "(GE|GT|LE|LT)";
 
     private readonly EpcisContext _context;
-    private int? _maxEventCount = default;
+    private int? _maxEventCount = default, _eventCountLimit = Constants.MaxEventsReturnedInQuery + 1;
     private OrderDirection _orderDirection = OrderDirection.Ascending;
     private Expression<Func<Event, object>> _orderExpression = e => e.CaptureTime;
 
@@ -49,9 +49,10 @@ public class SimpleEventQuery : IEpcisQuery
 
         try
         {
-            var eventIds = await ApplyOrderBy(query)
+            var eventIds = await ApplyOrderByLimit(query)
                 .Select(evt => evt.Id)
-                .ToListAsync(cancellationToken);
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
 
             if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount || eventIds.Count > Constants.MaxEventsReturnedInQuery)
             {
@@ -69,9 +70,9 @@ public class SimpleEventQuery : IEpcisQuery
                 .Include(x => x.Transactions)
                 .Where(evt => eventIds.Contains(evt.Id));
 
-            var result = await ApplyOrderBy(query).ToListAsync(cancellationToken);
+            var result = await query.ToListAsync(cancellationToken);
 
-            return new PollEventResponse(Name, result);
+            return new PollEventResponse(Name, ApplyOrderByLimit(result.AsQueryable()).ToList());
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
         {
@@ -87,11 +88,15 @@ public class SimpleEventQuery : IEpcisQuery
         }
     }
 
-    private IQueryable<Event> ApplyOrderBy(IQueryable<Event> query)
+    private IQueryable<Event> ApplyOrderByLimit(IQueryable<Event> query)
     {
+        var limit = _maxEventCount.HasValue 
+            ? _maxEventCount.Value + 1
+            : _eventCountLimit.Value;    
+
         return _orderDirection == OrderDirection.Ascending
-            ? query.OrderBy(_orderExpression)
-            : query.OrderByDescending(_orderExpression);
+            ? query.OrderBy(_orderExpression).Take(limit)
+            : query.OrderByDescending(_orderExpression).Take(limit);
     }
 
     private IQueryable<Event> ApplyParameter(QueryParameter param, IQueryable<Event> query)
@@ -103,8 +108,8 @@ public class SimpleEventQuery : IEpcisQuery
             "orderDirection" => ParseOrderDirection(param, query),
             // Simple filters
             "eventType" => query.Where(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)),
-            "eventCountLimit" => query.Take(param.GetIntValue()),
-            "maxEventCount" => ParseMaxEventCount(param, query),
+            "eventCountLimit" => ParseLimitEventCount(param, query, ref _eventCountLimit),
+            "maxEventCount" => ParseLimitEventCount(param, query, ref _maxEventCount),
             "GE_eventTime" => query.Where(x => x.EventTime >= param.GetDate()),
             "LT_eventTime" => query.Where(x => x.EventTime < param.GetDate()),
             "GE_recordTime" => query.Where(x => x.Request.CaptureDate >= param.GetDate()),
@@ -183,11 +188,11 @@ public class SimpleEventQuery : IEpcisQuery
     private static IQueryable<Event> ApplyCustomFieldParameter(string[] values, IQueryable<Event> query, FieldType type, bool inner, string name, string ns)
         => query.Where(x => x.CustomFields.Any(f => f.Type == type && f.Parent == null == !inner && values.Contains(f.TextValue) && f.Name == name && f.Namespace == ns));
 
-    private IQueryable<Event> ParseMaxEventCount(QueryParameter param, IQueryable<Event> query)
+    private static IQueryable<Event> ParseLimitEventCount(QueryParameter param, IQueryable<Event> query, ref int? destination)
     {
-        _maxEventCount = param.GetIntValue();
+        destination = param.GetIntValue();
 
-        return query.Take(1 + _maxEventCount.Value);
+        return query;
     }
 
     private static IQueryable<Event> ApplyComparison(QueryParameter param, IQueryable<Event> query, FieldType type, string ns, string name, bool inner)
