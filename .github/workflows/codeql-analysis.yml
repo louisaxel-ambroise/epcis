@@ -32,9 +32,9 @@ jobs:
       uses: github/codeql-action/init@v1
       with:
         languages: ${{ matrix.language }}
-
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v1
+        
+    - run: |
+        dotnet build /p:UseSharedCompilation=false
       
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
