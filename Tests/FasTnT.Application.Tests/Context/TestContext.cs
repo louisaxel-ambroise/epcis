@@ -12,8 +12,16 @@ public static class TestContext
             .Options;
     }
 
-    public static EpcisContext GetContext(string databaseName)
+    public static EpcisContext GetContext(string databaseName, bool reset = true)
     {
-        return new(GetOptions(databaseName));
+        var context = new EpcisContext(GetOptions(databaseName));
+
+        if (reset)
+        {
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+        }
+
+        return context;
     }
 }
