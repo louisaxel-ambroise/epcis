@@ -2,7 +2,7 @@
 using FasTnT.Domain.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace FasTnT.Infrastructure.Configuration;
  
@@ -24,8 +24,8 @@ internal static class EpcisModelConfiguration
         userParameter.HasKey("UserId", "Name");
         userParameter.Property(x => x.Name).IsRequired(true);
         userParameter.Property(x => x.Values).IsRequired(false).HasConversion(
-            x => JsonConvert.SerializeObject(x),
-            x => JsonConvert.DeserializeObject<string[]>(x),
+            x => JsonSerializer.Serialize(x, default(JsonSerializerOptions)),
+            x => JsonSerializer.Deserialize<string[]>(x, default(JsonSerializerOptions)),
             new ValueComparer<string[]>((c1, c2) => c1.SequenceEqual(c2), c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), c => c.ToArray()));
         userParameter.HasOne(x => x.User).WithMany(x => x.DefaultQueryParameters).OnDelete(DeleteBehavior.Cascade);
 
@@ -217,8 +217,8 @@ internal static class EpcisModelConfiguration
         subscriptionParam.HasKey("SubscriptionId", nameof(SubscriptionParameter.Name));
         subscriptionParam.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
         subscriptionParam.Property(x => x.Value).IsRequired(false).HasConversion(
-            x => JsonConvert.SerializeObject(x), 
-            x => JsonConvert.DeserializeObject<string[]>(x), 
+            x => JsonSerializer.Serialize(x, default(JsonSerializerOptions)), 
+            x => JsonSerializer.Deserialize<string[]>(x, default(JsonSerializerOptions)), 
             new ValueComparer<string[]>((c1, c2) => c1.SequenceEqual(c2), c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), c => c.ToArray()));
 
         var subscriptionSchedule = modelBuilder.Entity<SubscriptionSchedule>();

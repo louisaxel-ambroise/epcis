@@ -61,18 +61,26 @@ public class SimpleEventQuery : IEpcisQuery
                     QueryName = Name
                 };
             }
+            
+            if (eventIds.Count > 0)
+            {
+                query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
+                    .Include(x => x.Epcs)
+                    .Include(x => x.Sources)
+                    .Include(x => x.Destinations)
+                    .Include(x => x.CustomFields)
+                    .Include(x => x.Transactions)
+                    .Where(evt => eventIds.Contains(evt.Id));
 
-            query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
-                .Include(x => x.Epcs)
-                .Include(x => x.Sources)
-                .Include(x => x.Destinations)
-                .Include(x => x.CustomFields)
-                .Include(x => x.Transactions)
-                .Where(evt => eventIds.Contains(evt.Id));
+                var result = await query.ToListAsync(cancellationToken)
+                    .ContinueWith(x => ApplyOrderByLimit(x.Result.AsQueryable()).ToList());
 
-            var result = await query.ToListAsync(cancellationToken);
-
-            return new PollEventResponse(Name, ApplyOrderByLimit(result.AsQueryable()).ToList());
+                return new PollEventResponse(Name, result);
+            }
+            else
+            {
+                return new PollEventResponse(Name, new ());
+            }
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
         {
