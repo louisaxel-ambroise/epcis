@@ -50,7 +50,9 @@ public class Startup
             httpLogging.ResponseBodyLogLimit = 4096;
         });
         services.AddHttpContextAccessor();
-        services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt.CommandTimeout(commandTimeout)));
+        services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt
+            .EnableRetryOnFailure()
+            .CommandTimeout(commandTimeout)));
 
         services.AddMediatR(typeof(PollQueryHandler), typeof(SubscriptionCreatedNotificationHandler));
         services.AddCarter();
