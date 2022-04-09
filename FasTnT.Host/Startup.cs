@@ -8,7 +8,7 @@ using FasTnT.Host.Authorization;
 using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
 using FasTnT.Infrastructure.Configuration;
-using FasTnT.Infrastructure.Database;
+using FasTnT.Infrastructure.Store;
 using FasTnT.Subscriptions;
 using FasTnT.Subscriptions.Notifications;
 using FluentValidation;
@@ -32,6 +32,7 @@ public class Startup
     {
         var connectionString = _configuration.GetConnectionString("FasTnT.Database");
         var commandTimeout = _configuration.GetValue("FasTnT.Database.ConnectionTimeout", 60);
+        var sqlProvider = _configuration.GetValue("FasTnT.Database.SqlProvider", "SqlServer");
 
         services.AddAuthentication("BasicAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
@@ -50,9 +51,25 @@ public class Startup
             httpLogging.ResponseBodyLogLimit = 4096;
         });
         services.AddHttpContextAccessor();
-        services.AddDbContext<EpcisContext>(o => o.UseSqlServer(connectionString, opt => opt
-            .EnableRetryOnFailure()
-            .CommandTimeout(commandTimeout)));
+        services.AddDbContext<EpcisContext>(o => {
+            switch (sqlProvider)
+            {
+                case "Npgsql":
+                    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+                    o.UseNpgsql(connectionString, opt => opt
+                        .MigrationsAssembly("FasTnT.Migrations.Npgsql")
+                        .EnableRetryOnFailure()
+                        .CommandTimeout(commandTimeout));
+                    break;
+                case "SqlServer":
+                default:
+                    o.UseSqlServer(connectionString, opt => opt
+                        .MigrationsAssembly("FasTnT.Migrations.SqlServer")
+                        .EnableRetryOnFailure()
+                        .CommandTimeout(commandTimeout));
+                    break;
+            }
+        });
 
         services.AddMediatR(typeof(PollQueryHandler), typeof(SubscriptionCreatedNotificationHandler));
         services.AddCarter();

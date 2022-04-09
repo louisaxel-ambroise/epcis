@@ -4,7 +4,7 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Notifications;
 using FasTnT.Domain.Queries;
-using FasTnT.Infrastructure.Database;
+using FasTnT.Infrastructure.Store;
 using MediatR;
 
 namespace FasTnT.Application.Subscriptions;

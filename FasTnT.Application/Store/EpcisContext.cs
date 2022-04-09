@@ -2,7 +2,7 @@
 using FasTnT.Infrastructure.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Infrastructure.Database;
+namespace FasTnT.Infrastructure.Store;
 
 public class EpcisContext : DbContext
 {
@@ -15,5 +15,5 @@ public class EpcisContext : DbContext
 
     public EpcisContext(DbContextOptions<EpcisContext> options) : base(options) { }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) => EpcisModelConfiguration.Apply(modelBuilder);
+    protected override void OnModelCreating(ModelBuilder modelBuilder) => EpcisModelConfiguration.Apply(modelBuilder, Database);
 }

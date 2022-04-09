@@ -19,6 +19,6 @@ public static class PasswordUtils
     {
         var deriveBytes = new Rfc2898DeriveBytes(password, salt, 1_000);
 
-        return Encoding.UTF8.GetString(deriveBytes.GetBytes(256));
+        return Convert.ToBase64String(deriveBytes.GetBytes(256));
     }
 }

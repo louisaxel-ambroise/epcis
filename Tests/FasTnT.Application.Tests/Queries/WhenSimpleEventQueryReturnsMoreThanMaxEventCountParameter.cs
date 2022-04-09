@@ -2,7 +2,7 @@
 using FasTnT.Application.Services;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Queries;
-using FasTnT.Infrastructure.Database;
+using FasTnT.Infrastructure.Store;
 
 namespace FasTnT.Application.Tests.Queries
 {

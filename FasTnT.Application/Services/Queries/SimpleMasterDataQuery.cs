@@ -3,7 +3,7 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries;
 using FasTnT.Domain.Utils;
-using FasTnT.Infrastructure.Database;
+using FasTnT.Infrastructure.Store;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
