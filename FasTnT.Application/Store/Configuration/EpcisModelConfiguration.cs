@@ -72,7 +72,15 @@ internal static class EpcisModelConfiguration
         masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
         masterData.HasMany(x => x.Children).WithOne(x => x.MasterData).IsRequired(false);
         masterData.HasMany(x => x.Hierarchies).WithOne(x => x.MasterData).IsRequired(false);
-        masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
+
+        if (database.IsSqlServer())
+        {
+            masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
+        }
+        else if (database.IsNpgsql())
+        {
+            masterData.ToSqlQuery("SELECT MAX(\"RequestId\") AS \"RequestId\", \"Type\", \"Id\" FROM \"Cbv\".\"MasterData\" GROUP BY \"Type\", \"Id\"");
+        }
 
         var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
         mdHierarchy.ToView(nameof(MasterDataHierarchy), nameof(EpcisSchema.Cbv));
