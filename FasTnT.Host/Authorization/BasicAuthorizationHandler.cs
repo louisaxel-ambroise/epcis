@@ -16,7 +16,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
     private const string HeaderKey = "Authorization";
     private const string AuthorizationScheme = "Basic";
     
-    public const string SchemeName = AuthorizationScheme + HeaderKey;
+    public static string SchemeName => AuthorizationScheme + HeaderKey;
 
     public BasicAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
