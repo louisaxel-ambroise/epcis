@@ -1,14 +1,13 @@
 ﻿using FasTnT.Domain.Model;
 using FasTnT.Domain.Utils;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System.Text.Json;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace FasTnT.Infrastructure.Configuration;
- 
+
 internal static class EpcisModelConfiguration
 {
-    internal static void Apply(ModelBuilder modelBuilder)
+    internal static void Apply(ModelBuilder modelBuilder, DatabaseFacade database)
     {
         var user = modelBuilder.Entity<User>();
         user.ToTable(nameof(User), nameof(EpcisSchema.Users));
@@ -23,10 +22,7 @@ internal static class EpcisModelConfiguration
         userParameter.ToTable(nameof(UserDefaultQueryParameter), nameof(EpcisSchema.Users));
         userParameter.HasKey("UserId", "Name");
         userParameter.Property(x => x.Name).IsRequired(true);
-        userParameter.Property(x => x.Values).IsRequired(false).HasConversion(
-            x => JsonSerializer.Serialize(x, default(JsonSerializerOptions)),
-            x => JsonSerializer.Deserialize<string[]>(x, default(JsonSerializerOptions)),
-            new ValueComparer<string[]>((c1, c2) => c1.SequenceEqual(c2), c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), c => c.ToArray()));
+        userParameter.Property(x => x.Values).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
         userParameter.HasOne(x => x.User).WithMany(x => x.DefaultQueryParameters).OnDelete(DeleteBehavior.Cascade);
 
         var request = modelBuilder.Entity<Request>();
@@ -76,7 +72,15 @@ internal static class EpcisModelConfiguration
         masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
         masterData.HasMany(x => x.Children).WithOne(x => x.MasterData).IsRequired(false);
         masterData.HasMany(x => x.Hierarchies).WithOne(x => x.MasterData).IsRequired(false);
-        masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
+
+        if (database.IsSqlServer())
+        {
+            masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
+        }
+        else if (database.IsNpgsql())
+        {
+            masterData.ToSqlQuery("SELECT MAX(\"RequestId\") AS \"RequestId\", \"Type\", \"Id\" FROM \"Cbv\".\"MasterData\" GROUP BY \"Type\", \"Id\"");
+        }
 
         var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
         mdHierarchy.ToView(nameof(MasterDataHierarchy), nameof(EpcisSchema.Cbv));
@@ -198,7 +202,17 @@ internal static class EpcisModelConfiguration
         customField.Property(x => x.TextValue).IsRequired(false);
         customField.Property(x => x.NumericValue).IsRequired(false);
         customField.Property(x => x.DateValue).IsRequired(false);
-        customField.Property(x => x.HasParent).HasComputedColumnSql("(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", stored: true);
+
+        var customFieldHasParent = customField.Property(x => x.HasParent);
+        if (database.IsSqlServer())
+        {
+            customFieldHasParent.HasComputedColumnSql("(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", stored: true);
+        }
+        else if (database.IsNpgsql())
+        {
+            customFieldHasParent.HasComputedColumnSql("(CASE WHEN \"ParentId\" IS NOT NULL THEN true ELSE false END)", stored: true);
+        }
+
         customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
         customField.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey("EventId", "ParentId").OnDelete(DeleteBehavior.NoAction).IsRequired(false);
 
@@ -216,10 +230,7 @@ internal static class EpcisModelConfiguration
         subscriptionParam.ToTable(nameof(SubscriptionParameter), nameof(EpcisSchema.Subscription));
         subscriptionParam.HasKey("SubscriptionId", nameof(SubscriptionParameter.Name));
         subscriptionParam.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
-        subscriptionParam.Property(x => x.Value).IsRequired(false).HasConversion(
-            x => JsonSerializer.Serialize(x, default(JsonSerializerOptions)), 
-            x => JsonSerializer.Deserialize<string[]>(x, default(JsonSerializerOptions)), 
-            new ValueComparer<string[]>((c1, c2) => c1.SequenceEqual(c2), c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), c => c.ToArray()));
+        subscriptionParam.Property(x => x.Value).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
 
         var subscriptionSchedule = modelBuilder.Entity<SubscriptionSchedule>();
         subscriptionSchedule.ToTable(nameof(SubscriptionSchedule), nameof(EpcisSchema.Subscription));

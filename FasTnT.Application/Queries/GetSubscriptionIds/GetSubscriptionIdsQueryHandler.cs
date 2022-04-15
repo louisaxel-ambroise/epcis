@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Queries;
-using FasTnT.Infrastructure.Database;
+using FasTnT.Infrastructure.Store;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

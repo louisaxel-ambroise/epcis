@@ -3,7 +3,7 @@ using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Commands.Capture;
 using FasTnT.Domain.Model;
-using FasTnT.Infrastructure.Database;
+using FasTnT.Infrastructure.Store;
 
 namespace FasTnT.Application.Tests;
 

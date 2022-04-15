@@ -4,7 +4,7 @@ using FasTnT.Application.Subscriptions;
 using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Notifications;
-using FasTnT.Infrastructure.Database;
+using FasTnT.Infrastructure.Store;
 using MediatR;
 
 namespace FasTnT.Application.Tests;

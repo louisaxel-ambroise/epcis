@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Model;
-using FasTnT.Infrastructure.Database;
+using FasTnT.Infrastructure.Store;
 using FasTnT.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
