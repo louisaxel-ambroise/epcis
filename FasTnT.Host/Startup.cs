@@ -30,17 +30,13 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var connectionString = _configuration.GetConnectionString("FasTnT.Database");
-        var commandTimeout = _configuration.GetValue("FasTnT.Database.ConnectionTimeout", 60);
-        var sqlProvider = _configuration.GetValue("FasTnT.Database.SqlProvider", "SqlServer");
-
-        services.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+        services.AddAuthentication(BasicAuthenticationHandler.SchemeName)
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, null);
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("Query", policy => policy.RequireClaim("CanQuery", "True"));
-            options.AddPolicy("Capture", policy => policy.RequireClaim("CanCapture", "True"));
+            options.AddPolicy(nameof(ICurrentUser.CanQuery), policy => policy.RequireClaim(nameof(ICurrentUser.CanQuery), bool.TrueString));
+            options.AddPolicy(nameof(ICurrentUser.CanCapture), policy => policy.RequireClaim(nameof(ICurrentUser.CanCapture), bool.TrueString));
         });
         services.AddHttpLogging(httpLogging =>
         {
@@ -51,24 +47,7 @@ public class Startup
             httpLogging.ResponseBodyLogLimit = 4096;
         });
         services.AddHttpContextAccessor();
-        services.AddDbContext<EpcisContext>(o => {
-            switch (sqlProvider)
-            {
-                case "Npgsql":
-                    AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-                    o.UseNpgsql(connectionString, opt => opt
-                        .MigrationsAssembly("FasTnT.Migrations.Npgsql")
-                        .EnableRetryOnFailure()
-                        .CommandTimeout(commandTimeout));
-                    break;
-                default: // SqlServer
-                    o.UseSqlServer(connectionString, opt => opt
-                        .MigrationsAssembly("FasTnT.Migrations.SqlServer")
-                        .EnableRetryOnFailure()
-                        .CommandTimeout(commandTimeout));
-                    break;
-            }
-        });
+        services.AddDbContext<EpcisContext>(ContextOptionBuilder);
 
         services.AddMediatR(typeof(PollQueryHandler), typeof(SubscriptionCreatedNotificationHandler));
         services.AddCarter();
@@ -109,5 +88,28 @@ public class Startup
         {
             builder.MapCarter();
         });
+    }
+
+    private void ContextOptionBuilder(DbContextOptionsBuilder builder)
+    {
+        var connectionString = _configuration.GetConnectionString("FasTnT.Database");
+        var commandTimeout = _configuration.GetValue("FasTnT.Database.ConnectionTimeout", 60);
+        var sqlProvider = _configuration.GetValue("FasTnT.Database.SqlProvider", "SqlServer");
+
+        if (sqlProvider.Equals("Npgsql", StringComparison.OrdinalIgnoreCase))
+        {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            builder.UseNpgsql(connectionString, opt => opt
+                .MigrationsAssembly("FasTnT.Migrations.Npgsql")
+                .EnableRetryOnFailure()
+                .CommandTimeout(commandTimeout));
+        }
+        else
+        {
+            builder.UseSqlServer(connectionString, opt => opt
+                .MigrationsAssembly("FasTnT.Migrations.SqlServer")
+                .EnableRetryOnFailure()
+                .CommandTimeout(commandTimeout));
+        }
     }
 }

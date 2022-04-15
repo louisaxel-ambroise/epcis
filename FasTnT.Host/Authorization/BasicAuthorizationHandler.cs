@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using Newtonsoft.Json;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Queries;
+using FasTnT.Domain.Model;
 
 namespace FasTnT.Host.Authorization;
 
@@ -14,6 +15,8 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 {
     private const string HeaderKey = "Authorization";
     private const string AuthorizationScheme = "Basic";
+    
+    public const string SchemeName = AuthorizationScheme + HeaderKey;
 
     public BasicAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
@@ -85,16 +88,16 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         }
     }
 
-    private AuthenticateResult Authenticated(string username, Domain.Model.User user)
+    private AuthenticateResult Authenticated(string username, User user)
     {
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, username),
             new Claim(ClaimTypes.Name, username),
-            new Claim("UserId", user.Id.ToString()),
-            new Claim("CanQuery", user.CanQuery.ToString()),
-            new Claim("CanCapture", user.CanCapture.ToString()),
-            new Claim("DefaultQueryParameters", JsonConvert.SerializeObject(user.DefaultQueryParameters.Select(p => new QueryParameter(p.Name, p.Values))))
+            new Claim(nameof(ICurrentUser.UserId), user.Id.ToString()),
+            new Claim(nameof(ICurrentUser.CanQuery), user.CanQuery.ToString()),
+            new Claim(nameof(ICurrentUser.CanCapture), user.CanCapture.ToString()),
+            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonConvert.SerializeObject(user.DefaultQueryParameters.Select(p => new QueryParameter(p.Name, p.Values))))
         };
 
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));

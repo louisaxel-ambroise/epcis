@@ -1,4 +1,5 @@
 ﻿using Carter;
+using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Exceptions;
@@ -44,7 +45,7 @@ public class Epcis1_2Module : ICarterModule
                     ? 400
                     : 500;
             }
-        }).RequireAuthorization(policyNames: "Capture");
+        }).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
 
         app.MapGet("v1_2/query.svc", async (HttpResponse res) =>
         {
@@ -97,7 +98,7 @@ public class Epcis1_2Module : ICarterModule
             {
                 await res.FormatSoap(response, req.HttpContext.RequestAborted);
             }
-        }).RequireAuthorization(policyNames: "Query");
+        }).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
 
         app.MapGet("v1_2/Trigger", async (IMediator mediator, HttpRequest req, HttpResponse res) =>
         {
@@ -115,6 +116,6 @@ public class Epcis1_2Module : ICarterModule
 
                 res.StatusCode = 400;
             }
-        }).RequireAuthorization(policyNames: "Query");
+        }).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
     }
 }
