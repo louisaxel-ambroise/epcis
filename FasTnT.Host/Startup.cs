@@ -61,8 +61,7 @@ public class Startup
                         .EnableRetryOnFailure()
                         .CommandTimeout(commandTimeout));
                     break;
-                case "SqlServer":
-                default:
+                default: // SqlServer
                     o.UseSqlServer(connectionString, opt => opt
                         .MigrationsAssembly("FasTnT.Migrations.SqlServer")
                         .EnableRetryOnFailure()
