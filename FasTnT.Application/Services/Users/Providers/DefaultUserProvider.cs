@@ -1,19 +1,16 @@
 ﻿using FasTnT.Domain.Model;
 using FasTnT.Infrastructure.Store;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace FasTnT.Application.Services.Users;
- 
-public class UserProvider : IUserProvider
+
+public class DefaultUserProvider : IUserProvider
 {
     private readonly EpcisContext _context;
-    private readonly IHostEnvironment _environment;
 
-    public UserProvider(EpcisContext context, IHostEnvironment environment)
+    public DefaultUserProvider(EpcisContext context)
     {
         _context = context;
-        _environment = environment;
     }
 
     public async Task<User> GetByUsernameAndPasswordAsync(string username, string password, CancellationToken cancellationToken)
@@ -25,11 +22,11 @@ public class UserProvider : IUserProvider
             .SingleOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        if(user == default && _environment.IsDevelopment())
+        if(user == default)
         {
             user = await CreateUser(username, password, cancellationToken).ConfigureAwait(false);
         }
-        else if(user != default && !PasswordUtils.GetSecuredKey(password, user.Salt).Equals(user.SecuredKey))
+        else if(!PasswordUtils.GetSecuredKey(password, user.Salt).Equals(user.SecuredKey))
         {
             user = null;
         }

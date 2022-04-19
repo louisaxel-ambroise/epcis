@@ -22,10 +22,12 @@ namespace FasTnT.Host;
 public class Startup
 {
     private readonly IConfiguration _configuration;
+    private readonly IHostEnvironment _environment;
 
-    public Startup(IConfiguration configuration)
+    public Startup(IConfiguration configuration, IHostEnvironment environment)
     {
         _configuration = configuration;
+        _environment = environment;
     }
 
     public void ConfigureServices(IServiceCollection services)
@@ -53,7 +55,6 @@ public class Startup
         services.AddCarter();
         services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
         services.AddScoped<IncrementGenerator.Identity>();
-        services.AddTransient<IUserProvider, UserProvider>();
         services.AddTransient<IEpcisQuery, SimpleEventQuery>();
         services.AddTransient<IEpcisQuery, SimpleMasterDataQuery>();
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
@@ -63,6 +64,12 @@ public class Startup
         services.AddSingleton<ISubscriptionService, SubscriptionBackgroundService>();
         services.AddHostedService(s => s.GetRequiredService<ISubscriptionService>() as SubscriptionBackgroundService);
         services.AddScoped<ISubscriptionResultSender, HttpSubscriptionResultSender>();
+        services.AddScoped<IUserProvider, UserProvider>();
+
+        if (_environment.IsDevelopment())
+        {
+            services.AddScoped<IUserProvider, DefaultUserProvider>();
+        }
 
         var constantsSection = _configuration.GetSection(nameof(Constants));
         if (constantsSection.Exists())
