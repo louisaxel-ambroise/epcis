@@ -14,16 +14,13 @@ namespace FasTnT.Migrations.Npgsql.Migrations
     COST 100
     VOLATILE NOT LEAKPROOF
 AS $BODY$
-    DECLARE
-        c_subscription CURSOR FOR SELECT * FROM ""Subscription"".""Subscription"";
-            r_subscription ""Subscription"".""Subscription""%ROWTYPE;
-            BEGIN
-                FOR r_subscription IN c_subscription LOOP
-            INSERT INTO ""Subscriptions"".""Pendingrequest""(""SubscriptionId"", ""RequestId"") VALUES(r_subscription.id, NEW.id);
-            END LOOP;
+    BEGIN
+        INSERT INTO ""Subscriptions"".""Pendingrequest""(""SubscriptionId"", ""RequestId"")
+        SELECT s.id, NEW.id
+        FROM ""Subscription"".""Subscription"" s;
 
-            RETURN NULL;
-            END;
+        RETURN NULL;
+    END;
 $BODY$;");
             migrationBuilder.Sql(@"CREATE TRIGGER add_pending_request AFTER INSERT ON ""Epcis"".""Request""
 FOR EACH ROW EXECUTE PROCEDURE ""Subscription"".update_subscriptions();");
