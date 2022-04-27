@@ -15,8 +15,8 @@ namespace FasTnT.Migrations.Npgsql.Migrations
     VOLATILE NOT LEAKPROOF
 AS $BODY$
     BEGIN
-        INSERT INTO ""Subscriptions"".""Pendingrequest""(""SubscriptionId"", ""RequestId"")
-        SELECT s.id, NEW.id
+        INSERT INTO ""Subscription"".""PendingRequest""(""SubscriptionId"", ""RequestId"")
+        SELECT s.""Id"", NEW.""Id""
         FROM ""Subscription"".""Subscription"" s;
 
         RETURN NULL;
@@ -26,7 +26,7 @@ $BODY$;");
 FOR EACH ROW EXECUTE PROCEDURE ""Subscription"".update_subscriptions();");
         }
 
-        protected override void Down(MigrationBuilder migrationBuilder)
+        protected override void Down(MigrationBuilder migrationBuilder) 
         {
             migrationBuilder.Sql(@"DROP TRIGGER IF EXISTS add_pending_request ON ""Epcis"".""Request"" CASCADE;");
             migrationBuilder.Sql(@"DROP FUNCTION ""Subscription"".update_subscriptions();");
