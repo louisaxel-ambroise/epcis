@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Carter" Version="6.1.1" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.2.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.2.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
       <PrivateAssets>all</PrivateAssets>
