@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.HttpLogging;
 
 static class Options
 {
-    public static ExceptionHandlerOptions ExceptionHandler = new()
+    public static readonly ExceptionHandlerOptions ExceptionHandler = new()
     {
         ExceptionHandler = (ctx) =>
         {
@@ -20,13 +20,13 @@ static class Options
         }
     };
 
-    public static Action<AuthorizationOptions> AuthorizationPolicies = (options) =>
+    public static readonly Action<AuthorizationOptions> AuthorizationPolicies = (options) =>
     {
         options.AddPolicy(nameof(ICurrentUser.CanQuery), policy => policy.RequireClaim(nameof(ICurrentUser.CanQuery), bool.TrueString));
         options.AddPolicy(nameof(ICurrentUser.CanCapture), policy => policy.RequireClaim(nameof(ICurrentUser.CanCapture), bool.TrueString));
     };
 
-    public static Action<HttpLoggingOptions> LoggingPolicy = (options) =>
+    public static readonly Action<HttpLoggingOptions> LoggingPolicy = (options) =>
     {
         options.LoggingFields = HttpLoggingFields.All;
         options.MediaTypeOptions.AddText("application/xml");

@@ -7,16 +7,16 @@ using System.Text.Encodings.Web;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Queries;
 using FasTnT.Domain.Model;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace FasTnT.Host.Authorization;
 
 public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    private const string HeaderKey = "Authorization";
-    private const string AuthorizationScheme = "Basic";
+    private const string Authorization = nameof(Authorization);
+    private const string Basic = nameof(Basic);
     
-    public static string SchemeName => AuthorizationScheme + HeaderKey;
+    public static string SchemeName => Basic + Authorization;
 
     public BasicAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
@@ -25,16 +25,16 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!Request.Headers.ContainsKey(HeaderKey))
+        if (!Request.Headers.ContainsKey(Authorization))
         {
-            Logger.LogError("Missing {headerKey} Header", HeaderKey);
+            Logger.LogError("Missing {Authorization} Header", Authorization);
 
-            return AuthenticateResult.Fail($"Missing {HeaderKey} Header");
+            return AuthenticateResult.Fail("Missing Authorization Header");
         }
             
-        var authHeader = AuthenticationHeaderValue.Parse(Request.Headers[HeaderKey]);
+        var authHeader = AuthenticationHeaderValue.Parse(Request.Headers[Authorization]);
 
-        if(authHeader.Scheme != AuthorizationScheme)
+        if(authHeader.Scheme != Basic)
         {
             Logger.LogError("Invalid Authorization scheme: {scheme}", authHeader.Scheme);
 
@@ -64,7 +64,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
         return credentials.Length == 2
             ? (credentials[0], credentials[1])
-            : throw new FormatException($"{HeaderKey} header must contain 2 values separated by ':'");
+            : throw new FormatException("Authorization header must contain 2 values separated by ':'");
     }
 
     private async Task<AuthenticateResult> AuthenticateUser(string username, string password, CancellationToken cancellationToken)
@@ -84,7 +84,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         {
             Logger.LogWarning("Invalid credentials");
 
-            return AuthenticateResult.Fail($"Invalid credentials.");
+            return AuthenticateResult.Fail("Invalid credentials.");
         }
     }
 
@@ -97,7 +97,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             new Claim(nameof(ICurrentUser.UserId), user.Id.ToString()),
             new Claim(nameof(ICurrentUser.CanQuery), user.CanQuery.ToString()),
             new Claim(nameof(ICurrentUser.CanCapture), user.CanCapture.ToString()),
-            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonConvert.SerializeObject(user.DefaultQueryParameters.Select(p => new QueryParameter(p.Name, p.Values))))
+            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(user.DefaultQueryParameters.Select(p => new QueryParameter(p.Name, p.Values))))
         };
 
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
