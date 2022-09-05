@@ -14,7 +14,7 @@ namespace FasTnT.Host.Features.v1_2;
 
 public static class Epcis1_2Configuration
 {
-    public static IServiceCollection AddEpcis12Endpoints(this IServiceCollection services)
+    public static IServiceCollection AddEpcis12Services(this IServiceCollection services)
     {
         services.AddMediatR(typeof(PollQueryHandler), typeof(SubscriptionCreatedNotificationHandler));
         services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
