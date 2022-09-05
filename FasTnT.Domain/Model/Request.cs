@@ -13,8 +13,3 @@ public class Request
     public List<Event> Events { get; set; } = new();
     public List<MasterData> Masterdata { get; set; } = new();
 }
-public enum CaptureRequestBehavior
-{
-    Rollback,
-    Proceed
-}
