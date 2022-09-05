@@ -13,6 +13,9 @@ public class WhenHandlingGetVendorVersionQuery
         var handler = new GetVendorVersionQueryHandler();
         var result = handler.Handle(new GetVendorVersionQuery(), default).Result;
             
-        Assert.AreEqual(Constants.VendorVersion, result.Version);
+        Assert.IsInstanceOfType(result, typeof(GetVendorVersionResult));
+
+        var vendorVersion = (GetVendorVersionResult)result;
+        Assert.AreEqual(Constants.VendorVersion, vendorVersion.Version);
     }
 }

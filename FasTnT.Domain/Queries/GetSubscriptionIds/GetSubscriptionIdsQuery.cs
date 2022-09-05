@@ -2,7 +2,7 @@
 
 namespace FasTnT.Domain.Queries;
 
-public record GetSubscriptionIdsQuery : IRequest<GetSubscriptionIdsResult>
+public record GetSubscriptionIdsQuery : IRequest<IEpcisResponse>
 {
     public string QueryName { get; init; }
 }

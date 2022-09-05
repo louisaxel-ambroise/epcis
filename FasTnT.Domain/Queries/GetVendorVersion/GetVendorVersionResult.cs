@@ -1,3 +1,3 @@
 ﻿namespace FasTnT.Domain.Queries;
 
-public record GetVendorVersionResult(string Version);
+public record GetVendorVersionResult(string Version) : IEpcisResponse;

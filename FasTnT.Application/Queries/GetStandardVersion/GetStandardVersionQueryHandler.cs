@@ -4,10 +4,10 @@ using MediatR;
 
 namespace FasTnT.Application.Queries;
 
-public class GetStandardVersionQueryHandler : IRequestHandler<GetStandardVersionQuery, GetStandardVersionResult>
+public class GetStandardVersionQueryHandler : IRequestHandler<GetStandardVersionQuery, IEpcisResponse>
 {
-    public Task<GetStandardVersionResult> Handle(GetStandardVersionQuery request, CancellationToken cancellationToken)
+    public Task<IEpcisResponse> Handle(GetStandardVersionQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult<GetStandardVersionResult>(new(Constants.StandardVersion));
+        return Task.FromResult<IEpcisResponse>(new GetStandardVersionResult(Constants.StandardVersion));
     }
 }

@@ -2,4 +2,4 @@
 
 namespace FasTnT.Domain.Queries;
 
-public record GetVendorVersionQuery : IRequest<GetVendorVersionResult>;
+public record GetVendorVersionQuery : IRequest<IEpcisResponse>;

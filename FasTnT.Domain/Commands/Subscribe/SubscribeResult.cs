@@ -1,5 +1,5 @@
-﻿namespace FasTnT.Domain.Commands.Subscribe;
+﻿using FasTnT.Domain.Queries;
 
-public class SubscribeResult
-{
-}
+namespace FasTnT.Domain.Commands.Subscribe;
+
+public record SubscribeResult() : IEpcisResponse;

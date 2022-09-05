@@ -1,13 +1,14 @@
 ﻿using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Notifications;
+using FasTnT.Domain.Queries;
 using FasTnT.Infrastructure.Store;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Subscriptions;
 
-public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, UnsubscribeResult>
+public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, IEpcisResponse>
 {
     private readonly EpcisContext _context;
     private readonly IMediator _mediator;
@@ -18,7 +19,7 @@ public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, Uns
         _mediator = mediator;
     }
 
-    public async Task<UnsubscribeResult> Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
+    public async Task<IEpcisResponse> Handle(UnsubscribeCommand request, CancellationToken cancellationToken)
     {
         var subscription = await _context.Subscriptions.SingleOrDefaultAsync(x => x.Name == request.SubscriptionId, cancellationToken);
 
@@ -33,6 +34,6 @@ public class UnsubscribeCommandHandler : IRequestHandler<UnsubscribeCommand, Uns
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new();
+        return new UnsubscribeResult();
     }
 }

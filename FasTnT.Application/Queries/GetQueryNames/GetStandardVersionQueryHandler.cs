@@ -4,7 +4,7 @@ using MediatR;
 
 namespace FasTnT.Application.Queries;
 
-public class GetQueryNamesQueryHandler : IRequestHandler<GetQueryNamesQuery, GetQueryNamesResult>
+public class GetQueryNamesQueryHandler : IRequestHandler<GetQueryNamesQuery, IEpcisResponse>
 {
     private readonly IEnumerable<IEpcisQuery> _queries;
 
@@ -13,8 +13,8 @@ public class GetQueryNamesQueryHandler : IRequestHandler<GetQueryNamesQuery, Get
         _queries = queries;
     }
 
-    public Task<GetQueryNamesResult> Handle(GetQueryNamesQuery request, CancellationToken cancellationToken)
+    public Task<IEpcisResponse> Handle(GetQueryNamesQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult<GetQueryNamesResult>(new(_queries.Select(x => x.Name)));
+        return Task.FromResult<IEpcisResponse>(new GetQueryNamesResult(_queries.Select(x => x.Name)));
     }
 }

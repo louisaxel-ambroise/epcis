@@ -2,12 +2,13 @@
 using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Queries;
+using MediatR;
 
 namespace FasTnT.Formatter.Xml.Parsers;
  
 public static class XmlQueryParser
 {
-    public static object Parse(XElement queryElement)
+    public static IRequest<IEpcisResponse> Parse(XElement queryElement)
     {
         return queryElement?.Name?.LocalName switch
         {

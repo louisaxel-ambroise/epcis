@@ -2,4 +2,4 @@
 
 namespace FasTnT.Domain.Queries;
 
-public record GetQueryNamesQuery : IRequest<GetQueryNamesResult>;
+public record GetQueryNamesQuery : IRequest<IEpcisResponse>;
