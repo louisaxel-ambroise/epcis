@@ -8,7 +8,7 @@ permissions:
   packages: write
   
 env:
-  REPO: fastnt/epcis-ef-core
+  REPO: louisaxel-ambroise/epcis
 
 jobs:
   build:
