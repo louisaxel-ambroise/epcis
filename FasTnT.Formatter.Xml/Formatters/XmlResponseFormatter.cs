@@ -8,6 +8,21 @@ namespace FasTnT.Formatter.Xml.Formatters;
  
 public static class XmlResponseFormatter
 {
+    public static XElement Format(IEpcisResponse response)
+    {
+        return response switch
+        {
+            PollResponse poll => FormatPoll(poll),
+            GetSubscriptionIdsResult subscriptionIds => FormatSubscriptionIds(subscriptionIds),
+            GetQueryNamesResult queryNames => FormatGetQueryNames(queryNames),
+            GetVendorVersionResult vendorVersion => FormatVendorVersion(vendorVersion),
+            GetStandardVersionResult standardVersion => FormatStandardVersion(standardVersion),
+            UnsubscribeResult unsubscription => FormatUnsubscribeResponse(unsubscription),
+            SubscribeResult subscription => FormatSubscribeResponse(subscription),
+            _ => FormatError(EpcisException.Default)
+        };
+    }
+
     public static XElement FormatPoll(PollResponse response)
     {
         var (resultName, resultList) = response switch

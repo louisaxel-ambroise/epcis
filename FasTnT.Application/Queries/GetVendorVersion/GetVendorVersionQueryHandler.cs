@@ -4,10 +4,10 @@ using MediatR;
 
 namespace FasTnT.Application.Queries;
 
-public class GetVendorVersionQueryHandler : IRequestHandler<GetVendorVersionQuery, GetVendorVersionResult>
+public class GetVendorVersionQueryHandler : IRequestHandler<GetVendorVersionQuery, IEpcisResponse>
 {
-    public Task<GetVendorVersionResult> Handle(GetVendorVersionQuery request, CancellationToken cancellationToken)
+    public Task<IEpcisResponse> Handle(GetVendorVersionQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult<GetVendorVersionResult>(new(Constants.VendorVersion));
+        return Task.FromResult<IEpcisResponse>(new GetVendorVersionResult(Constants.VendorVersion));
     }
 }

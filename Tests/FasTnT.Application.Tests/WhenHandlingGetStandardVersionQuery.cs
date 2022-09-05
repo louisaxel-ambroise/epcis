@@ -12,6 +12,9 @@ public class WhenHandlingGetStandardVersionQuery
         var handler = new GetStandardVersionQueryHandler();
         var result = handler.Handle(new GetStandardVersionQuery(), default).Result;
             
-        Assert.AreEqual("1.2", result.Version);
+        Assert.IsInstanceOfType(result, typeof(GetStandardVersionResult));
+
+        var standardVersion = (GetStandardVersionResult)result;
+        Assert.AreEqual("1.2", standardVersion.Version);
     }
 }

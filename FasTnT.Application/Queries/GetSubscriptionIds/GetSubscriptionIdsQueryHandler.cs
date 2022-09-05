@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Queries;
  
-public class GetSubscriptionIdsQueryHandler : IRequestHandler<GetSubscriptionIdsQuery, GetSubscriptionIdsResult>
+public class GetSubscriptionIdsQueryHandler : IRequestHandler<GetSubscriptionIdsQuery, IEpcisResponse>
 {
     private readonly EpcisContext _context;
 
@@ -14,7 +14,7 @@ public class GetSubscriptionIdsQueryHandler : IRequestHandler<GetSubscriptionIds
         _context = context;
     }
 
-    public async Task<GetSubscriptionIdsResult> Handle(GetSubscriptionIdsQuery request, CancellationToken cancellationToken)
+    public async Task<IEpcisResponse> Handle(GetSubscriptionIdsQuery request, CancellationToken cancellationToken)
     {
         var subscriptionIds = await _context.Subscriptions
             .AsNoTracking()
@@ -22,6 +22,6 @@ public class GetSubscriptionIdsQueryHandler : IRequestHandler<GetSubscriptionIds
             .Select(x => x.Name)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        return new(subscriptionIds);
+        return new GetSubscriptionIdsResult(subscriptionIds);
     }
 }

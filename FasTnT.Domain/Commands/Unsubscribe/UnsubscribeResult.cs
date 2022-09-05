@@ -1,5 +1,5 @@
-﻿namespace FasTnT.Domain.Commands.Unsubscribe;
+﻿using FasTnT.Domain.Queries;
 
-public class UnsubscribeResult
-{
-}
+namespace FasTnT.Domain.Commands.Unsubscribe;
+
+public record UnsubscribeResult() : IEpcisResponse;

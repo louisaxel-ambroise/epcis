@@ -3,7 +3,7 @@ using MediatR;
 
 namespace FasTnT.Domain.Commands.Subscribe;
 
-public class SubscribeCommand : IRequest<SubscribeResult>
+public class SubscribeCommand : IRequest<IEpcisResponse>
 {
     public string SubscriptionId { get; init; }
     public string QueryName { get; init; }

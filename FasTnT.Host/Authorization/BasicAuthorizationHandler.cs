@@ -4,10 +4,10 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
-using Newtonsoft.Json;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Queries;
 using FasTnT.Domain.Model;
+using Newtonsoft.Json;
 
 namespace FasTnT.Host.Authorization;
 

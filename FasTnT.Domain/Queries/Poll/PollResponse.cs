@@ -2,7 +2,9 @@
 
 namespace FasTnT.Domain.Queries;
 
-public abstract class PollResponse
+public interface IEpcisResponse { }
+
+public abstract class PollResponse : IEpcisResponse
 {
     public string QueryName { get; init; }
     public string SubscriptionId { get; set; }

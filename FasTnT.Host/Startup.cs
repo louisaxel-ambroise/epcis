@@ -1,18 +1,8 @@
-using Carter;
-using FasTnT.Application.Queries;
-using FasTnT.Application.Services;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
-using FasTnT.Domain.Infrastructure.Behaviors;
 using FasTnT.Host.Authorization;
-using FasTnT.Host.Services.Subscriptions;
-using FasTnT.Host.Services.User;
-using FasTnT.Infrastructure.Configuration;
+using FasTnT.Host.Features.v1_2;
 using FasTnT.Infrastructure.Store;
-using FasTnT.Subscriptions;
-using FasTnT.Subscriptions.Notifications;
-using FluentValidation;
-using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
@@ -51,19 +41,8 @@ public class Startup
         services.AddHttpContextAccessor();
         services.AddDbContext<EpcisContext>(ContextOptionBuilder);
 
-        services.AddMediatR(typeof(PollQueryHandler), typeof(SubscriptionCreatedNotificationHandler));
-        services.AddCarter();
-        services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
-        services.AddScoped<IncrementGenerator.Identity>();
-        services.AddTransient<IEpcisQuery, SimpleEventQuery>();
-        services.AddTransient<IEpcisQuery, SimpleMasterDataQuery>();
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandLoggerBehavior<,>));
-        services.AddTransient<ICurrentUser, HttpContextCurrentUser>();
-        services.AddScoped<SubscriptionRunner>();
-        services.AddSingleton<ISubscriptionService, SubscriptionBackgroundService>();
-        services.AddHostedService(s => s.GetRequiredService<ISubscriptionService>() as SubscriptionBackgroundService);
-        services.AddScoped<ISubscriptionResultSender, HttpSubscriptionResultSender>();
+        services.AddEpcis12Endpoints();
+        services.AddEpcis12SubscriptionService();
         services.AddScoped<IUserProvider, UserProvider>();
 
         if (_environment.IsDevelopment())
@@ -86,14 +65,13 @@ public class Startup
             app.UseDefaultFiles().UseStaticFiles();
         }
 
-        app.UseExceptionHandler("/epciserror");
         app.UseRouting();
         app.UseHttpLogging();
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(builder =>
         {
-            builder.MapCarter();
+            builder.MapEpcis12Endpoints();
         });
     }
 

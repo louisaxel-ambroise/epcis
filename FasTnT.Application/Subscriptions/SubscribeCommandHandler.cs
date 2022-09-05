@@ -9,7 +9,7 @@ using MediatR;
 
 namespace FasTnT.Application.Subscriptions;
 
-public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, SubscribeResult>
+public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, IEpcisResponse>
 {
     private readonly EpcisContext _context;
     private readonly IEnumerable<IEpcisQuery> _queries;
@@ -22,7 +22,7 @@ public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, Subscri
         _mediator = mediator;
     }
 
-    public async Task<SubscribeResult> Handle(SubscribeCommand request, CancellationToken cancellationToken)
+    public async Task<IEpcisResponse> Handle(SubscribeCommand request, CancellationToken cancellationToken)
     {
         EnsureSubscriptionDoesNotExist(request);
         EnsureQueryAllowsSubscription(request);
@@ -33,7 +33,7 @@ public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, Subscri
         await _context.SaveChangesAsync(cancellationToken);
         await _mediator.Publish(new SubscriptionCreatedNotification(subscription.Id), cancellationToken);
 
-        return new();
+        return new SubscribeResult();
     }
 
     private void EnsureSubscriptionDoesNotExist(SubscribeCommand request)

@@ -27,16 +27,16 @@ public class WhenHandlingGetSubscriptionIdsQuery
     }
 
     [TestMethod]
-
-
-
     public void ItShouldReturnTheListOfExistingSubscriptionIdsForTheSpecifiedRequest()
     {
         var handler = new GetSubscriptionIdsQueryHandler(Context);
         var result = handler.Handle(new GetSubscriptionIdsQuery { QueryName = "TestQuery" }, default).Result;
             
-        Assert.AreEqual(1, result.SubscriptionIDs.Count());
-        Assert.AreEqual("SubscriptionTest", result.SubscriptionIDs.First());
+        Assert.IsInstanceOfType(result, typeof(GetSubscriptionIdsResult));
+
+        var subscriptions = (GetSubscriptionIdsResult)result;
+        Assert.AreEqual(1, subscriptions.SubscriptionIDs.Count());
+        Assert.AreEqual("SubscriptionTest", subscriptions.SubscriptionIDs.First());
     }
 
     [TestMethod]
@@ -44,7 +44,10 @@ public class WhenHandlingGetSubscriptionIdsQuery
     {
         var handler = new GetSubscriptionIdsQueryHandler(Context);
         var result = handler.Handle(new GetSubscriptionIdsQuery { QueryName = "UnknownQuery" }, default).Result;
-            
-        Assert.AreEqual(0, result.SubscriptionIDs.Count());
+
+        Assert.IsInstanceOfType(result, typeof(GetSubscriptionIdsResult));
+
+        var subscriptions = (GetSubscriptionIdsResult)result;
+        Assert.AreEqual(0, subscriptions.SubscriptionIDs.Count());
     }
 }

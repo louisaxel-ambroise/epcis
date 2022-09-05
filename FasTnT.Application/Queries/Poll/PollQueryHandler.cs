@@ -6,7 +6,7 @@ using MediatR;
 
 namespace FasTnT.Application.Queries;
 
-public class PollQueryHandler : IRequestHandler<PollQuery, PollResponse>
+public class PollQueryHandler : IRequestHandler<PollQuery, IEpcisResponse>
 {
     private readonly IEnumerable<IEpcisQuery> _queries;
     private readonly ICurrentUser _currentUser;
@@ -17,12 +17,12 @@ public class PollQueryHandler : IRequestHandler<PollQuery, PollResponse>
         _currentUser = currentUser;
     }
 
-    public Task<PollResponse> Handle(PollQuery request, CancellationToken cancellationToken)
+    public async Task<IEpcisResponse> Handle(PollQuery request, CancellationToken cancellationToken)
     {
         var parameters = request.Parameters.Union(_currentUser.DefaultQueryParameters);
         var query = _queries.FirstOrDefault(q => q.Name == request.QueryName)
                         ?? throw new EpcisException(ExceptionType.NoSuchNameException, $"Query with name '{request.QueryName}' is not implemented");
 
-        return query.HandleAsync(parameters, cancellationToken);
+        return await query.HandleAsync(parameters, cancellationToken);
     }
 }
