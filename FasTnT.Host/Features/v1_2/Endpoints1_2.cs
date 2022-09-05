@@ -9,6 +9,8 @@ namespace FasTnT.Host.Features.v1_2;
 public class Endpoints1_2
 {
     internal const string WsdlPath = "FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
+
+    protected Endpoints1_2() { }
     
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
