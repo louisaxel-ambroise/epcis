@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("FasTnT.Database");
 var commandTimeout = builder.Configuration.GetValue("FasTnT.Database.ConnectionTimeout", 60);
+var constantsSection = builder.Configuration.GetSection(nameof(Constants));
+Constants.MaxEventsReturnedInQuery = constantsSection.GetValue(nameof(Constants.MaxEventsReturnedInQuery), Constants.MaxEventsReturnedInQuery);
 
 builder.Services.AddAuthentication(BasicAuthenticationHandler.SchemeName).AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, null);
 builder.Services.AddAuthorization(Options.AuthorizationPolicies);
@@ -19,26 +21,18 @@ builder.Services.AddSqlServer<EpcisContext>(connectionString, opt => opt.Migrati
 // Register EPCIS 1.2 services
 builder.Services.AddEpcis12Services();
 builder.Services.AddEpcis12SubscriptionService();
-builder.Services.AddScoped<IUserProvider, UserProvider>();
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddScoped<IUserProvider, DefaultUserProvider>();
-}
-
-var constantsSection = builder.Configuration.GetSection(nameof(Constants));
-
-if (constantsSection.Exists())
-{
-    Constants.MaxEventsReturnedInQuery = constantsSection.GetValue(nameof(Constants.MaxEventsReturnedInQuery), Constants.MaxEventsReturnedInQuery);
-}
+builder.Services.AddScoped<IUserProvider>(svc => builder.Environment.IsDevelopment() ? new DefaultUserProvider(svc.GetService<EpcisContext>()) : new UserProvider(svc.GetService<EpcisContext>()));
 
 var app = builder.Build();
 
 if (builder.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
-    app.UseDefaultFiles().UseStaticFiles();
+    app.UseDefaultFiles()
+       .UseStaticFiles();
+}
+if(builder.Configuration.GetValue("FasTnT.Database.ApplyMigrations", false))
+{
+    app.ApplyMigrations();
 }
 
 app.UseRouting();
