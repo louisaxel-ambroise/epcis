@@ -30,4 +30,7 @@ public class TimeZoneOffset
             throw new FormatException($"Invalid format for TimeZoneOffset: {value}");
         }
     }
+
+    public static implicit operator TimeZoneOffset(string representation) => new TimeZoneOffset { Representation = representation };
+    public static implicit operator TimeZoneOffset(short value) => new TimeZoneOffset { Value = value };
 }

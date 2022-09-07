@@ -1,4 +1,5 @@
 ﻿using FasTnT.Infrastructure.Store;
+using Microsoft.EntityFrameworkCore;
 
 public static class DatabaseMigrator
 {
@@ -8,6 +9,7 @@ public static class DatabaseMigrator
         using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
 
         context.Database.EnsureCreated();
+        context.Database.Migrate();
 
         return application;
     }

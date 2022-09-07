@@ -165,7 +165,7 @@ public static class XmlEventParser
         {
             Type = eventType,
             EventTime = DateTime.Parse(eventRoot.Element("eventTime").Value, null, DateTimeStyles.AdjustToUniversal),
-            EventTimeZoneOffset = new TimeZoneOffset { Representation = eventRoot.Element("eventTimeZoneOffset").Value },
+            EventTimeZoneOffset = eventRoot.Element("eventTimeZoneOffset").Value,
             BusinessStep = eventRoot.Element("bizStep")?.Value,
             Disposition = eventRoot.Element("disposition")?.Value,
         };

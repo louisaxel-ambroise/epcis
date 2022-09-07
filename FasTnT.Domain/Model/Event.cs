@@ -25,5 +25,7 @@ public class Event
     public List<BusinessTransaction> Transactions { get; set; } = new();
     public List<Source> Sources { get; set; } = new();
     public List<Destination> Destinations { get; set; } = new();
+    public List<SensorElement> SensorElements { get; set; } = new();
+    public List<PersistentDisposition> PersistentDispositions { get; set; } = new();
     public List<CustomField> CustomFields { get; set; } = new();
 }

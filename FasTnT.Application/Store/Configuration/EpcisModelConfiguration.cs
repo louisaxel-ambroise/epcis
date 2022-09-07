@@ -72,15 +72,7 @@ internal static class EpcisModelConfiguration
         masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
         masterData.HasMany(x => x.Children).WithOne(x => x.MasterData).IsRequired(false);
         masterData.HasMany(x => x.Hierarchies).WithOne(x => x.MasterData).IsRequired(false);
-
-        if (database.IsSqlServer())
-        {
-            masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
-        }
-        else if (database.IsNpgsql())
-        {
-            masterData.ToSqlQuery("SELECT MAX(\"RequestId\") AS \"RequestId\", \"Type\", \"Id\" FROM \"Cbv\".\"MasterData\" GROUP BY \"Type\", \"Id\"");
-        }
+        masterData.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
 
         var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
         mdHierarchy.ToView(nameof(MasterDataHierarchy), nameof(EpcisSchema.Cbv));
@@ -133,7 +125,7 @@ internal static class EpcisModelConfiguration
         evt.Property(x => x.Id).IsRequired(true).UseIdentityColumn(1, 1).HasColumnType("bigint");
         evt.Property(x => x.EventTime).IsRequired(true);
         evt.Property(x => x.Type).IsRequired(true).HasConversion<short>();
-        evt.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => new TimeZoneOffset { Value = x });
+        evt.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => x);
         evt.Property(x => x.Action).IsRequired(true).HasConversion<short>();
         evt.Property(x => x.EventId).HasMaxLength(256).IsRequired(false);
         evt.Property(x => x.ReadPoint).HasMaxLength(256).IsRequired(false);
@@ -147,6 +139,8 @@ internal static class EpcisModelConfiguration
         evt.HasMany(x => x.Sources).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.Destinations).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.Transactions).WithOne(x => x.Event).HasForeignKey("EventId");
+        evt.HasMany(x => x.PersistentDispositions).WithOne(x => x.Event).HasForeignKey("EventId");
+        evt.HasMany(x => x.SensorElements).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.CustomFields).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.CorrectiveEventIds).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
@@ -204,17 +198,34 @@ internal static class EpcisModelConfiguration
         customField.Property(x => x.DateValue).IsRequired(false);
 
         var customFieldHasParent = customField.Property(x => x.HasParent);
-        if (database.IsSqlServer())
-        {
-            customFieldHasParent.HasComputedColumnSql("(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", stored: true);
-        }
-        else if (database.IsNpgsql())
-        {
-            customFieldHasParent.HasComputedColumnSql("(CASE WHEN \"ParentId\" IS NOT NULL THEN true ELSE false END)", stored: true);
-        }
+        customFieldHasParent.HasComputedColumnSql("(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", stored: true);
 
         customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
         customField.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey("EventId", "ParentId").OnDelete(DeleteBehavior.NoAction).IsRequired(false);
+
+        var persistentDisposition = modelBuilder.Entity<PersistentDisposition>();
+        persistentDisposition.ToTable(nameof(PersistentDisposition), nameof(EpcisSchema.Epcis));
+        persistentDisposition.Property<long>("EventId").HasColumnType("bigint");
+        persistentDisposition.HasKey("EventId", nameof(PersistentDisposition.Type), nameof(PersistentDisposition.Id));
+        persistentDisposition.Property(x => x.Type).IsRequired(true);
+        persistentDisposition.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+        persistentDisposition.HasOne(x => x.Event).WithMany(x => x.PersistentDispositions).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
+
+        var sensorElement = modelBuilder.Entity<SensorElement>();
+        sensorElement.ToTable(nameof(SensorElement), nameof(EpcisSchema.Epcis));
+        sensorElement.Property<long>("EventId").HasColumnType("bigint");
+        sensorElement.Property<int>("SensorId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
+        sensorElement.HasKey("EventId", "SensorId");
+        sensorElement.HasOne(x => x.Event).WithMany(x => x.SensorElements).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
+        sensorElement.HasMany(x => x.Reports).WithOne(x => x.SensorElement).HasForeignKey("EventId");
+
+        var sensorReport = modelBuilder.Entity<SensorReport>();
+        sensorReport.ToTable(nameof(SensorReport), nameof(EpcisSchema.Epcis));
+        sensorReport.Property<long>("EventId").HasColumnType("bigint");
+        sensorReport.Property<int>("SensorId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
+        sensorReport.Property<int>("ReportId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
+        sensorReport.HasKey("EventId", "SensorId", "ReportId");
+        sensorReport.HasOne(x => x.SensorElement).WithMany(x => x.Reports).HasForeignKey("EventId", "SensorId").OnDelete(DeleteBehavior.Cascade);
 
         var subscription = modelBuilder.Entity<Subscription>();
         subscription.ToTable(nameof(Subscription), nameof(EpcisSchema.Subscription));

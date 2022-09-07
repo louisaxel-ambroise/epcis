@@ -2,6 +2,7 @@ using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Host.Authorization;
 using FasTnT.Host.Features.v1_2;
+using FasTnT.Host.Features.v2_0;
 using FasTnT.Infrastructure.Store;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,7 @@ app.UseExceptionHandler(Options.ExceptionHandler);
 app.UseEndpoints(builder =>
 {
     builder.MapEpcis12Endpoints();
+    builder.MapEpcis20Endpoints();
 });
 
 app.Run();

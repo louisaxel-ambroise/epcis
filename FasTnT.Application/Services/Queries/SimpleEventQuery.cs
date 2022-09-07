@@ -70,6 +70,8 @@ public class SimpleEventQuery : IEpcisQuery
                     .Include(x => x.Destinations)
                     .Include(x => x.CustomFields)
                     .Include(x => x.Transactions)
+                    .Include(x => x.PersistentDispositions)
+                    .Include(x => x.SensorElements).ThenInclude(x => x.Reports)
                     .Where(evt => eventIds.Contains(evt.Id));
 
                 var result = await query.ToListAsync(cancellationToken)
