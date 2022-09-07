@@ -46,7 +46,7 @@ public record CaptureRequest(IRequest<CaptureEpcisRequestResponse> Request)
         if(context.Request.Headers.TryGetValue("GS1-Extensions", out var extensions))
         {
             return extensions
-                .Select(x => x.Split(':', 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                .Select(x => x.Split('=', 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                 .ToDictionary(x => x[0], x => x[1]);
         }
 
