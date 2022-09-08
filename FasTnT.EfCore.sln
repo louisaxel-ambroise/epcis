@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Application", "FasTn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Host", "FasTnT.Host\FasTnT.Host.csproj", "{245E5EE4-2C00-4C62-ABCD-1775BFE8EAC2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Formatter.Xml", "FasTnT.Formatter.Xml\FasTnT.Formatter.Xml.csproj", "{CB50A1A4-A78A-4D64-AB55-544C202B1A53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Formatter.v1_2", "FasTnT.Formatter.Xml\FasTnT.Formatter.v1_2.csproj", "{CB50A1A4-A78A-4D64-AB55-544C202B1A53}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Formatters", "Formatters", "{1904AB64-DCB2-4D05-9A53-6D54481B5849}"
 EndProject
@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Migrations.SqlServer
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Migrations", "Migrations", "{91390250-5085-4334-823A-334F36A02D54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FasTnT.Formatter.Json", "FasTnT.Formatter.Json\FasTnT.Formatter.Json.csproj", "{222852D4-EBED-4C2D-B069-2A541E5C0B88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Formatter.v2_0", "FasTnT.Formatter.Json\FasTnT.Formatter.v2_0.csproj", "{222852D4-EBED-4C2D-B069-2A541E5C0B88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Commands.Capture;
-using FasTnT.Formatter.Json;
+using FasTnT.Domain.Queries;
+using FasTnT.Host.Features.v2_0.Interfaces;
 using MediatR;
 
 namespace FasTnT.Host.Features.v2_0;
@@ -13,6 +13,7 @@ public class Endpoints2_0
     {
         app.MapPost("v2_0/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
         app.MapGet("v2_0/capture", HandleCaptureQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
+        app.MapGet("v2_0/events", HandleEventQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
 
         return app;
     }
@@ -25,32 +26,17 @@ public class Endpoints2_0
         return Results.NoContent();
     }
 
-    private static async Task<IResult> HandleCaptureQuery(IMediator mediator, ILogger<Endpoints2_0> logger, CancellationToken cancellationToken)
+    private static IResult HandleCaptureQuery(IMediator mediator, ILogger<Endpoints2_0> logger, CancellationToken cancellationToken)
     {
         return Results.Ok();
     }
-}
 
-public record CaptureRequest(IRequest<CaptureEpcisRequestResponse> Request)
-{
-    public static async ValueTask<CaptureRequest> BindAsync(HttpContext context)
+    private static async Task<IResult> HandleEventQuery(IMediator mediator, ILogger<Endpoints2_0> logger, CancellationToken cancellationToken)
     {
-        var extensions = ParseExtensionHeader(context);
-        var request = await CaptureRequestParser.ParseAsync(context.Request.Body, extensions, context.RequestAborted);
+        var query = new PollQuery("SimpleEventQuery", Array.Empty<QueryParameter>());
+        var response = await mediator.Send(query, cancellationToken) as PollResponse;
 
-        return new(request);
-    }
-
-    private static IDictionary<string, string> ParseExtensionHeader(HttpContext context)
-    {
-        if(context.Request.Headers.TryGetValue("GS1-Extensions", out var extensions))
-        {
-            return extensions
-                .Select(x => x.Split('=', 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-                .ToDictionary(x => x[0], x => x[1]);
-        }
-
-        return new Dictionary<string, string>();
+        return IRestResponse.Create(response);
     }
 }
 

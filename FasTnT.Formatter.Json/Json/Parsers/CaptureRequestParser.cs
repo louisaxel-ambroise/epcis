@@ -1,11 +1,7 @@
 ﻿using FasTnT.Domain.Commands.Capture;
 using FasTnT.Domain.Exceptions;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace FasTnT.Formatter.Json;
+namespace FasTnT.Formatter.v2_0.Json;
 
 public static class CaptureRequestParser
 {

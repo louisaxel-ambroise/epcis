@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
-    <ProjectReference Include="..\FasTnT.Formatter.Xml\FasTnT.Formatter.Xml.csproj" />
+    <ProjectReference Include="..\FasTnT.Formatter.Xml\FasTnT.Formatter.v1_2.csproj" />
   </ItemGroup>
 
 </Project>

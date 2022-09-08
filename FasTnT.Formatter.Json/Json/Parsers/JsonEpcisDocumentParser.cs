@@ -1,9 +1,7 @@
 ﻿using FasTnT.Domain.Model;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 
-namespace FasTnT.Formatter.Json;
+namespace FasTnT.Formatter.v2_0.Json;
 
 public static class JsonEpcisDocumentParser
 {

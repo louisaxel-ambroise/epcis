@@ -1,10 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
-namespace FasTnT.Formatter.Json;
+namespace FasTnT.Formatter.v2_0.Json;
 
 public class JsonDocumentParser
 {
