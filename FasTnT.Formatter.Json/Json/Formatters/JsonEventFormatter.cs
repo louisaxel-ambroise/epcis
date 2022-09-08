@@ -54,6 +54,9 @@ public static class JsonEventFormatter
             SetDisposition(element, evt.PersistentDispositions);
         }
 
+        // TODO: add sensorElements
+        // TODO: add context object and namespaces in custom fields
+
         var ilmd = BuildExtensionFields(evt.CustomFields.Where(x => x.Type == FieldType.Ilmd));
         if (ilmd is not null) element["ilmd"] = ilmd;
 
