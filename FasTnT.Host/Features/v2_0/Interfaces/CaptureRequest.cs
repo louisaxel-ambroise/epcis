@@ -24,4 +24,3 @@ public record CaptureRequest(IRequest<CaptureEpcisRequestResponse> Request)
         }
     }
 }
-

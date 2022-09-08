@@ -6,7 +6,7 @@ namespace FasTnT.Formatter.v2_0.Json.Formatters;
     
 public static class JsonEventFormatter
 {
-    public static IDictionary<string, object> FormatEvent(Event evt)
+    public static IDictionary<string, object> FormatEvent(Event evt, IDictionary<string, string> context)
     {
         var element = new Dictionary<string, object>
         {
@@ -55,12 +55,11 @@ public static class JsonEventFormatter
         }
 
         // TODO: add sensorElements
-        // TODO: add context object and namespaces in custom fields
 
-        var ilmd = BuildExtensionFields(evt.CustomFields.Where(x => x.Type == FieldType.Ilmd));
+        var ilmd = BuildExtensionFields(evt.CustomFields.Where(x => x.Type == FieldType.Ilmd), context);
         if (ilmd is not null) element["ilmd"] = ilmd;
 
-        var customFields = BuildExtensionFields(evt.CustomFields.Where(x => x.Type == FieldType.CustomField));
+        var customFields = BuildExtensionFields(evt.CustomFields.Where(x => x.Type == FieldType.CustomField), context);
         if (customFields is not null)
         {
             foreach (var field in customFields) element[field.Key] = field.Value;
@@ -115,7 +114,7 @@ public static class JsonEventFormatter
     }
 
     // TODO: refactor this mess.
-    private static IDictionary<string, object> BuildExtensionFields(IEnumerable<CustomField> fields)
+    private static IDictionary<string, object> BuildExtensionFields(IEnumerable<CustomField> fields, IDictionary<string, string> context)
     {
         if (!fields.Any()) return null;
 
@@ -127,27 +126,27 @@ public static class JsonEventFormatter
             {
                 if (field.Children.All(x => x.Name == field.Name && x.Namespace == field.Namespace))
                 {
-                    extension.Add(field.Namespace + ":" + field.Name, BuildArrayElement(field.Children));
+                    extension.Add(context[field.Namespace] + ":" + field.Name, BuildArrayElement(field.Children, context));
                 }
                 else
                 {
-                    extension.Add(field.Namespace + ":" + field.Name, BuildElement(field.Children));
+                    extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(field.Children, context));
                 }
             }
             else if (field.Children.Count == 1)
             {
-                extension.Add(field.Namespace + ":" + field.Name, BuildElement(field.Children).First().Value);
+                extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(field.Children, context).First().Value);
             }
             else
             {
-                extension.Add(field.Namespace + ":" + field.Name, field.TextValue);
+                extension.Add(context[field.Namespace] + ":" + field.Name, field.TextValue);
             }
         }
 
         return extension;
     }
 
-    private static Dictionary<string, object> BuildElement(IEnumerable<CustomField> fields)
+    private static Dictionary<string, object> BuildElement(IEnumerable<CustomField> fields, IDictionary<string, string> context)
     {
         var element = new Dictionary<string, object>();
 
@@ -157,27 +156,27 @@ public static class JsonEventFormatter
             {
                 if (field.Children.Count > 1 && field.Children.All(x => x.Name == field.Name && x.Namespace == field.Namespace))
                 {
-                    element.Add(field.Namespace + ":" + field.Name, BuildArrayElement(field.Children));
+                    element.Add(context[field.Namespace] + ":" + field.Name, BuildArrayElement(field.Children, context));
                 }
                 else
                 {
-                    element.Add(field.Namespace + ":" + field.Name, BuildArrayElement(field.Children));
+                    element.Add(context[field.Namespace] + ":" + field.Name, BuildArrayElement(field.Children, context));
                 }
             }
             else if (field.Children.Count == 1)
             {
-                element.Add(field.Namespace + ":" + field.Name, BuildArrayElement(field.Children).First());
+                element.Add(context[field.Namespace] + ":" + field.Name, BuildArrayElement(field.Children, context).First());
             }
             else
             {
-                element.Add(field.Namespace + ":" + field.Name, field.TextValue);
+                element.Add(context[field.Namespace] + ":" + field.Name, field.TextValue);
             }
         }
 
         return element;
     }
 
-    private static List<object> BuildArrayElement(IEnumerable<CustomField> fields)
+    private static List<object> BuildArrayElement(IEnumerable<CustomField> fields, IDictionary<string, string> context)
     {
         var array = new List<object>();
 
@@ -187,16 +186,16 @@ public static class JsonEventFormatter
             {
                 if (field.Children.All(x => x.Name == field.Name && x.Namespace == field.Namespace))
                 {
-                    array.Add(BuildArrayElement(field.Children));
+                    array.Add(BuildArrayElement(field.Children, context));
                 }
                 else
                 {
-                    array.Add(BuildElement(field.Children));
+                    array.Add(BuildElement(field.Children, context));
                 }
             }
             else if (field.Children.Count == 1)
             {
-                array.Add(BuildElement(field.Children));
+                array.Add(BuildElement(field.Children, context));
             }
             else
             {
