@@ -17,7 +17,7 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldReturnAPollResponse()
     {
-        var queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
+        var queries = new Services.IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
         var handler = new PollQueryHandler(queries, UserContext);
         var request = new PollQuery("SimpleEventQuery", new List<QueryParameter>());
         var result = handler.Handle(request, default).Result;
@@ -28,7 +28,7 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
-        var queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
+        var queries = new Services.IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
         var handler = new PollQueryHandler(queries, UserContext);
         var request = new PollQuery("UnknownQuery", new List<QueryParameter>());
 

@@ -10,12 +10,12 @@ namespace FasTnT.Subscriptions;
  
 public class SubscriptionRunner
 {
-    private readonly IEnumerable<IEpcisQuery> _epcisQueries;
+    private readonly IEnumerable<Application.Services.IEpcisQuery> _epcisQueries;
     private readonly EpcisContext _context;
     private readonly ISubscriptionResultSender _resultSender;
     private readonly ILogger<SubscriptionRunner> _logger;
 
-    public SubscriptionRunner(IEnumerable<IEpcisQuery> epcisQueries, EpcisContext context, ISubscriptionResultSender resultSender, ILogger<SubscriptionRunner> logger)
+    public SubscriptionRunner(IEnumerable<Application.Services.IEpcisQuery> epcisQueries, EpcisContext context, ISubscriptionResultSender resultSender, ILogger<SubscriptionRunner> logger)
     {
         _epcisQueries = epcisQueries;
         _context = context;

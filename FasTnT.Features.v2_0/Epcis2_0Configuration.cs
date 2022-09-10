@@ -4,7 +4,8 @@ public static class Epcis2_0Configuration
 {
     public static IEndpointRouteBuilder MapEpcis20Endpoints(this IEndpointRouteBuilder endpoints)
     {
-        Endpoints2_0.AddRoutes(endpoints);
+        CaptureEndpoints.AddRoutes(endpoints);
+        QueryEndpoints.AddRoutes(endpoints);
 
         return endpoints;
     }

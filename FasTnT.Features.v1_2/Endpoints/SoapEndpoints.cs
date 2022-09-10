@@ -10,15 +10,14 @@ using Microsoft.AspNetCore.Builder;
 
 namespace FasTnT.Host.Features.v1_2;
 
-public class Endpoints1_2
+public class SoapEndpoints
 {
     internal const string WsdlPath = "FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
 
-    protected Endpoints1_2() { }
+    protected SoapEndpoints() { }
     
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("v1_2/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
         app.MapPost("v1_2/query.svc", HandleSoapQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
         app.MapGet("v1_2/Trigger", HandleTriggerSubscription).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
         app.MapGet("v1_2/query.svc", HandleGetWsdl).AllowAnonymous();
@@ -26,26 +25,7 @@ public class Endpoints1_2
         return app;
     }
 
-    private static async Task<IResult> HandleCaptureRequest(CaptureRequest request, IMediator mediator, ILogger<Endpoints1_2> logger, CancellationToken cancellationToken)
-    {
-        try
-        {
-            logger.LogInformation("Start capture request processing");
-            await mediator.Send(request.Request, cancellationToken);
-
-            return Results.NoContent();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Unable to process capture request");
-
-            return (ex is FormatException or EpcisException)
-                ? Results.BadRequest()
-                : Results.StatusCode(500);
-        }
-    }
-
-    private static async Task<ISoapResponse> HandleSoapQuery(SoapEnvelope envelope, IMediator mediator, ILogger<Endpoints1_2> logger, CancellationToken cancellationToken)
+    private static async Task<ISoapResponse> HandleSoapQuery(SoapEnvelope envelope, IMediator mediator, ILogger<SoapEndpoints> logger, CancellationToken cancellationToken)
     {
         try
         {
@@ -61,7 +41,7 @@ public class Endpoints1_2
         }
     }
 
-    private static async Task<IResult> HandleTriggerSubscription(string triggers, IMediator mediator, ILogger<Endpoints1_2> logger, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleTriggerSubscription(string triggers, IMediator mediator, ILogger<SoapEndpoints> logger, CancellationToken cancellationToken)
     {
         if (!string.IsNullOrWhiteSpace(triggers))
         {
@@ -77,7 +57,7 @@ public class Endpoints1_2
         }
     }
 
-    private static async Task HandleGetWsdl(HttpResponse response, ILogger<Endpoints1_2> logger, CancellationToken cancellationToken)
+    private static async Task HandleGetWsdl(HttpResponse response, ILogger<SoapEndpoints> logger, CancellationToken cancellationToken)
     {
         logger.LogInformation("Return Query 1.2 WSDL from GET request");
         response.ContentType = "text/xml";

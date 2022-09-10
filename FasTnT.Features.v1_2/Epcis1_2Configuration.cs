@@ -24,7 +24,8 @@ public static class Epcis1_2Configuration
 
     public static IEndpointRouteBuilder MapEpcis12Endpoints(this IEndpointRouteBuilder endpoints)
     {
-        Endpoints1_2.AddRoutes(endpoints);
+        CaptureEndpoints.AddRoutes(endpoints);
+        SoapEndpoints.AddRoutes(endpoints);
 
         return endpoints;
     }

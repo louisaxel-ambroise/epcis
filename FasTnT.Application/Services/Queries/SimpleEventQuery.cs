@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.Queries;
 
-public class SimpleEventQuery : IEpcisQuery
+public class SimpleEventQuery : Services.IEpcisQuery
 {
     const string Comparison = "(GE|GT|LE|LT)";
 

@@ -9,7 +9,7 @@ namespace FasTnT.Application.Tests.Queries
     public class WhenApplyingLT_eventTimeFilter
     {
         public EpcisContext Context { get; set; }
-        public IEpcisQuery Query { get; set; }
+        public Services.IEpcisQuery Query { get; set; }
         public IList<QueryParameter> Parameters { get; set; }
 
         [TestInitialize]

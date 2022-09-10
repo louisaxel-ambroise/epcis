@@ -8,10 +8,10 @@ namespace FasTnT.Application.Queries;
 
 public class PollQueryHandler : IRequestHandler<PollQuery, IEpcisResponse>
 {
-    private readonly IEnumerable<IEpcisQuery> _queries;
+    private readonly IEnumerable<Services.IEpcisQuery> _queries;
     private readonly ICurrentUser _currentUser;
 
-    public PollQueryHandler(IEnumerable<IEpcisQuery> queries, ICurrentUser currentUser)
+    public PollQueryHandler(IEnumerable<Services.IEpcisQuery> queries, ICurrentUser currentUser)
     {
         _queries = queries;
         _currentUser = currentUser;

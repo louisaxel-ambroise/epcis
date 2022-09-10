@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Queries;
 
-public class SimpleMasterDataQuery : IEpcisQuery
+public class SimpleMasterDataQuery : Services.IEpcisQuery
 {
     private readonly EpcisContext _context;
     private int? _maxEventCount;

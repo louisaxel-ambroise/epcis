@@ -10,7 +10,7 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldReturnAllTheQueryNames()
     {
-        var queries = new IEpcisQuery[] { new SimpleEventQuery(default), new SimpleMasterDataQuery(default) };
+        var queries = new Services.IEpcisQuery[] { new SimpleEventQuery(default), new SimpleMasterDataQuery(default) };
         var handler = new GetQueryNamesQueryHandler(queries);
         var result = handler.Handle(new GetQueryNamesQuery(), default).Result;
 

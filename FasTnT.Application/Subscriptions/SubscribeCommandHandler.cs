@@ -12,10 +12,10 @@ namespace FasTnT.Application.Subscriptions;
 public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, IEpcisResponse>
 {
     private readonly EpcisContext _context;
-    private readonly IEnumerable<IEpcisQuery> _queries;
+    private readonly IEnumerable<Services.IEpcisQuery> _queries;
     private readonly IMediator _mediator;
 
-    public SubscribeCommandHandler(EpcisContext context, IEnumerable<IEpcisQuery> queries, IMediator mediator)
+    public SubscribeCommandHandler(EpcisContext context, IEnumerable<Services.IEpcisQuery> queries, IMediator mediator)
     {
         _context = context;
         _queries = queries;

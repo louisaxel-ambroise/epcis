@@ -6,9 +6,9 @@ namespace FasTnT.Application.Queries;
 
 public class GetQueryNamesQueryHandler : IRequestHandler<GetQueryNamesQuery, IEpcisResponse>
 {
-    private readonly IEnumerable<IEpcisQuery> _queries;
+    private readonly IEnumerable<Services.IEpcisQuery> _queries;
 
-    public GetQueryNamesQueryHandler(IEnumerable<IEpcisQuery> queries)
+    public GetQueryNamesQueryHandler(IEnumerable<Services.IEpcisQuery> queries)
     {
         _queries = queries;
     }

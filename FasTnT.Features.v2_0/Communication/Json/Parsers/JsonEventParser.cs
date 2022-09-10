@@ -9,10 +9,20 @@ public class JsonEventParser
     private readonly JsonElement _element;
     private readonly JsonCustomFieldParser _customFieldParser;
 
-    internal JsonEventParser(JsonElement element, IDictionary<string, string> extensions)
+    private JsonEventParser(JsonElement element, Namespaces extensions)
     {
         _element = element;
         _customFieldParser = new(extensions);
+    }
+
+    public static JsonEventParser Create(JsonElement element, Namespaces extensions)
+    {
+        if(element.TryGetProperty("@context", out var context))
+        {
+            extensions = extensions.Merge(Namespaces.Parse(context));
+        }
+
+        return new(element, extensions);
     }
 
     public Event Parse()
@@ -26,6 +36,7 @@ public class JsonEventParser
                 case "eventID":
                     evt.EventId = property.Value.GetString(); break;
                 case "isA":
+                case "type":
                     evt.Type = Enum.Parse<EventType>(property.Value.GetString(), true); break;
                 case "action":
                     evt.Action = Enum.Parse<EventAction>(property.Value.GetString(), true); break;
@@ -75,6 +86,8 @@ public class JsonEventParser
                     evt.CustomFields.AddRange(_customFieldParser.ParseIlmd(property)); break;
                 case "recordTime":
                     /* Don't do anything - record time is set to the time the event was inserted. */
+                case "@context":
+                    /* Don't do anything - context will only contains custom context, not important. */
                     break;
                 default:
                     evt.CustomFields.AddRange(_customFieldParser.ParseCustomField(property)); break;
@@ -153,9 +166,9 @@ public class JsonEventParser
 
 class JsonCustomFieldParser
 {
-    private readonly IDictionary<string, string> _extensions;
+    private readonly Namespaces _extensions;
 
-    public JsonCustomFieldParser(IDictionary<string, string> extensions)
+    public JsonCustomFieldParser(Namespaces extensions)
     {
         _extensions = extensions;
     }
