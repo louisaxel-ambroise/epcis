@@ -17,7 +17,13 @@ public static class XmlEventParser
 
     private readonly static Dictionary<string, Func<XElement, Event>> ExtensionParsers = new ()
     {
-        { "TransformationEvent", ParseTransformationEvent }
+        { "TransformationEvent", ParseTransformationEvent },
+        { "extension", ParseEventListSubExtension }
+    };
+
+    private readonly static Dictionary<string, Func<XElement, Event>> SubExtensionParsers = new ()
+    {
+        { "AssociationEvent", ParseAssociationEvent }
     };
 
     public static IEnumerable<Event> ParseEvents(XElement root)
@@ -38,6 +44,18 @@ public static class XmlEventParser
         var eventElement = element.Elements().First();
 
         if (!ExtensionParsers.TryGetValue(eventElement.Name.LocalName, out Func<XElement, Event> parser))
+        {
+            throw new ArgumentException($"Element '{eventElement.Name.LocalName}' not expected in this context");
+        }
+
+        return parser(eventElement);
+    }
+
+    private static Event ParseEventListSubExtension(XElement element)
+    {
+        var eventElement = element.Elements().First();
+
+        if (!SubExtensionParsers.TryGetValue(eventElement.Name.LocalName, out Func<XElement, Event> parser))
         {
             throw new ArgumentException($"Element '{eventElement.Name.LocalName}' not expected in this context");
         }
@@ -156,6 +174,32 @@ public static class XmlEventParser
         ParseExtension(eventRoot.Element("extension"), Event, FieldType.Extension);
 
         return Event;
+    }
+
+    public static Event ParseAssociationEvent(XElement eventRoot)
+    {
+        var Event = ParseBase(eventRoot, EventType.AssociationEvent);
+
+        Event.Action = Enum.Parse<EventAction>(eventRoot.Element("action").Value, true);
+        ParseParentId(eventRoot.Element("parentID"), Event);
+        ParseEpcList(eventRoot.Element("childEPCs"), Event, EpcType.ChildEpc);
+        ParseTransactions(eventRoot.Element("bizTransactionList"), Event);
+        ParseAssociationExtension(eventRoot.Element("extension"), Event);
+
+        return Event;
+    }
+
+    private static void ParseAssociationExtension(XElement element, Event evt)
+    {
+        if (element == null || element.IsEmpty)
+        {
+            return;
+        }
+
+        ParseEpcQuantityList(element.Element("childQuantityList"), evt, EpcType.ChildQuantity);
+        ParseSources(element.Element("sourceList"), evt);
+        ParseDestinations(element.Element("destinationList"), evt);
+        ParseExtension(element.Element("extension"), evt, FieldType.Extension);
     }
 
     public static Event ParseBase(XElement eventRoot, EventType eventType)

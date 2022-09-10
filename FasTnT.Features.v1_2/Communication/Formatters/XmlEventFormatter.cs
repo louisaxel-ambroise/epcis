@@ -12,6 +12,7 @@ public static class XmlEventFormatter
         { EventType.AggregationEvent, FormatAggregationEvent },
         { EventType.TransactionEvent, FormatTransactionEvent },
         { EventType.TransformationEvent, FormatTransformationEvent },
+        { EventType.AssociationEvent, FormatAssociationEvent },
     };
 
     public static IEnumerable<XElement> FormatList(IList<Event> eventList)
@@ -149,6 +150,26 @@ public static class XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));
 
         return new XElement("extension", xmlEvent);
+    }
+
+    private static XElement FormatAssociationEvent(Event evt)
+    {
+        var xmlEvent = new XElement("AssociationEvent");
+
+        AddCommonEventFields(evt, xmlEvent);
+        xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
+        xmlEvent.Add(CreateEpcList(evt, EpcType.ChildEpc, "childEPCs"));
+        xmlEvent.Add(CreateQuantityList(evt, EpcType.ChildQuantity, "childQuantityList"));
+        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        AddV1_1Fields(evt, xmlEvent);
+        xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
+        xmlEvent.AddIfNotNull(CreateSourceList(evt));
+        xmlEvent.AddIfNotNull(CreateDestinationList(evt));
+        xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Ilmd, "ilmd"));
+        xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Extension, "extension"));
+        xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));
+
+        return new XElement("extension", new XElement("extension", xmlEvent));
     }
 
     private static XElement CreateReadPoint(Event evt)
