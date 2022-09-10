@@ -39,6 +39,8 @@ public class JsonEventParser
                     evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.InputEpc)); break;
                 case "outputEPCList":
                     evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.OutputEpc)); break;
+                case "quantityList":
+                    evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.Quantity)); break;
                 case "inputQuantityList":
                     evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.InputQuantity)); break;
                 case "outputQuantityList":

@@ -7,7 +7,7 @@ public static class JsonCaptureRequestParser
 {
     public static async Task<CaptureEpcisRequestCommand> ParseAsync(Stream input, IDictionary<string, string> extensions, CancellationToken cancellationToken)
     {
-        var document = await JsonDocumentParser.ParseAsync(input, cancellationToken);
+        var document = await JsonDocumentParser.Instance.ParseAsync(input, cancellationToken);
         var request = JsonEpcisDocumentParser.Parse(document, extensions);
 
         return request != default
