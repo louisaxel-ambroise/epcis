@@ -1,5 +1,4 @@
-﻿using FasTnT.Domain;
-using FasTnT.Domain.Queries.GetStandardVersion;
+﻿using FasTnT.Domain.Queries.GetStandardVersion;
 using FasTnT.Domain.Queries.Poll;
 using MediatR;
 
@@ -9,6 +8,6 @@ public class GetStandardVersionQueryHandler : IRequestHandler<GetStandardVersion
 {
     public Task<IEpcisResponse> Handle(GetStandardVersionQuery request, CancellationToken cancellationToken)
     {
-        return Task.FromResult<IEpcisResponse>(new GetStandardVersionResult(Constants.StandardVersion));
+        return Task.FromResult<IEpcisResponse>(new GetStandardVersionResult(request.StandardVersion));
     }
 }
