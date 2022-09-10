@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Commands.Capture;
-using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Infrastructure.Exceptions;
 
 namespace FasTnT.Features.v2_0.Communication.Xml.Parsers;
 

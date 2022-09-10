@@ -1,12 +1,13 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Builder;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Domain.Infrastructure.Exceptions;
 
-namespace FasTnT.Host.Features.v1_2;
+namespace FasTnT.Features.v1_2.Endpoints;
 
 public class CaptureEndpoints
 {
@@ -32,7 +33,7 @@ public class CaptureEndpoints
         {
             logger.LogError(ex, "Unable to process capture request");
 
-            return (ex is FormatException or EpcisException)
+            return ex is FormatException or EpcisException
                 ? Results.BadRequest()
                 : Results.StatusCode(500);
         }

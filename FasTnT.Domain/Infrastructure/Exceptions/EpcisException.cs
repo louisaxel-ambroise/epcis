@@ -1,8 +1,8 @@
-﻿namespace FasTnT.Domain.Exceptions;
+﻿namespace FasTnT.Domain.Infrastructure.Exceptions;
 
 public class EpcisException : Exception
 {
-    public static readonly EpcisException Default = new (ExceptionType.ImplementationException, string.Empty) { Severity = ExceptionSeverity.Error };
+    public static readonly EpcisException Default = new(ExceptionType.ImplementationException, string.Empty) { Severity = ExceptionSeverity.Error };
 
     public ExceptionType ExceptionType { get; }
     public ExceptionSeverity Severity { get; set; }

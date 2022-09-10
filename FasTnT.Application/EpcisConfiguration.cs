@@ -1,18 +1,20 @@
-﻿using FasTnT.Application.Queries;
+﻿using FasTnT.Application.Queries.Poll;
 using FasTnT.Application.Services;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
+using FasTnT.Application.Services.Users.Providers;
+using FasTnT.Application.Store;
+using FasTnT.Application.Store.Configuration;
 using FasTnT.Domain.Infrastructure.Behaviors;
-using FasTnT.Infrastructure.Configuration;
-using FasTnT.Infrastructure.Store;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FasTnT.Host.Features.v2_0;
+namespace FasTnT.Application;
 
 public static class EpcisConfiguration
 {
-    public static IServiceCollection AddEpcisServices(this IServiceCollection services) => AddEpcisServices(services, null);
+    public static IServiceCollection AddEpcisServices(this IServiceCollection services) => services.AddEpcisServices(null);
 
     public static IServiceCollection AddEpcisServices(this IServiceCollection services, Action<EpcisOptions> configure)
     {

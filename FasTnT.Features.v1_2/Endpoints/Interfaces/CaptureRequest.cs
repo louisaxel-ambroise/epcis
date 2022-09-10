@@ -1,9 +1,9 @@
 ﻿using FasTnT.Domain.Commands.Capture;
-using FasTnT.Formatter.Xml.Parsers;
+using FasTnT.Features.v1_2.Communication.Parsers;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
-namespace FasTnT.Host.Features.v1_2;
+namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 public record CaptureRequest(IRequest<CaptureEpcisRequestResponse> Request)
 {

@@ -1,9 +1,9 @@
 ﻿using FasTnT.Application.Commands;
 using FasTnT.Application.Services.Users;
+using FasTnT.Application.Store;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Commands.Capture;
 using FasTnT.Domain.Model;
-using FasTnT.Infrastructure.Store;
 
 namespace FasTnT.Application.Tests;
 

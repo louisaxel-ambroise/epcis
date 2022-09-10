@@ -1,14 +1,14 @@
 ﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Infrastructure.Utils;
 using FasTnT.Domain.Model;
-using FasTnT.Domain.Utils;
-using FasTnT.Formatter.Xml.Parsers;
+using FasTnT.Features.v1_2.Communication.Parsers;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 [TestClass]
 public class WhenParsingAValidAggregationEvent : XmlParsingTestCase
 {
-    public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.Events.AggregationEvent_Full.xml";
+    public static readonly string ResourceName = "FasTnT.Features.v1_2.Tests.Resources.Events.AggregationEvent_Full.xml";
 
     public Event Event { get; set; }
 

@@ -1,12 +1,12 @@
-﻿using FasTnT.Domain.Queries;
-using FasTnT.Formatter.Xml.Parsers;
+﻿using FasTnT.Domain.Queries.GetSubscriptionIds;
+using FasTnT.Features.v1_2.Communication.Parsers;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 [TestClass]
 public class WhenParsingAGetSubscriptionIDsQuery : XmlParsingTestCase
 {
-    public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.Queries.GetSubscriptionIDs.xml";
+    public static readonly string ResourceName = "FasTnT.Features.v1_2.Tests.Resources.Queries.GetSubscriptionIDs.xml";
 
     public object Query { get; set; }
 

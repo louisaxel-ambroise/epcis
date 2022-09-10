@@ -1,13 +1,13 @@
-﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
-using FasTnT.Formatter.Xml.Parsers;
+using FasTnT.Features.v1_2.Communication.Parsers;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 [TestClass]
-public class WhenParsingAnImplementationExceptionCallback : XmlParsingTestCase
+public class WhenParsingAQueryTooLargeExceptionCallback : XmlParsingTestCase
 {
-    public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.CallbackRequests.ImplementationExceptionRequest.xml";
+    public static readonly string ResourceName = "FasTnT.Features.v1_2.Tests.Resources.CallbackRequests.QueryTooLargeRequest.xml";
 
     public Request Request { get; set; }
 
@@ -40,18 +40,18 @@ public class WhenParsingAnImplementationExceptionCallback : XmlParsingTestCase
     [TestMethod]
     public void SubscriptionCallbackTypeShouldBeQueryTooLargeException()
     {
-        Assert.AreEqual(QueryCallbackType.ImplementationException, Request.SubscriptionCallback.CallbackType);
+        Assert.AreEqual(QueryCallbackType.QueryTooLargeException, Request.SubscriptionCallback.CallbackType);
     }
 
     [TestMethod]
     public void SubscriptionCallbackReasonShouldMatchTheRequestValue()
     {
-        Assert.AreEqual("Query parameter not supported", Request.SubscriptionCallback.Reason);
+        Assert.AreEqual("This is a reason", Request.SubscriptionCallback.Reason);
     }
 
     [TestMethod]
     public void SubscriptionIdShouldMatchTheRequestValue()
     {
-        Assert.AreEqual("TestID", Request.SubscriptionCallback.SubscriptionId);
+        Assert.AreEqual("TestSubscription1", Request.SubscriptionCallback.SubscriptionId);
     }
 }

@@ -1,19 +1,19 @@
-﻿using FasTnT.Domain;
+﻿using FasTnT.Application.Store;
+using FasTnT.Application.Utils;
+using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
-using FasTnT.Domain.Queries;
-using FasTnT.Domain.Utils;
-using FasTnT.Infrastructure.Store;
+using FasTnT.Domain.Queries.Poll;
 using LinqKit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
-namespace FasTnT.Application.Queries;
+namespace FasTnT.Application.Services.Queries;
 
-public class SimpleEventQuery : Services.IEpcisQuery
+public class SimpleEventQuery : IEpcisQuery
 {
     const string Comparison = "(GE|GT|LE|LT)";
 
@@ -60,7 +60,7 @@ public class SimpleEventQuery : Services.IEpcisQuery
                     QueryName = Name
                 };
             }
-            
+
             if (eventIds.Count > 0)
             {
                 query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
@@ -80,7 +80,7 @@ public class SimpleEventQuery : Services.IEpcisQuery
             }
             else
             {
-                return new PollEventResponse(Name, new ());
+                return new PollEventResponse(Name, new());
             }
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
@@ -99,9 +99,9 @@ public class SimpleEventQuery : Services.IEpcisQuery
 
     private IQueryable<Event> ApplyOrderByLimit(IQueryable<Event> query)
     {
-        var limit = _maxEventCount.HasValue 
+        var limit = _maxEventCount.HasValue
             ? _maxEventCount.Value + 1
-            : _eventCountLimit.Value;    
+            : _eventCountLimit.Value;
 
         return _orderDirection == OrderDirection.Ascending
             ? query.OrderBy(_orderExpression).Take(limit)
@@ -171,8 +171,8 @@ public class SimpleEventQuery : Services.IEpcisQuery
     {
         _orderExpression = param.Value() switch
         {
-            "eventTime" => (Event x) => x.EventTime,
-            "recordTime" => (Event x) => x.CaptureTime,
+            "eventTime" => (x) => x.EventTime,
+            "recordTime" => (x) => x.CaptureTime,
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order field: {param.Value()}")
         };
 

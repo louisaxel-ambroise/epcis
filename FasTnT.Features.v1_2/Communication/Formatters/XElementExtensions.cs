@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Formatter.Xml.Formatters;
+﻿namespace FasTnT.Features.v1_2.Communication.Formatters;
 
 public static class XElementExtensions
 {

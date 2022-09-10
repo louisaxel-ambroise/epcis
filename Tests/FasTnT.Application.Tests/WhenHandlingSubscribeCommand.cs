@@ -1,10 +1,10 @@
-﻿using FasTnT.Application.Queries;
-using FasTnT.Application.Services;
+﻿using FasTnT.Application.Services;
+using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Store;
 using FasTnT.Application.Subscriptions;
 using FasTnT.Domain.Commands.Subscribe;
-using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Notifications;
-using FasTnT.Infrastructure.Store;
 using MediatR;
 
 namespace FasTnT.Application.Tests;

@@ -1,11 +1,11 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
-using FasTnT.Formatter.Xml.Formatters;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
+using FasTnT.Features.v1_2.Communication.Formatters;
 using System.Net;
 using System.Text;
 using System.Xml;
 
-namespace FasTnT.Subscriptions;
+namespace FasTnT.Features.v1_2.Subscriptions;
 
 public class HttpSubscriptionResultSender : ISubscriptionResultSender
 {
@@ -79,6 +79,6 @@ public class HttpSubscriptionResultSender : ISubscriptionResultSender
             new XAttribute("schemaVersion", "1")
         };
 
-        return new (new XElement(rootName, attributes, new XElement("EPCISBody", content)));
+        return new(new XElement(rootName, attributes, new XElement("EPCISBody", content)));
     }
 }

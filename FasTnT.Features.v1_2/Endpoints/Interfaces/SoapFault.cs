@@ -1,9 +1,8 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Formatter.Xml.Formatters;
-using FasTnT.Host.Extensions;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Features.v1_2.Communication.Formatters;
 using Microsoft.AspNetCore.Http;
 
-namespace FasTnT.Host.Features.v1_2;
+namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 public record SoapFault(EpcisException Fault) : ISoapResponse
 {

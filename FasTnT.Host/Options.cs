@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.HttpLogging;

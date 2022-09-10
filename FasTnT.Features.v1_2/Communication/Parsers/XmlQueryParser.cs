@@ -1,11 +1,15 @@
 ﻿using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Commands.Unsubscribe;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
+using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.GetQueryNames;
+using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.GetSubscriptionIds;
+using FasTnT.Domain.Queries.GetVendorVersion;
+using FasTnT.Domain.Queries.Poll;
 using MediatR;
 
-namespace FasTnT.Formatter.Xml.Parsers;
- 
+namespace FasTnT.Features.v1_2.Communication.Parsers;
+
 public static class XmlQueryParser
 {
     public static IRequest<IEpcisResponse> Parse(XElement queryElement)

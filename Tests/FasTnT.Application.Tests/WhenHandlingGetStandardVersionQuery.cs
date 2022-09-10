@@ -1,5 +1,5 @@
-﻿using FasTnT.Application.Queries;
-using FasTnT.Domain.Queries;
+﻿using FasTnT.Application.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.GetStandardVersion;
 
 namespace FasTnT.Application.Tests;
 

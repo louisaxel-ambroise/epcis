@@ -1,14 +1,14 @@
 ﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Infrastructure.Utils;
 using FasTnT.Domain.Model;
-using FasTnT.Domain.Utils;
-using FasTnT.Formatter.Xml.Parsers;
+using FasTnT.Features.v1_2.Communication.Parsers;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 [TestClass]
 public class WhenParsingAValidTransformationEvent : XmlParsingTestCase
 {
-    public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.Events.TransformationEvent_Full.xml";
+    public static readonly string ResourceName = "FasTnT.Features.v1_2.Tests.Resources.Events.TransformationEvent_Full.xml";
 
     public Event Event { get; set; }
 
@@ -61,7 +61,7 @@ public class WhenParsingAValidTransformationEvent : XmlParsingTestCase
     public void IlmdShouldBeParsedCorrectly()
     {
         Assert.AreEqual(2, Event.CustomFields.Count(x => x.Type == FieldType.Ilmd));
-            
+
         Assert.IsTrue(Event.CustomFields.Any(x => x.Type == FieldType.Ilmd && x.Name == "bestBeforeDate" && x.Namespace == "http://ns.example.com/epcis" && x.TextValue == "2014-12-10"));
         Assert.IsTrue(Event.CustomFields.Any(x => x.Type == FieldType.Ilmd && x.Name == "batch" && x.Namespace == "http://ns.example.com/epcis" && x.TextValue == "XYZ"));
     }

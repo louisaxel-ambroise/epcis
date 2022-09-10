@@ -1,4 +1,6 @@
-﻿namespace FasTnT.Host.Features.v2_0;
+﻿using FasTnT.Features.v2_0.Endpoints;
+
+namespace FasTnT.Features.v2_0;
 
 public static class Epcis2_0Configuration
 {

@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Commands.Capture;
-using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Infrastructure.Exceptions;
 
-namespace FasTnT.Formatter.Xml.Parsers;
+namespace FasTnT.Features.v1_2.Communication.Parsers;
 
 public static class CaptureRequestParser
 {

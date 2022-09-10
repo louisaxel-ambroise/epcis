@@ -1,10 +1,10 @@
 ﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
+using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace FasTnT.Domain.Utils;
+namespace FasTnT.Application.Utils;
 
 public static class QueryParameterExtensions
 {

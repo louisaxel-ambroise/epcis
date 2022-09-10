@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Infrastructure.Configuration;
+﻿namespace FasTnT.Application.Store.Configuration;
 
 enum EpcisSchema
 {

@@ -2,7 +2,7 @@
 using FasTnT.Domain.Model;
 using System.Text.Json;
 
-namespace FasTnT.Formatter.v2_0.Json;
+namespace FasTnT.Features.v2_0.Communication.Json.Parsers;
 
 public class JsonEventParser
 {
@@ -17,7 +17,7 @@ public class JsonEventParser
 
     public static JsonEventParser Create(JsonElement element, Namespaces extensions)
     {
-        if(element.TryGetProperty("@context", out var context))
+        if (element.TryGetProperty("@context", out var context))
         {
             extensions = extensions.Merge(Namespaces.Parse(context));
         }
@@ -84,7 +84,7 @@ public class JsonEventParser
                 case "ilmd":
                     evt.CustomFields.AddRange(ParseIlmd(property)); break;
                 case "recordTime":
-                    /* Don't do anything - record time is set to the time the event was inserted. */
+                /* Don't do anything - record time is set to the time the event was inserted. */
                 case "@context":
                     /* Don't do anything - context was already parsed. */
                     break;
@@ -113,6 +113,7 @@ public class JsonEventParser
         {
             Type = type,
             Id = x.GetProperty("epcClass").GetString(),
+            IsQuantity = true,
             Quantity = x.TryGetProperty("quantity", out var quantity) ? quantity.GetSingle() : null,
             UnitOfMeasure = x.TryGetProperty("uom", out var uom) ? uom.GetString() : null,
         });
@@ -163,7 +164,7 @@ public class JsonEventParser
 
     private IEnumerable<CustomField> ParseIlmd(JsonProperty jsonProperty)
     {
-        return jsonProperty.Value.EnumerateObject().SelectMany(e => 
+        return jsonProperty.Value.EnumerateObject().SelectMany(e =>
         {
             var (ns, name) = ParseName(e.Name);
             return ParseCustomField(e.Value, FieldType.Ilmd, name, ns);

@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Queries;
+﻿using FasTnT.Domain.Queries.Poll;
 using MediatR;
 
 namespace FasTnT.Domain.Commands.Unsubscribe;

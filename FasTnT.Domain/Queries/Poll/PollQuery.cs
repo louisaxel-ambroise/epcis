@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace FasTnT.Domain.Queries;
+namespace FasTnT.Domain.Queries.Poll;
 
 public interface IEpcisQuery { }
 

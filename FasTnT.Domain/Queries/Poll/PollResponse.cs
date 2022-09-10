@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Model;
 
-namespace FasTnT.Domain.Queries;
+namespace FasTnT.Domain.Queries.Poll;
 
 public interface IEpcisResponse { }
 

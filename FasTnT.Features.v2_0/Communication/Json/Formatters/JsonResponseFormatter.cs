@@ -1,9 +1,9 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace FasTnT.Formatter.v2_0.Json.Formatters;
+namespace FasTnT.Features.v2_0.Communication.Json.Formatters;
 
 public static class JsonResponseFormatter
 {
@@ -27,7 +27,7 @@ public static class JsonResponseFormatter
         var context = BuildContext(response.EventList.SelectMany(x => x.CustomFields).Select(x => x.Namespace).Distinct());
         var document = new Dictionary<string, object>
         {
-            ["@context"] = context.Select(x => (object) new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
+            ["@context"] = context.Select(x => (object)new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
             ["id"] = $"fastnt:epcis:2.0:pollquery:{Guid.NewGuid()}",
             ["type"] = "EPCISQueryDocument",
             ["schemaVersion"] = "2.0",

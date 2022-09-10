@@ -1,9 +1,9 @@
-﻿using FasTnT.Domain.Notifications;
-using FasTnT.Infrastructure.Store;
+﻿using FasTnT.Application.Store;
+using FasTnT.Domain.Notifications;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Subscriptions.Notifications;
+namespace FasTnT.Features.v1_2.Subscriptions.Notifications;
 
 public class SubscriptionCreatedNotificationHandler : INotificationHandler<SubscriptionCreatedNotification>
 {

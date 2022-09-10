@@ -1,8 +1,8 @@
 ﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
 
-namespace FasTnT.Formatter.Xml.Formatters;
+namespace FasTnT.Features.v2_0.Communication.Xml.Formatters;
 
 public static class XmlEventFormatter
 {

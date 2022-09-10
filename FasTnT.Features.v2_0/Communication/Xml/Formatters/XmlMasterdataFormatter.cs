@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Model;
 
-namespace FasTnT.Formatter.Xml.Formatters;
+namespace FasTnT.Features.v2_0.Communication.Xml.Formatters;
 
 public static class XmlMasterdataFormatter
 {
@@ -41,7 +41,7 @@ public static class XmlMasterdataFormatter
     {
         var formatted = new List<XElement>();
 
-        foreach(var field in fields.Where(x => x.ParentName == parentName && x.ParentNamespace == parentNamespace))
+        foreach (var field in fields.Where(x => x.ParentName == parentName && x.ParentNamespace == parentNamespace))
         {
             var value = fields.Any(f => f.ParentName == field.Name && f.ParentNamespace == field.Namespace)
                 ? FormatFields(fields, field.Name, field.Namespace)

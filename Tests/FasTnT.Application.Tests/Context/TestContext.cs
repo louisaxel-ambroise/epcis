@@ -1,4 +1,4 @@
-﻿using FasTnT.Infrastructure.Store;
+﻿using FasTnT.Application.Store;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Tests.Context;

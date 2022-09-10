@@ -1,10 +1,10 @@
 ﻿using System.Xml;
 
-namespace FasTnT.Formatter.Xml.Utils;
+namespace FasTnT.Features.v1_2.Communication.Utils;
 
 public static class Namespaces
 {
-    public static XmlNamespaceManager Resolver { get; } = new (new NameTable());
+    public static XmlNamespaceManager Resolver { get; } = new(new NameTable());
 
     static Namespaces()
     {

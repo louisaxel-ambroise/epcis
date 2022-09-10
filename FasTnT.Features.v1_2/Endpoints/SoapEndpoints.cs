@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -7,15 +6,17 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Domain.Infrastructure.Exceptions;
 
-namespace FasTnT.Host.Features.v1_2;
+namespace FasTnT.Features.v1_2.Endpoints;
 
 public class SoapEndpoints
 {
     internal const string WsdlPath = "FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
 
     protected SoapEndpoints() { }
-    
+
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("v1_2/query.svc", HandleSoapQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));

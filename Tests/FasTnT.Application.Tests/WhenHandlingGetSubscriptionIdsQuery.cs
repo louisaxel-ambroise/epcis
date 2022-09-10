@@ -1,6 +1,6 @@
-﻿using FasTnT.Application.Queries;
-using FasTnT.Domain.Queries;
-using FasTnT.Infrastructure.Store;
+﻿using FasTnT.Application.Queries.GetSubscriptionIds;
+using FasTnT.Application.Store;
+using FasTnT.Domain.Queries.GetSubscriptionIds;
 
 namespace FasTnT.Application.Tests;
 

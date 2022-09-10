@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Notifications;
 using MediatR;
 
-namespace FasTnT.Subscriptions.Notifications;
+namespace FasTnT.Features.v1_2.Subscriptions.Notifications;
 
 public class TriggerSubscriptionNotificationHandler : INotificationHandler<TriggerSubscriptionNotification>
 {

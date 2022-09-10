@@ -1,12 +1,13 @@
-using FasTnT.Application.Services.Users;
+using FasTnT.Application;
+using FasTnT.Application.Services.Users.Providers;
+using FasTnT.Application.Store;
 using FasTnT.Domain;
+using FasTnT.Features.v1_2;
+using FasTnT.Features.v2_0;
 using FasTnT.Host.Authorization;
 using FasTnT.Host.Extensions;
-using FasTnT.Host.Features.v1_2;
-using FasTnT.Host.Features.v2_0;
 using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
-using FasTnT.Infrastructure.Store;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 

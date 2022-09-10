@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Text.Json;
 
-namespace FasTnT.Infrastructure.Configuration;
+namespace FasTnT.Application.Store.Configuration;
 
 public class ArrayConverter : ValueConverter<string[], string>
 {

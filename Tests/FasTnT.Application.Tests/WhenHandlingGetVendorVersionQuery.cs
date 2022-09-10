@@ -1,6 +1,6 @@
-﻿using FasTnT.Application.Queries;
+﻿using FasTnT.Application.Queries.GetVendorVersion;
 using FasTnT.Domain;
-using FasTnT.Domain.Queries;
+using FasTnT.Domain.Queries.GetVendorVersion;
 
 namespace FasTnT.Application.Tests;
 

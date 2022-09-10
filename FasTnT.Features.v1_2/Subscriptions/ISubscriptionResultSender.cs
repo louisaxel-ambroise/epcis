@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Subscriptions;
+﻿namespace FasTnT.Features.v1_2.Subscriptions;
 
 public interface ISubscriptionResultSender
 {

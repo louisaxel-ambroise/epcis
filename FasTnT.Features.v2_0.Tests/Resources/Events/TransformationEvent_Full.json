@@ -1,0 +1,80 @@
+﻿{
+  "@context": [
+    "https://gs1.github.io/EPCIS/epcis-context.jsonld",
+    { "ext1": "http://ns.example.com/ext1/" }
+  ],
+  "isA": "TransformationEvent",
+  "eventTime": "2013-10-31T14:58:56Z",
+  "eventTimeZoneOffset": "+02:00",
+  "inputEPCList": [
+    "urn:epc:id:sgtin:4012345.011122.25",
+    "urn:epc:id:sgtin:4000001.065432.99886655"
+  ],
+  "inputQuantityList": [
+    {
+      "epcClass": "urn:epc:class:lgtin:4012345.011111.4444",
+      "quantity": 10,
+      "uom": "KGM"
+    },
+    {
+      "epcClass": "urn:epc:class:lgtin:0614141.077777.987",
+      "quantity": 30
+    }
+  ],
+  "outputEPCList": [
+    "urn:epc:id:sgtin:4012345.077889.25",
+    "urn:epc:id:sgtin:4012345.077889.26"
+  ],
+  "outputQuantityList": [
+    {
+      "epcClass": "urn:epc:class:lgtin:4012345.011111.4444",
+      "quantity": 10,
+      "uom": "KGM"
+    },
+    {
+      "epcClass": "urn:epc:class:lgtin:0614141.077777.987",
+      "quantity": 30
+    }
+  ],
+  "transformationID": "urn:epc:id:gdti:0614141.12345.400",
+  "bizStep": "commissioning",
+  "disposition": "in_progress",
+  "readPoint": {
+    "id": "urn:epc:id:sgln:4012345.00001.0"
+  },
+  "bizLocation": {
+    "id": "urn:epc:id:sgln:0614141.00888.0"
+  },
+  "bizTransactionList": [
+    {
+      "type": "po",
+      "bizTransaction": "urn:epc:id:gdti:0614141.00001.1618034"
+    }
+  ],
+  "sourceList": [
+    {
+      "type": "location",
+      "source": "urn:epc:id:sgln:4012345.00225.0"
+    },
+    {
+      "type": "possessing_party",
+      "source": "urn:epc:id:pgln:4012345.00225"
+    }
+  ],
+  "destinationList": [
+    {
+      "type": "location",
+      "destination": "urn:epc:id:sgln:0614141.00777.0"
+    }
+  ],
+  "persistentDisposition": {
+    "set": [
+      "completeness_verified"
+    ],
+    "unset": [
+      "completeness_inferred"
+    ]
+  },
+  "ext1:int": "10",
+  "ext1:string": "string"
+}

@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Model;
 
-namespace FasTnT.Formatter.Xml.Parsers;
- 
+namespace FasTnT.Features.v1_2.Communication.Parsers;
+
 public static class XmlMasterdataParser
 {
     public static IEnumerable<MasterData> ParseMasterdata(XElement root)

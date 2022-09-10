@@ -1,11 +1,15 @@
 ﻿using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Commands.Unsubscribe;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
-using FasTnT.Formatter.Xml.Utils;
+using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.GetQueryNames;
+using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.GetSubscriptionIds;
+using FasTnT.Domain.Queries.GetVendorVersion;
+using FasTnT.Domain.Queries.Poll;
+using FasTnT.Features.v1_2.Communication.Utils;
 
-namespace FasTnT.Formatter.Xml.Formatters;
- 
+namespace FasTnT.Features.v1_2.Communication.Formatters;
+
 public static class XmlResponseFormatter
 {
     public static XElement Format(IEpcisResponse response)
@@ -62,7 +66,7 @@ public static class XmlResponseFormatter
     {
         var queryNames = response.QueryNames.Select(x => new XElement("string", x));
 
-        return new (XName.Get(nameof(GetQueryNamesResult), Namespaces.Query), queryNames);
+        return new(XName.Get(nameof(GetQueryNamesResult), Namespaces.Query), queryNames);
     }
 
     public static XElement FormatVendorVersion(GetVendorVersionResult response)

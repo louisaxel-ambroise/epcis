@@ -1,8 +1,8 @@
-﻿using FasTnT.Domain.Queries;
-using FasTnT.Formatter.v2_0.Json.Formatters;
-using FasTnT.Formatter.Xml.Formatters;
+﻿using FasTnT.Domain.Queries.Poll;
+using FasTnT.Features.v2_0.Communication.Json.Formatters;
+using FasTnT.Features.v2_0.Communication.Xml.Formatters;
 
-namespace FasTnT.Host.Features.v2_0.Interfaces;
+namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
 
 public record RestResponse(IEpcisResponse Response) : IRestResponse
 {

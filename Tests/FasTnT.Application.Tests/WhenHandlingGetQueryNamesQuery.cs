@@ -1,5 +1,6 @@
-﻿using FasTnT.Application.Queries;
-using FasTnT.Domain.Queries;
+﻿using FasTnT.Application.Queries.GetQueryNames;
+using FasTnT.Application.Services.Queries;
+using FasTnT.Domain.Queries.GetQueryNames;
 
 namespace FasTnT.Application.Tests;
 

@@ -1,8 +1,9 @@
 ﻿using FasTnT.Domain;
-using FasTnT.Domain.Queries;
+using FasTnT.Domain.Queries.GetVendorVersion;
+using FasTnT.Domain.Queries.Poll;
 using MediatR;
 
-namespace FasTnT.Application.Queries;
+namespace FasTnT.Application.Queries.GetVendorVersion;
 
 public class GetVendorVersionQueryHandler : IRequestHandler<GetVendorVersionQuery, IEpcisResponse>
 {

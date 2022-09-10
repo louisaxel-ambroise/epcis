@@ -1,8 +1,8 @@
-﻿using FasTnT.Domain.Model;
-using FasTnT.Infrastructure.Configuration;
+﻿using FasTnT.Application.Store.Configuration;
+using FasTnT.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Infrastructure.Store;
+namespace FasTnT.Application.Store;
 
 public class EpcisContext : DbContext
 {

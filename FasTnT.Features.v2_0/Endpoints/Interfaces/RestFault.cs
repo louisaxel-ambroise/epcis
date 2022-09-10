@@ -1,7 +1,7 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Formatter.v2_0.Json.Formatters;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Features.v2_0.Communication.Json.Formatters;
 
-namespace FasTnT.Host.Features.v2_0.Interfaces;
+namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
 
 public record RestFault(EpcisException Error) : IRestResponse
 {

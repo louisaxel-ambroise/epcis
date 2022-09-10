@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 
-namespace FasTnT.Formatter.Xml.Parsers;
+namespace FasTnT.Features.v1_2.Communication.Parsers;
 
 internal static class XmlStandardBusinessHeaderParser
 {
@@ -29,7 +29,7 @@ internal static class XmlStandardBusinessHeaderParser
         var sender = sbdh.Element(XName.Get("Sender", Namespace));
         var receiver = sbdh.Element(XName.Get("Receiver", Namespace));
 
-        if(sender != default)
+        if (sender != default)
         {
             result.Add(ParseContactInformation(sender, ContactInformationType.Sender));
         }

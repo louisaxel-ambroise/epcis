@@ -1,10 +1,11 @@
-﻿using FasTnT.Domain.Queries;
-using FasTnT.Infrastructure.Store;
+﻿using FasTnT.Application.Store;
+using FasTnT.Domain.Queries.GetSubscriptionIds;
+using FasTnT.Domain.Queries.Poll;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Queries;
- 
+namespace FasTnT.Application.Queries.GetSubscriptionIds;
+
 public class GetSubscriptionIdsQueryHandler : IRequestHandler<GetSubscriptionIdsQuery, IEpcisResponse>
 {
     private readonly EpcisContext _context;

@@ -1,8 +1,8 @@
-﻿using FasTnT.Domain.Model;
-using FasTnT.Infrastructure.Store;
+﻿using FasTnT.Application.Store;
+using FasTnT.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Services.Users;
+namespace FasTnT.Application.Services.Users.Providers;
 
 public class DefaultUserProvider : IUserProvider
 {
@@ -22,11 +22,11 @@ public class DefaultUserProvider : IUserProvider
             .SingleOrDefaultAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        if(user == default)
+        if (user == default)
         {
             user = await CreateUser(username, password, cancellationToken).ConfigureAwait(false);
         }
-        else if(!PasswordUtils.GetSecuredKey(password, user.Salt).Equals(user.SecuredKey))
+        else if (!PasswordUtils.GetSecuredKey(password, user.Salt).Equals(user.SecuredKey))
         {
             user = null;
         }

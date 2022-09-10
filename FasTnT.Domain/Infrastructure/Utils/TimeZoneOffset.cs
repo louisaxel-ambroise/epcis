@@ -1,8 +1,8 @@
-﻿namespace FasTnT.Domain.Utils;
- 
+﻿namespace FasTnT.Domain.Infrastructure.Utils;
+
 public class TimeZoneOffset
 {
-    public static TimeZoneOffset Default => new ();
+    public static TimeZoneOffset Default => new();
 
     public string Representation { get { return ComputeRepresentation(Value); } set { Value = ComputeValue(value); } }
     public short Value { get; set; }
@@ -20,7 +20,7 @@ public class TimeZoneOffset
     {
         try
         {
-            var sign = (value[0] is '-') ? -1 : +1;
+            var sign = value[0] is '-' ? -1 : +1;
             var parts = value.TrimStart('+', '-').Split(':');
 
             return (short)(sign * (int.Parse(parts[0]) * 60 + int.Parse(parts[1])));

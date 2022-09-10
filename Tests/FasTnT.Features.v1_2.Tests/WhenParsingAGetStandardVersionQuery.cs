@@ -1,12 +1,12 @@
-﻿using FasTnT.Domain.Queries;
-using FasTnT.Formatter.Xml.Parsers;
+﻿using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Features.v1_2.Communication.Parsers;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 [TestClass]
 public class WhenParsingAGetStandardVersionQuery : XmlParsingTestCase
 {
-    public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.Queries.GetStandardVersion.xml";
+    public static readonly string ResourceName = "FasTnT.Features.v1_2.Tests.Resources.Queries.GetStandardVersion.xml";
 
     public object Query { get; set; }
 

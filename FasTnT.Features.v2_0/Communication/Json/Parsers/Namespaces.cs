@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace FasTnT.Formatter.v2_0.Json;
+namespace FasTnT.Features.v2_0.Communication.Json.Parsers;
 
 public class Namespaces
 {

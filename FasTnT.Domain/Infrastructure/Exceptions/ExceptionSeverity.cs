@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Domain.Exceptions;
+﻿namespace FasTnT.Domain.Infrastructure.Exceptions;
 
 public enum ExceptionSeverity
 {

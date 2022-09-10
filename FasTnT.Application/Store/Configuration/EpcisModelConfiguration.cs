@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace FasTnT.Infrastructure.Configuration;
+namespace FasTnT.Application.Store.Configuration;
 
 internal static class EpcisModelConfiguration
 {

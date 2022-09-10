@@ -1,6 +1,6 @@
-﻿using FasTnT.Domain.Queries;
+﻿using FasTnT.Domain.Queries.Poll;
 
-namespace FasTnT.Host.Features.v2_0;
+namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
 
 public record QueryParameters(IEnumerable<QueryParameter> Parameters)
 {

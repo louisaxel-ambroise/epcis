@@ -1,9 +1,9 @@
 ﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
 using System.Xml.XPath;
 
-namespace FasTnT.Formatter.Xml.Parsers;
+namespace FasTnT.Features.v1_2.Communication.Parsers;
 
 public static class XmlEpcisDocumentParser
 {
@@ -27,7 +27,7 @@ public static class XmlEpcisDocumentParser
         var sbdh = epcisHeader?.Element(XName.Get("StandardBusinessDocumentHeader", "http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader"));
         var masterData = epcisHeader?.XPathSelectElement("extension/EPCISMasterData/VocabularyList");
 
-        if(sbdh != default)
+        if (sbdh != default)
         {
             request.StandardBusinessHeader = XmlStandardBusinessHeaderParser.ParseHeader(sbdh);
         }
@@ -44,13 +44,13 @@ public static class XmlEpcisDocumentParser
         switch (element.Name.LocalName)
         {
             case "QueryResults":
-                ParseCallbackResult(element, request); 
+                ParseCallbackResult(element, request);
                 break;
             case "QueryTooLargeException":
-                ParseCallbackError(element, QueryCallbackType.QueryTooLargeException, request); 
+                ParseCallbackError(element, QueryCallbackType.QueryTooLargeException, request);
                 break;
             case "ImplementationException":
-                ParseCallbackError(element, QueryCallbackType.ImplementationException, request); 
+                ParseCallbackError(element, QueryCallbackType.ImplementationException, request);
                 break;
             case "EventList":
                 request.Events = XmlEventParser.ParseEvents(element).ToList();

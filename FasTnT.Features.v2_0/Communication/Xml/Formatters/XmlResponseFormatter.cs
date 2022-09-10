@@ -1,9 +1,9 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
-using FasTnT.Formatter.Xml.Utils;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
+using FasTnT.Features.v2_0.Communication.Xml.Utils;
 
-namespace FasTnT.Formatter.Xml.Formatters;
- 
+namespace FasTnT.Features.v2_0.Communication.Xml.Formatters;
+
 public static class XmlResponseFormatter
 {
     public static string Format(IEpcisResponse response)
@@ -30,11 +30,11 @@ public static class XmlResponseFormatter
         );
 
         // TODO: improve.
-        if(response is PollResponse pollResponse)
+        if (response is PollResponse pollResponse)
         {
             var customNamespaces = pollResponse.EventList.SelectMany(x => x.CustomFields.Select(x => x.Namespace)).Distinct().ToArray();
-            
-            for(var i=0; i < customNamespaces.Length; i++)
+
+            for (var i = 0; i < customNamespaces.Length; i++)
             {
                 queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i}", customNamespaces[i]));
             }

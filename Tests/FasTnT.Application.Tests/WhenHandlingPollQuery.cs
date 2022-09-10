@@ -1,9 +1,10 @@
-﻿using FasTnT.Application.Queries;
+﻿using FasTnT.Application.Queries.Poll;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
+using FasTnT.Application.Store;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
-using FasTnT.Infrastructure.Store;
+using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
 
 namespace FasTnT.Application.Tests;
 

@@ -1,7 +1,8 @@
-﻿using FasTnT.Domain.Queries;
+﻿using FasTnT.Domain.Queries.GetQueryNames;
+using FasTnT.Domain.Queries.Poll;
 using MediatR;
 
-namespace FasTnT.Application.Queries;
+namespace FasTnT.Application.Queries.GetQueryNames;
 
 public class GetQueryNamesQueryHandler : IRequestHandler<GetQueryNamesQuery, IEpcisResponse>
 {

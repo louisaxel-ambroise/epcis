@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Services.Users;
+using FasTnT.Application.Store;
 using FasTnT.Domain.Commands.Capture;
-using FasTnT.Infrastructure.Store;
 using MediatR;
 
 namespace FasTnT.Application.Commands;

@@ -1,12 +1,12 @@
-﻿using FasTnT.Formatter.Xml.Parsers;
+﻿using FasTnT.Features.v1_2.Communication.Parsers;
 using System.Reflection;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 [TestClass]
 public class WhenParsingAnInvalidXmlRequest : XmlParsingTestCase
 {
-    public static readonly string ResourceName = "FasTnT.Formatters.Xml.Tests.Resources.Requests.InvalidRequest.xml";
+    public static readonly string ResourceName = "FasTnT.Features.v1_2.Tests.Resources.Requests.InvalidRequest.xml";
 
     [TestMethod]
     public void ItShouldThrowAnException()

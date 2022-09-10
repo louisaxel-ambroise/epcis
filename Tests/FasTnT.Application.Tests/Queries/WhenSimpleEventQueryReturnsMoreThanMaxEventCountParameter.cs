@@ -1,7 +1,7 @@
-﻿using FasTnT.Application.Queries;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
-using FasTnT.Infrastructure.Store;
+﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Store;
+using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
 
 namespace FasTnT.Application.Tests.Queries
 {

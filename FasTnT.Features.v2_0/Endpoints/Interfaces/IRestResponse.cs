@@ -1,7 +1,7 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
 
-namespace FasTnT.Host.Features.v2_0.Interfaces;
+namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
 
 public interface IRestResponse : IResult
 {

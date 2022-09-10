@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Formatter.v2_0.Utils;
+﻿namespace FasTnT.Features.v2_0.Communication.Json.Utils;
 
 public static class Extensions
 {

@@ -1,8 +1,8 @@
 ﻿using FasTnT.Domain.Commands.Unsubscribe;
-using FasTnT.Formatter.Xml.Formatters;
+using FasTnT.Features.v1_2.Communication.Formatters;
 using System.Xml.Linq;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 [TestClass]
 public class WhenFormattingAnUnsubscribeResult

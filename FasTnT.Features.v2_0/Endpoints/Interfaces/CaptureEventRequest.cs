@@ -1,8 +1,8 @@
 ﻿using FasTnT.Domain.Commands.Capture;
-using FasTnT.Formatter.v2_0.Json;
+using FasTnT.Features.v2_0.Communication.Json.Parsers;
 using MediatR;
 
-namespace FasTnT.Host.Features.v2_0;
+namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
 
 public record CaptureEventRequest(IRequest<CaptureEpcisRequestResponse> Request)
 {

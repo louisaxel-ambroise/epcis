@@ -1,10 +1,10 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
-using FasTnT.Host.Features.v2_0.Interfaces;
+using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
+using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using MediatR;
 
-namespace FasTnT.Host.Features.v2_0;
+namespace FasTnT.Features.v2_0.Endpoints;
 
 public class QueryEndpoints
 {

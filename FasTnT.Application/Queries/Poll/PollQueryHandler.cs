@@ -1,9 +1,9 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
+using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
 using MediatR;
 
-namespace FasTnT.Application.Queries;
+namespace FasTnT.Application.Queries.Poll;
 
 public class PollQueryHandler : IRequestHandler<PollQuery, IEpcisResponse>
 {

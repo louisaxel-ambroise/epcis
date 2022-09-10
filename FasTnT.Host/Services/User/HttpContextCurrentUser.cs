@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Queries;
+using FasTnT.Domain.Queries.Poll;
 using System.Security.Claims;
 using System.Text.Json;
 

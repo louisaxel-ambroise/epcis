@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System.Diagnostics.CodeAnalysis;
 
-namespace FasTnT.Infrastructure.Configuration;
+namespace FasTnT.Application.Store.Configuration;
 
 public sealed class IncrementGenerator : ValueGenerator<int>
 {

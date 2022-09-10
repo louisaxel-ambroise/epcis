@@ -1,14 +1,14 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application.Store;
+using FasTnT.Application.Utils;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
-using FasTnT.Domain.Queries;
-using FasTnT.Domain.Utils;
-using FasTnT.Infrastructure.Store;
+using FasTnT.Domain.Queries.Poll;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Queries;
+namespace FasTnT.Application.Services.Queries;
 
-public class SimpleMasterDataQuery : Services.IEpcisQuery
+public class SimpleMasterDataQuery : IEpcisQuery
 {
     private readonly EpcisContext _context;
     private int? _maxEventCount;
@@ -81,7 +81,7 @@ public class SimpleMasterDataQuery : Services.IEpcisQuery
             "WD_name" => query.Where(x => param.Values.Any(v => v == x.Id) || x.Hierarchies.Any(h => param.Values.Any(v => v == h.ParentId))),
             "attributeNames" => query.Include(x => x.Attributes.Where(a => param.Values.Contains(a.Id))).ThenInclude(x => x.Fields),
             "HASATTR" => query.Where(x => x.Attributes.Any(a => a.Id == param.Value())),
-                
+
             var s when s.StartsWith("EQATTR_") => ApplyEqAttrParameter(param, query),
 
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is invalid for simplemasterdata query: {param.Name}")

@@ -1,11 +1,11 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application.Store;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
-using FasTnT.Domain.Queries;
-using FasTnT.Infrastructure.Store;
+using FasTnT.Domain.Queries.Poll;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FasTnT.Subscriptions;
+namespace FasTnT.Features.v1_2.Subscriptions;
 
 public class SubscriptionRunner
 {
@@ -42,7 +42,7 @@ public class SubscriptionRunner
             {
                 var parameters = subscription.Parameters
                     .Select(s => new QueryParameter(s.Name, s.Value))
-                    .Append(new ("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
+                    .Append(new("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
                     .ToArray();
 
                 response = await query.HandleAsync(parameters, cancellationToken);
@@ -51,7 +51,7 @@ public class SubscriptionRunner
             response.SubscriptionId = subscription.Name;
             resultsSent = await SendQueryResults(executionContext, response, cancellationToken).ConfigureAwait(false);
         }
-        catch(EpcisException ex)
+        catch (EpcisException ex)
         {
             ex.SubscriptionId = subscription.Name;
 

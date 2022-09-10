@@ -1,11 +1,11 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Formatter.Xml.Formatters;
-using FasTnT.Formatter.Xml.Utils;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Features.v1_2.Communication.Formatters;
+using FasTnT.Features.v1_2.Communication.Utils;
 using Microsoft.AspNetCore.Http;
 using System.Xml;
 using System.Xml.XPath;
 
-namespace FasTnT.Host.Extensions;
+namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 public static class SoapExtensions
 {

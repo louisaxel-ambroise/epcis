@@ -1,8 +1,8 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Queries;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Queries.Poll;
 using Microsoft.AspNetCore.Http;
 
-namespace FasTnT.Host.Features.v1_2;
+namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 public interface ISoapResponse : IResult
 {

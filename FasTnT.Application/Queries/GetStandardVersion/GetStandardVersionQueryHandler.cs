@@ -1,8 +1,9 @@
 ﻿using FasTnT.Domain;
-using FasTnT.Domain.Queries;
+using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Domain.Queries.Poll;
 using MediatR;
 
-namespace FasTnT.Application.Queries;
+namespace FasTnT.Application.Queries.GetStandardVersion;
 
 public class GetStandardVersionQueryHandler : IRequestHandler<GetStandardVersionQuery, IEpcisResponse>
 {

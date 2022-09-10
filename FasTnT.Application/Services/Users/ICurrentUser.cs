@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Queries;
+﻿using FasTnT.Domain.Queries.Poll;
 
 namespace FasTnT.Application.Services.Users;
 

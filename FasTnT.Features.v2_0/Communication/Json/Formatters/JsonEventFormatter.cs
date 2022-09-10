@@ -1,9 +1,9 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
-using FasTnT.Formatter.v2_0.Utils;
+using FasTnT.Features.v2_0.Communication.Json.Utils;
 
-namespace FasTnT.Formatter.v2_0.Json.Formatters;
-    
+namespace FasTnT.Features.v2_0.Communication.Json.Formatters;
+
 public static class JsonEventFormatter
 {
     public static IDictionary<string, object> FormatEvent(Event evt, IDictionary<string, string> context)
@@ -17,11 +17,11 @@ public static class JsonEventFormatter
             ["eventID"] = evt.EventId
         };
 
-        if(evt.Action != EventAction.None)
+        if (evt.Action != EventAction.None)
         {
             element["action"] = evt.Action.ToString();
         }
-        if(evt.Epcs.Count > 0)
+        if (evt.Epcs.Count > 0)
         {
             AddEpcs(element, evt.Epcs);
         }
@@ -38,19 +38,19 @@ public static class JsonEventFormatter
         {
             element["bizLocation"] = new { id = evt.BusinessLocation };
         }
-        if(evt.Sources.Count > 0)
+        if (evt.Sources.Count > 0)
         {
             element["sourceList"] = evt.Sources.Select(x => new { type = x.Type, source = x.Id });
         }
-        if(evt.Destinations.Count > 0)
+        if (evt.Destinations.Count > 0)
         {
             element["destList"] = evt.Destinations.Select(x => new { type = x.Type, destination = x.Id });
         }
-        if(evt.Transactions.Count > 0)
+        if (evt.Transactions.Count > 0)
         {
             element["bizTransactionList"] = evt.Transactions.Select(x => new { type = x.Type, bizTransaction = x.Id });
         }
-        if(evt.PersistentDispositions.Count > 0)
+        if (evt.PersistentDispositions.Count > 0)
         {
             SetDisposition(element, evt.PersistentDispositions);
         }
@@ -186,7 +186,7 @@ public static class JsonEventFormatter
     private static IDictionary<string, object> BuildExtensionFields(IEnumerable<CustomField> fields, IDictionary<string, string> context)
     {
         var extension = new Dictionary<string, object>();
-        
+
         foreach (var group in fields.Where(x => !x.HasParent).GroupBy(x => (x.Name, x.Namespace)))
         {
             if (group.Count() > 1)

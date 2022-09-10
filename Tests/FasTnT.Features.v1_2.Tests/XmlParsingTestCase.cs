@@ -1,8 +1,8 @@
-﻿using FasTnT.Formatter.Xml.Parsers;
+﻿using FasTnT.Features.v1_2.Communication.Parsers;
 using System.Reflection;
 using System.Xml.Linq;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 public abstract class XmlParsingTestCase
 {
@@ -10,7 +10,7 @@ public abstract class XmlParsingTestCase
     {
         var manifest = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
         using var resourceStream = XmlDocumentParser.Instance.ParseAsync(manifest, default);
-         
+
         return resourceStream.Result;
     }
 }

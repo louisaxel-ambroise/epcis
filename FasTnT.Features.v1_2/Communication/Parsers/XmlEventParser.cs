@@ -2,11 +2,11 @@
 using FasTnT.Domain.Model;
 using System.Globalization;
 
-namespace FasTnT.Formatter.Xml.Parsers;
+namespace FasTnT.Features.v1_2.Communication.Parsers;
 
 public static class XmlEventParser
 {
-    private readonly static Dictionary<string, Func<XElement, Event>> RootParsers = new ()
+    private readonly static Dictionary<string, Func<XElement, Event>> RootParsers = new()
     {
         { "ObjectEvent", ParseObjectEvent },
         { "TransactionEvent", ParseTransactionEvent },
@@ -15,13 +15,13 @@ public static class XmlEventParser
         { "extension", ParseEventListExtension }
     };
 
-    private readonly static Dictionary<string, Func<XElement, Event>> ExtensionParsers = new ()
+    private readonly static Dictionary<string, Func<XElement, Event>> ExtensionParsers = new()
     {
         { "TransformationEvent", ParseTransformationEvent },
         { "extension", ParseEventListSubExtension }
     };
 
-    private readonly static Dictionary<string, Func<XElement, Event>> SubExtensionParsers = new ()
+    private readonly static Dictionary<string, Func<XElement, Event>> SubExtensionParsers = new()
     {
         { "AssociationEvent", ParseAssociationEvent }
     };

@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FluentValidation;
 using MediatR;
 

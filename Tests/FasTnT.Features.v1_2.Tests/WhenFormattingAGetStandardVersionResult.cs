@@ -1,8 +1,8 @@
-﻿using FasTnT.Domain.Queries;
-using FasTnT.Formatter.Xml.Formatters;
+﻿using FasTnT.Domain.Queries.GetStandardVersion;
+using FasTnT.Features.v1_2.Communication.Formatters;
 using System.Xml.Linq;
 
-namespace FasTnT.Formatters.Xml.Tests;
+namespace FasTnT.Features.v1_2.Tests;
 
 [TestClass]
 public class WhenFormattingAGetStandardVersionResult

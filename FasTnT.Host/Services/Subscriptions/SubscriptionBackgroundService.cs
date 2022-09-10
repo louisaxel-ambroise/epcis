@@ -1,6 +1,6 @@
-﻿using FasTnT.Domain.Model;
-using FasTnT.Infrastructure.Store;
-using FasTnT.Subscriptions;
+﻿using FasTnT.Application.Store;
+using FasTnT.Domain.Model;
+using FasTnT.Features.v1_2.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 

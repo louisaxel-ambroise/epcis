@@ -1,11 +1,12 @@
-﻿using FasTnT.Subscriptions;
-using FasTnT.Subscriptions.Notifications;
+﻿using FasTnT.Features.v1_2.Endpoints;
+using FasTnT.Features.v1_2.Subscriptions;
+using FasTnT.Features.v1_2.Subscriptions.Notifications;
 using MediatR;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace FasTnT.Host.Features.v1_2;
+namespace FasTnT.Features.v1_2;
 
 public static class Epcis1_2Configuration
 {

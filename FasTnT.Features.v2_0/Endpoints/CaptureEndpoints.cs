@@ -1,7 +1,8 @@
 ﻿using FasTnT.Application.Services.Users;
+using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using MediatR;
 
-namespace FasTnT.Host.Features.v2_0;
+namespace FasTnT.Features.v2_0.Endpoints;
 
 public class CaptureEndpoints
 {
