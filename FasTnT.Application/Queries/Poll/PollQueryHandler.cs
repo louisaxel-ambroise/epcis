@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services;
-using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Queries;
 using MediatR;

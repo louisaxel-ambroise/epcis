@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services;
-using FasTnT.Domain.Commands.Subscribe;
+﻿using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Notifications;

@@ -23,10 +23,8 @@ public static class XmlEpcisDocumentParser
     {
         var element = epcisBody.Elements().First();
 
-        request.Events = element.Name.LocalName switch
-        {
-            "EventList" => XmlEventParser.ParseEvents(element).ToList(),
-            _ => throw new EpcisException(ExceptionType.ValidationException, $"Invalid element: {element.Name.LocalName}"),
-        };
+        request.Events = element.Name.LocalName == "EventList" 
+            ? XmlEventParser.ParseEvents(element).ToList()
+            : throw new EpcisException(ExceptionType.ValidationException, $"Invalid element: {element.Name.LocalName}");
     }
 }

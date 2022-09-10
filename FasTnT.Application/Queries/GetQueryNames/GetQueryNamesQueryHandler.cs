@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services;
-using FasTnT.Domain.Queries;
+﻿using FasTnT.Domain.Queries;
 using MediatR;
 
 namespace FasTnT.Application.Queries;

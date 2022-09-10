@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace FasTnT.Formatter.v2_0.Json;
 
-public partial class JsonEventParser
+public class JsonEventParser
 {
     private readonly JsonElement _element;
     private readonly Namespaces _extensions;

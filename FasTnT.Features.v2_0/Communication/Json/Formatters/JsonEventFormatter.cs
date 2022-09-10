@@ -74,7 +74,10 @@ public static class JsonEventFormatter
 
     private static void AddSensorElements(Dictionary<string, object> element, List<SensorElement> sensorElements)
     {
-        if (sensorElements.Count == 0) return;
+        if (sensorElements.Count == 0)
+        {
+            return;
+        }
 
         element["sensorElements"] = sensorElements.Select(MapSensorElement);
     }
@@ -142,14 +145,20 @@ public static class JsonEventFormatter
 
     private static void AddEpcList(Dictionary<string, object> element, string key, IEnumerable<Epc> epcs)
     {
-        if (!epcs.Any()) return;
+        if (!epcs.Any())
+        {
+            return;
+        }
 
         element[key] = epcs.Select(x => x.Id);
     }
 
     private static void AddQuantityEpcList(Dictionary<string, object> element, string key, IEnumerable<Epc> epcs)
     {
-        if (!epcs.Any()) return;
+        if (!epcs.Any())
+        {
+            return;
+        }
 
         element[key] = epcs.Select(x => new { epcClass = x.Id, quantity = x.Quantity, uom = x.UnitOfMeasure });
     }

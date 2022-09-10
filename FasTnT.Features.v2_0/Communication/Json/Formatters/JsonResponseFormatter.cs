@@ -9,11 +9,7 @@ public static class JsonResponseFormatter
 {
     public static string Format(IEpcisResponse response)
     {
-        return response switch
-        {
-            PollResponse poll => FormatPoll(poll),
-            _ => FormatError(EpcisException.Default)
-        };
+        return response is PollResponse poll ? FormatPoll(poll) : FormatError(EpcisException.Default);
     }
 
     public static string FormatError(EpcisException error)

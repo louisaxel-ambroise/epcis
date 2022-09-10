@@ -4,7 +4,7 @@ namespace FasTnT.Formatter.v2_0.Json;
 
 public class Namespaces
 {
-    private Dictionary<string, string> _namespaces;
+    private readonly Dictionary<string, string> _namespaces;
 
     public Namespaces(Dictionary<string, string> namespaces)
     {

@@ -8,11 +8,7 @@ public static class XmlResponseFormatter
 {
     public static string Format(IEpcisResponse response)
     {
-        var element = response switch
-        {
-            PollResponse poll => FormatPoll(poll),
-            _ => FormatError(EpcisException.Default)
-        };
+        var element = response is PollResponse poll ? FormatPoll(poll) : FormatError(EpcisException.Default);
 
         return element.ToString(SaveOptions.OmitDuplicateNamespaces | SaveOptions.DisableFormatting);
     }

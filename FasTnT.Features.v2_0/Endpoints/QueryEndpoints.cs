@@ -8,6 +8,8 @@ namespace FasTnT.Host.Features.v2_0;
 
 public class QueryEndpoints
 {
+    protected QueryEndpoints() { }
+
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("v2_0/events", HandleEventQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));

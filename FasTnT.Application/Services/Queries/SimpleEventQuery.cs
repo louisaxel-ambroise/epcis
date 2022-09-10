@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services;
-using FasTnT.Domain;
+﻿using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;

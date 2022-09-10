@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Queries;
-using FasTnT.Application.Services;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;

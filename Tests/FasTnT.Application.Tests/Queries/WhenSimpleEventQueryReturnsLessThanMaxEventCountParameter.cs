@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Queries;
-using FasTnT.Application.Services;
 using FasTnT.Domain.Queries;
 using FasTnT.Infrastructure.Store;
 

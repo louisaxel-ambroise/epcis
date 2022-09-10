@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services;
-using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Queries;
 using FasTnT.Infrastructure.Store;
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FasTnT.Subscriptions;
- 
+
 public class SubscriptionRunner
 {
     private readonly IEnumerable<Application.Services.IEpcisQuery> _epcisQueries;

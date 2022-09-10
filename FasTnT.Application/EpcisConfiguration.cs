@@ -12,7 +12,9 @@ namespace FasTnT.Host.Features.v2_0;
 
 public static class EpcisConfiguration
 {
-    public static IServiceCollection AddEpcisServices(this IServiceCollection services, Action<EpcisOptions> configure = null)
+    public static IServiceCollection AddEpcisServices(this IServiceCollection services) => AddEpcisServices(services, null);
+
+    public static IServiceCollection AddEpcisServices(this IServiceCollection services, Action<EpcisOptions> configure)
     {
         var options = new EpcisOptions();
         if (configure is not null)

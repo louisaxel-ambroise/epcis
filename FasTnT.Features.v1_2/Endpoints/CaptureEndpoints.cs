@@ -10,6 +10,8 @@ namespace FasTnT.Host.Features.v1_2;
 
 public class CaptureEndpoints
 {
+    protected CaptureEndpoints() { }
+
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("v1_2/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
