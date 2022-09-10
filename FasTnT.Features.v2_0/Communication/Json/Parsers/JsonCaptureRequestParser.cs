@@ -19,7 +19,8 @@ public static class JsonCaptureRequestParser
 
     public static async Task<CaptureEpcisRequestCommand> ParseEventAsync(Stream input, Namespaces extensions, CancellationToken cancellationToken)
     {
-        var document = await JsonDocument.ParseAsync(input, default, cancellationToken);
+        var document = await JsonDocumentParser.Instance.ParseAsync(input, cancellationToken);
+        //var document = await JsonDocument.ParseAsync(input, default, cancellationToken);
         var request = new Request
         {
             CaptureDate = DateTime.UtcNow,

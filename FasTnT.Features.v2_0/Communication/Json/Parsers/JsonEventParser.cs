@@ -4,15 +4,15 @@ using System.Text.Json;
 
 namespace FasTnT.Formatter.v2_0.Json;
 
-public class JsonEventParser
+public partial class JsonEventParser
 {
     private readonly JsonElement _element;
-    private readonly JsonCustomFieldParser _customFieldParser;
+    private readonly Namespaces _extensions;
 
     private JsonEventParser(JsonElement element, Namespaces extensions)
     {
         _element = element;
-        _customFieldParser = new(extensions);
+        _extensions = extensions;
     }
 
     public static JsonEventParser Create(JsonElement element, Namespaces extensions)
@@ -36,7 +36,6 @@ public class JsonEventParser
                 case "eventID":
                     evt.EventId = property.Value.GetString(); break;
                 case "isA":
-                case "type":
                     evt.Type = Enum.Parse<EventType>(property.Value.GetString(), true); break;
                 case "action":
                     evt.Action = Enum.Parse<EventAction>(property.Value.GetString(), true); break;
@@ -83,14 +82,14 @@ public class JsonEventParser
                 case "persistentDisposition":
                     evt.PersistentDispositions.AddRange(ParsePersistentDispositions(property.Value)); break;
                 case "ilmd":
-                    evt.CustomFields.AddRange(_customFieldParser.ParseIlmd(property)); break;
+                    evt.CustomFields.AddRange(ParseIlmd(property)); break;
                 case "recordTime":
                     /* Don't do anything - record time is set to the time the event was inserted. */
                 case "@context":
-                    /* Don't do anything - context will only contains custom context, not important. */
+                    /* Don't do anything - context was already parsed. */
                     break;
                 default:
-                    evt.CustomFields.AddRange(_customFieldParser.ParseCustomField(property)); break;
+                    evt.CustomFields.AddRange(ParseCustomField(property)); break;
             }
         }
 
@@ -157,23 +156,12 @@ public class JsonEventParser
         return value.EnumerateObject().SelectMany(parser);
     }
 
-    // TODO: parse
     private static IEnumerable<SensorElement> ParseSensorElements(JsonElement value)
     {
         return value.EnumerateArray().Select(JsonSensorElementParser.ParseSensorElement);
     }
-}
 
-class JsonCustomFieldParser
-{
-    private readonly Namespaces _extensions;
-
-    public JsonCustomFieldParser(Namespaces extensions)
-    {
-        _extensions = extensions;
-    }
-
-    public IEnumerable<CustomField> ParseIlmd(JsonProperty jsonProperty)
+    private IEnumerable<CustomField> ParseIlmd(JsonProperty jsonProperty)
     {
         return jsonProperty.Value.EnumerateObject().SelectMany(e => 
         {
@@ -182,7 +170,7 @@ class JsonCustomFieldParser
         });
     }
 
-    public IEnumerable<CustomField> ParseCustomField(JsonProperty jsonProperty)
+    private IEnumerable<CustomField> ParseCustomField(JsonProperty jsonProperty)
     {
         var (ns, name) = ParseName(jsonProperty.Name);
         return ParseCustomField(jsonProperty.Value, FieldType.CustomField, name, ns);

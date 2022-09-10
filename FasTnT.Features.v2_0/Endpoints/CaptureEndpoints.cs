@@ -13,7 +13,7 @@ public class CaptureEndpoints
         return app;
     }
 
-    private static async Task<IResult> HandleCaptureRequest(CaptureDocumentRequest request, IMediator mediator, ILogger logger, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleCaptureRequest(CaptureDocumentRequest request, IMediator mediator, ILogger<CaptureEndpoints> logger, CancellationToken cancellationToken)
     {
         logger.LogInformation("Start capture request processing");
         await mediator.Send(request.Request, cancellationToken);
@@ -21,7 +21,7 @@ public class CaptureEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> HandleCaptureSingleEventRequest(CaptureEventRequest request, IMediator mediator, ILogger logger, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleCaptureSingleEventRequest(CaptureEventRequest request, IMediator mediator, ILogger<CaptureEndpoints> logger, CancellationToken cancellationToken)
     {
         logger.LogInformation("Start capture request processing");
         await mediator.Send(request.Request, cancellationToken);
