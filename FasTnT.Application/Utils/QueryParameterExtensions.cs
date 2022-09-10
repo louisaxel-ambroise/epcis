@@ -1,4 +1,5 @@
 ﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Queries;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -18,7 +19,7 @@ public static class QueryParameterExtensions
     {
         if (parameter.Values.Length != 1)
         {
-            throw new ArgumentException($"A single value is expected, but multiple were found. Parameter name '{parameter.Name}'");
+            throw new EpcisException(ExceptionType.QueryParameterException, $"A single value is expected, but multiple were found. Parameter name '{parameter.Name}'");
         }
 
         return parameter.Values[0];
@@ -44,7 +45,7 @@ public static class QueryParameterExtensions
     {
         if (!parameter.Name.StartsWith("MATCH_"))
         {
-            throw new ArgumentException("A 'MATCH_*' parameter is expected here.");
+            throw new EpcisException(ExceptionType.QueryParameterException, "A 'MATCH_*' parameter is expected here.");
         }
 
         return parameter.Name[6..] switch
@@ -58,7 +59,7 @@ public static class QueryParameterExtensions
             "inputEpcClass" => new[] { EpcType.InputQuantity },
             "outputEpcClass" => new[] { EpcType.OutputQuantity },
             "anyEpcClass" => new[] { EpcType.Quantity, EpcType.InputQuantity, EpcType.OutputQuantity },
-            _ => throw new ArgumentException($"Unknown 'MATCH_*' parameter: '{parameter.Name}'")
+            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Unknown 'MATCH_*' parameter: '{parameter.Name}'")
         };
     }
 }

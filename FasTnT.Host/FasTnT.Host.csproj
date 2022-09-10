@@ -9,16 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Features\v1_2\Artifacts\index.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Features\v1_2\Artifacts\epcis1_2.wsdl" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.2.1" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -28,10 +18,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
-    <ProjectReference Include="..\FasTnT.Formatter.Json\FasTnT.Formatter.v2_0.csproj" />
-    <ProjectReference Include="..\FasTnT.Formatter.Xml\FasTnT.Formatter.v1_2.csproj" />
+    <ProjectReference Include="..\FasTnT.Features.v1_2\FasTnT.Features.v1_2.csproj" />
+    <ProjectReference Include="..\FasTnT.Features.v2_0\FasTnT.Features.v2_0.csproj" />
     <ProjectReference Include="..\FasTnT.Migrations.SqlServer\FasTnT.Migrations.SqlServer.csproj" />
-    <ProjectReference Include="..\FasTnT.Subscriptions\FasTnT.Subscriptions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

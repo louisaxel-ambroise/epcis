@@ -54,7 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FasTnT.Formatter.Xml\FasTnT.Formatter.v1_2.csproj" />
+    <ProjectReference Include="..\..\FasTnT.Features.v1_2\FasTnT.Features.v1_2.csproj" />
   </ItemGroup>
 
 </Project>

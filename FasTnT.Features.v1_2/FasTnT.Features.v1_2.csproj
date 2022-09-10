@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Remove="Artifacts\epcis1_2.wsdl" />
+    <None Remove="Communication\Schemas\BasicTypes.xsd" />
+    <None Remove="Communication\Schemas\BusinessScope.xsd" />
+    <None Remove="Communication\Schemas\DocumentIdentification.xsd" />
+    <None Remove="Communication\Schemas\EPCglobal-epcis-1_2.xsd" />
+    <None Remove="Communication\Schemas\EPCglobal-epcis-masterdata-1_2.xsd" />
+    <None Remove="Communication\Schemas\EPCglobal-epcis-query-1_2.xsd" />
+    <None Remove="Communication\Schemas\EPCglobal.xsd" />
+    <None Remove="Communication\Schemas\Manifest.xsd" />
+    <None Remove="Communication\Schemas\Partner.xsd" />
+    <None Remove="Communication\Schemas\StandardBusinessDocumentHeader.xsd" />
+    <EmbeddedResource Include="Artifacts\epcis1_2.wsdl" />
+    <EmbeddedResource Include="Communication\Schemas\BasicTypes.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\BusinessScope.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\DocumentIdentification.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\EPCglobal-epcis-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\EPCglobal-epcis-masterdata-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\EPCglobal-epcis-query-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\EPCglobal.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\Manifest.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\Partner.xsd" />
+    <EmbeddedResource Include="Communication\Schemas\StandardBusinessDocumentHeader.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+    <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
+  </ItemGroup>
+</Project>

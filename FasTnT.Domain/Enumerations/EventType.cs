@@ -7,5 +7,6 @@ public enum EventType
     AggregationEvent,
     TransactionEvent,
     TransformationEvent,
-    QuantityEvent
+    QuantityEvent,
+    AssociationEvent
 }

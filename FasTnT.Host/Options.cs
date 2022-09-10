@@ -8,16 +8,14 @@ static class Options
 {
     public static readonly ExceptionHandlerOptions ExceptionHandler = new()
     {
-        ExceptionHandler = (ctx) =>
+        ExceptionHandler = (HttpContext ctx) => Task.Run(() =>
         {
             var exceptionHandler = ctx.Features.Get<IExceptionHandlerPathFeature>();
 
-            ctx.Response.StatusCode = exceptionHandler?.Error is EpcisException
+            ctx.Response.StatusCode = exceptionHandler?.Error is EpcisException epcisFault
                 ? 400
                 : 500;
-
-            return Task.CompletedTask;
-        }
+        })
     };
 
     public static readonly Action<AuthorizationOptions> AuthorizationPolicies = (options) =>

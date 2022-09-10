@@ -1,5 +1,4 @@
 ﻿using FasTnT.Domain.Model;
-using FasTnT.Domain.Utils;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
