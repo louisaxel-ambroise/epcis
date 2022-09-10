@@ -28,9 +28,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FasTnT.Features.v1_2.Tests", "Tests\FasTnT.Features.v1_2.Tests\FasTnT.Features.v1_2.Tests.csproj", "{8A1E27B2-6769-4A5A-8498-127E939C3021}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Features.v1_2.Tests", "Tests\FasTnT.Features.v1_2.Tests\FasTnT.Features.v1_2.Tests.csproj", "{8A1E27B2-6769-4A5A-8498-127E939C3021}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FasTnT.Features.v2_0.Tests", "Tests\FasTnT.Features.v2_0.Tests\FasTnT.Features.v2_0.Tests.csproj", "{431685B9-7DA1-4572-8D59-253593FD8E7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Features.v2_0.Tests", "Tests\FasTnT.Features.v2_0.Tests\FasTnT.Features.v2_0.Tests.csproj", "{431685B9-7DA1-4572-8D59-253593FD8E7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
