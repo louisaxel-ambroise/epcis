@@ -29,6 +29,6 @@ jobs:
       run: dotnet test --no-build --verbosity normal -c Debug /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       
     - name: Upload Coverage
-      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r Tests/FasTnT.Formatters.Xml.Tests/coverage.opencover.xml -r Tests/FasTnT.Application.Tests/coverage.opencover.xml
+      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r Tests/FasTnT.Features.v1_2.Tests/coverage.opencover.xml  -r Tests/FasTnT.Features.v2_0.Tests/coverage.opencover.xml -r Tests/FasTnT.Application.Tests/coverage.opencover.xml
       env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
