@@ -3,9 +3,8 @@
 [![.NET](https://github.com/FasTnT/epcis-ef-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/FasTnT/epcis-ef-core/actions/workflows/dotnet.yml)
 
 # [EPCIS](https://fastnt.github.io/)
-EF Core version of EPCIS repository
 
-FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 repository written in C# using .NET 6 and backed using EntityFramework Core.
+FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and 2.0 repository written in C# using .NET 6 and backed using EntityFramework Core.
 
 There is a [sandbox](https://fastnt.github.io/sandbox.html) available if you want to quickly test this repository capabilities.
 
@@ -19,15 +18,18 @@ Steps:
 1. Download the source code, and create a new user/database in SQL Server for FasTnT ;
 2. Start the repository with the command `$ dotnet run -p FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}"` ;
 
-That's it! You have a properly working EPCIS 1.2 repository.
+That's it! You have a properly working EPCIS repository.
 
 You can also setup FasTnT EPCIS using the Docker image or in Azure quite easily. Check the [wiki](https://github.com/FasTnT/epcis-ef-core/wiki/Installation) for more details.
 
 ## HTTP Endpoints
 
+The API is secured using HTTP Basic authentication. 
+There is no default user, but when in Development environment the unknown users will be created autmatically. A user is limited to see only the events and masterdata he captured by default.
+
 ### EPCIS 1.2 endpoints:
 
-The API is secured using HTTP Basic authentication. There is no default user, but when in Development environment the unknown users will be created autmatically. A user is limited to see only the events and masterdata he captured by default.
+FasT&T provides a full implementation of the EPCIS 1.2 specification. The endpoints are:
 
 - Capture: `POST /v1_2/Capture`
 - Queries : `POST /v1_2/Query.svc`
@@ -38,9 +40,9 @@ The API is secured using HTTP Basic authentication. There is no default user, bu
 
 See the [wiki](https://github.com/FasTnT/epcis-ef-core/wiki) for more details.
 
-## Implemented Features
+#### Implemented Features
 
-This is the list of planned and implemented features in the repository:
+This is the list of implemented 1.2 features in the repository:
 
 - Capture
   - [x] Events
@@ -62,6 +64,42 @@ This is the list of planned and implemented features in the repository:
   - [x] Unsubscribe from EPCIS repository
   - [x] Trigger subscriptions that register to specific trigger name
   - [x] Execute subscription based on schedule
+
+  
+### EPCIS 2.0 endpoints:
+
+A subset of EPCIS 2.0 specification is currently implemented in FasT&T repository. The endpoints are:
+
+- Capture: `POST /v2_0/Capture`
+- Query : `GET /v2_0/events`
+
+**Capture** endpoint supports requests with both `content-type: application/xml` or `content-type: application/json` headers and payload.
+
+**Queries** endpoint supports HTTP requests and supports both `accept: application/json` and `accept: application/xml` headers.
+
+See the [wiki](https://github.com/FasTnT/epcis-ef-core/wiki) for more details.
+
+#### Implemented Features
+
+This is the list of planned and implemented 2.0 features in the repository:
+
+- Capture
+  - [x] Capture list of Events
+  - [ ] Capture a single Event
+- Queries:
+  - [x] List events
+  - [ ] Event pagination
+  - [ ] Create a named query
+  - [ ] Execute a named query
+- Subscriptions:
+  - [ ] Subscribe to an EPCIS request (websocket)
+- Discovery endpoints
+   - [ ] EventType discovery endpoint
+   - [ ] EPCs discovery endpoint
+   - [ ] Business Steps discovery endpoint
+   - [ ] Business Locations discovery endpoint
+   - [ ] Read Points discovery endpoint
+   - [ ] Dispositions discovery endpoint
 
 # Authors
 
