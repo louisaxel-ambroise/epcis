@@ -1,12 +1,12 @@
-﻿namespace FasTnT.Domain.Model;
+﻿namespace FasTnT.Domain.Model.Subscriptions;
 
 public class SubscriptionScheduleEntry
 {
-    internal readonly ScheduleEntry Seconds, 
-                                    Minutes, 
-                                    Hours, 
-                                    DayOfMonth, 
-                                    Month, 
+    internal readonly ScheduleEntry Seconds,
+                                    Minutes,
+                                    Hours,
+                                    DayOfMonth,
+                                    Month,
                                     DayOfWeek;
 
     public SubscriptionScheduleEntry(SubscriptionSchedule schedule)

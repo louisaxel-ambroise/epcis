@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Store.Configuration;
-using FasTnT.Domain.CutomQueries;
 using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.CustomQueries;
+using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Store;

@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Text.Json;
 
-namespace FasTnT.Features.v2_0.Tests;
+namespace FasTnT.Features.v2_0.Tests.Communication.Json;
 
 public abstract class JsonParsingTestCase
 {

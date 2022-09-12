@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Domain.CutomQueries;
+﻿namespace FasTnT.Domain.Model.CustomQueries;
 
 public class CustomQueryParameter
 {

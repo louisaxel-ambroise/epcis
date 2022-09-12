@@ -1,4 +1,6 @@
-﻿namespace FasTnT.Domain.Model;
+﻿using FasTnT.Domain.Model.Subscriptions;
+
+namespace FasTnT.Domain.Model;
 
 public class Request
 {

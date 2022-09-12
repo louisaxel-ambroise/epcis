@@ -4,6 +4,7 @@ using FasTnT.Application.Store;
 using FasTnT.Application.Subscriptions;
 using FasTnT.Domain.Commands.Unsubscribe;
 using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Domain.Notifications;
 using MediatR;
 
@@ -19,7 +20,7 @@ public class WhenHandlingUnsubscribeCommand
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new Domain.Model.Subscription
+        Context.Subscriptions.Add(new Subscription
         {
             Name = "TestSubscription",
             QueryName = Queries.First().Name

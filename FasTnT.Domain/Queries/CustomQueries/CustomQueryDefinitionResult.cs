@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.CutomQueries;
+﻿using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Queries.Poll;
 
 namespace FasTnT.Domain.Queries.CustomQueries;

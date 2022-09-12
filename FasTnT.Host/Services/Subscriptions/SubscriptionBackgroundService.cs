@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Store;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Features.v1_2.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
@@ -169,7 +169,7 @@ public sealed class SubscriptionBackgroundService : BackgroundService, ISubscrip
         });
     }
 
-    private void Pulse(Action action)
+    private static void Pulse(Action action)
     {
         lock (_monitor)
         {

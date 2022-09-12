@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
 
-namespace FasTnT.Features.v2_0.Tests;
+namespace FasTnT.Features.v2_0.Tests.Communication.Json;
 
 [TestClass]
 public class WhenParsingAValidObjectEvent : JsonParsingTestCase

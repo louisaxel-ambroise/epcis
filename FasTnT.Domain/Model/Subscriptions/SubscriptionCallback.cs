@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 
-namespace FasTnT.Domain.Model;
+namespace FasTnT.Domain.Model.Subscriptions;
 
 public class SubscriptionCallback
 {

@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Domain.Queries.Poll;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -79,9 +80,14 @@ public class SubscriptionRunner
 
     private async Task<bool> SendQueryResults(SubscriptionExecutionContext context, PollResponse response, CancellationToken cancellationToken)
     {
-        return response.EventList.Count > 0 || context.Subscription.RecordIfEmpty
-            ? await _resultSender.Send(context, response, cancellationToken).ConfigureAwait(false)
-            : true;
+        var successful = true;
+
+        if(response.EventList.Count > 0 || context.Subscription.RecordIfEmpty)
+        {
+            successful = await _resultSender.Send(context, response, cancellationToken).ConfigureAwait(false);
+        }
+
+        return successful;
     }
 
     private async Task<bool> SendExceptionResult(SubscriptionExecutionContext context, EpcisException response, CancellationToken cancellationToken)

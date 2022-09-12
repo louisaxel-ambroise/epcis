@@ -1,5 +1,6 @@
 ﻿using FasTnT.Application.Queries.GetSubscriptionIds;
 using FasTnT.Application.Store;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Domain.Queries.GetSubscriptionIds;
 
 namespace FasTnT.Application.Tests;
@@ -12,12 +13,12 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new Domain.Model.Subscription
+        Context.Subscriptions.Add(new Subscription
         {
             Name = "SubscriptionTest",
             QueryName = "TestQuery"
         });
-        Context.Subscriptions.Add(new Domain.Model.Subscription
+        Context.Subscriptions.Add(new Subscription
         {
             Name = "OtherSubscription",
             QueryName = "OtherQuery"

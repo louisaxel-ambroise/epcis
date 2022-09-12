@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Domain.Model;
+﻿namespace FasTnT.Domain.Model.Subscriptions;
 
 public class SubscriptionSchedule
 {
@@ -14,7 +14,7 @@ public class SubscriptionSchedule
     {
         // Parse from the next second
         var schedule = new SubscriptionScheduleEntry(this);
-        var tentative = SetMonth(SetDayOfMonth(SetHours(SetMinutes(SetSeconds(startDate.AddSeconds(1), schedule), schedule), schedule), schedule), schedule); 
+        var tentative = SetMonth(SetDayOfMonth(SetHours(SetMinutes(SetSeconds(startDate.AddSeconds(1), schedule), schedule), schedule), schedule), schedule);
 
         if (!schedule.DayOfWeek.HasValue(1 + (int)tentative.DayOfWeek))
         {

@@ -1,7 +1,8 @@
 ﻿using FasTnT.Application.Store;
+using FasTnT.Application.Validators;
 using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Domain.Notifications;
 using FasTnT.Domain.Queries.Poll;
 using MediatR;
@@ -23,6 +24,7 @@ public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, IEpcisR
 
     public async Task<IEpcisResponse> Handle(SubscribeCommand request, CancellationToken cancellationToken)
     {
+        EnsureSubscriptionCommandIsValid(request);
         EnsureSubscriptionDoesNotExist(request);
         EnsureQueryAllowsSubscription(request);
 
@@ -33,6 +35,14 @@ public class SubscribeCommandHandler : IRequestHandler<SubscribeCommand, IEpcisR
         await _mediator.Publish(new SubscriptionCreatedNotification(subscription.Id), cancellationToken);
 
         return new SubscribeResult();
+    }
+
+    private static void EnsureSubscriptionCommandIsValid(SubscribeCommand request)
+    {
+        if (!SubscriptionValidator.IsValid(request))
+        {
+            throw new EpcisException(ExceptionType.ValidationException, "Subscription is not valid");
+        }
     }
 
     private void EnsureSubscriptionDoesNotExist(SubscribeCommand request)

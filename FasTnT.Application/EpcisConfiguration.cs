@@ -5,8 +5,6 @@ using FasTnT.Application.Services.Users;
 using FasTnT.Application.Services.Users.Providers;
 using FasTnT.Application.Store;
 using FasTnT.Application.Store.Configuration;
-using FasTnT.Domain.Infrastructure.Behaviors;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,14 +23,11 @@ public static class EpcisConfiguration
         }
 
         services.AddMediatR(typeof(PollQueryHandler));
-        services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
         services.AddScoped<IncrementGenerator.Identity>();
         services.AddScoped(options.CurrentUser);
         services.AddScoped(options.UserProvider);
         services.AddTransient<IEpcisQuery, SimpleEventQuery>();
         services.AddTransient<IEpcisQuery, SimpleMasterDataQuery>();
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandLoggerBehavior<,>));
         services.AddSqlServer<EpcisContext>(options.ConnectionString, opt => opt.MigrationsAssembly("FasTnT.Migrations.SqlServer").EnableRetryOnFailure().CommandTimeout(options.CommandTimeout));
 
         return services;
