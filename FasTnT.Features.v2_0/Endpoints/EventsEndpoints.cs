@@ -6,9 +6,9 @@ using MediatR;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
-public class QueryEndpoints
+public class EventsEndpoints
 {
-    protected QueryEndpoints() { }
+    protected EventsEndpoints() { }
 
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {

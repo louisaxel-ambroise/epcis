@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Store.Configuration;
+using FasTnT.Domain.CutomQueries;
 using FasTnT.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ public class EpcisContext : DbContext
     public DbSet<MasterData> MasterData { get; init; }
     public DbSet<Subscription> Subscriptions { get; init; }
     public DbSet<PendingRequest> PendingRequests { get; init; }
+    public DbSet<CustomQuery> CustomQueries { get; init; }
 
     public EpcisContext(DbContextOptions<EpcisContext> options) : base(options) { }
 

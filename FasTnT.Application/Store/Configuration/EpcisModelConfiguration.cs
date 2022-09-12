@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Domain.CutomQueries;
+using FasTnT.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -266,5 +267,15 @@ internal static class EpcisModelConfiguration
         var pendingRequest = modelBuilder.Entity<PendingRequest>();
         pendingRequest.ToTable(nameof(PendingRequest), nameof(EpcisSchema.Subscription));
         pendingRequest.HasKey(x => new { x.RequestId, x.SubscriptionId });
+
+        var customQuery = modelBuilder.Entity<CustomQuery>();
+        customQuery.ToTable(nameof(CustomQuery), nameof(EpcisSchema.Queries));
+        customQuery.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
+        customQuery.HasMany(x => x.Parameters).WithOne(x => x.Query).HasForeignKey("QueryId");
+
+        var customQueryParam = modelBuilder.Entity<CustomQueryParameter>();
+        customQueryParam.ToTable(nameof(CustomQueryParameter), nameof(EpcisSchema.Subscription));
+        customQueryParam.HasKey("QueryId", nameof(CustomQueryParameter.Name));
+        customQueryParam.Property(x => x.Value).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
     }
 }
