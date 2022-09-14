@@ -6,19 +6,19 @@ namespace FasTnT.Features.v2_0.Communication.Xml.Formatters;
 
 public static class XmlResponseFormatter
 {
-    public static string Format(IEpcisResponse response)
+    public static string Format<T>(T response)
     {
-        var element = response is PollResponse poll ? FormatPoll(poll) : FormatError(EpcisException.Default);
+        var element = response is QueryResponse poll ? FormatPoll(poll) : FormatError(EpcisException.Default);
 
         return element.ToString(SaveOptions.OmitDuplicateNamespaces | SaveOptions.DisableFormatting);
     }
 
-    public static XElement FormatPoll(PollResponse response)
+    public static XElement FormatPoll(QueryResponse response)
     {
         var (resultName, resultList) = response switch
         {
-            PollEventResponse => (nameof(response.EventList), XmlEventFormatter.FormatList(response.EventList)),
-            PollMasterdataResponse => (nameof(response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.VocabularyList)),
+            _ when response.EventList is not null => (nameof(response.EventList), XmlEventFormatter.FormatList(response.EventList)),
+            _ when response.VocabularyList is not null => (nameof(response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.VocabularyList)),
             _ => throw new NotImplementedException()
         };
 
@@ -30,7 +30,7 @@ public static class XmlResponseFormatter
         );
 
         // TODO: improve.
-        if (response is PollResponse pollResponse)
+        if (response is QueryResponse pollResponse)
         {
             var customNamespaces = pollResponse.EventList.SelectMany(x => x.CustomFields.Select(x => x.Namespace)).Distinct().ToArray();
 

@@ -31,6 +31,6 @@ public class TimeZoneOffset
         }
     }
 
-    public static implicit operator TimeZoneOffset(string representation) => new TimeZoneOffset { Representation = representation };
-    public static implicit operator TimeZoneOffset(short value) => new TimeZoneOffset { Value = value };
+    public static implicit operator TimeZoneOffset(string representation) => new() { Representation = representation };
+    public static implicit operator TimeZoneOffset(short value) => new() { Value = value };
 }

@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Queries.CustomQueries;
 using FasTnT.Domain.Queries.Poll;
+using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,12 +10,12 @@ public static class JsonResponseFormatter
 {
     private static readonly JsonSerializerOptions Options = new () { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
 
-    public static string Format(IEpcisResponse response)
+    public static string Format<T>(T response)
     {
         return response switch {
             CustomQueryDefinitionResult customQuery => FormatCustomQuery(customQuery),
             ListCustomQueriesResult listQueries => FormatListQueries(listQueries),
-            PollResponse poll => FormatPoll(poll),
+            QueryResponse poll => FormatPoll(poll),
             _ => FormatError(EpcisException.Default)
         };
     }
@@ -34,8 +34,8 @@ public static class JsonResponseFormatter
     {
         var query = new Dictionary<string, object>
         {
-            ["name"] = result.Query.Name,
-            ["query"] = result.Query.Parameters.Select(x => new Dictionary<string, object> { [x.Name] = x.Value })
+            ["name"] = result.Name,
+            ["query"] = result.Parameters.Select(x => new Dictionary<string, object> { [x.Name] = x.Values })
         };
 
         return JsonSerializer.Serialize(query, Options);
@@ -46,13 +46,13 @@ public static class JsonResponseFormatter
         var queries = result.Queries.Select(q => new Dictionary<string, object>
         {
             ["name"] = q.Name,
-            ["query"] = q.Parameters.Select(x => new Dictionary<string, object> { [x.Name] = x.Value })
+            ["query"] = q.Parameters.Select(x => new Dictionary<string, object> { [x.Name] = x.Values })
         });
 
         return JsonSerializer.Serialize(queries, Options);
     }
 
-    private static string FormatPoll(PollResponse result)
+    private static string FormatPoll(QueryResponse result)
     {
         var context = BuildContext(result.EventList.SelectMany(x => x.CustomFields).Select(x => x.Namespace).Distinct());
         var document = new Dictionary<string, object>

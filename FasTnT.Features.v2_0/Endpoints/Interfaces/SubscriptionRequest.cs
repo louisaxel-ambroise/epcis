@@ -2,7 +2,7 @@
 
 public record SubscriptionRequest(string Destination)
 {
-    public static async ValueTask<SubscriptionRequest> BindAsync(HttpContext context)
+    public static ValueTask<SubscriptionRequest> BindAsync(HttpContext context)
     {
         throw new NotImplementedException();
     }

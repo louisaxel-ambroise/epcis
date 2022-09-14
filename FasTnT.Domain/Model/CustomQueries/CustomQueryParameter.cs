@@ -1,8 +1,8 @@
-﻿namespace FasTnT.Domain.Model.CustomQueries;
+﻿using FasTnT.Domain.Queries.Poll;
 
-public class CustomQueryParameter
+namespace FasTnT.Domain.Model.CustomQueries;
+
+public class CustomQueryParameter : QueryParameter
 {
-    public string Name { get; set; }
-    public string[] Value { get; set; }
     public CustomQuery Query { get; set; }
 }

@@ -17,7 +17,7 @@ namespace FasTnT.Application.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -131,6 +131,40 @@ namespace FasTnT.Application.Migrations
                     b.HasIndex("EventId", "ParentId");
 
                     b.ToTable("CustomField", "Epcis");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.CustomQuery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CustomQuery", "Queries");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.CustomQueryParameter", b =>
+                {
+                    b.Property<int>("QueryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Values")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("QueryId", "Name");
+
+                    b.ToTable("CustomQueryParameter", "Subscription");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Destination", b =>
@@ -373,19 +407,6 @@ namespace FasTnT.Application.Migrations
                     b.ToView("MasterDataHierarchy", "Cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.PendingRequest", b =>
-                {
-                    b.Property<int>("RequestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubscriptionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("RequestId", "SubscriptionId");
-
-                    b.ToTable("PendingRequest", "Subscription");
-                });
-
             modelBuilder.Entity("FasTnT.Domain.Model.PersistentDisposition", b =>
                 {
                     b.Property<long>("EventId")
@@ -602,7 +623,20 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("StandardBusinessHeader", "Sbdh");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Subscription", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.PendingRequest", b =>
+                {
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RequestId", "SubscriptionId");
+
+                    b.ToTable("PendingRequest", "Subscription");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -626,7 +660,7 @@ namespace FasTnT.Application.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<bool>("RecordIfEmpty")
+                    b.Property<bool>("ReportIfEmpty")
                         .HasColumnType("bit");
 
                     b.Property<int?>("ScheduleId")
@@ -645,7 +679,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("Subscription", "Subscription");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionCallback", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>
                 {
                     b.Property<int>("RequestId")
                         .HasColumnType("int");
@@ -666,7 +700,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("SubscriptionCallback", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionExecutionRecord", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", b =>
                 {
                     b.Property<int>("SubscriptionId")
                         .HasColumnType("int");
@@ -688,7 +722,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("SubscriptionExecutionRecord", "Subscription");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionParameter", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", b =>
                 {
                     b.Property<int>("SubscriptionId")
                         .HasColumnType("int");
@@ -696,7 +730,7 @@ namespace FasTnT.Application.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Value")
+                    b.Property<string>("Values")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SubscriptionId", "Name");
@@ -704,7 +738,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("SubscriptionParameter", "Subscription");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionSchedule", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -841,6 +875,17 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.CustomQueryParameter", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.CustomQueries.CustomQuery", "Query")
+                        .WithMany("Parameters")
+                        .HasForeignKey("QueryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Query");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Destination", b =>
@@ -994,29 +1039,29 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Subscription", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.SubscriptionSchedule", "Schedule")
+                    b.HasOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule")
                         .WithOne("Subscription")
-                        .HasForeignKey("FasTnT.Domain.Model.Subscription", "ScheduleId")
+                        .HasForeignKey("FasTnT.Domain.Model.Subscriptions.Subscription", "ScheduleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Schedule");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionCallback", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.Request", "Request")
                         .WithOne("SubscriptionCallback")
-                        .HasForeignKey("FasTnT.Domain.Model.SubscriptionCallback", "RequestId")
+                        .HasForeignKey("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", "RequestId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionExecutionRecord", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.Subscription", "Subscription")
+                    b.HasOne("FasTnT.Domain.Model.Subscriptions.Subscription", "Subscription")
                         .WithMany("ExecutionRecords")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1025,9 +1070,9 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionParameter", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.Subscription", "Subscription")
+                    b.HasOne("FasTnT.Domain.Model.Subscriptions.Subscription", "Subscription")
                         .WithMany("Parameters")
                         .HasForeignKey("SubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1050,6 +1095,11 @@ namespace FasTnT.Application.Migrations
             modelBuilder.Entity("FasTnT.Domain.Model.CustomField", b =>
                 {
                     b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.CustomQuery", b =>
+                {
+                    b.Navigation("Parameters");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Event", b =>
@@ -1106,14 +1156,14 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("ContactInformations");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Subscription", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
                 {
                     b.Navigation("ExecutionRecords");
 
                     b.Navigation("Parameters");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SubscriptionSchedule", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", b =>
                 {
                     b.Navigation("Subscription");
                 });

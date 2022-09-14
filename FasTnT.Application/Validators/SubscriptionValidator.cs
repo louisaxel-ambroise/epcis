@@ -1,11 +1,11 @@
-﻿using FasTnT.Domain.Commands.Subscribe;
+﻿using FasTnT.Domain.Model.Subscriptions;
 using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.Validators;
 
 internal class SubscriptionValidator
 {
-    public static bool IsValid(SubscribeCommand request)
+    public static bool IsValid(Subscription request)
     {
         if (!OnlyOneSubscriptionMethodIsDefined(request))
         {
@@ -19,12 +19,12 @@ internal class SubscriptionValidator
         return true;
     }
 
-    private static bool OnlyOneSubscriptionMethodIsDefined(SubscribeCommand request)
+    private static bool OnlyOneSubscriptionMethodIsDefined(Subscription request)
     {
         return string.IsNullOrEmpty(request.Trigger) != (request.Schedule is null);
     }
 
-    private static bool IsValid(QuerySchedule schedule)
+    private static bool IsValid(SubscriptionSchedule schedule)
     {
         return SecondRegex.IsMatch(schedule.Second)
             && MinuteRegex.IsMatch(schedule.Minute)

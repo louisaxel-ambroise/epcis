@@ -1,24 +1,18 @@
-﻿using FasTnT.Domain.Commands.Subscribe;
-using FasTnT.Domain.Commands.Unsubscribe;
-using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Queries.GetQueryNames;
-using FasTnT.Domain.Queries.GetStandardVersion;
-using FasTnT.Domain.Queries.GetSubscriptionIds;
-using FasTnT.Domain.Queries.GetVendorVersion;
-using FasTnT.Domain.Queries.Poll;
-using MediatR;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Features.v1_2.Endpoints.Interfaces.Queries;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;
 
 public static class XmlQueryParser
 {
-    public static IRequest<IEpcisResponse> Parse(XElement queryElement)
+    public static object Parse(XElement queryElement)
     {
         return queryElement?.Name?.LocalName switch
         {
             "Poll" => ParsePollQuery(queryElement),
-            "GetVendorVersion" => ParseGetVendorVersion(),
-            "GetStandardVersion" => ParseGetStandardVersion(),
+            "GetVendorVersion" => new GetVendorVersion(),
+            "GetStandardVersion" => new GetStandardVersion(),
             "GetQueryNames" => ParseGetQueryNames(),
             "Subscribe" => ParseSubscribe(queryElement),
             "Unsubscribe" => ParseUnsubscribe(queryElement),
@@ -27,7 +21,7 @@ public static class XmlQueryParser
         };
     }
 
-    public static PollQuery ParsePollQuery(XElement element)
+    public static Poll ParsePollQuery(XElement element)
     {
         var queryName = element.Element("queryName").Value;
         var parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToArray();
@@ -35,19 +29,16 @@ public static class XmlQueryParser
         return new(queryName, parameters);
     }
 
-    public static UnsubscribeCommand ParseUnsubscribe(XElement element)
+    public static string ParseUnsubscribe(XElement element)
     {
-        return new()
-        {
-            SubscriptionId = element.Element("subscriptionID").Value
-        };
+        return element.Element("subscriptionID").Value;
     }
 
-    public static SubscribeCommand ParseSubscribe(XElement element)
+    public static Subscription ParseSubscribe(XElement element)
     {
         return new()
         {
-            SubscriptionId = element.Element("subscriptionID").Value,
+            Name = element.Element("subscriptionID").Value,
             QueryName = element.Element("queryName").Value,
             Destination = element.Element("dest").Value,
             Trigger = element.Element("controls")?.Element("trigger")?.Value,
@@ -58,11 +49,9 @@ public static class XmlQueryParser
         };
     }
 
-    public static GetVendorVersionQuery ParseGetVendorVersion() => new();
-    public static GetStandardVersionQuery ParseGetStandardVersion() => new();
-    public static GetQueryNamesQuery ParseGetQueryNames() => new();
+    public static GetQueryNames ParseGetQueryNames() => new();
 
-    private static IEnumerable<QueryParameter> ParseQueryParameters(IEnumerable<XElement> elements)
+    private static IEnumerable<SubscriptionParameter> ParseQueryParameters(IEnumerable<XElement> elements)
     {
         foreach (var element in elements ?? Array.Empty<XElement>())
         {
@@ -71,19 +60,16 @@ public static class XmlQueryParser
                 ? element.Element("value").Elements().Select(x => x.Value)
                 : new[] { element.Element("value").Value };
 
-            yield return new(name, values.ToArray());
+            yield return new() { Name = name, Values = values.ToArray() };
         }
     }
 
-    public static GetSubscriptionIdsQuery ParseGetSubscriptionIds(XElement element)
+    public static GetSubscriptionIDs ParseGetSubscriptionIds(XElement element)
     {
-        return new()
-        {
-            QueryName = element.Element("queryName")?.Value
-        };
+        return new(element.Element("queryName")?.Value);
     }
 
-    private static QuerySchedule ParseQuerySchedule(XElement element)
+    private static SubscriptionSchedule ParseQuerySchedule(XElement element)
     {
         if (element == null || element.IsEmpty)
         {

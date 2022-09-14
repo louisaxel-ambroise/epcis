@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,10 @@
-﻿using FasTnT.Application.Queries.CustomQueries;
-using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Services.Users;
+using FasTnT.Application.UseCases.DeleteCustomQuery;
+using FasTnT.Application.UseCases.ExecuteCustomQuery;
+using FasTnT.Application.UseCases.GetCustomQueryDetails;
+using FasTnT.Application.UseCases.ListCustomQueries;
+using FasTnT.Application.UseCases.StoreCustomQuery;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
-using MediatR;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
@@ -20,35 +23,39 @@ public class QueriesEndpoints
         return app;
     }
 
-    private static async Task<IResult> HandleListNamedQueries(IMediator mediator, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListNamedQueries(IListCustomQueriesHandler handler, CancellationToken cancellationToken)
     {
-        var query = new ListCustomQueryDefinition();
-        var response = await mediator.Send(query, cancellationToken);
+        var customQueries = await handler.ListCustomQueriesAsync(cancellationToken);
 
-        return IRestResponse.Create(response);
+        return EpcisResults.Ok(new ListCustomQueriesResult(customQueries.Select(x => new CustomQueryDefinitionResult(x.Name, x.Parameters))));
     }
 
-    private static async Task<IResult> HandleGetQueryDefinition(string queryName, IMediator mediator, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleGetQueryDefinition(string queryName, IGetCustomQueryDetailsHandler handler, CancellationToken cancellationToken)
     {
-        var query = new GetCustomQueryDefinition(queryName);
-        var response = await mediator.Send(query, cancellationToken);
+        var query = await handler.GetCustomQueryDetailsAsync(queryName, cancellationToken);
 
-        return IRestResponse.Create(response);
+        return EpcisResults.Ok(new CustomQueryDefinitionResult(query.Name, query.Parameters));
     }
 
-    private static async Task<IResult> HandleGetQueryEvents(string queryName, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleGetQueryEvents(string queryName, IExecuteCustomQueryHandler handler, CancellationToken cancellationToken)
     {
-        return Results.Ok();
+        var queryResponse = await handler.ExecuteQueryAsync(queryName, cancellationToken);
+
+        return EpcisResults.Ok(queryResponse);
     }
 
-    private static async Task<IResult> HandleCreateNamedQuery(CancellationToken cancellationToken)
+    private static async Task<IResult> HandleCreateNamedQuery(CreateCustomQueryRequest command, IStoreCustomQueryHandler handler, CancellationToken cancellationToken)
     {
-        return Results.Ok();
+        await handler.StoreQueryAsync(command.Query, cancellationToken);
+
+        return Results.Created($"v2_0/queries/{command.Query.Name}", null);
     }
 
-    private static async Task<IResult> HandleDeleteNamedQuery(string queryName, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleDeleteNamedQuery(string queryName, IDeleteCustomQueryHandler handler, CancellationToken cancellationToken)
     {
-        return Results.Ok();
+        await handler.DeleteQueryAsync(queryName, cancellationToken);
+
+        return Results.NoContent();
     }
 }
 

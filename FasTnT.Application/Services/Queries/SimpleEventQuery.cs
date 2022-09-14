@@ -13,26 +13,21 @@ using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.Services.Queries;
 
-public class SimpleEventQuery : IEpcisQuery
+public class SimpleEventQuery : IStandardQuery
 {
     const string Comparison = "(GE|GT|LE|LT)";
 
-    private readonly EpcisContext _context;
-    private int? _maxEventCount = default, _eventCountLimit = Constants.MaxEventsReturnedInQuery + 1;
+    private int? _maxEventCount = default, 
+                 _eventCountLimit = Constants.MaxEventsReturnedInQuery + 1;
     private OrderDirection _orderDirection = OrderDirection.Ascending;
     private Expression<Func<Event, object>> _orderExpression = e => e.CaptureTime;
-
-    public SimpleEventQuery(EpcisContext context)
-    {
-        _context = context;
-    }
 
     public string Name => nameof(SimpleEventQuery);
     public bool AllowSubscription => true;
 
-    public async Task<PollResponse> HandleAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+    public async Task<QueryResponse> ExecuteAsync(EpcisContext context, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var query = _context.Events.AsNoTracking();
+        var query = context.Events.AsNoTracking();
 
         foreach (var parameter in parameters)
         {
@@ -63,7 +58,7 @@ public class SimpleEventQuery : IEpcisQuery
 
             if (eventIds.Count > 0)
             {
-                query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
+                query = context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
                     .Include(x => x.Epcs)
                     .Include(x => x.Sources)
                     .Include(x => x.Destinations)
@@ -76,11 +71,11 @@ public class SimpleEventQuery : IEpcisQuery
                 var result = await query.ToListAsync(cancellationToken)
                     .ContinueWith(x => ApplyOrderByLimit(x.Result.AsQueryable()).ToList());
 
-                return new PollEventResponse(Name, result);
+                return QueryResponse.Events(Name, result);
             }
             else
             {
-                return new PollEventResponse(Name, new());
+                return QueryResponse.Empty(Name);
             }
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)

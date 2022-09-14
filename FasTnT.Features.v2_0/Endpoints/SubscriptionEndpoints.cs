@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Services.Users;
+using FasTnT.Application.UseCases.ListSubscriptions;
+using FasTnT.Application.UseCases.StoreCustomQuerySubscription;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
-using FasTnT.Features.v2_0.Subscriptions;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
@@ -15,15 +16,16 @@ public class SubscriptionEndpoints
         app.MapDelete("/v2_0/queries/{query}/subscriptions/{subscriptionId}", HandleDeleteSubscription).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
         app.MapPost("/v2_0/queries/{query}/subscriptions", HandleSubscribeRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
 
-        // WebSocket endpoints.
-        app.MapHub<SubscriptionHub>("/v2_0/queries/{query}/subscriptions").AllowAnonymous();
+        // TODO: add WebSocket endpoints.
 
         return app;
     }
 
-    private static Task<IResult> HandleSubscriptionQuery(string query, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleSubscriptionQuery(string query, IListSubscriptionsHandler handler, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var subscriptions = await handler.ListSubscriptionsAsync(query, cancellationToken);
+
+        return EpcisResults.Ok(subscriptions);
     }
 
     private static Task<IResult> HandleSubscriptionDetailQuery(string query, string subscriptionId, CancellationToken cancellationToken)
@@ -36,7 +38,7 @@ public class SubscriptionEndpoints
         throw new NotImplementedException();
     }
 
-    private static Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, CancellationToken cancellationToken)
+    private static Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, IStoreCustomQuerySubscriptionHandler handler, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }

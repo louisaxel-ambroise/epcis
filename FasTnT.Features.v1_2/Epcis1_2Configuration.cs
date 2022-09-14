@@ -1,7 +1,8 @@
-﻿using FasTnT.Features.v1_2.Endpoints;
+﻿using FasTnT.Application.Services.Users;
+using FasTnT.Features.v1_2.Endpoints;
+using FasTnT.Features.v1_2.Extensions;
 using FasTnT.Features.v1_2.Subscriptions;
-using FasTnT.Features.v1_2.Subscriptions.Notifications;
-using MediatR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +14,6 @@ public static class Epcis1_2Configuration
     public static IServiceCollection AddEpcis12SubscriptionService<T>(this IServiceCollection services)
         where T : class, ISubscriptionService, IHostedService
     {
-        services.AddMediatR(typeof(SubscriptionCreatedNotificationHandler));
         services.AddScoped<SubscriptionRunner>();
         services.AddScoped<SubscriptionRunner>();
         services.AddScoped<ISubscriptionResultSender, HttpSubscriptionResultSender>();
@@ -26,7 +26,14 @@ public static class Epcis1_2Configuration
     public static IEndpointRouteBuilder MapEpcis12Endpoints(this IEndpointRouteBuilder endpoints)
     {
         CaptureEndpoints.AddRoutes(endpoints);
-        SoapEndpoints.AddRoutes(endpoints);
+        QueryEndpoints.AddRoutes(endpoints);
+        SubscriptionEndpoints.AddRoutes(endpoints);
+
+        endpoints.MapSoap("v1_2/query.svc", action =>
+        {
+            QueryEndpoints.AddSoapActions(action);
+            SubscriptionEndpoints.AddSoapActions(action);
+        }).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
 
         return endpoints;
     }

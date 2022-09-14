@@ -1,8 +1,8 @@
-﻿namespace FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Domain.Queries.Poll;
 
-public class SubscriptionParameter
+namespace FasTnT.Domain.Model.Subscriptions;
+
+public class SubscriptionParameter : QueryParameter
 {
     public Subscription Subscription { get; set; }
-    public string Name { get; set; }
-    public string[] Value { get; set; }
 }
