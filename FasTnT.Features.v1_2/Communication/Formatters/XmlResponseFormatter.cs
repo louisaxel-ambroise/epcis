@@ -1,38 +1,33 @@
-﻿using FasTnT.Domain.Commands.Subscribe;
-using FasTnT.Domain.Commands.Unsubscribe;
-using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Queries.GetQueryNames;
-using FasTnT.Domain.Queries.GetStandardVersion;
-using FasTnT.Domain.Queries.GetSubscriptionIds;
-using FasTnT.Domain.Queries.GetVendorVersion;
-using FasTnT.Domain.Queries.Poll;
+﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Features.v1_2.Communication.Utils;
+using FasTnT.Features.v1_2.Endpoints.Interfaces.Queries;
 
 namespace FasTnT.Features.v1_2.Communication.Formatters;
 
 public static class XmlResponseFormatter
 {
-    public static XElement Format(IEpcisResponse response)
+    public static XElement Format(object response)
     {
         return response switch
         {
-            PollResponse poll => FormatPoll(poll),
-            GetSubscriptionIdsResult subscriptionIds => FormatSubscriptionIds(subscriptionIds),
+            PollResult poll => FormatPoll(poll),
+            GetSubscriptionIDsResult subscriptionIds => FormatSubscriptionIds(subscriptionIds),
             GetQueryNamesResult queryNames => FormatGetQueryNames(queryNames),
             GetVendorVersionResult vendorVersion => FormatVendorVersion(vendorVersion),
             GetStandardVersionResult standardVersion => FormatStandardVersion(standardVersion),
-            UnsubscribeResult unsubscription => FormatUnsubscribeResponse(unsubscription),
-            SubscribeResult subscription => FormatSubscribeResponse(subscription),
+            // TODO: subscriptions
+            //UnsubscribeResult unsubscription => FormatUnsubscribeResponse(unsubscription),
+            //SubscribeResult subscription => FormatSubscribeResponse(subscription),
             _ => FormatError(EpcisException.Default)
         };
     }
 
-    public static XElement FormatPoll(PollResponse response)
+    public static XElement FormatPoll(PollResult response)
     {
         var (resultName, resultList) = response switch
         {
-            PollEventResponse => (nameof(response.EventList), XmlEventFormatter.FormatList(response.EventList)),
-            PollMasterdataResponse => (nameof(response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.VocabularyList)),
+            _ when response.EventList is not null => (nameof(response.EventList), XmlEventFormatter.FormatList(response.EventList)),
+            _ when response.VocabularyList is not null => (nameof(response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.VocabularyList)),
             _ => throw new NotImplementedException()
         };
 
@@ -55,11 +50,11 @@ public static class XmlResponseFormatter
         return new(XName.Get(exception.ExceptionType.ToString(), Namespaces.Query), reason, severity, queryName, subscriptionId);
     }
 
-    public static XElement FormatSubscriptionIds(GetSubscriptionIdsResult response)
+    public static XElement FormatSubscriptionIds(GetSubscriptionIDsResult response)
     {
         var subscriptions = response.SubscriptionIDs.Select(x => new XElement("string", x));
 
-        return new(XName.Get(nameof(GetSubscriptionIdsResult), Namespaces.Query), subscriptions);
+        return new(XName.Get(nameof(GetSubscriptionIDsResult), Namespaces.Query), subscriptions);
     }
 
     public static XElement FormatGetQueryNames(GetQueryNamesResult response)
@@ -79,13 +74,13 @@ public static class XmlResponseFormatter
         return new XElement(XName.Get(nameof(GetStandardVersionResult), Namespaces.Query), response.Version);
     }
 
-    public static XElement FormatUnsubscribeResponse(UnsubscribeResult _)
+    public static XElement FormatUnsubscribeResponse()
     {
-        return new(XName.Get(nameof(UnsubscribeResult), Namespaces.Query));
+        return new(XName.Get("UnsubscribeResult", Namespaces.Query));
     }
 
-    public static XElement FormatSubscribeResponse(SubscribeResult _)
+    public static XElement FormatSubscribeResponse()
     {
-        return new(XName.Get(nameof(SubscribeResult), Namespaces.Query));
+        return new(XName.Get("SubscribeResult", Namespaces.Query));
     }
 }

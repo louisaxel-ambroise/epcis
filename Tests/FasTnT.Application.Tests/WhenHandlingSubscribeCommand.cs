@@ -4,6 +4,7 @@ using FasTnT.Application.Store;
 using FasTnT.Application.Subscriptions;
 using FasTnT.Domain.Commands.Subscribe;
 using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Domain.Notifications;
 using MediatR;
 
@@ -19,7 +20,7 @@ public class WhenHandlingSubscribeCommand
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new Domain.Model.Subscription
+        Context.Subscriptions.Add(new Subscription
         {
             Name = "TestSubscription",
             QueryName = Queries.First().Name
@@ -34,7 +35,8 @@ public class WhenHandlingSubscribeCommand
         var subscription = new SubscribeCommand
         {
             SubscriptionId = "NewSubscription",
-            QueryName = "SimpleEventQuery"
+            QueryName = "SimpleEventQuery",
+            Trigger = "testTrigger"
         };
         var handler = new SubscribeCommandHandler(Context, Queries, Mediator.Object);
         var result = handler.Handle(subscription, CancellationToken.None).Result;

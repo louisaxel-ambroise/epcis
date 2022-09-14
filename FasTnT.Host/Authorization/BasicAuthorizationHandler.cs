@@ -97,7 +97,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             new Claim(nameof(ICurrentUser.UserId), user.Id.ToString()),
             new Claim(nameof(ICurrentUser.CanQuery), user.CanQuery.ToString()),
             new Claim(nameof(ICurrentUser.CanCapture), user.CanCapture.ToString()),
-            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(user.DefaultQueryParameters.Select(p => new QueryParameter(p.Name, p.Values))))
+            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(user.DefaultQueryParameters.Cast<QueryParameter>()))
         };
 
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));

@@ -6,5 +6,6 @@ enum EpcisSchema
     Sbdh,
     Epcis,
     Cbv,
-    Subscription
+    Subscription, 
+    Queries
 }

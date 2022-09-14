@@ -8,22 +8,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Services.Queries;
 
-public class SimpleMasterDataQuery : IEpcisQuery
+public class SimpleMasterDataQuery : IStandardQuery
 {
-    private readonly EpcisContext _context;
     private int? _maxEventCount;
-
-    public SimpleMasterDataQuery(EpcisContext context)
-    {
-        _context = context;
-    }
 
     public string Name => nameof(SimpleMasterDataQuery);
     public bool AllowSubscription => false;
 
-    public async Task<PollResponse> HandleAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+    public async Task<QueryResponse> ExecuteAsync(EpcisContext context, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var query = _context.MasterData.AsSplitQuery().AsNoTrackingWithIdentityResolution();
+        var query = context.MasterData.AsSplitQuery().AsNoTrackingWithIdentityResolution();
 
         foreach (var parameter in parameters)
         {
@@ -52,7 +46,7 @@ public class SimpleMasterDataQuery : IEpcisQuery
                 };
             }
 
-            return new PollMasterdataResponse(Name, result);
+            return QueryResponse.Masterdata(Name, result);
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
         {

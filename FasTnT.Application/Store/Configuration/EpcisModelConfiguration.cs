@@ -1,4 +1,6 @@
 ﻿using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.CustomQueries;
+using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -230,7 +232,7 @@ internal static class EpcisModelConfiguration
         subscription.ToTable(nameof(Subscription), nameof(EpcisSchema.Subscription));
         subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
-        subscription.Property(x => x.RecordIfEmpty).IsRequired(true);
+        subscription.Property(x => x.ReportIfEmpty).IsRequired(true);
         subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
         subscription.HasMany(x => x.Parameters).WithOne(x => x.Subscription).HasForeignKey("SubscriptionId");
         subscription.HasOne(x => x.Schedule).WithOne(x => x.Subscription).HasForeignKey<Subscription>("ScheduleId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
@@ -240,7 +242,7 @@ internal static class EpcisModelConfiguration
         subscriptionParam.ToTable(nameof(SubscriptionParameter), nameof(EpcisSchema.Subscription));
         subscriptionParam.HasKey("SubscriptionId", nameof(SubscriptionParameter.Name));
         subscriptionParam.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
-        subscriptionParam.Property(x => x.Value).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
+        subscriptionParam.Property(x => x.Values).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
 
         var subscriptionSchedule = modelBuilder.Entity<SubscriptionSchedule>();
         subscriptionSchedule.ToTable(nameof(SubscriptionSchedule), nameof(EpcisSchema.Subscription));
@@ -266,5 +268,15 @@ internal static class EpcisModelConfiguration
         var pendingRequest = modelBuilder.Entity<PendingRequest>();
         pendingRequest.ToTable(nameof(PendingRequest), nameof(EpcisSchema.Subscription));
         pendingRequest.HasKey(x => new { x.RequestId, x.SubscriptionId });
+
+        var customQuery = modelBuilder.Entity<CustomQuery>();
+        customQuery.ToTable(nameof(CustomQuery), nameof(EpcisSchema.Queries));
+        customQuery.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
+        customQuery.HasMany(x => x.Parameters).WithOne(x => x.Query).HasForeignKey("QueryId");
+
+        var customQueryParam = modelBuilder.Entity<CustomQueryParameter>();
+        customQueryParam.ToTable(nameof(CustomQueryParameter), nameof(EpcisSchema.Subscription));
+        customQueryParam.HasKey("QueryId", nameof(CustomQueryParameter.Name));
+        customQueryParam.Property(x => x.Values).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
     }
 }

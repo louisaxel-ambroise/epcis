@@ -1,13 +1,23 @@
-﻿using FasTnT.Application.Queries.Poll;
-using FasTnT.Application.Services;
+﻿using FasTnT.Application.Services;
+using FasTnT.Application.Services.Capture;
 using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Services.Users.Providers;
 using FasTnT.Application.Store;
 using FasTnT.Application.Store.Configuration;
-using FasTnT.Domain.Infrastructure.Behaviors;
-using FluentValidation;
-using MediatR;
+using FasTnT.Application.UseCases.CaptureRequestDetails;
+using FasTnT.Application.UseCases.DeleteCustomQuery;
+using FasTnT.Application.UseCases.DeleteSubscription;
+using FasTnT.Application.UseCases.ExecuteCustomQuery;
+using FasTnT.Application.UseCases.ExecuteStandardQuery;
+using FasTnT.Application.UseCases.GetCustomQueryDetails;
+using FasTnT.Application.UseCases.GetStandardQueryNames;
+using FasTnT.Application.UseCases.ListCustomQueries;
+using FasTnT.Application.UseCases.ListSubscriptions;
+using FasTnT.Application.UseCases.StoreCustomQuery;
+using FasTnT.Application.UseCases.StoreCustomQuerySubscription;
+using FasTnT.Application.UseCases.StoreStandardQuerySubscription;
+using FasTnT.Application.UseCases.TriggerSubscription;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FasTnT.Application;
@@ -24,15 +34,25 @@ public static class EpcisConfiguration
             configure(options);
         }
 
-        services.AddMediatR(typeof(PollQueryHandler));
-        services.AddValidatorsFromAssemblyContaining(typeof(CommandValidationBehavior<,>));
+        services.AddSingleton<IStandardQuery, SimpleEventQuery>();
+        services.AddSingleton<IStandardQuery, SimpleMasterDataQuery>();
+        services.AddTransient<IListCustomQueriesHandler, ListCustomQueriesHandler>();
+        services.AddTransient<IGetCustomQueryDetailsHandler, GetCustomQueryDetailsHandler>();
+        services.AddTransient<IStoreEpcisDocumentHandler, StoreEpcisDocumentHandler>();
+        services.AddTransient<IExecuteCustomQueryHandler, ExecuteCustomQueryHandler>();
+        services.AddTransient<IGetStandardQueryNamesHandler, GetStandardQueryNamesHandler>();
+        services.AddTransient<IExecuteStandardQueryHandler, ExecuteStandardQueryHandler>();
+        services.AddTransient<IDeleteCustomQueryHandler, DeleteCustomQueryHandler>();
+        services.AddTransient<IStoreCustomQueryHandler, StoreCustomQueryHandler>();
+        services.AddTransient<ITriggerSubscriptionHandler, TriggerSubscriptionHandler>();
+        services.AddTransient<IDeleteSubscriptionHandler, DeleteSubscriptionHandler>();
+        services.AddTransient<IListSubscriptionsHandler, ListSubscriptionsHandler>();
+        services.AddTransient<IStoreCustomQuerySubscriptionHandler, StoreCustomQuerySubscriptionHandler>();
+        services.AddTransient<IStoreStandardQuerySubscriptionHandler, StoreStandardQuerySubscriptionHandler>();
+        services.AddTransient<ICaptureRequestDetailsHandler, CaptureRequestDetailsHandler>();
         services.AddScoped<IncrementGenerator.Identity>();
         services.AddScoped(options.CurrentUser);
         services.AddScoped(options.UserProvider);
-        services.AddTransient<IEpcisQuery, SimpleEventQuery>();
-        services.AddTransient<IEpcisQuery, SimpleMasterDataQuery>();
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandValidationBehavior<,>));
-        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CommandLoggerBehavior<,>));
         services.AddSqlServer<EpcisContext>(options.ConnectionString, opt => opt.MigrationsAssembly("FasTnT.Migrations.SqlServer").EnableRetryOnFailure().CommandTimeout(options.CommandTimeout));
 
         return services;

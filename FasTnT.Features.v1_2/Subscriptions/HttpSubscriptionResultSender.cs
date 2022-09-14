@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Queries.Poll;
 using FasTnT.Features.v1_2.Communication.Formatters;
+using FasTnT.Features.v1_2.Endpoints.Interfaces.Queries;
 using System.Net;
 using System.Text;
 using System.Xml;
@@ -43,7 +44,7 @@ public class HttpSubscriptionResultSender : ISubscriptionResultSender
 
         var content = response switch
         {
-            PollResponse pollResult => XmlResponseFormatter.FormatPoll(pollResult),
+            PollResult pollResult => XmlResponseFormatter.FormatPoll(pollResult),
             EpcisException exception => XmlResponseFormatter.FormatError(exception),
             _ => throw new ArgumentException("Unexpected subscription response type", nameof(response))
         };

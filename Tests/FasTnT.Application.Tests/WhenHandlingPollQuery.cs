@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Queries.Poll;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Store;
 using FasTnT.Application.Tests.Context;
@@ -17,7 +16,7 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldReturnAPollResponse()
     {
-        var queries = new Services.IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
+        var queries = new Services.IEpcisQuery[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
         var handler = new PollQueryHandler(queries, UserContext);
         var request = new PollQuery("SimpleEventQuery", new List<QueryParameter>());
         var result = handler.Handle(request, default).Result;

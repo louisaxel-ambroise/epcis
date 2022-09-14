@@ -19,6 +19,7 @@ builder.Services.AddAuthorization(Options.AuthorizationPolicies);
 builder.Services.AddHttpLogging(Options.LoggingPolicy);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcis12SubscriptionService<SubscriptionBackgroundService>(); // Register EPCIS 1.2 subscription services
+builder.Services.AddEpcis20SubscriptionService();
 builder.Services.AddEpcisServices(opt =>
 {
     opt.ConnectionString = builder.Configuration.GetConnectionString("FasTnT.Database");

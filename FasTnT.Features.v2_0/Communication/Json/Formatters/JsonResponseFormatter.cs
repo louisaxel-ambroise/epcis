@@ -1,5 +1,6 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Queries.Poll;
+using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -7,9 +8,16 @@ namespace FasTnT.Features.v2_0.Communication.Json.Formatters;
 
 public static class JsonResponseFormatter
 {
-    public static string Format(IEpcisResponse response)
+    private static readonly JsonSerializerOptions Options = new () { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+
+    public static string Format<T>(T response)
     {
-        return response is PollResponse poll ? FormatPoll(poll) : FormatError(EpcisException.Default);
+        return response switch {
+            CustomQueryDefinitionResult customQuery => FormatCustomQuery(customQuery),
+            ListCustomQueriesResult listQueries => FormatListQueries(listQueries),
+            QueryResponse poll => FormatPoll(poll),
+            _ => FormatError(EpcisException.Default)
+        };
     }
 
     public static string FormatError(EpcisException error)
@@ -22,9 +30,31 @@ public static class JsonResponseFormatter
         });
     }
 
-    private static string FormatPoll(PollResponse response)
+    private static string FormatCustomQuery(CustomQueryDefinitionResult result)
     {
-        var context = BuildContext(response.EventList.SelectMany(x => x.CustomFields).Select(x => x.Namespace).Distinct());
+        var query = new Dictionary<string, object>
+        {
+            ["name"] = result.Name,
+            ["query"] = result.Parameters.Select(x => new Dictionary<string, object> { [x.Name] = x.Values })
+        };
+
+        return JsonSerializer.Serialize(query, Options);
+    }
+
+    private static string FormatListQueries(ListCustomQueriesResult result)
+    {
+        var queries = result.Queries.Select(q => new Dictionary<string, object>
+        {
+            ["name"] = q.Name,
+            ["query"] = q.Parameters.Select(x => new Dictionary<string, object> { [x.Name] = x.Values })
+        });
+
+        return JsonSerializer.Serialize(queries, Options);
+    }
+
+    private static string FormatPoll(QueryResponse result)
+    {
+        var context = BuildContext(result.EventList.SelectMany(x => x.CustomFields).Select(x => x.Namespace).Distinct());
         var document = new Dictionary<string, object>
         {
             ["@context"] = context.Select(x => (object)new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
@@ -36,16 +66,16 @@ public static class JsonResponseFormatter
             {
                 queryResults = new
                 {
-                    queryName = response.QueryName,
+                    queryName = result.QueryName,
                     resultsBody = new
                     {
-                        eventList = response.EventList.Select(x => JsonEventFormatter.FormatEvent(x, context))
+                        eventList = result.EventList.Select(x => JsonEventFormatter.FormatEvent(x, context))
                     }
                 }
             }
         };
 
-        return JsonSerializer.Serialize(document, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+        return JsonSerializer.Serialize(document, Options);
     }
 
     // Builds a context for JSON format.

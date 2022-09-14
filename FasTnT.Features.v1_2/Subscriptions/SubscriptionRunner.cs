@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Domain.Queries.Poll;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,12 +9,12 @@ namespace FasTnT.Features.v1_2.Subscriptions;
 
 public class SubscriptionRunner
 {
-    private readonly IEnumerable<Application.Services.IEpcisQuery> _epcisQueries;
+    private readonly IEnumerable<Application.Services.IStandardQuery> _epcisQueries;
     private readonly EpcisContext _context;
     private readonly ISubscriptionResultSender _resultSender;
     private readonly ILogger<SubscriptionRunner> _logger;
 
-    public SubscriptionRunner(IEnumerable<Application.Services.IEpcisQuery> epcisQueries, EpcisContext context, ISubscriptionResultSender resultSender, ILogger<SubscriptionRunner> logger)
+    public SubscriptionRunner(IEnumerable<Application.Services.IStandardQuery> epcisQueries, EpcisContext context, ISubscriptionResultSender resultSender, ILogger<SubscriptionRunner> logger)
     {
         _epcisQueries = epcisQueries;
         _context = context;
@@ -36,16 +36,15 @@ public class SubscriptionRunner
 
         try
         {
-            PollResponse response = new PollEventResponse(query.Name, new());
+            var response = QueryResponse.Empty(query.Name);
 
             if (pendingRequests.Any())
             {
                 var parameters = subscription.Parameters
-                    .Select(s => new QueryParameter(s.Name, s.Value))
-                    .Append(new("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
+                    .Append(QueryParameter.Create("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString())))
                     .ToArray();
 
-                response = await query.HandleAsync(parameters, cancellationToken);
+                response = await query.ExecuteAsync(_context, parameters, cancellationToken);
             }
 
             response.SubscriptionId = subscription.Name;
@@ -77,11 +76,16 @@ public class SubscriptionRunner
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private async Task<bool> SendQueryResults(SubscriptionExecutionContext context, PollResponse response, CancellationToken cancellationToken)
+    private async Task<bool> SendQueryResults(SubscriptionExecutionContext context, QueryResponse response, CancellationToken cancellationToken)
     {
-        return response.EventList.Count > 0 || context.Subscription.RecordIfEmpty
-            ? await _resultSender.Send(context, response, cancellationToken).ConfigureAwait(false)
-            : true;
+        var successful = true;
+
+        if(response.EventList.Count > 0 || context.Subscription.ReportIfEmpty)
+        {
+            successful = await _resultSender.Send(context, response, cancellationToken).ConfigureAwait(false);
+        }
+
+        return successful;
     }
 
     private async Task<bool> SendExceptionResult(SubscriptionExecutionContext context, EpcisException response, CancellationToken cancellationToken)

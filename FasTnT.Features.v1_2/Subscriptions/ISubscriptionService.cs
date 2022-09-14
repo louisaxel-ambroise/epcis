@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Features.v1_2.Subscriptions;
 
