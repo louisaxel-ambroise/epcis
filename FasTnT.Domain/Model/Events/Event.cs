@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Infrastructure.Utils;
 
-namespace FasTnT.Domain.Model;
+namespace FasTnT.Domain.Model.Events;
 
 public class Event
 {

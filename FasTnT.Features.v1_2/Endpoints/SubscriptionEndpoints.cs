@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Extensions;
 using FasTnT.Application.UseCases.TriggerSubscription;
 using FasTnT.Application.UseCases.ListSubscriptions;
-using FasTnT.Features.v1_2.Endpoints.Interfaces.Queries;
 using FasTnT.Application.UseCases.StoreStandardQuerySubscription;
+using FasTnT.Application.UseCases.DeleteSubscription;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
@@ -24,12 +25,12 @@ public class SubscriptionEndpoints
     public static SoapActionBuilder AddSoapActions(SoapActionBuilder action)
     {
         action.On<GetSubscriptionIDs>(HandleGetSubscriptionIds);
-        action.On<Subscribe>(HandleCreateSubscription);
+        action.On<Subscribe>(HandleSubscribe);
+        action.On<Unsubscribe>(HandleUnsubscribe);
 
         return action;
     }
 
-    // TODO: queryName?
     private static async Task<GetSubscriptionIDsResult> HandleGetSubscriptionIds(GetSubscriptionIDs query, IListSubscriptionsHandler handler, CancellationToken cancellationToken)
     {
         var subscriptions = await handler.ListSubscriptionsAsync(query.QueryName, cancellationToken);
@@ -37,9 +38,16 @@ public class SubscriptionEndpoints
         return new GetSubscriptionIDsResult(subscriptions.Select(x => x.Name));
     }
 
-    private static async Task<SubscribeResult> HandleCreateSubscription(Subscribe request, IStoreStandardQuerySubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<SubscribeResult> HandleSubscribe(Subscribe request, IStoreStandardQuerySubscriptionHandler handler, CancellationToken cancellationToken)
     {
         await handler.StoreSubscriptionAsync(request.Subscription, cancellationToken);
+
+        return new();
+    }
+
+    private static async Task<UnsubscribeResult> HandleUnsubscribe(Unsubscribe request, IDeleteSubscriptionHandler handler, CancellationToken cancellationToken)
+    {
+        await handler.DeleteSubscriptionAsync(request.SubscriptionId, cancellationToken);
 
         return new();
     }

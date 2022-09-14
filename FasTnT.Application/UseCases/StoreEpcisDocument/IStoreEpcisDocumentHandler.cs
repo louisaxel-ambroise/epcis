@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Model;
 
-namespace FasTnT.Application.Services.Capture
+namespace FasTnT.Application.UseCases.StoreEpcisDocument
 {
     public interface IStoreEpcisDocumentHandler
     {

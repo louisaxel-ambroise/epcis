@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
-using FasTnT.Application.Services.Capture;
+using FasTnT.Application.UseCases.StoreEpcisDocument;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 

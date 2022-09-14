@@ -19,7 +19,7 @@ public class StoreCustomQueryHandler : IStoreCustomQueryHandler
         if(await _context.CustomQueries.AnyAsync(x => x.Name == query.Name, cancellationToken))
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query already exists: '{query.Name}'");
-        };
+        }
 
         _context.CustomQueries.Add(query);
 

@@ -1,7 +1,8 @@
-﻿using FasTnT.Application.Store;
+﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Domain.Queries.Poll;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -9,12 +10,12 @@ namespace FasTnT.Features.v1_2.Subscriptions;
 
 public class SubscriptionRunner
 {
-    private readonly IEnumerable<Application.Services.IStandardQuery> _epcisQueries;
+    private readonly IEnumerable<IStandardQuery> _epcisQueries;
     private readonly EpcisContext _context;
     private readonly ISubscriptionResultSender _resultSender;
     private readonly ILogger<SubscriptionRunner> _logger;
 
-    public SubscriptionRunner(IEnumerable<Application.Services.IStandardQuery> epcisQueries, EpcisContext context, ISubscriptionResultSender resultSender, ILogger<SubscriptionRunner> logger)
+    public SubscriptionRunner(IEnumerable<IStandardQuery> epcisQueries, EpcisContext context, ISubscriptionResultSender resultSender, ILogger<SubscriptionRunner> logger)
     {
         _epcisQueries = epcisQueries;
         _context = context;

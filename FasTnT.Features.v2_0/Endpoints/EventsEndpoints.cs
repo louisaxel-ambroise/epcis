@@ -1,8 +1,9 @@
 ﻿using FasTnT.Application.Services.Users;
 using FasTnT.Application.UseCases.ExecuteStandardQuery;
 using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
+using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
@@ -13,6 +14,7 @@ public class EventsEndpoints
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("v2_0/events", HandleEventQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.MapGet("v2_0/events/{eventId}", HandleSingleEventQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
         app.MapGet("v2_0/eventTypes/{eventType}/events", HandleEventTypeQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
         app.MapGet("v2_0/epcs/{epc}/events", HandleEpcQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
         app.MapGet("v2_0/bizSteps/{bizStep}/events", HandleBizStepQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
@@ -26,6 +28,13 @@ public class EventsEndpoints
     private static Task<IResult> HandleEventQuery(QueryParameters parameters, IExecuteStandardQueryHandler handler, CancellationToken cancellationToken)
     {
         return ExecuteQuery(handler, parameters.Parameters, cancellationToken);
+    }
+
+    private static Task<IResult> HandleSingleEventQuery(string eventId, IExecuteStandardQueryHandler handler, CancellationToken cancellationToken)
+    {
+        var parameter = QueryParameter.Create("EQ_eventID", new[] { eventId });
+
+        return ExecuteQuery(handler, new[] { parameter }, cancellationToken);
     }
 
     private static Task<IResult> HandleEventTypeQuery(string eventType, QueryParameters queryParams, IExecuteStandardQueryHandler handler, CancellationToken cancellationToken)

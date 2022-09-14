@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Queries.Poll;
+﻿using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
 

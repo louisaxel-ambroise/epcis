@@ -1,9 +1,10 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
 
 namespace FasTnT.Application.Validators;
 
-public class EpcisCaptureRequestValidator
+public static class EpcisCaptureRequestValidator
 {
     public static bool IsValid(Request request)
     {

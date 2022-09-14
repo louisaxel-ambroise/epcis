@@ -24,32 +24,32 @@ public class TopLevelEndpoints
         return app;
     }
 
-    private static Task HandleListEventTypes(HttpContext context)
+    private static Task HandleListEventTypes()
     {
         throw new NotImplementedException();
     }
 
-    private static Task HandleListEpcs(HttpContext context)
+    private static Task HandleListEpcs()
     {
         throw new NotImplementedException();
     }
 
-    private static Task HandleListBizSteps(HttpContext context)
+    private static Task HandleListBizSteps()
     {
         throw new NotImplementedException();
     }
 
-    private static Task HandleListBizLocations(HttpContext context)
+    private static Task HandleListBizLocations()
     {
         throw new NotImplementedException();
     }
 
-    private static Task HandleListReadPoints(HttpContext context)
+    private static Task HandleListReadPoints()
     {
         throw new NotImplementedException();
     }
 
-    private static Task HandleListDispositions(HttpContext context)
+    private static Task HandleListDispositions()
     {
         throw new NotImplementedException();
     }

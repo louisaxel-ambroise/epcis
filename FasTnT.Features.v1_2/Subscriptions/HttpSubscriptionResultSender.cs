@@ -1,7 +1,6 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Queries.Poll;
 using FasTnT.Features.v1_2.Communication.Formatters;
-using FasTnT.Features.v1_2.Endpoints.Interfaces.Queries;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
 using System.Net;
 using System.Text;
 using System.Xml;

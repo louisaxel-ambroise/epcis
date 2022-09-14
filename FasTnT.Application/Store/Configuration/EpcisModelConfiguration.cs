@@ -1,6 +1,8 @@
 ﻿using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.CustomQueries;
+using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Domain.Model.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 

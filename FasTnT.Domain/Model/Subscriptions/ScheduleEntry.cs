@@ -1,13 +1,13 @@
-﻿namespace FasTnT.Domain.Model;
+﻿namespace FasTnT.Domain.Model.Subscriptions;
 
 public class ScheduleEntry
 {
-    private readonly List<int> _values = new ();
+    private readonly List<int> _values = new();
     private readonly int _minValue, _maxValue;
 
     public int Min => _values.Min();
 
-    public static ScheduleEntry Parse(string expression, int min, int max) => new (expression, min, max);
+    public static ScheduleEntry Parse(string expression, int min, int max) => new(expression, min, max);
     public bool HasValue(int value) => _values.Contains(value);
 
     private ScheduleEntry(string expression, int min, int max)
@@ -74,7 +74,7 @@ public class ScheduleEntry
             throw new ArgumentException($"Invalid range value: [{minValue}-{maxValue}]");
         }
 
-        _values.AddRange(Enumerable.Range(minValue, (maxValue - minValue + 1)));
+        _values.AddRange(Enumerable.Range(minValue, maxValue - minValue + 1));
     }
 
     private void AddValue(int value)

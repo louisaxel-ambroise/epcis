@@ -1,4 +1,6 @@
-﻿namespace FasTnT.Domain.Model;
+﻿using FasTnT.Domain.Model.Events;
+
+namespace FasTnT.Domain.Model;
 
 public class StandardBusinessHeader
 {

@@ -4,7 +4,7 @@ using FasTnT.Application.Validators;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
 
-namespace FasTnT.Application.Services.Capture
+namespace FasTnT.Application.UseCases.StoreEpcisDocument
 {
     public class StoreEpcisDocumentHandler : IStoreEpcisDocumentHandler
     {

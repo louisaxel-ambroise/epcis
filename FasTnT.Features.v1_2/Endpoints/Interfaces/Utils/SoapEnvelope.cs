@@ -1,7 +1,7 @@
 ﻿using FasTnT.Features.v1_2.Communication.Parsers;
 using Microsoft.AspNetCore.Http;
 
-namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
+namespace FasTnT.Features.v1_2.Endpoints.Interfaces.Utils;
 
 public record SoapEnvelope(string Action, object Query)
 {

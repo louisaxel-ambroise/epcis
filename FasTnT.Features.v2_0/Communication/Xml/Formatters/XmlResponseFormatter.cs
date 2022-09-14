@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Features.v2_0.Communication.Xml.Utils;
 
 namespace FasTnT.Features.v2_0.Communication.Xml.Formatters;
@@ -8,7 +8,9 @@ public static class XmlResponseFormatter
 {
     public static string Format<T>(T response)
     {
-        var element = response is QueryResponse poll ? FormatPoll(poll) : FormatError(EpcisException.Default);
+        var element = response is QueryResponse poll
+            ? FormatPoll(poll)
+            : throw new FormatException();
 
         return element.ToString(SaveOptions.OmitDuplicateNamespaces | SaveOptions.DisableFormatting);
     }

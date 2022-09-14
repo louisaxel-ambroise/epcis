@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Domain.Model;
+﻿namespace FasTnT.Domain.Model.Events;
 
 public class MasterDataChildren
 {

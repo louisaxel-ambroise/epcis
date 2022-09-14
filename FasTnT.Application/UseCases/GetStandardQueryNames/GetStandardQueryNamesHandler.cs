@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.Services;
+﻿using FasTnT.Application.Services.Queries;
 
 namespace FasTnT.Application.UseCases.GetStandardQueryNames;
 

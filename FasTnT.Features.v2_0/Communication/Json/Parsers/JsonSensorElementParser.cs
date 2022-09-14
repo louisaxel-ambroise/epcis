@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
 using System.Text.Json;
 
 namespace FasTnT.Features.v2_0.Communication.Json.Parsers;

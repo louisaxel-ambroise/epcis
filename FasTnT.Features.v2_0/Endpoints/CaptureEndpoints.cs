@@ -1,7 +1,8 @@
-﻿using FasTnT.Application.Services.Capture;
-using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Services.Users;
 using FasTnT.Application.UseCases.CaptureRequestDetails;
+using FasTnT.Application.UseCases.StoreEpcisDocument;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
+using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 

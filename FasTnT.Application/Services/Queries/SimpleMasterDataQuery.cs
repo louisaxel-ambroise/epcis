@@ -1,8 +1,8 @@
-﻿using FasTnT.Application.Store;
-using FasTnT.Application.Utils;
+﻿using FasTnT.Application.Services.Queries.Utils;
+using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Queries;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,7 +46,7 @@ public class SimpleMasterDataQuery : IStandardQuery
                 };
             }
 
-            return QueryResponse.Masterdata(Name, result);
+            return QueryResponse.MasterdataResponse(Name, result);
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
         {

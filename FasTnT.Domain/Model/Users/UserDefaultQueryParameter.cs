@@ -1,6 +1,6 @@
-﻿using FasTnT.Domain.Queries.Poll;
+﻿using FasTnT.Domain.Model.Queries;
 
-namespace FasTnT.Domain.Model;
+namespace FasTnT.Domain.Model.Users;
 
 public class UserDefaultQueryParameter : QueryParameter
 {

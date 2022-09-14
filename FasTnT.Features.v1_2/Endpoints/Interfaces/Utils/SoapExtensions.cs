@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using System.Xml;
 using System.Xml.XPath;
 
-namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
+namespace FasTnT.Features.v1_2.Endpoints.Interfaces.Utils;
 
 public static class SoapExtensions
 {

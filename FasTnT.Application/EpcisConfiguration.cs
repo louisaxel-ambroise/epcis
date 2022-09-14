@@ -1,6 +1,4 @@
-﻿using FasTnT.Application.Services;
-using FasTnT.Application.Services.Capture;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Services.Users.Providers;
 using FasTnT.Application.Store;
@@ -12,10 +10,12 @@ using FasTnT.Application.UseCases.ExecuteCustomQuery;
 using FasTnT.Application.UseCases.ExecuteStandardQuery;
 using FasTnT.Application.UseCases.GetCustomQueryDetails;
 using FasTnT.Application.UseCases.GetStandardQueryNames;
+using FasTnT.Application.UseCases.GetSubscriptionDetails;
 using FasTnT.Application.UseCases.ListCustomQueries;
 using FasTnT.Application.UseCases.ListSubscriptions;
 using FasTnT.Application.UseCases.StoreCustomQuery;
 using FasTnT.Application.UseCases.StoreCustomQuerySubscription;
+using FasTnT.Application.UseCases.StoreEpcisDocument;
 using FasTnT.Application.UseCases.StoreStandardQuerySubscription;
 using FasTnT.Application.UseCases.TriggerSubscription;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,6 +50,7 @@ public static class EpcisConfiguration
         services.AddTransient<IStoreCustomQuerySubscriptionHandler, StoreCustomQuerySubscriptionHandler>();
         services.AddTransient<IStoreStandardQuerySubscriptionHandler, StoreStandardQuerySubscriptionHandler>();
         services.AddTransient<ICaptureRequestDetailsHandler, CaptureRequestDetailsHandler>();
+        services.AddTransient<IGetSubscriptionDetailsHandler, GetSubscriptionDetailsHandler>();
         services.AddScoped<IncrementGenerator.Identity>();
         services.AddScoped(options.CurrentUser);
         services.AddScoped(options.UserProvider);

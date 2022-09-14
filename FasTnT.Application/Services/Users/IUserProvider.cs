@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Domain.Model.Users;
 
 namespace FasTnT.Application.Services.Users;
 

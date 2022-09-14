@@ -12,9 +12,12 @@ static class Options
         {
             var exceptionHandler = ctx.Features.Get<IExceptionHandlerPathFeature>();
 
-            ctx.Response.StatusCode = exceptionHandler?.Error is EpcisException epcisFault
-                ? 400
-                : 500;
+            ctx.Response.StatusCode = exceptionHandler?.Error switch
+            {
+                EpcisException _ => 400,
+                FormatException _ => 415,
+                _ => 500
+            };
         })
     };
 

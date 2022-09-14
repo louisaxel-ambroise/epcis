@@ -1,4 +1,6 @@
-﻿using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Domain.Model.Users;
 
 namespace FasTnT.Domain.Model;
 

@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Store;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Queries;
 
-namespace FasTnT.Application.Services;
+namespace FasTnT.Application.Services.Queries;
 
 public interface IStandardQuery
 {

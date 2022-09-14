@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Domain.Model.Events;
 
 namespace FasTnT.Features.v2_0.Communication.Xml.Formatters;
 

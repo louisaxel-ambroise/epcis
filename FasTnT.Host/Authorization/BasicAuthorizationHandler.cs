@@ -5,9 +5,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Model;
 using System.Text.Json;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Queries;
+using FasTnT.Domain.Model.Users;
 
 namespace FasTnT.Host.Authorization;
 

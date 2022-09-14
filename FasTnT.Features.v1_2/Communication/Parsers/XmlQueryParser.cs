@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Features.v1_2.Endpoints.Interfaces.Queries;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;
 
@@ -29,14 +29,14 @@ public static class XmlQueryParser
         return new(queryName, parameters);
     }
 
-    public static string ParseUnsubscribe(XElement element)
+    public static Unsubscribe ParseUnsubscribe(XElement element)
     {
-        return element.Element("subscriptionID").Value;
+        return new (element.Element("subscriptionID").Value);
     }
 
-    public static Subscription ParseSubscribe(XElement element)
+    public static Subscribe ParseSubscribe(XElement element)
     {
-        return new()
+        var subscription = new Subscription
         {
             Name = element.Element("subscriptionID").Value,
             QueryName = element.Element("queryName").Value,
@@ -47,6 +47,8 @@ public static class XmlQueryParser
             Parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToList(),
             Schedule = ParseQuerySchedule(element.Element("controls")?.Element("schedule"))
         };
+
+        return new(subscription);
     }
 
     public static GetQueryNames ParseGetQueryNames() => new();

@@ -2,9 +2,9 @@
 using FasTnT.Features.v1_2.Communication.Formatters;
 using Microsoft.AspNetCore.Http;
 
-namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
+namespace FasTnT.Features.v1_2.Endpoints.Interfaces.Utils;
 
-public record SoapFault(EpcisException Fault) : ISoapResponse
+public record SoapFault(EpcisException Fault) : IResult
 {
     public async Task ExecuteAsync(HttpContext context)
     {

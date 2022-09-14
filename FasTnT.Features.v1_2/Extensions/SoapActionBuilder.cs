@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Features.v1_2.Endpoints.Interfaces.Utils;
 using Microsoft.AspNetCore.Http;
 
 namespace FasTnT.Features.v1_2.Extensions;
@@ -11,7 +11,7 @@ public class SoapActionBuilder
     public void On<TAction>(Delegate requestDelegate) => On(typeof(TAction).Name, requestDelegate);
     public void On(string action, Delegate requestDelegate) => _mappedActions[action] = requestDelegate;
 
-    internal async Task<ISoapResponse> HandleSoapAction(SoapEnvelope envelope, HttpContext context, CancellationToken cancellationToken)
+    internal async Task<IResult> HandleSoapAction(SoapEnvelope envelope, HttpContext context, CancellationToken cancellationToken)
     {
         if(_mappedActions.TryGetValue(envelope.Action, out var handler))
         {
@@ -38,11 +38,11 @@ public class SoapActionBuilder
 
                 var result = await handler.DynamicInvoke(paramList).CastTask();
 
-                return ISoapResponse.Create(result);
+                return SoapResults.Create(result);
             }
             catch (Exception ex)
             {
-                return ISoapResponse.Fault(ex is EpcisException epcisException ? epcisException : EpcisException.Default);
+                return SoapResults.Fault(ex is EpcisException epcisException ? epcisException : EpcisException.Default);
             }
         }
 

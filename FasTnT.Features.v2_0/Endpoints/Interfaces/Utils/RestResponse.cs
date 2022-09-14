@@ -1,7 +1,7 @@
 ﻿using FasTnT.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Features.v2_0.Communication.Xml.Formatters;
 
-namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
+namespace FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 public record RestResponse<T>(T Response) : IResult
 {

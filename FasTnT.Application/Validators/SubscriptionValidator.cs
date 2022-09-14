@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.Validators;
 
-internal class SubscriptionValidator
+public static class SubscriptionValidator
 {
     public static bool IsValid(Subscription request)
     {

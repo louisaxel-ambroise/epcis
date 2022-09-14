@@ -1,3 +1,3 @@
-﻿namespace FasTnT.Features.v1_2.Endpoints.Interfaces.Queries;
+﻿namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 public record GetStandardVersion();

@@ -1,10 +1,10 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http;
 
-namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
+namespace FasTnT.Features.v1_2.Endpoints.Interfaces.Utils;
 
-public interface ISoapResponse : IResult
+public static class SoapResults
 {
-    public static ISoapResponse Create(object result) => new SoapResponse(result);
-    public static ISoapResponse Fault(EpcisException error) => new SoapFault(error);
+    public static IResult Create(object result) => new SoapResponse(result);
+    public static IResult Fault(EpcisException error) => new SoapFault(error);
 }

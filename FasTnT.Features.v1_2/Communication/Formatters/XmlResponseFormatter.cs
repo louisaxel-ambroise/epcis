@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Features.v1_2.Communication.Utils;
-using FasTnT.Features.v1_2.Endpoints.Interfaces.Queries;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Features.v1_2.Communication.Formatters;
 
@@ -15,9 +15,8 @@ public static class XmlResponseFormatter
             GetQueryNamesResult queryNames => FormatGetQueryNames(queryNames),
             GetVendorVersionResult vendorVersion => FormatVendorVersion(vendorVersion),
             GetStandardVersionResult standardVersion => FormatStandardVersion(standardVersion),
-            // TODO: subscriptions
-            //UnsubscribeResult unsubscription => FormatUnsubscribeResponse(unsubscription),
-            //SubscribeResult subscription => FormatSubscribeResponse(subscription),
+            UnsubscribeResult _ => FormatUnsubscribeResponse(),
+            SubscribeResult _ => FormatSubscribeResponse(),
             _ => FormatError(EpcisException.Default)
         };
     }

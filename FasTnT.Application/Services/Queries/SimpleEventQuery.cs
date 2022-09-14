@@ -1,10 +1,10 @@
-﻿using FasTnT.Application.Store;
-using FasTnT.Application.Utils;
+﻿using FasTnT.Application.Services.Queries.Utils;
+using FasTnT.Application.Store;
 using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Queries;
 using LinqKit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -71,7 +71,7 @@ public class SimpleEventQuery : IStandardQuery
                 var result = await query.ToListAsync(cancellationToken)
                     .ContinueWith(x => ApplyOrderByLimit(x.Result.AsQueryable()).ToList());
 
-                return QueryResponse.Events(Name, result);
+                return QueryResponse.EventsResponse(Name, result);
             }
             else
             {

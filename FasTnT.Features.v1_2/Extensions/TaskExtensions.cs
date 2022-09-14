@@ -10,7 +10,7 @@ public static class TaskExtensions
         var castTaskMethodGeneric = typeof(TaskExtensions).GetMethod(nameof(CastTaskInner), BindingFlags.Static | BindingFlags.Public);
         var castTaskMethod = castTaskMethodGeneric.MakeGenericMethod(resultType, typeof(object));
         
-        return castTaskMethod.Invoke(null, new object[] { taskObj }) as Task<object>;
+        return castTaskMethod.Invoke(null, new [] { taskObj }) as Task<object>;
     }
 
     public static async Task<TResult> CastTaskInner<T, TResult>(Task<T> task)

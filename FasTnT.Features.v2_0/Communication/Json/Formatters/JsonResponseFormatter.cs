@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;

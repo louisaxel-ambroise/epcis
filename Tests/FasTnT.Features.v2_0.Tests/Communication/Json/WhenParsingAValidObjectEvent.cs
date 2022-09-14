@@ -1,5 +1,5 @@
 using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
 using FasTnT.Features.v2_0.Communication.Json.Parsers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

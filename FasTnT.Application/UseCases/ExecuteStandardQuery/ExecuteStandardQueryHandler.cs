@@ -1,7 +1,7 @@
-﻿using FasTnT.Application.Services;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.UseCases.ExecuteStandardQuery
 {
