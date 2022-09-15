@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.ExecuteStandardQuery;
+using FasTnT.Application.UseCases.StandardQueries;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;

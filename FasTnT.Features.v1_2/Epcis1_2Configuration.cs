@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.Services.Users;
 using FasTnT.Features.v1_2.Endpoints;
 using FasTnT.Features.v1_2.Extensions;
 using FasTnT.Features.v1_2.Subscriptions;
@@ -11,14 +12,13 @@ namespace FasTnT.Features.v1_2;
 
 public static class Epcis1_2Configuration
 {
-    public static IServiceCollection AddEpcis12SubscriptionService<T>(this IServiceCollection services)
-        where T : class, ISubscriptionService, IHostedService
+    public static IServiceCollection AddEpcis12SubscriptionService(this IServiceCollection services)
     {
         services.AddScoped<SubscriptionRunner>();
-        services.AddScoped<SubscriptionRunner>();
         services.AddScoped<ISubscriptionResultSender, HttpSubscriptionResultSender>();
-        services.AddSingleton<ISubscriptionService, T>();
-        services.AddHostedService(s => s.GetRequiredService<ISubscriptionService>() as T);
+        services.AddSingleton<SubscriptionBackgroundService>();
+        services.AddSingleton<ISubscriptionListener>(s => s.GetRequiredService<SubscriptionBackgroundService>());
+        services.AddHostedService(s => s.GetRequiredService<SubscriptionBackgroundService>());
 
         return services;
     }

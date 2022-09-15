@@ -3,11 +3,11 @@ using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FasTnT.Features.v1_2.Subscriptions;
+namespace FasTnT.Features.v2_0.Subscriptions;
 
 public class SubscriptionRunner
 {
@@ -28,7 +28,7 @@ public class SubscriptionRunner
     {
         var subscription = executionContext.Subscription;
 
-        _logger.LogInformation("[1.2] Running Subscription {Name} ({Id})", subscription.Name, subscription.Id);
+        _logger.LogInformation("[2.0] Running Subscription {Name} ({Id})", subscription.Name, subscription.Id);
         _context.Attach(subscription);
 
         var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = DateTime.UtcNow, ResultsSent = true, Successful = true };
@@ -62,12 +62,12 @@ public class SubscriptionRunner
 
         if (resultsSent)
         {
-            _logger.LogInformation("[1.2] Results for subscription {Name} successfully sent", subscription.Name);
+            _logger.LogInformation("[2.0] Results for subscription {Name} successfully sent", subscription.Name);
             _context.PendingRequests.RemoveRange(pendingRequests);
         }
         else
         {
-            _logger.LogInformation("[1.2] Failed to send results for subscription {Name}", subscription.Name);
+            _logger.LogInformation("[2.0] Failed to send results for subscription {Name}", subscription.Name);
 
             executionRecord.Successful = false;
             executionRecord.Reason = "Failed to send subscription result";
@@ -82,11 +82,10 @@ public class SubscriptionRunner
     {
         var successful = true;
 
-        if(response.EventList.Count > 0 || context.Subscription.ReportIfEmpty)
+        if (response.EventList.Count > 0 || context.Subscription.ReportIfEmpty)
         {
-            var pollResult = new PollResult(response);
-
-            successful = await _resultSender.Send(context, pollResult, cancellationToken).ConfigureAwait(false);
+            var queryResult = new QueryResult(response);
+            successful = await _resultSender.Send(context, queryResult, cancellationToken).ConfigureAwait(false);
         }
 
         return successful;

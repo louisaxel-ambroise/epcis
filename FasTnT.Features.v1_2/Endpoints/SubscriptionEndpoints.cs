@@ -3,11 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Extensions;
-using FasTnT.Application.UseCases.TriggerSubscription;
-using FasTnT.Application.UseCases.ListSubscriptions;
-using FasTnT.Application.UseCases.StoreStandardQuerySubscription;
-using FasTnT.Application.UseCases.DeleteSubscription;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Application.UseCases.Subscriptions;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
@@ -38,9 +35,9 @@ public class SubscriptionEndpoints
         return new GetSubscriptionIDsResult(subscriptions.Select(x => x.Name));
     }
 
-    private static async Task<SubscribeResult> HandleSubscribe(Subscribe request, IStoreStandardQuerySubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<SubscribeResult> HandleSubscribe(Subscribe request, IStandardQuerySubscriptionHandler handler, CancellationToken cancellationToken)
     {
-        await handler.StoreSubscriptionAsync(request.Subscription, cancellationToken);
+        await handler.StandardQuerySubscriptionAsync(request.Subscription, cancellationToken);
 
         return new();
     }

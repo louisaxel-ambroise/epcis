@@ -4,9 +4,8 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Extensions;
 using FasTnT.Domain;
-using FasTnT.Application.UseCases.GetStandardQueryNames;
-using FasTnT.Application.UseCases.ExecuteStandardQuery;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Application.UseCases.StandardQueries;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 

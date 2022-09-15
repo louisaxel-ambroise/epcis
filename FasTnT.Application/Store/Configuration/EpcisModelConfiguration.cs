@@ -232,6 +232,10 @@ internal static class EpcisModelConfiguration
 
         var subscription = modelBuilder.Entity<Subscription>();
         subscription.ToTable(nameof(Subscription), nameof(EpcisSchema.Subscription));
+        subscription.HasDiscriminator<string>("Type")
+            .HasValue<CustomSubscription>("custom")
+            .HasValue<StandardSubscription>("standard");
+        subscription.Property<string>("Type").IsRequired(true).HasMaxLength(10).HasDefaultValue("standard");
         subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.ReportIfEmpty).IsRequired(true);

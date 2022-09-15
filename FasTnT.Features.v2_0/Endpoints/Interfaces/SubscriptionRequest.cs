@@ -2,7 +2,7 @@
 
 namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
 
-public record SubscriptionRequest(Subscription Subscription)
+public record SubscriptionRequest(CustomSubscription Subscription)
 {
     public static ValueTask<SubscriptionRequest> BindAsync(HttpContext context)
     {

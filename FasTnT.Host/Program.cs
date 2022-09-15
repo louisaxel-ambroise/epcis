@@ -6,7 +6,6 @@ using FasTnT.Features.v1_2;
 using FasTnT.Features.v2_0;
 using FasTnT.Host.Authorization;
 using FasTnT.Host.Extensions;
-using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +17,7 @@ builder.Services.AddAuthentication(BasicAuthenticationHandler.SchemeName).AddSch
 builder.Services.AddAuthorization(Options.AuthorizationPolicies);
 builder.Services.AddHttpLogging(Options.LoggingPolicy);
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddEpcis12SubscriptionService<SubscriptionBackgroundService>(); // Register EPCIS 1.2 subscription services
+builder.Services.AddEpcis12SubscriptionService();
 builder.Services.AddEpcis20SubscriptionService();
 builder.Services.AddEpcisServices(opt =>
 {

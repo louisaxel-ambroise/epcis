@@ -36,7 +36,7 @@ public static class XmlQueryParser
 
     public static Subscribe ParseSubscribe(XElement element)
     {
-        var subscription = new Subscription
+        var subscription = new StandardSubscription
         {
             Name = element.Element("subscriptionID").Value,
             QueryName = element.Element("queryName").Value,

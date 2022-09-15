@@ -1,9 +1,5 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.DeleteCustomQuery;
-using FasTnT.Application.UseCases.ExecuteCustomQuery;
-using FasTnT.Application.UseCases.GetCustomQueryDetails;
-using FasTnT.Application.UseCases.ListCustomQueries;
-using FasTnT.Application.UseCases.StoreCustomQuery;
+using FasTnT.Application.UseCases.CustomQueries;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
