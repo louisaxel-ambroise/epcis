@@ -1,21 +1,16 @@
-﻿using FasTnT.Application.Services;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Store;
-using FasTnT.Application.Subscriptions;
-using FasTnT.Domain.Commands.Unsubscribe;
+using FasTnT.Application.UseCases.DeleteSubscription;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Domain.Notifications;
-using MediatR;
 
 namespace FasTnT.Application.Tests;
 
 [TestClass]
 public class WhenHandlingUnsubscribeCommand
 {
-    readonly static EpcisContext Context = Tests.Context.TestContext.GetContext(nameof(Tests.WhenHandlingUnsubscribeCommand));
-    readonly static IEnumerable<IEpcisQuery> Queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-    readonly static Mock<IMediator> Mediator = new (MockBehavior.Loose);
+    readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(Tests.WhenHandlingUnsubscribeCommand));
+    readonly static IEnumerable<IStandardQuery> Queries = new IStandardQuery[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
@@ -32,27 +27,19 @@ public class WhenHandlingUnsubscribeCommand
     [TestMethod]
     public void ItShouldReturnAnUnubscribeResultAndSendANotification()
     {
-        var subscriptionId = Context.Subscriptions.First().Id;
-        var subscription = new UnsubscribeCommand
-        {
-            SubscriptionId = "TestSubscription"
-        };
-        var handler = new UnsubscribeCommandHandler(Context, Mediator.Object);
-        var result = handler.Handle(subscription, CancellationToken.None).Result;
+        var subscription = "TestSubscription";
+        var handler = new DeleteSubscriptionHandler(Context);
+        handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
             
-        Assert.IsNotNull(result);
-        Mediator.Verify(x => x.Publish(It.Is<SubscriptionRemovedNotification>(x => x.SubscriptionId == subscriptionId), It.IsAny<CancellationToken>()));
+        Assert.AreEqual(0, Context.Subscriptions.Count());
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameDoesNotExist()
     {
-        var subscription = new UnsubscribeCommand
-        {
-            SubscriptionId = "UnknownSubscription"
-        };
-        var handler = new UnsubscribeCommandHandler(Context, Mediator.Object);
+        var subscription = "UnknownSubscription";
+        var handler = new DeleteSubscriptionHandler(Context);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.Handle(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
     }
 }

@@ -1,21 +1,16 @@
-﻿using FasTnT.Application.Services;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Store;
-using FasTnT.Application.Subscriptions;
-using FasTnT.Domain.Commands.Subscribe;
+using FasTnT.Application.UseCases.StoreStandardQuerySubscription;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Domain.Notifications;
-using MediatR;
 
 namespace FasTnT.Application.Tests;
 
 [TestClass]
 public class WhenHandlingSubscribeCommand
 {
-    readonly static EpcisContext Context = Tests.Context.TestContext.GetContext(nameof(Tests.WhenHandlingSubscribeCommand));
-    readonly static IEnumerable<IEpcisQuery> Queries = new IEpcisQuery[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-    readonly static Mock<IMediator> Mediator = new (MockBehavior.Loose);
+    readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(Tests.WhenHandlingSubscribeCommand));
+    readonly static IEnumerable<IStandardQuery> Queries = new IStandardQuery[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
@@ -30,57 +25,41 @@ public class WhenHandlingSubscribeCommand
     }
 
     [TestMethod]
-    public void ItShouldReturnASubscribeResultAndSendANotification()
-    {
-        var subscription = new SubscribeCommand
-        {
-            SubscriptionId = "NewSubscription",
-            QueryName = "SimpleEventQuery",
-            Trigger = "testTrigger"
-        };
-        var handler = new SubscribeCommandHandler(Context, Queries, Mediator.Object);
-        var result = handler.Handle(subscription, CancellationToken.None).Result;
-            
-        Assert.IsNotNull(result);
-        Mediator.Verify(x => x.Publish(It.Is<SubscriptionCreatedNotification>(x => x.SubscriptionId == Context.Subscriptions.Single(x => x.Name == "NewSubscription").Id), It.IsAny<CancellationToken>()));
-    }
-
-    [TestMethod]
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameAlreadyExist()
     {
-        var subscription = new SubscribeCommand
+        var subscription = new Subscription
         {
-            SubscriptionId = "TestSubscription",
+            Name = "TestSubscription",
             QueryName = "SimpleEventQuery"
         };
-        var handler = new SubscribeCommandHandler(Context, Queries, Mediator.Object);
+        var handler = new StoreStandardQuerySubscriptionHandler(Context, Queries);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.Handle(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheSpecifiedQueryNameDoesNotExist()
     {
-        var subscription = new SubscribeCommand
+        var subscription = new Subscription
         {
-            SubscriptionId = "InvalidSubscription",
+            Name = "InvalidSubscription",
             QueryName = "UnknownQuery"
         };
-        var handler = new SubscribeCommandHandler(Context, Queries, Mediator.Object);
+        var handler = new StoreStandardQuerySubscriptionHandler(Context, Queries);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.Handle(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheSpecifiedQueryDoesNotAllowSubscription()
     {
-        var subscription = new SubscribeCommand
+        var subscription = new Subscription
         {
-            SubscriptionId = "MasterdataTestSubscription",
+            Name = "MasterdataTestSubscription",
             QueryName = "SimpleMasterdataQuery"
         };
-        var handler = new SubscribeCommandHandler(Context, Queries, Mediator.Object);
+        var handler = new StoreStandardQuerySubscriptionHandler(Context, Queries);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.Handle(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreSubscriptionAsync(subscription, CancellationToken.None));
     }
 }

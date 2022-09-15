@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Tests.Context;
 
-public static class TestContext
+public static class EpcisTestContext
 {
     public static DbContextOptions<EpcisContext> GetOptions(string databaseName)
     {

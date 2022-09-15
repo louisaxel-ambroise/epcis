@@ -14,7 +14,7 @@ public class StoreCustomQueryHandler : IStoreCustomQueryHandler
         _context = context;
     }
 
-    public async Task StoreQueryAsync(CustomQuery query, CancellationToken cancellationToken)
+    public async Task<CustomQuery> StoreQueryAsync(CustomQuery query, CancellationToken cancellationToken)
     {
         if(await _context.CustomQueries.AnyAsync(x => x.Name == query.Name, cancellationToken))
         {
@@ -24,5 +24,7 @@ public class StoreCustomQueryHandler : IStoreCustomQueryHandler
         _context.CustomQueries.Add(query);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        return query;
     }
 }

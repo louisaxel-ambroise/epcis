@@ -1,6 +1,8 @@
-﻿namespace FasTnT.Application.UseCases.DeleteCustomQuery;
+﻿using FasTnT.Domain.Model.CustomQueries;
+
+namespace FasTnT.Application.UseCases.DeleteCustomQuery;
 
 public interface IDeleteCustomQueryHandler
 {
-    Task DeleteQueryAsync(string queryName, CancellationToken cancellationToken);
+    Task<CustomQuery> DeleteQueryAsync(string queryName, CancellationToken cancellationToken);
 }

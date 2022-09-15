@@ -25,16 +25,16 @@ public class SubscriptionEndpoints
 
     private static async Task<IResult> HandleSubscriptionQuery(string query, IListSubscriptionsHandler handler, CancellationToken cancellationToken)
     {
-        var subscriptions = await handler.ListSubscriptionsAsync(query, cancellationToken);
+        var response = await handler.ListSubscriptionsAsync(query, cancellationToken);
 
-        return EpcisResults.Ok(subscriptions);
+        return EpcisResults.Ok(new ListSubscriptionsResult(response));
     }
 
     private static async Task<IResult> HandleSubscriptionDetailQuery(string name, IGetSubscriptionDetailsHandler handler, CancellationToken cancellationToken)
     {
-        var subscription = await handler.GetCustomQueryDetailsAsync(name, cancellationToken);
+        var response = await handler.GetCustomQueryDetailsAsync(name, cancellationToken);
 
-        return EpcisResults.Ok(subscription);
+        return EpcisResults.Ok(new SubscriptionDetailsResult(response));
     }
 
     private static async Task<IResult> HandleDeleteSubscription(string name, IDeleteSubscriptionHandler handler, CancellationToken cancellationToken)
@@ -47,10 +47,9 @@ public class SubscriptionEndpoints
     private static async Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, IStoreCustomQuerySubscriptionHandler handler, CancellationToken cancellationToken)
     {
         request.Subscription.QueryName = query;
+        var response = await handler.StoreSubscriptionAsync(request.Subscription, cancellationToken);
 
-        await handler.StoreSubscriptionAsync(request.Subscription, cancellationToken);
-
-        return Results.Created($"v2_0/queries/{query}/subscriptions/{request.Subscription.Name}", null);
+        return Results.Created($"v2_0/queries/{query}/subscriptions/{response.Name}", null);
     }
 }
 

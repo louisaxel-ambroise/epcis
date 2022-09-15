@@ -1,5 +1,6 @@
 ﻿using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.DeleteSubscription;
@@ -13,7 +14,7 @@ public class DeleteSubscriptionHandler : IDeleteSubscriptionHandler
         _context = context;
     }
 
-    public async Task DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
+    public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
     {
         var subscription = await _context.Subscriptions.SingleOrDefaultAsync(x => x.Name == name, cancellationToken);
 
@@ -24,5 +25,7 @@ public class DeleteSubscriptionHandler : IDeleteSubscriptionHandler
 
         _context.Subscriptions.Remove(subscription);
         await _context.SaveChangesAsync(cancellationToken);
+
+        return subscription;
     }
 }

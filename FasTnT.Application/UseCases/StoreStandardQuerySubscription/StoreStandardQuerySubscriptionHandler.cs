@@ -17,7 +17,7 @@ namespace FasTnT.Application.UseCases.StoreStandardQuerySubscription
             _queries = queries;
         }
 
-        public async Task StoreSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
+        public async Task<Subscription> StoreSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
         {
             var query = _queries.SingleOrDefault(x => x.Name == subscription.QueryName);
 
@@ -36,6 +36,8 @@ namespace FasTnT.Application.UseCases.StoreStandardQuerySubscription
 
             _context.Subscriptions.Add(subscription);
             await _context.SaveChangesAsync(cancellationToken);
+
+            return subscription;
         }
     }
 }

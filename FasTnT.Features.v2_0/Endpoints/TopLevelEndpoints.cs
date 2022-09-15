@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Services.Users;
+using FasTnT.Application.UseCases.ListTopLevelResources;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
@@ -24,34 +25,46 @@ public class TopLevelEndpoints
         return app;
     }
 
-    private static Task HandleListEventTypes()
+    private static async Task<IResult> HandleListEventTypes(IListEventTypesHandler handler, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var response = await handler.ListEventTypes(cancellationToken);
+
+        return Results.Ok(response);
     }
 
-    private static Task HandleListEpcs()
+    private static async Task<IResult> HandleListEpcs(IListEpcsHandler handler, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var response = await handler.ListEpcs(cancellationToken);
+
+        return Results.Ok(response);
     }
 
-    private static Task HandleListBizSteps()
+    private static async Task<IResult> HandleListBizSteps(IListBizStepsHandler handler, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var response = await handler.ListBizSteps(cancellationToken);
+
+        return Results.Ok(response);
     }
 
-    private static Task HandleListBizLocations()
+    private static async Task<IResult> HandleListBizLocations(IListBizLocationsHandler handler, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var response = await handler.ListBizLocations(cancellationToken);
+
+        return Results.Ok(response);
     }
 
-    private static Task HandleListReadPoints()
+    private static async Task<IResult> HandleListReadPoints(IListReadPointsHandler handler, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var response = await handler.ListReadPoints(cancellationToken);
+
+        return Results.Ok(response);
     }
 
-    private static Task HandleListDispositions()
+    private static async Task<IResult> HandleListDispositions(IListDispositionsHandler handler, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var response = await handler.ListDispositions(cancellationToken);
+
+        return Results.Ok(response);
     }
 
     private static IResult HandleSubResourceRequest()

@@ -26,30 +26,30 @@ public class QueriesEndpoints
 
     private static async Task<IResult> HandleListNamedQueries(IListCustomQueriesHandler handler, CancellationToken cancellationToken)
     {
-        var customQueries = await handler.ListCustomQueriesAsync(cancellationToken);
+        var response = await handler.ListCustomQueriesAsync(cancellationToken);
 
-        return EpcisResults.Ok(new ListCustomQueriesResult(customQueries.Select(x => new CustomQueryDefinitionResult(x.Name, x.Parameters))));
+        return EpcisResults.Ok(new ListCustomQueriesResult(response.Select(x => new CustomQueryDefinitionResult(x.Name, x.Parameters))));
     }
 
     private static async Task<IResult> HandleGetQueryDefinition(string queryName, IGetCustomQueryDetailsHandler handler, CancellationToken cancellationToken)
     {
-        var query = await handler.GetCustomQueryDetailsAsync(queryName, cancellationToken);
+        var response = await handler.GetCustomQueryDetailsAsync(queryName, cancellationToken);
 
-        return EpcisResults.Ok(new CustomQueryDefinitionResult(query.Name, query.Parameters));
+        return EpcisResults.Ok(new CustomQueryDefinitionResult(response.Name, response.Parameters));
     }
 
     private static async Task<IResult> HandleGetQueryEvents(string queryName, IExecuteCustomQueryHandler handler, CancellationToken cancellationToken)
     {
-        var queryResponse = await handler.ExecuteQueryAsync(queryName, cancellationToken);
+        var response = await handler.ExecuteQueryAsync(queryName, cancellationToken);
 
-        return EpcisResults.Ok(queryResponse);
+        return EpcisResults.Ok(new QueryResult(response));
     }
 
     private static async Task<IResult> HandleCreateNamedQuery(CreateCustomQueryRequest command, IStoreCustomQueryHandler handler, CancellationToken cancellationToken)
     {
-        await handler.StoreQueryAsync(command.Query, cancellationToken);
+        var response = await handler.StoreQueryAsync(command.Query, cancellationToken);
 
-        return Results.Created($"v2_0/queries/{command.Query.Name}", null);
+        return Results.Created($"v2_0/queries/{response.Name}", null);
     }
 
     private static async Task<IResult> HandleDeleteNamedQuery(string queryName, IDeleteCustomQueryHandler handler, CancellationToken cancellationToken)

@@ -4,5 +4,5 @@ namespace FasTnT.Application.UseCases.StoreCustomQuery;
 
 public interface IStoreCustomQueryHandler
 {
-    Task StoreQueryAsync(CustomQuery query, CancellationToken cancellationToken);
+    Task<CustomQuery> StoreQueryAsync(CustomQuery query, CancellationToken cancellationToken);
 }

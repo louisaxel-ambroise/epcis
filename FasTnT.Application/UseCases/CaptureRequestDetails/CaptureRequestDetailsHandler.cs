@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Store;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,12 +14,17 @@ public class CaptureRequestDetailsHandler : ICaptureRequestDetailsHandler
         _context = context;
     }
 
-    public Task<Request> GetCaptureDetails(int captureId, CancellationToken cancellationToken)
+    public async Task<Request> GetCaptureDetailsAsync(int captureId, CancellationToken cancellationToken)
     {
-        var query = _context.Requests
+        var capture = await _context.Requests
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == captureId, cancellationToken);
 
-        return query;
+        if(capture is null)
+        {
+            throw new EpcisException(ExceptionType.QueryParameterException, $"Capture not found: {captureId}");
+        }
+
+        return capture;
     }
 }

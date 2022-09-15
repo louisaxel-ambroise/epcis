@@ -1,14 +1,13 @@
-﻿using FasTnT.Application.Queries.GetSubscriptionIds;
-using FasTnT.Application.Store;
+﻿using FasTnT.Application.Store;
+using FasTnT.Application.UseCases.ListSubscriptions;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Domain.Queries.GetSubscriptionIds;
 
 namespace FasTnT.Application.Tests;
 
 [TestClass]
 public class WhenHandlingGetSubscriptionIdsQuery
 {
-    public readonly static EpcisContext Context = Tests.Context.TestContext.GetContext(nameof(Tests.WhenHandlingGetSubscriptionIdsQuery));
+    public readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(Tests.WhenHandlingGetSubscriptionIdsQuery));
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
@@ -30,25 +29,19 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [TestMethod]
     public void ItShouldReturnTheListOfExistingSubscriptionIdsForTheSpecifiedRequest()
     {
-        var handler = new GetSubscriptionIdsQueryHandler(Context);
-        var result = handler.Handle(new GetSubscriptionIdsQuery { QueryName = "TestQuery" }, default).Result;
+        var handler = new ListSubscriptionsHandler(Context);
+        var result = handler.ListSubscriptionsAsync("TestQuery", CancellationToken.None).Result;
             
-        Assert.IsInstanceOfType(result, typeof(GetSubscriptionIdsResult));
-
-        var subscriptions = (GetSubscriptionIdsResult)result;
-        Assert.AreEqual(1, subscriptions.SubscriptionIDs.Count());
-        Assert.AreEqual("SubscriptionTest", subscriptions.SubscriptionIDs.First());
+        Assert.AreEqual(1, result.Count());
+        Assert.AreEqual("SubscriptionTest", result.First().Name);
     }
 
     [TestMethod]
     public void ItShouldReturnAnEmptyListWhenNoSubscriptionMatch()
     {
-        var handler = new GetSubscriptionIdsQueryHandler(Context);
-        var result = handler.Handle(new GetSubscriptionIdsQuery { QueryName = "UnknownQuery" }, default).Result;
+        var handler = new ListSubscriptionsHandler(Context);
+        var result = handler.ListSubscriptionsAsync("UnknownQuery", CancellationToken.None).Result;
 
-        Assert.IsInstanceOfType(result, typeof(GetSubscriptionIdsResult));
-
-        var subscriptions = (GetSubscriptionIdsResult)result;
-        Assert.AreEqual(0, subscriptions.SubscriptionIDs.Count());
+        Assert.AreEqual(0, result.Count());
     }
 }

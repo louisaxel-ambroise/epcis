@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.Context;
 

@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Users;
 using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
@@ -9,11 +10,13 @@ namespace FasTnT.Application.UseCases.ExecuteCustomQuery
     public class ExecuteCustomQueryHandler : IExecuteCustomQueryHandler
     {
         private readonly EpcisContext _context;
+        private readonly ICurrentUser _currentUser;
         private readonly IEnumerable<IStandardQuery> _standardQueries;
 
-        public ExecuteCustomQueryHandler(EpcisContext context, IEnumerable<IStandardQuery> standardQueries)
+        public ExecuteCustomQueryHandler(EpcisContext context, ICurrentUser currentUser, IEnumerable<IStandardQuery> standardQueries)
         {
             _context = context;
+            _currentUser = currentUser;
             _standardQueries = standardQueries;
         }
 
@@ -30,7 +33,8 @@ namespace FasTnT.Application.UseCases.ExecuteCustomQuery
                 throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
             }
 
-            var response = await standardQuery.ExecuteAsync(_context, query.Parameters, cancellationToken);
+            var applyParams = query.Parameters.Union(_currentUser.DefaultQueryParameters);
+            var response = await standardQuery.ExecuteAsync(_context, applyParams, cancellationToken);
 
             return response;
         }

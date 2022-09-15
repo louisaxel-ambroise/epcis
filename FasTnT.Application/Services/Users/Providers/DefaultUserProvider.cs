@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Store;
-using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Users;
 using Microsoft.EntityFrameworkCore;
 

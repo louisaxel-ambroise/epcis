@@ -42,7 +42,7 @@ public class SubscriptionRunner
             if (pendingRequests.Any())
             {
                 var parameters = subscription.Parameters
-                    .Append(QueryParameter.Create("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString())))
+                    .Append(QueryParameter.Create("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
                     .ToArray();
 
                 response = await query.ExecuteAsync(_context, parameters, cancellationToken);

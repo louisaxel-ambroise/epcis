@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Store;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.Queries
 {
@@ -8,19 +9,19 @@ namespace FasTnT.Application.Tests.Queries
     public class WhenSimpleEventQueryReturnsLessThanMaxEventCountParameter
     {
         public EpcisContext Context { get; set; }
-        public Services.IEpcisQuery Query { get; set; }
+        public IStandardQuery Query { get; set; }
         public IList<QueryParameter> Parameters { get; set; }
 
         [TestInitialize]
         public void Initialize()
         {
-            Context = Tests.Context.TestContext.GetContext("simpleEventQuery");
-            Query = new SimpleEventQuery(Context);
+            Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
+            Query = new SimpleEventQuery();
 
             Context.Requests.Add(new Domain.Model.Request
             {
                 Events = new[] {
-                    new Domain.Model.Event
+                    new Event
                     {
                         Action = Domain.Enumerations.EventAction.Observe
                     }
@@ -31,13 +32,13 @@ namespace FasTnT.Application.Tests.Queries
             });
             Context.SaveChanges();
 
-            Parameters = new[] { new QueryParameter("maxEventCount", new[] { "2" }) }.ToList();
+            Parameters = new[] { QueryParameter.Create("maxEventCount", new[] { "2" }) }.ToList();
         }
 
         [TestMethod]
         public void ItShouldThrowAQueryTooLargeExceptionException()
         {
-            var result = Query.HandleAsync(Parameters, default).Result;
+            var result = Query.ExecuteAsync(Context, Parameters, default).Result;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(result.EventList.Count, 1);

@@ -1,6 +1,5 @@
-﻿using FasTnT.Application.Queries.GetQueryNames;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Domain.Queries.GetQueryNames;
+﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Application.UseCases.GetStandardQueryNames;
 
 namespace FasTnT.Application.Tests;
 
@@ -10,14 +9,13 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldReturnAllTheQueryNames()
     {
-        var queries = new Services.IEpcisQuery[] { new SimpleEventQuery(default), new SimpleMasterDataQuery(default) };
-        var handler = new GetQueryNamesQueryHandler(queries);
-        var result = handler.Handle(new GetQueryNamesQuery(), default).Result;
+        var queries = new IStandardQuery[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
+        var handler = new GetStandardQueryNamesHandler(queries);
+        var result = handler.GetQueryNamesAsync(CancellationToken.None).Result;
 
-        Assert.IsInstanceOfType(result, typeof(GetQueryNamesResult));
+        Assert.IsInstanceOfType(result, typeof(IEnumerable<string>));
 
-        var queryNames = (GetQueryNamesResult)result;
-        Assert.AreEqual(2, queryNames.QueryNames.Count());
-        CollectionAssert.AreEquivalent(new[] { "SimpleEventQuery", "SimpleMasterDataQuery" }, queryNames.QueryNames.ToArray());
+        Assert.AreEqual(2, result.Count());
+        CollectionAssert.AreEquivalent(new[] { "SimpleEventQuery", "SimpleMasterDataQuery" }, result.ToArray());
     }
 }

@@ -11,8 +11,10 @@ using FasTnT.Application.UseCases.ExecuteStandardQuery;
 using FasTnT.Application.UseCases.GetCustomQueryDetails;
 using FasTnT.Application.UseCases.GetStandardQueryNames;
 using FasTnT.Application.UseCases.GetSubscriptionDetails;
+using FasTnT.Application.UseCases.ListCaptureRequests;
 using FasTnT.Application.UseCases.ListCustomQueries;
 using FasTnT.Application.UseCases.ListSubscriptions;
+using FasTnT.Application.UseCases.ListTopLevelResources;
 using FasTnT.Application.UseCases.StoreCustomQuery;
 using FasTnT.Application.UseCases.StoreCustomQuerySubscription;
 using FasTnT.Application.UseCases.StoreEpcisDocument;
@@ -34,8 +36,11 @@ public static class EpcisConfiguration
             configure(options);
         }
 
+        services.AddSqlServer<EpcisContext>(options.ConnectionString, opt => opt.MigrationsAssembly("FasTnT.Migrations.SqlServer").EnableRetryOnFailure().CommandTimeout(options.CommandTimeout));
+
         services.AddSingleton<IStandardQuery, SimpleEventQuery>();
         services.AddSingleton<IStandardQuery, SimpleMasterDataQuery>();
+
         services.AddTransient<IListCustomQueriesHandler, ListCustomQueriesHandler>();
         services.AddTransient<IGetCustomQueryDetailsHandler, GetCustomQueryDetailsHandler>();
         services.AddTransient<IStoreEpcisDocumentHandler, StoreEpcisDocumentHandler>();
@@ -49,12 +54,19 @@ public static class EpcisConfiguration
         services.AddTransient<IListSubscriptionsHandler, ListSubscriptionsHandler>();
         services.AddTransient<IStoreCustomQuerySubscriptionHandler, StoreCustomQuerySubscriptionHandler>();
         services.AddTransient<IStoreStandardQuerySubscriptionHandler, StoreStandardQuerySubscriptionHandler>();
+        services.AddTransient<IListCaptureRequestsHandler, ListCaptureRequestsHandler>();
         services.AddTransient<ICaptureRequestDetailsHandler, CaptureRequestDetailsHandler>();
         services.AddTransient<IGetSubscriptionDetailsHandler, GetSubscriptionDetailsHandler>();
+        services.AddTransient<IListEpcsHandler, ListTopResourcesHandler>();
+        services.AddTransient<IListBizLocationsHandler, ListTopResourcesHandler>();
+        services.AddTransient<IListBizStepsHandler, ListTopResourcesHandler>();
+        services.AddTransient<IListEventTypesHandler, ListTopResourcesHandler>();
+        services.AddTransient<IListReadPointsHandler, ListTopResourcesHandler>();
+        services.AddTransient<IListDispositionsHandler, ListTopResourcesHandler>();
+
         services.AddScoped<IncrementGenerator.Identity>();
         services.AddScoped(options.CurrentUser);
         services.AddScoped(options.UserProvider);
-        services.AddSqlServer<EpcisContext>(options.ConnectionString, opt => opt.MigrationsAssembly("FasTnT.Migrations.SqlServer").EnableRetryOnFailure().CommandTimeout(options.CommandTimeout));
 
         return services;
     }

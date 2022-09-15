@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Store;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.Queries
 {
@@ -8,24 +9,24 @@ namespace FasTnT.Application.Tests.Queries
     public class WhenApplyingeventTypeFilter
     {
         public EpcisContext Context { get; set; }
-        public Services.IEpcisQuery Query { get; set; }
+        public IStandardQuery Query { get; set; }
         public IList<QueryParameter> Parameters { get; set; }
 
         [TestInitialize]
         public void Initialize()
         {
-            Context = Tests.Context.TestContext.GetContext("simpleEventQuery");
-            Query = new SimpleEventQuery(Context);
+            Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
+            Query = new SimpleEventQuery();
 
             Context.Requests.Add(new Domain.Model.Request
             {
                 Events = new[] {
-                    new Domain.Model.Event
+                    new Event
                     {
                         Type = Domain.Enumerations.EventType.ObjectEvent,
                         Action = Domain.Enumerations.EventAction.Observe
                     },
-                    new Domain.Model.Event
+                    new Event
                     {
                         Type = Domain.Enumerations.EventType.TransactionEvent,
                         Action = Domain.Enumerations.EventAction.Observe
@@ -37,13 +38,13 @@ namespace FasTnT.Application.Tests.Queries
             });
             Context.SaveChanges();
 
-            Parameters = new[] { new QueryParameter("eventType", new[] { "ObjectEvent" }) }.ToList();
+            Parameters = new[] { QueryParameter.Create("eventType", "ObjectEvent") }.ToList();
         }
 
         [TestMethod]
         public void ItShouldOnlyReturnTheEventsOfTheSpecifiedType()
         {
-            var result = Query.HandleAsync(Parameters, default).Result;
+            var result = Query.ExecuteAsync(Context, Parameters, CancellationToken.None).Result;
             Assert.AreEqual(1, result.EventList.Count);
             Assert.IsTrue(result.EventList.All(x => x.Type == Domain.Enumerations.EventType.ObjectEvent));
         }

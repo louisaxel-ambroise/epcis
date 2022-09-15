@@ -1,6 +1,8 @@
-﻿namespace FasTnT.Application.UseCases.DeleteSubscription;
+﻿using FasTnT.Domain.Model.Subscriptions;
+
+namespace FasTnT.Application.UseCases.DeleteSubscription;
 
 public interface IDeleteSubscriptionHandler
 {
-    Task DeleteSubscriptionAsync(string name, CancellationToken cancellationToken);
+    Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken);
 }

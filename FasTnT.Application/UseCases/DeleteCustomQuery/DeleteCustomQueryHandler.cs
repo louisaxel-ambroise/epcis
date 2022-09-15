@@ -1,5 +1,7 @@
 ﻿using FasTnT.Application.Store;
 using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Model.CustomQueries;
+using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.DeleteCustomQuery;
 
@@ -12,9 +14,10 @@ public class DeleteCustomQueryHandler : IDeleteCustomQueryHandler
         _context = context;
     }
 
-    public Task DeleteQueryAsync(string queryName, CancellationToken cancellationToken)
+    public async Task<CustomQuery> DeleteQueryAsync(string queryName, CancellationToken cancellationToken)
     {
-        var query = _context.CustomQueries.SingleOrDefault(x => x.Name == queryName);
+        var query = await _context.CustomQueries
+            .SingleOrDefaultAsync(x => x.Name == queryName, cancellationToken);
 
         if (query is null)
         {
@@ -23,6 +26,8 @@ public class DeleteCustomQueryHandler : IDeleteCustomQueryHandler
 
         _context.CustomQueries.Remove(query);
 
-        return _context.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return query;
     }
 }

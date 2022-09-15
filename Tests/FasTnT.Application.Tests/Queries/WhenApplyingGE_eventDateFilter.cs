@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Store;
-using FasTnT.Domain.Queries.Poll;
+using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.Queries
 {
@@ -8,31 +9,31 @@ namespace FasTnT.Application.Tests.Queries
     public class WhenApplyingGE_eventTimeFilter
     {
         public EpcisContext Context { get; set; }
-        public Services.IEpcisQuery Query { get; set; }
+        public IStandardQuery Query { get; set; }
         public IList<QueryParameter> Parameters { get; set; }
 
         [TestInitialize]
         public void Initialize()
         {
-            Context = Tests.Context.TestContext.GetContext("simpleEventQuery");
-            Query = new SimpleEventQuery(Context);
+            Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
+            Query = new SimpleEventQuery();
 
             Context.Requests.Add(new Domain.Model.Request
             {
                 Events = new[] {
-                    new Domain.Model.Event
+                    new Event
                     {
                         Type = Domain.Enumerations.EventType.ObjectEvent,
                         EventTime = new (2021, 01, 12, 10, 24, 10, DateTimeKind.Utc),
                         Action = Domain.Enumerations.EventAction.Observe
                     },
-                    new Domain.Model.Event
+                    new Event
                     {
                         Type = Domain.Enumerations.EventType.TransactionEvent,
                         EventTime = new (2021, 01, 12, 10, 30, 00, DateTimeKind.Utc),
                         Action = Domain.Enumerations.EventAction.Observe
                     },
-                    new Domain.Model.Event
+                    new Event
                     {
                         Type = Domain.Enumerations.EventType.TransactionEvent,
                         EventTime = new (2011, 08, 02, 21, 50, 00, DateTimeKind.Utc),
@@ -45,13 +46,13 @@ namespace FasTnT.Application.Tests.Queries
             });
             Context.SaveChanges();
 
-            Parameters = new[] { new QueryParameter("GE_eventTime", new[] { "2020-01-12T10:24:10.000Z" }) }.ToList();
+            Parameters = new[] { QueryParameter.Create("GE_eventTime", new[] { "2020-01-12T10:24:10.000Z" }) }.ToList();
         }
 
         [TestMethod]
         public void ItShouldOnlyReturnTheEventsCaptureAfterOrOnTheDate()
         {
-            var result = Query.HandleAsync(Parameters, default).Result;
+            var result = Query.ExecuteAsync(Context, Parameters, default).Result;
             Assert.AreEqual(2, result.EventList.Count);
             Assert.IsTrue(result.EventList.All(x => x.EventTime >= new DateTime(2021, 01, 12, 10, 24, 10, DateTimeKind.Utc)));
         }
