@@ -160,6 +160,9 @@ namespace FasTnT.Application.Migrations
                     b.Property<DateTime?>("DateValue")
                         .HasColumnType("datetime2");
 
+                    b.Property<short>("FieldType")
+                        .HasColumnType("smallint");
+
                     b.Property<bool>("HasParent")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("bit")
@@ -191,6 +194,8 @@ namespace FasTnT.Application.Migrations
                     b.HasIndex("EventId", "ParentId");
 
                     b.ToTable("CustomField", "Epcis");
+
+                    b.HasDiscriminator<short>("FieldType");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Destination", b =>
@@ -862,6 +867,41 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("UserDefaultQueryParameter", "Users");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.EventCustomField", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Events.CustomField");
+
+                    b.HasDiscriminator().HasValue((short)0);
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorElementCustomField", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Events.CustomField");
+
+                    b.Property<int?>("SensorId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("EventId", "SensorId");
+
+                    b.HasDiscriminator().HasValue((short)1);
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorReportCustomField", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Events.CustomField");
+
+                    b.Property<int?>("ReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SensorId")
+                        .HasColumnType("int")
+                        .HasColumnName("SensorReportCustomField_SensorId");
+
+                    b.HasIndex("EventId", "SensorId", "ReportId");
+
+                    b.HasDiscriminator().HasValue((short)2);
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQueryParameter", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.CustomQueries.StoredQuery", "Query")
@@ -1128,6 +1168,26 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorElementCustomField", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Events.SensorElement", "Element")
+                        .WithMany("CustomFields")
+                        .HasForeignKey("EventId", "SensorId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Element");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorReportCustomField", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Events.SensorReport", "Report")
+                        .WithMany("CustomFields")
+                        .HasForeignKey("EventId", "SensorId", "ReportId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Report");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
                 {
                     b.Navigation("Parameters");
@@ -1173,7 +1233,14 @@ namespace FasTnT.Application.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorElement", b =>
                 {
+                    b.Navigation("CustomFields");
+
                     b.Navigation("Reports");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorReport", b =>
+                {
+                    b.Navigation("CustomFields");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>

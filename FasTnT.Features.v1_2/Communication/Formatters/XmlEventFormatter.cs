@@ -277,7 +277,7 @@ public static class XmlEventFormatter
 
     private static IEnumerable<XElement> CreateCustomFields(Event evt, FieldType type)
     {
-        return evt.CustomFields.Where(x => x.Type == type && x.Parent is null).Select(FormatField);
+        return evt.CustomFields.OfType<EventCustomField>().Where(x => x.Type == type && x.Parent is null).Select(FormatField);
     }
 
     private static XElement FormatField(CustomField field)

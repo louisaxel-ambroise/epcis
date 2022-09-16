@@ -73,6 +73,35 @@ namespace FasTnT.Application.Migrations
                 maxLength: 256,
                 nullable: true);
 
+            migrationBuilder.AddColumn<short>(
+                name: "FieldType",
+                schema: "Epcis",
+                table: "CustomField",
+                type: "smallint",
+                nullable: false,
+                defaultValue: (short)0);
+
+            migrationBuilder.AddColumn<int>(
+                name: "ReportId",
+                schema: "Epcis",
+                table: "CustomField",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "SensorId",
+                schema: "Epcis",
+                table: "CustomField",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "SensorReportCustomField_SensorId",
+                schema: "Epcis",
+                table: "CustomField",
+                type: "int",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "PersistentDisposition",
                 schema: "Epcis",
@@ -222,11 +251,41 @@ namespace FasTnT.Application.Migrations
                 filter: "[SubscriptionId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CustomField_EventId_SensorId",
+                schema: "Epcis",
+                table: "CustomField",
+                columns: new[] { "EventId", "SensorId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomField_EventId_SensorReportCustomField_SensorId_ReportId",
+                schema: "Epcis",
+                table: "CustomField",
+                columns: new[] { "EventId", "SensorReportCustomField_SensorId", "ReportId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_StoredQuery_Name",
                 schema: "Queries",
                 table: "StoredQuery",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CustomField_SensorElement_EventId_SensorId",
+                schema: "Epcis",
+                table: "CustomField",
+                columns: new[] { "EventId", "SensorId" },
+                principalSchema: "Epcis",
+                principalTable: "SensorElement",
+                principalColumns: new[] { "EventId", "SensorId" });
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_CustomField_SensorReport_EventId_SensorReportCustomField_SensorId_ReportId",
+                schema: "Epcis",
+                table: "CustomField",
+                columns: new[] { "EventId", "SensorReportCustomField_SensorId", "ReportId" },
+                principalSchema: "Epcis",
+                principalTable: "SensorReport",
+                principalColumns: new[] { "EventId", "SensorId", "ReportId" });
 
             migrationBuilder.AddForeignKey(
                 name: "FK_SubscriptionSchedule_Subscription_SubscriptionId",
@@ -241,6 +300,16 @@ namespace FasTnT.Application.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_CustomField_SensorElement_EventId_SensorId",
+                schema: "Epcis",
+                table: "CustomField");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_CustomField_SensorReport_EventId_SensorReportCustomField_SensorId_ReportId",
+                schema: "Epcis",
+                table: "CustomField");
+
             migrationBuilder.DropForeignKey(
                 name: "FK_SubscriptionSchedule_Subscription_SubscriptionId",
                 schema: "Subscription",
@@ -271,6 +340,16 @@ namespace FasTnT.Application.Migrations
                 schema: "Subscription",
                 table: "SubscriptionSchedule");
 
+            migrationBuilder.DropIndex(
+                name: "IX_CustomField_EventId_SensorId",
+                schema: "Epcis",
+                table: "CustomField");
+
+            migrationBuilder.DropIndex(
+                name: "IX_CustomField_EventId_SensorReportCustomField_SensorId_ReportId",
+                schema: "Epcis",
+                table: "CustomField");
+
             migrationBuilder.DropColumn(
                 name: "SubscriptionId",
                 schema: "Subscription",
@@ -285,6 +364,26 @@ namespace FasTnT.Application.Migrations
                 name: "SignatureToken",
                 schema: "Subscription",
                 table: "Subscription");
+
+            migrationBuilder.DropColumn(
+                name: "FieldType",
+                schema: "Epcis",
+                table: "CustomField");
+
+            migrationBuilder.DropColumn(
+                name: "ReportId",
+                schema: "Epcis",
+                table: "CustomField");
+
+            migrationBuilder.DropColumn(
+                name: "SensorId",
+                schema: "Epcis",
+                table: "CustomField");
+
+            migrationBuilder.DropColumn(
+                name: "SensorReportCustomField_SensorId",
+                schema: "Epcis",
+                table: "CustomField");
 
             migrationBuilder.RenameColumn(
                 name: "Values",

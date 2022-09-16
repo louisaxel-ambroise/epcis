@@ -29,7 +29,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldReturnAnUnubscribeResultAndSendANotification()
     {
         var subscription = "TestSubscription";
-        var handler = new SubscriptionsUseCasesHandler(Context, null, new List<ISubscriptionListener>());
+        var handler = new SubscriptionsUseCasesHandler(Context, null, default);
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
             
         Assert.AreEqual(0, Context.Subscriptions.Count());
@@ -39,7 +39,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameDoesNotExist()
     {
         var subscription = "UnknownSubscription";
-        var handler = new SubscriptionsUseCasesHandler(Context, null, new List<ISubscriptionListener>());
+        var handler = new SubscriptionsUseCasesHandler(Context, null, default);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
     }

@@ -189,6 +189,11 @@ internal static class EpcisModelConfiguration
         bizTrans.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
 
         var customField = modelBuilder.Entity<CustomField>();
+        customField.HasDiscriminator<short>("FieldType")
+            .HasValue<EventCustomField>(0)
+            .HasValue<SensorElementCustomField>(1)
+            .HasValue<SensorReportCustomField>(2);
+        customField.Property<short>("FieldType");
         customField.ToTable(nameof(CustomField), nameof(EpcisSchema.Epcis));
         customField.Property<int>("FieldId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
         customField.Property<long>("EventId").HasColumnType("bigint");
@@ -200,11 +205,20 @@ internal static class EpcisModelConfiguration
         customField.Property(x => x.TextValue).IsRequired(false);
         customField.Property(x => x.NumericValue).IsRequired(false);
         customField.Property(x => x.DateValue).IsRequired(false);
+        customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
+
+        var sensorReportCustomField = modelBuilder.Entity<SensorReportCustomField>();
+        sensorReportCustomField.Property<int?>("SensorId");
+        sensorReportCustomField.Property<int?>("ReportId");
+        sensorReportCustomField.HasOne(x => x.Report).WithMany(x => x.CustomFields).IsRequired(false).HasForeignKey("EventId", "SensorId", "ReportId").OnDelete(DeleteBehavior.NoAction);
+
+        var sensorElementCustomField = modelBuilder.Entity<SensorElementCustomField>();
+        sensorElementCustomField.Property<int?>("SensorId");
+        sensorElementCustomField.HasOne(x => x.Element).WithMany(x => x.CustomFields).IsRequired(false).HasForeignKey("EventId", "SensorId").OnDelete(DeleteBehavior.NoAction);
 
         var customFieldHasParent = customField.Property(x => x.HasParent);
         customFieldHasParent.HasComputedColumnSql("(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", stored: true);
 
-        customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
         customField.HasOne(x => x.Parent).WithMany(x => x.Children).HasForeignKey("EventId", "ParentId").OnDelete(DeleteBehavior.NoAction).IsRequired(false);
 
         var persistentDisposition = modelBuilder.Entity<PersistentDisposition>();

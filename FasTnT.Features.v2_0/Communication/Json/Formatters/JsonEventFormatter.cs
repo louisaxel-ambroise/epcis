@@ -55,15 +55,15 @@ public static class JsonEventFormatter
             SetDisposition(element, evt.PersistentDispositions);
         }
 
-        AddSensorElements(element, evt.SensorElements);
+        AddSensorElements(element, evt.SensorElements, context);
 
-        var ilmd = BuildExtensionFields(evt.CustomFields.Where(x => x.Type == FieldType.Ilmd), context);
+        var ilmd = BuildExtensionFields(evt.CustomFields.OfType<EventCustomField>().Where(x => x.Type == FieldType.Ilmd), context);
         if (ilmd.Count > 0)
         {
             element["ilmd"] = ilmd;
         }
 
-        var customFields = BuildExtensionFields(evt.CustomFields.Where(x => x.Type == FieldType.CustomField), context);
+        var customFields = BuildExtensionFields(evt.CustomFields.OfType<EventCustomField>().Where(x => x.Type == FieldType.CustomField), context);
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -72,39 +72,60 @@ public static class JsonEventFormatter
         return element;
     }
 
-    private static void AddSensorElements(Dictionary<string, object> element, List<SensorElement> sensorElements)
+    private static void AddSensorElements(Dictionary<string, object> element, List<SensorElement> sensorElements, IDictionary<string, string> context)
     {
         if (sensorElements.Count == 0)
         {
             return;
         }
 
-        element["sensorElements"] = sensorElements.Select(MapSensorElement);
+        element["sensorElements"] = sensorElements.Select(x => MapSensorElement(x, context));
     }
 
-    private static object MapSensorElement(SensorElement sensor)
+    private static object MapSensorElement(SensorElement sensor, IDictionary<string, string> context)
     {
-        return new Dictionary<string, object>
+        var element = new Dictionary<string, object>
         {
             ["isA"] = "epcis:SensorElement",
-            ["sensorMetadata"] = new Dictionary<string, object>
-            {
-                ["time"] = sensor.Time,
-                ["deviceID"] = sensor.DeviceId,
-                ["deviceMetadata"] = sensor.DeviceMetadata,
-                ["rawData"] = sensor.Time,
-                ["startTime"] = sensor.Time,
-                ["endTime"] = sensor.Time,
-                ["dataProcessingMethod"] = sensor.Time,
-                ["bizRules"] = sensor.Time
-            },
-            ["sensorReport"] = sensor.Reports.Select(MapSensorReport)
+            ["sensorMetadata"] = MapSensorMetadata(sensor, context),
+            ["sensorReport"] = sensor.Reports.Select(x => MapSensorReport(x, context))
         };
+
+        var customFields = BuildExtensionFields(sensor.CustomFields.Where(x => x.Type == FieldType.CustomField), context);
+        foreach (var field in customFields)
+        {
+            element[field.Key] = field.Value;
+        }
+
+        return element;
     }
 
-    private static object MapSensorReport(SensorReport report)
+    private static object MapSensorMetadata(SensorElement sensor, IDictionary<string, string> context)
     {
-        return new Dictionary<string, object>
+        var element = new Dictionary<string, object>
+        {
+            ["time"] = sensor.Time,
+            ["deviceID"] = sensor.DeviceId,
+            ["deviceMetadata"] = sensor.DeviceMetadata,
+            ["rawData"] = sensor.Time,
+            ["startTime"] = sensor.Time,
+            ["endTime"] = sensor.Time,
+            ["dataProcessingMethod"] = sensor.Time,
+            ["bizRules"] = sensor.Time
+        };
+
+        var customFields = BuildExtensionFields(sensor.CustomFields.Where(x => x.Type == FieldType.SensorMetadata), context);
+        foreach (var field in customFields)
+        {
+            element[field.Key] = field.Value;
+        }
+
+        return element;
+    }
+
+    private static object MapSensorReport(SensorReport report, IDictionary<string, string> context)
+    {
+        var element = new Dictionary<string, object>
         {
             ["type"] = report.Type,
             ["deviceID"] = report.DeviceId,
@@ -128,6 +149,14 @@ public static class JsonEventFormatter
             ["sDev"] = report.SDev,
             ["deviceMetadata"] = report.DeviceMetadata
         };
+
+        var customFields = BuildExtensionFields(report.CustomFields, context);
+        foreach (var field in customFields)
+        {
+            element[field.Key] = field.Value;
+        }
+
+        return element;
     }
 
     private static void AddEpcs(Dictionary<string, object> element, List<Epc> epcs)
