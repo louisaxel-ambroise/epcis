@@ -10,15 +10,15 @@ public class SubscriptionSchedule
     public string Month { get; set; }
     public string DayOfWeek { get; set; }
 
-    public virtual DateTime GetNextOccurence(DateTime startDate)
+    public static DateTime GetNextOccurence(SubscriptionSchedule schedule, DateTime startDate)
     {
         // Parse from the next second
-        var schedule = new SubscriptionScheduleEntry(this);
-        var tentative = SetMonth(SetDayOfMonth(SetHours(SetMinutes(SetSeconds(startDate.AddSeconds(1), schedule), schedule), schedule), schedule), schedule);
+        var scheduleEntry = new SubscriptionScheduleEntry(schedule);
+        var tentative = SetMonth(SetDayOfMonth(SetHours(SetMinutes(SetSeconds(startDate.AddSeconds(1), scheduleEntry), scheduleEntry), scheduleEntry), scheduleEntry), scheduleEntry);
 
-        if (!schedule.DayOfWeek.HasValue(1 + (int)tentative.DayOfWeek))
+        if (!scheduleEntry.DayOfWeek.HasValue(1 + (int)tentative.DayOfWeek))
         {
-            return GetNextOccurence(new DateTime(tentative.Year, tentative.Month, tentative.Day, 23, 59, 59));
+            return GetNextOccurence(schedule, new DateTime(tentative.Year, tentative.Month, tentative.Day, 23, 59, 59));
         }
 
         return tentative;

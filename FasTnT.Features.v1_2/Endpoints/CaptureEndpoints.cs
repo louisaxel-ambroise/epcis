@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
-using FasTnT.Application.UseCases.StoreEpcisDocument;
+using FasTnT.Application.UseCases.Captures;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
@@ -18,7 +18,7 @@ public class CaptureEndpoints
         return app;
     }
 
-    private static async Task<IResult> HandleCaptureRequest(CaptureRequest request, IStoreEpcisDocumentHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleCaptureRequest(CaptureRequest request, ICaptureRequestHandler handler, CancellationToken cancellationToken)
     {
         await handler.StoreAsync(request.Request, cancellationToken);
 

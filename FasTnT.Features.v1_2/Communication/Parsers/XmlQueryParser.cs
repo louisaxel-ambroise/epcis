@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Features.v1_2.Subscriptions;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;
 
@@ -41,6 +42,7 @@ public static class XmlQueryParser
             Name = element.Element("subscriptionID").Value,
             QueryName = element.Element("queryName").Value,
             Destination = element.Element("dest").Value,
+            FormatterName = XmlResultSender.Instance.Name,
             Trigger = element.Element("controls")?.Element("trigger")?.Value,
             ReportIfEmpty = bool.Parse(element.Element("controls").Element("reportIfEmpty").Value),
             InitialRecordTime = DateTime.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, out DateTime date) ? date : default(DateTime?),

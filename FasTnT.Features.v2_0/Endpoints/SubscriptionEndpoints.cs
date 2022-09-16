@@ -1,8 +1,5 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.DeleteSubscription;
-using FasTnT.Application.UseCases.GetSubscriptionDetails;
-using FasTnT.Application.UseCases.ListSubscriptions;
-using FasTnT.Application.UseCases.StoreCustomQuerySubscription;
+using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
@@ -32,7 +29,7 @@ public class SubscriptionEndpoints
 
     private static async Task<IResult> HandleSubscriptionDetailQuery(string name, IGetSubscriptionDetailsHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.GetCustomQueryDetailsAsync(name, cancellationToken);
+        var response = await handler.GetSubscriptionDetailsAsync(name, cancellationToken);
 
         return EpcisResults.Ok(new SubscriptionDetailsResult(response));
     }
@@ -44,10 +41,10 @@ public class SubscriptionEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, IStoreCustomQuerySubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, IRegisterSubscriptionHandler handler, CancellationToken cancellationToken)
     {
         request.Subscription.QueryName = query;
-        var response = await handler.StoreSubscriptionAsync(request.Subscription, cancellationToken);
+        var response = await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
 
         return Results.Created($"v2_0/queries/{query}/subscriptions/{response.Name}", null);
     }

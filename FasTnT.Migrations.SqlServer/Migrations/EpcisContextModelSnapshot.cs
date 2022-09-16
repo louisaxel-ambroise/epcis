@@ -22,7 +22,67 @@ namespace FasTnT.Application.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("FasTnT.Domain.Model.BusinessTransaction", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("DataSource")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Username")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("StoredQuery", "Queries");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -2,
+                            DataSource = "SimpleEventQuery",
+                            Name = "SimpleEventQuery"
+                        },
+                        new
+                        {
+                            Id = -1,
+                            DataSource = "SimpleMasterDataQuery",
+                            Name = "SimpleMasterDataQuery"
+                        });
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQueryParameter", b =>
+                {
+                    b.Property<int>("QueryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Values")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("QueryId", "Name");
+
+                    b.ToTable("StoredQueryParameter", "Subscription");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.BusinessTransaction", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -39,7 +99,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("BusinessTransaction", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.ContactInformation", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.ContactInformation", b =>
                 {
                     b.Property<int>("RequestId")
                         .HasColumnType("int");
@@ -75,7 +135,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("ContactInformation", "Sbdh");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.CorrectiveEventId", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.CorrectiveEventId", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -89,7 +149,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("CorrectiveEventId", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomField", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.CustomField", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -99,6 +159,9 @@ namespace FasTnT.Application.Migrations
 
                     b.Property<DateTime?>("DateValue")
                         .HasColumnType("datetime2");
+
+                    b.Property<short>("FieldType")
+                        .HasColumnType("smallint");
 
                     b.Property<bool>("HasParent")
                         .ValueGeneratedOnAddOrUpdate()
@@ -131,43 +194,11 @@ namespace FasTnT.Application.Migrations
                     b.HasIndex("EventId", "ParentId");
 
                     b.ToTable("CustomField", "Epcis");
+
+                    b.HasDiscriminator<short>("FieldType");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.CustomQuery", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CustomQuery", "Queries");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.CustomQueryParameter", b =>
-                {
-                    b.Property<int>("QueryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Values")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("QueryId", "Name");
-
-                    b.ToTable("CustomQueryParameter", "Subscription");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Destination", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Destination", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -184,7 +215,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("Destination", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Epc", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Epc", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -213,7 +244,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("Epc", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Event", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -277,7 +308,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("Event", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterData", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterData", b =>
                 {
                     b.Property<int>("RequestId")
                         .HasColumnType("int");
@@ -297,7 +328,7 @@ namespace FasTnT.Application.Migrations
                     b.ToSqlQuery("SELECT MAX(RequestId) AS RequestId, type, id FROM [Cbv].[MasterData] GROUP BY type, id");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataAttribute", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataAttribute", b =>
                 {
                     b.Property<int>("RequestId")
                         .HasColumnType("int");
@@ -324,7 +355,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("MasterDataAttribute", "Cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataChildren", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataChildren", b =>
                 {
                     b.Property<int?>("MasterDataRequestId")
                         .HasColumnType("int");
@@ -344,7 +375,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("MasterDataChildren", "Cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataField", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataField", b =>
                 {
                     b.Property<int>("RequestId")
                         .HasColumnType("int");
@@ -386,7 +417,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("MasterDataField", "Cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataHierarchy", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataHierarchy", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(256)");
@@ -407,7 +438,7 @@ namespace FasTnT.Application.Migrations
                     b.ToView("MasterDataHierarchy", "Cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.PersistentDisposition", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.PersistentDisposition", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -424,35 +455,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("PersistentDisposition", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("CaptureDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DocumentTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SchemaVersion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Request", "Epcis");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.SensorElement", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorElement", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -489,7 +492,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("SensorElement", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SensorReport", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorReport", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -568,7 +571,7 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("SensorReport", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Source", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Source", b =>
                 {
                     b.Property<long>("EventId")
                         .HasColumnType("bigint");
@@ -583,6 +586,34 @@ namespace FasTnT.Application.Migrations
                     b.HasKey("EventId", "Type", "Id");
 
                     b.ToTable("Source", "Epcis");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CaptureDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DocumentTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SchemaVersion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Request", "Epcis");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.StandardBusinessHeader", b =>
@@ -647,6 +678,11 @@ namespace FasTnT.Application.Migrations
                     b.Property<string>("Destination")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FormatterName")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.Property<DateTime?>("InitialRecordTime")
                         .HasColumnType("datetime2");
 
@@ -663,18 +699,15 @@ namespace FasTnT.Application.Migrations
                     b.Property<bool>("ReportIfEmpty")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ScheduleId")
-                        .HasColumnType("int");
+                    b.Property<string>("SignatureToken")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Trigger")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ScheduleId")
-                        .IsUnique()
-                        .HasFilter("[ScheduleId] IS NOT NULL");
 
                     b.ToTable("Subscription", "Subscription");
                 });
@@ -770,12 +803,19 @@ namespace FasTnT.Application.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int?>("SubscriptionId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SubscriptionId")
+                        .IsUnique()
+                        .HasFilter("[SubscriptionId] IS NOT NULL");
 
                     b.ToTable("SubscriptionSchedule", "Subscription");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.User", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Users.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -803,14 +843,15 @@ namespace FasTnT.Application.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
 
                     b.HasKey("Id");
 
                     b.ToTable("User", "Users");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.UserDefaultQueryParameter", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Users.UserDefaultQueryParameter", b =>
                 {
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
@@ -826,9 +867,55 @@ namespace FasTnT.Application.Migrations
                     b.ToTable("UserDefaultQueryParameter", "Users");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.BusinessTransaction", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.EventCustomField", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
+                    b.HasBaseType("FasTnT.Domain.Model.Events.CustomField");
+
+                    b.HasDiscriminator().HasValue((short)0);
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorElementCustomField", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Events.CustomField");
+
+                    b.Property<int?>("SensorId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("EventId", "SensorId");
+
+                    b.HasDiscriminator().HasValue((short)1);
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorReportCustomField", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Events.CustomField");
+
+                    b.Property<int?>("ReportId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SensorId")
+                        .HasColumnType("int")
+                        .HasColumnName("SensorReportCustomField_SensorId");
+
+                    b.HasIndex("EventId", "SensorId", "ReportId");
+
+                    b.HasDiscriminator().HasValue((short)2);
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQueryParameter", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.CustomQueries.StoredQuery", "Query")
+                        .WithMany("Parameters")
+                        .HasForeignKey("QueryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Query");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.BusinessTransaction", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Events.Event", "Event")
                         .WithMany("Transactions")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -837,7 +924,7 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.ContactInformation", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.ContactInformation", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.StandardBusinessHeader", "Header")
                         .WithMany("ContactInformations")
@@ -848,9 +935,9 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Header");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.CorrectiveEventId", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.CorrectiveEventId", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
+                    b.HasOne("FasTnT.Domain.Model.Events.Event", "Event")
                         .WithMany("CorrectiveEventIds")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -859,15 +946,15 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomField", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.CustomField", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
+                    b.HasOne("FasTnT.Domain.Model.Events.Event", "Event")
                         .WithMany("CustomFields")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FasTnT.Domain.Model.CustomField", "Parent")
+                    b.HasOne("FasTnT.Domain.Model.Events.CustomField", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("EventId", "ParentId")
                         .OnDelete(DeleteBehavior.NoAction);
@@ -877,20 +964,9 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Parent");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.CustomQueryParameter", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Destination", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.CustomQueries.CustomQuery", "Query")
-                        .WithMany("Parameters")
-                        .HasForeignKey("QueryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Query");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Destination", b =>
-                {
-                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
+                    b.HasOne("FasTnT.Domain.Model.Events.Event", "Event")
                         .WithMany("Destinations")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -899,9 +975,9 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Epc", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Epc", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
+                    b.HasOne("FasTnT.Domain.Model.Events.Event", "Event")
                         .WithMany("Epcs")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -910,7 +986,7 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Event", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.Request", "Request")
                         .WithMany("Events")
@@ -920,7 +996,7 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterData", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterData", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.Request", "Request")
                         .WithMany("Masterdata")
@@ -931,9 +1007,9 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataAttribute", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataAttribute", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.MasterData", "MasterData")
+                    b.HasOne("FasTnT.Domain.Model.Events.MasterData", "MasterData")
                         .WithMany("Attributes")
                         .HasForeignKey("RequestId", "MasterdataType", "MasterdataId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -942,9 +1018,9 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("MasterData");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataChildren", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataChildren", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.MasterData", "MasterData")
+                    b.HasOne("FasTnT.Domain.Model.Events.MasterData", "MasterData")
                         .WithMany("Children")
                         .HasForeignKey("MasterDataRequestId", "MasterDataType", "MasterDataId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -952,9 +1028,9 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("MasterData");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataField", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataField", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.MasterDataAttribute", "Attribute")
+                    b.HasOne("FasTnT.Domain.Model.Events.MasterDataAttribute", "Attribute")
                         .WithMany("Fields")
                         .HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -963,9 +1039,9 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Attribute");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataHierarchy", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataHierarchy", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.MasterData", "MasterData")
+                    b.HasOne("FasTnT.Domain.Model.Events.MasterData", "MasterData")
                         .WithMany("Hierarchies")
                         .HasForeignKey("RequestId", "Type", "Id")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -973,10 +1049,43 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("MasterData");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.PersistentDisposition", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.PersistentDisposition", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
+                    b.HasOne("FasTnT.Domain.Model.Events.Event", "Event")
                         .WithMany("PersistentDispositions")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorElement", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Events.Event", "Event")
+                        .WithMany("SensorElements")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorReport", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Events.SensorElement", "SensorElement")
+                        .WithMany("Reports")
+                        .HasForeignKey("EventId", "SensorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SensorElement");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Source", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Events.Event", "Event")
+                        .WithMany("Sources")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -986,46 +1095,13 @@ namespace FasTnT.Application.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.User", "User")
+                    b.HasOne("FasTnT.Domain.Model.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.SensorElement", b =>
-                {
-                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
-                        .WithMany("SensorElements")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.SensorReport", b =>
-                {
-                    b.HasOne("FasTnT.Domain.Model.SensorElement", "SensorElement")
-                        .WithMany("Reports")
-                        .HasForeignKey("EventId", "SensorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SensorElement");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Source", b =>
-                {
-                    b.HasOne("FasTnT.Domain.Model.Event", "Event")
-                        .WithMany("Sources")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.StandardBusinessHeader", b =>
@@ -1037,16 +1113,6 @@ namespace FasTnT.Application.Migrations
                         .IsRequired();
 
                     b.Navigation("Request");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
-                {
-                    b.HasOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule")
-                        .WithOne("Subscription")
-                        .HasForeignKey("FasTnT.Domain.Model.Subscriptions.Subscription", "ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>
@@ -1081,9 +1147,19 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Subscription");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.UserDefaultQueryParameter", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.User", "User")
+                    b.HasOne("FasTnT.Domain.Model.Subscriptions.Subscription", "Subscription")
+                        .WithOne("Schedule")
+                        .HasForeignKey("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Subscription");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Users.UserDefaultQueryParameter", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Users.User", "User")
                         .WithMany("DefaultQueryParameters")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1092,17 +1168,37 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomField", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorElementCustomField", b =>
                 {
-                    b.Navigation("Children");
+                    b.HasOne("FasTnT.Domain.Model.Events.SensorElement", "Element")
+                        .WithMany("CustomFields")
+                        .HasForeignKey("EventId", "SensorId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Element");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.CustomQuery", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorReportCustomField", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Events.SensorReport", "Report")
+                        .WithMany("CustomFields")
+                        .HasForeignKey("EventId", "SensorId", "ReportId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Report");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
                 {
                     b.Navigation("Parameters");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Event", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.CustomField", b =>
+                {
+                    b.Navigation("Children");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
                     b.Navigation("CorrectiveEventIds");
 
@@ -1121,7 +1217,7 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterData", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterData", b =>
                 {
                     b.Navigation("Attributes");
 
@@ -1130,9 +1226,21 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Hierarchies");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.MasterDataAttribute", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.MasterDataAttribute", b =>
                 {
                     b.Navigation("Fields");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorElement", b =>
+                {
+                    b.Navigation("CustomFields");
+
+                    b.Navigation("Reports");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Events.SensorReport", b =>
+                {
+                    b.Navigation("CustomFields");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
@@ -1146,11 +1254,6 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("SubscriptionCallback");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.SensorElement", b =>
-                {
-                    b.Navigation("Reports");
-                });
-
             modelBuilder.Entity("FasTnT.Domain.Model.StandardBusinessHeader", b =>
                 {
                     b.Navigation("ContactInformations");
@@ -1161,14 +1264,11 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("ExecutionRecords");
 
                     b.Navigation("Parameters");
+
+                    b.Navigation("Schedule");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", b =>
-                {
-                    b.Navigation("Subscription");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.User", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Users.User", b =>
                 {
                     b.Navigation("DefaultQueryParameters");
                 });

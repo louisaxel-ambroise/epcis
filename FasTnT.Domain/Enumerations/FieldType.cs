@@ -14,5 +14,6 @@ public enum FieldType
     BusinessLocationExtension,
     ReadPointCustomField,
     ReadPointExtension,
-    Attribute
+    Attribute,
+    SensorMetadata
 }

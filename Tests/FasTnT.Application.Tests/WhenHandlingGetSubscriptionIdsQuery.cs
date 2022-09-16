@@ -1,5 +1,6 @@
-﻿using FasTnT.Application.Store;
-using FasTnT.Application.UseCases.ListSubscriptions;
+﻿using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.Store;
+using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application.Tests;
@@ -7,7 +8,7 @@ namespace FasTnT.Application.Tests;
 [TestClass]
 public class WhenHandlingGetSubscriptionIdsQuery
 {
-    public readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(Tests.WhenHandlingGetSubscriptionIdsQuery));
+    public readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenHandlingGetSubscriptionIdsQuery));
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
@@ -29,7 +30,7 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [TestMethod]
     public void ItShouldReturnTheListOfExistingSubscriptionIdsForTheSpecifiedRequest()
     {
-        var handler = new ListSubscriptionsHandler(Context);
+        var handler = new SubscriptionsUseCasesHandler(Context, default, default);
         var result = handler.ListSubscriptionsAsync("TestQuery", CancellationToken.None).Result;
             
         Assert.AreEqual(1, result.Count());
@@ -39,7 +40,7 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [TestMethod]
     public void ItShouldReturnAnEmptyListWhenNoSubscriptionMatch()
     {
-        var handler = new ListSubscriptionsHandler(Context);
+        var handler = new SubscriptionsUseCasesHandler(Context, default, default);
         var result = handler.ListSubscriptionsAsync("UnknownQuery", CancellationToken.None).Result;
 
         Assert.AreEqual(0, result.Count());

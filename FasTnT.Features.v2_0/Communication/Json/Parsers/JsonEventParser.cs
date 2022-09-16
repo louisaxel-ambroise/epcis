@@ -157,12 +157,12 @@ public class JsonEventParser
         return value.EnumerateObject().SelectMany(parser);
     }
 
-    private static IEnumerable<SensorElement> ParseSensorElements(JsonElement value)
+    private IEnumerable<SensorElement> ParseSensorElements(JsonElement value)
     {
-        return value.EnumerateArray().Select(JsonSensorElementParser.ParseSensorElement);
+        return value.EnumerateArray().Select(x => JsonSensorElementParser.ParseSensorElement(x, _extensions));
     }
 
-    private IEnumerable<CustomField> ParseIlmd(JsonProperty jsonProperty)
+    private IEnumerable<EventCustomField> ParseIlmd(JsonProperty jsonProperty)
     {
         return jsonProperty.Value.EnumerateObject().SelectMany(e =>
         {
@@ -171,15 +171,15 @@ public class JsonEventParser
         });
     }
 
-    private IEnumerable<CustomField> ParseCustomField(JsonProperty jsonProperty)
+    private IEnumerable<EventCustomField> ParseCustomField(JsonProperty jsonProperty)
     {
         var (ns, name) = ParseName(jsonProperty.Name);
         return ParseCustomField(jsonProperty.Value, FieldType.CustomField, name, ns);
     }
 
-    private IEnumerable<CustomField> ParseCustomField(JsonElement element, FieldType type, string propName, string propNs)
+    private IEnumerable<EventCustomField> ParseCustomField(JsonElement element, FieldType type, string propName, string propNs)
     {
-        var field = new CustomField { Type = type, Name = propName, Namespace = propNs };
+        var field = new EventCustomField { Type = type, Name = propName, Namespace = propNs };
 
         if (element.ValueKind == JsonValueKind.Object)
         {

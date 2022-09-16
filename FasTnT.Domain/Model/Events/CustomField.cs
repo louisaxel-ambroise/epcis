@@ -2,7 +2,7 @@
 
 namespace FasTnT.Domain.Model.Events;
 
-public class CustomField
+public abstract class CustomField
 {
     public Event Event { get; set; }
     public FieldType Type { get; set; }
@@ -14,4 +14,18 @@ public class CustomField
     public CustomField Parent { get; set; }
     public bool HasParent { get; set; }
     public List<CustomField> Children { get; set; } = new();
+}
+
+public class EventCustomField : CustomField
+{
+}
+
+public class SensorElementCustomField : CustomField
+{
+    public SensorElement Element { get; set; }
+}
+
+public class SensorReportCustomField : CustomField
+{
+    public SensorReport Report { get; set; }
 }

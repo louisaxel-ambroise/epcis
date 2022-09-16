@@ -1,11 +1,12 @@
-﻿using FasTnT.Domain.Model.CustomQueries;
+﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Domain.Model.CustomQueries;
 using System.Text.Json;
 
 namespace FasTnT.Features.v2_0.Communication.Json.Parsers
 {
     public static class JsonRequestParser
     {
-        public static async Task<CustomQuery> ParseCustomQueryRequestAsync(Stream body, CancellationToken cancellationToken)
+        public static async Task<StoredQuery> ParseCustomQueryRequestAsync(Stream body, CancellationToken cancellationToken)
         {
             var document = await JsonDocument.ParseAsync(body, default, cancellationToken);
 
@@ -15,13 +16,14 @@ namespace FasTnT.Features.v2_0.Communication.Json.Parsers
             return new ()
             {
                 Name = name,
+                DataSource = nameof(SimpleEventQuery),
                 Parameters = parameters
             };
         }
 
-        private static IEnumerable<CustomQueryParameter> ParseQueryParameters(JsonElement jsonElement)
+        private static IEnumerable<StoredQueryParameter> ParseQueryParameters(JsonElement jsonElement)
         {
-            var parameters = new List<CustomQueryParameter>();
+            var parameters = new List<StoredQueryParameter>();
 
             if(jsonElement.ValueKind == JsonValueKind.Object)
             {

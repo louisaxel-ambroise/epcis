@@ -1,7 +1,5 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.CaptureRequestDetails;
-using FasTnT.Application.UseCases.ListCaptureRequests;
-using FasTnT.Application.UseCases.StoreEpcisDocument;
+using FasTnT.Application.UseCases.Captures;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
@@ -35,14 +33,14 @@ public class CaptureEndpoints
         return EpcisResults.Ok(new CaptureDetailsResult(response));
     }
 
-    private static async Task<IResult> HandleCaptureRequest(CaptureDocumentRequest request, IStoreEpcisDocumentHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleCaptureRequest(CaptureDocumentRequest request, ICaptureRequestHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.StoreAsync(request.Request, cancellationToken);
 
         return Results.Created($"v2_0/capture/{response.Id}", null);
     }
 
-    private static async Task<IResult> HandleCaptureSingleEventRequest(CaptureEventRequest request, IStoreEpcisDocumentHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleCaptureSingleEventRequest(CaptureEventRequest request, ICaptureRequestHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.StoreAsync(request.Request, cancellationToken);
 

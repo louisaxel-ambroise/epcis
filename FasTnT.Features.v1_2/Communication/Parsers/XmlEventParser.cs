@@ -390,9 +390,9 @@ public static class XmlEventParser
         return new() { Type = element.Attribute("type").Value, Id = element.Value };
     }
 
-    public static CustomField ParseCustomFields(XElement element, FieldType fieldType)
+    public static EventCustomField ParseCustomFields(XElement element, FieldType fieldType)
     {
-        var field = new CustomField
+        var field = new EventCustomField
         {
             Type = fieldType,
             Name = element.Name.LocalName,
@@ -408,9 +408,9 @@ public static class XmlEventParser
         return field;
     }
 
-    public static CustomField ParseAttribute(XAttribute element)
+    public static EventCustomField ParseAttribute(XAttribute element)
     {
-        return new()
+        return new EventCustomField
         {
             Type = FieldType.Attribute,
             Name = element.Name.LocalName,

@@ -4,9 +4,8 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Extensions;
 using FasTnT.Domain;
-using FasTnT.Application.UseCases.GetStandardQueryNames;
-using FasTnT.Application.UseCases.ExecuteStandardQuery;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Application.UseCases.Queries;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
@@ -33,16 +32,17 @@ public class QueryEndpoints
         return action;
     }
 
-    private static async Task<PollResult> HandlePollQuery(Poll query, IExecuteStandardQueryHandler handler, CancellationToken cancellationToken)
+    private static async Task<PollResult> HandlePollQuery(Poll query, IExecuteQueryHandler handler, CancellationToken cancellationToken)
     {
         var response =  await handler.ExecuteQueryAsync(query.QueryName, query.Parameters, cancellationToken);
 
         return new(response);
     }
 
-    private static async Task<GetQueryNamesResult> HandleGetQueryNamesQuery(IGetStandardQueryNamesHandler handler, CancellationToken cancellationToken)
+    private static async Task<GetQueryNamesResult> HandleGetQueryNamesQuery(IListQueriesHandler handler, CancellationToken cancellationToken)
     {
-        var queryNames = await handler.GetQueryNamesAsync(cancellationToken);
+        var queries = await handler.ListQueriesAsync(cancellationToken);
+        var queryNames = queries.Select(x => x.Name);
 
         return new(queryNames);
     }

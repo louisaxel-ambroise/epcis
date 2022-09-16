@@ -10,7 +10,7 @@ namespace FasTnT.Application.Tests.Queries
     public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
     {
         public EpcisContext Context { get; set; }
-        public IStandardQuery Query { get; set; }
+        public IEpcisDataSource Query { get; set; }
         public IList<QueryParameter> Parameters { get; set; }
 
         [TestInitialize]

@@ -3,7 +3,7 @@ using FasTnT.Features.v2_0.Communication.Json.Parsers;
 
 namespace FasTnT.Features.v2_0.Endpoints.Interfaces;
 
-public record CreateCustomQueryRequest(CustomQuery Query)
+public record CreateCustomQueryRequest(StoredQuery Query)
 {
     public static async ValueTask<CreateCustomQueryRequest> BindAsync(HttpContext context)
     {
@@ -12,5 +12,5 @@ public record CreateCustomQueryRequest(CustomQuery Query)
         return request;
     }
 
-    public static implicit operator CreateCustomQueryRequest(CustomQuery query) => new(query);
+    public static implicit operator CreateCustomQueryRequest(StoredQuery query) => new(query);
 }

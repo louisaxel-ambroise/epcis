@@ -25,6 +25,7 @@ public class SensorElement
     public string DataProcessingMethod { get; set; }
     public string BizRules { get; set; }
     public List<SensorReport> Reports { get; set; } = new();
+    public List<SensorElementCustomField> CustomFields { get; set; } = new();
 }
 
 public class SensorReport
@@ -51,4 +52,5 @@ public class SensorReport
     public string UnitOfMeasure { get; set; }
     public float? SDev { get; set; }
     public string DeviceMetadata { get; set; }
+    public List<SensorReportCustomField> CustomFields { get; set; } = new();
 }
