@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Subscriptions;
@@ -15,7 +16,7 @@ internal static class EpcisModelConfiguration
         var user = modelBuilder.Entity<User>();
         user.ToTable(nameof(User), nameof(EpcisSchema.Users));
         user.HasKey(x => x.Id);
-        user.Property(x => x.Username).IsRequired(true);
+        user.Property(x => x.Username).IsRequired(true).HasMaxLength(80);
         user.Property(x => x.Salt).IsRequired(true).HasMaxLength(20);
         user.Property(x => x.SecuredKey).IsRequired(true);
         user.Property(x => x.RegisteredOn).IsRequired(true);
@@ -232,16 +233,14 @@ internal static class EpcisModelConfiguration
 
         var subscription = modelBuilder.Entity<Subscription>();
         subscription.ToTable(nameof(Subscription), nameof(EpcisSchema.Subscription));
-        subscription.HasDiscriminator<string>("Type")
-            .HasValue<CustomSubscription>("custom")
-            .HasValue<StandardSubscription>("standard");
-        subscription.Property<string>("Type").IsRequired(true).HasMaxLength(10).HasDefaultValue("standard");
         subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.ReportIfEmpty).IsRequired(true);
         subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
+        subscription.Property(x => x.SignatureToken).IsRequired(false).HasMaxLength(256);
+        subscription.Property(x => x.FormatterName).IsRequired(true).HasMaxLength(30);
         subscription.HasMany(x => x.Parameters).WithOne(x => x.Subscription).HasForeignKey("SubscriptionId");
-        subscription.HasOne(x => x.Schedule).WithOne(x => x.Subscription).HasForeignKey<Subscription>("ScheduleId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+        subscription.HasOne(x => x.Schedule).WithOne(x => x.Subscription).HasForeignKey<SubscriptionSchedule>("SubscriptionId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         subscription.HasMany(x => x.ExecutionRecords).WithOne(x => x.Subscription);
 
         var subscriptionParam = modelBuilder.Entity<SubscriptionParameter>();
@@ -260,7 +259,7 @@ internal static class EpcisModelConfiguration
         subscriptionSchedule.Property(x => x.DayOfWeek).HasMaxLength(256).IsRequired(false);
         subscriptionSchedule.Property(x => x.DayOfMonth).HasMaxLength(256).IsRequired(false);
         subscriptionSchedule.Property(x => x.Month).HasMaxLength(256).IsRequired(false);
-        subscriptionSchedule.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<Subscription>("ScheduleId").OnDelete(DeleteBehavior.Cascade);
+        subscriptionSchedule.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<SubscriptionSchedule>("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
 
         var subscriptionExecutionRecord = modelBuilder.Entity<SubscriptionExecutionRecord>();
         subscriptionExecutionRecord.ToTable(nameof(SubscriptionExecutionRecord), nameof(EpcisSchema.Subscription));
@@ -275,14 +274,22 @@ internal static class EpcisModelConfiguration
         pendingRequest.ToTable(nameof(PendingRequest), nameof(EpcisSchema.Subscription));
         pendingRequest.HasKey(x => new { x.RequestId, x.SubscriptionId });
 
-        var customQuery = modelBuilder.Entity<CustomQuery>();
-        customQuery.ToTable(nameof(CustomQuery), nameof(EpcisSchema.Queries));
-        customQuery.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
-        customQuery.HasMany(x => x.Parameters).WithOne(x => x.Query).HasForeignKey("QueryId");
+        var storedQuery = modelBuilder.Entity<StoredQuery>();
+        storedQuery.ToTable(nameof(StoredQuery), nameof(EpcisSchema.Queries));
+        storedQuery.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
+        storedQuery.Property(x => x.DataSource).IsRequired(true).HasMaxLength(30);
+        storedQuery.Property(x => x.Username).IsRequired(false).HasMaxLength(80);
+        storedQuery.HasMany(x => x.Parameters).WithOne(x => x.Query).HasForeignKey("QueryId");
+        storedQuery.HasIndex(x => x.Name).IsUnique();
+        storedQuery.HasData
+        (
+            new StoredQuery { Id = -2, Name = nameof(SimpleEventQuery), DataSource = nameof(SimpleEventQuery) },
+            new StoredQuery { Id = -1, Name = nameof(SimpleMasterDataQuery), DataSource = nameof(SimpleMasterDataQuery) }
+        );
 
-        var customQueryParam = modelBuilder.Entity<CustomQueryParameter>();
-        customQueryParam.ToTable(nameof(CustomQueryParameter), nameof(EpcisSchema.Subscription));
-        customQueryParam.HasKey("QueryId", nameof(CustomQueryParameter.Name));
+        var customQueryParam = modelBuilder.Entity<StoredQueryParameter>();
+        customQueryParam.ToTable(nameof(StoredQueryParameter), nameof(EpcisSchema.Subscription));
+        customQueryParam.HasKey("QueryId", nameof(StoredQueryParameter.Name));
         customQueryParam.Property(x => x.Values).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
     }
 }

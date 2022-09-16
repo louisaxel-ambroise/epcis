@@ -41,10 +41,10 @@ public class SubscriptionEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, ICustomQuerySubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, IRegisterSubscriptionHandler handler, CancellationToken cancellationToken)
     {
         request.Subscription.QueryName = query;
-        var response = await handler.CustomQuerySubscriptionAsync(request.Subscription, cancellationToken);
+        var response = await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
 
         return Results.Created($"v2_0/queries/{query}/subscriptions/{response.Name}", null);
     }

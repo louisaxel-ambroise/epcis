@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.Services.Queries;
 
-public class SimpleEventQuery : IStandardQuery
+public class SimpleEventQuery : IEpcisDataSource
 {
     const string Comparison = "(GE|GT|LE|LT)";
 
@@ -25,7 +25,7 @@ public class SimpleEventQuery : IStandardQuery
     public string Name => nameof(SimpleEventQuery);
     public bool AllowSubscription => true;
 
-    public async Task<QueryResponse> ExecuteAsync(EpcisContext context, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+    public async Task<QueryData> ExecuteAsync(EpcisContext context, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
         var query = context.Events.AsNoTracking();
 
@@ -71,11 +71,11 @@ public class SimpleEventQuery : IStandardQuery
                 var result = await query.ToListAsync(cancellationToken)
                     .ContinueWith(x => ApplyOrderByLimit(x.Result.AsQueryable()).ToList());
 
-                return QueryResponse.EventsResponse(Name, result);
+                return result;
             }
             else
             {
-                return QueryResponse.Empty(Name);
+                return QueryData.Empty;
             }
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)

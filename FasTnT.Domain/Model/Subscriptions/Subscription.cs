@@ -1,10 +1,12 @@
 ﻿namespace FasTnT.Domain.Model.Subscriptions;
 
-public abstract class Subscription
+public class Subscription
 {
     public int Id { get; set; }
     public string Name { get; set; }
     public string QueryName { get; set; }
+    public string SignatureToken { get; set; }
+    public string FormatterName { get; set; }
     public SubscriptionSchedule Schedule { get; set; }
     public string Trigger { get; set; }
     public bool ReportIfEmpty { get; set; }

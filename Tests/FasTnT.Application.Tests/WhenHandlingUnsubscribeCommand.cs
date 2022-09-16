@@ -11,12 +11,12 @@ namespace FasTnT.Application.Tests;
 public class WhenHandlingUnsubscribeCommand
 {
     readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenHandlingUnsubscribeCommand));
-    readonly static IEnumerable<IStandardQuery> Queries = new IStandardQuery[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
+    readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new StandardSubscription
+        Context.Subscriptions.Add(new Subscription
         {
             Name = "TestSubscription",
             QueryName = Queries.First().Name

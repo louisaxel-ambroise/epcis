@@ -35,9 +35,9 @@ public class SubscriptionEndpoints
         return new GetSubscriptionIDsResult(subscriptions.Select(x => x.Name));
     }
 
-    private static async Task<SubscribeResult> HandleSubscribe(Subscribe request, IStandardQuerySubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<SubscribeResult> HandleSubscribe(Subscribe request, IRegisterSubscriptionHandler handler, CancellationToken cancellationToken)
     {
-        await handler.StandardQuerySubscriptionAsync(request.Subscription, cancellationToken);
+        await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
 
         return new();
     }

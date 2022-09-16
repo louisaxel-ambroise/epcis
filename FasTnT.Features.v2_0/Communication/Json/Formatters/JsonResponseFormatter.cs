@@ -15,6 +15,7 @@ public static class JsonResponseFormatter
     public static string Format<T>(T response)
     {
         return response switch {
+            CollectionResult collectionResult => FormatCollection(collectionResult.Values),
             CustomQueryDefinitionResult customQuery => FormatCustomQuery(customQuery),
             ListCustomQueriesResult listQueries => FormatListQueries(listQueries),
             QueryResult queryResult => FormatQueryResult(queryResult.Response),
@@ -24,6 +25,18 @@ public static class JsonResponseFormatter
             SubscriptionDetailsResult subscriptionsDetail => FormatSubscriptionDetail(subscriptionsDetail.Subscription),
             _ => FormatError(EpcisException.Default)
         };
+    }
+
+    private static string FormatCollection(IEnumerable<string> values)
+    {
+        var formatted = new Dictionary<string, object>
+        {
+            ["@context"] = "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld",
+            ["type"] = "collection",
+            ["member"] = values
+        };
+
+        return JsonSerializer.Serialize(formatted, Options);
     }
 
     private static string FormatListSubscriptions(IEnumerable<Subscription> subscriptions)

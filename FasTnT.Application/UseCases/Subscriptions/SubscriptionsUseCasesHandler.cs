@@ -13,18 +13,17 @@ public class SubscriptionsUseCasesHandler :
     IListSubscriptionsHandler,
     IGetSubscriptionDetailsHandler,
     ITriggerSubscriptionHandler,
-    IStandardQuerySubscriptionHandler,
-    ICustomQuerySubscriptionHandler
+    IRegisterSubscriptionHandler
 {
     private readonly EpcisContext _context;
-    private readonly IEnumerable<IStandardQuery> _queries;
-    private readonly IEnumerable<ISubscriptionListener> _listeners;
+    private readonly IEnumerable<IEpcisDataSource> _dataSources;
+    private readonly ISubscriptionListener _listener;
 
-    public SubscriptionsUseCasesHandler(EpcisContext context, IEnumerable<IStandardQuery> queries, IEnumerable<ISubscriptionListener> listeners)
+    public SubscriptionsUseCasesHandler(EpcisContext context, IEnumerable<IEpcisDataSource> queries, ISubscriptionListener listener)
     {
         _context = context;
-        _queries = queries;
-        _listeners = listeners;
+        _dataSources = queries;
+        _listener = listener;
     }
 
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
@@ -38,6 +37,7 @@ public class SubscriptionsUseCasesHandler :
 
         _context.Subscriptions.Remove(subscription);
         await _context.SaveChangesAsync(cancellationToken);
+        await _listener.RemoveAsync(subscription, cancellationToken);
 
         return subscription;
     }
@@ -70,22 +70,22 @@ public class SubscriptionsUseCasesHandler :
 
     public async Task TriggerSubscriptionAsync(string[] triggers, CancellationToken cancellationToken)
     {
-        await Task.WhenAll(_listeners.Select(x => x.TriggerAsync(triggers, cancellationToken)));
+        await _listener.TriggerAsync(triggers, cancellationToken);
     }
 
-    public async Task<Subscription> StandardQuerySubscriptionAsync(StandardSubscription subscription, CancellationToken cancellationToken)
+    public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
     {
-        var query = _queries.SingleOrDefault(x => x.Name == subscription.QueryName);
+        var dataSource = _dataSources.SingleOrDefault(x => x.Name == subscription.QueryName);
 
         if (!SubscriptionValidator.IsValid(subscription))
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Subscription request is not valid");
         }
-        if (query is null) 
+        if (dataSource is null) 
         {
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query with name '{subscription.QueryName}' not found");
         }
-        if(!query.AllowSubscription) 
+        if(!dataSource.AllowSubscription) 
         {
             throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query '{subscription.QueryName}' does not allow subscription");
         }
@@ -94,38 +94,10 @@ public class SubscriptionsUseCasesHandler :
             throw new EpcisException(ExceptionType.DuplicateSubscriptionException, $"Subscription '{subscription.Name}' already exists");
         }
 
-        return await RegisterSubscriptionAsync(subscription, cancellationToken);
-    }
-
-    public async Task<Subscription> CustomQuerySubscriptionAsync(CustomSubscription subscription, CancellationToken cancellationToken)
-    {
-        var query = await _context.CustomQueries
-            .AsNoTracking()
-            .Include(x => x.Parameters)
-            .SingleOrDefaultAsync(x => x.Name == subscription.QueryName, cancellationToken);
-
-        if (!SubscriptionValidator.IsValid(subscription))
-        {
-            throw new EpcisException(ExceptionType.ValidationException, $"Subscription request is not valid");
-        }
-        if (query is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Query with name '{subscription.QueryName}' not found");
-        }
-        if (await _context.Subscriptions.AnyAsync(x => x.Name == subscription.Name, cancellationToken))
-        {
-            throw new EpcisException(ExceptionType.DuplicateSubscriptionException, $"Subscription '{subscription.Name}' already exists");
-        }
-
-        return await RegisterSubscriptionAsync(subscription, cancellationToken);
-    }
-
-    private async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
-    {
         _context.Subscriptions.Add(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await Task.WhenAll(_listeners.Select(x => x.RegisterAsync(subscription, cancellationToken)));
+        await _listener.RegisterAsync(subscription, cancellationToken);
 
         return subscription;
     }

@@ -1,11 +1,15 @@
 using FasTnT.Application;
+using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users.Providers;
 using FasTnT.Application.Store;
 using FasTnT.Domain;
 using FasTnT.Features.v1_2;
+using FasTnT.Features.v1_2.Subscriptions;
 using FasTnT.Features.v2_0;
+using FasTnT.Features.v2_0.Subscriptions;
 using FasTnT.Host.Authorization;
 using FasTnT.Host.Extensions;
+using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +21,6 @@ builder.Services.AddAuthentication(BasicAuthenticationHandler.SchemeName).AddSch
 builder.Services.AddAuthorization(Options.AuthorizationPolicies);
 builder.Services.AddHttpLogging(Options.LoggingPolicy);
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddEpcis12SubscriptionService();
-builder.Services.AddEpcis20SubscriptionService();
 builder.Services.AddEpcisServices(opt =>
 {
     opt.ConnectionString = builder.Configuration.GetConnectionString("FasTnT.Database");
@@ -26,6 +28,11 @@ builder.Services.AddEpcisServices(opt =>
     opt.CurrentUser = svc => new HttpContextCurrentUser(svc.GetRequiredService<IHttpContextAccessor>());
     opt.UserProvider = svc => builder.Environment.IsDevelopment() ? new DefaultUserProvider(svc.GetService<EpcisContext>()) : new UserProvider(svc.GetService<EpcisContext>());
 });
+
+// Add the subscription manager as background service
+builder.Services.AddSingleton<IResultSender>(XmlResultSender.Instance);
+builder.Services.AddSingleton<IResultSender>(JsonResultSender.Instance);
+builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
 var app = builder.Build();
 

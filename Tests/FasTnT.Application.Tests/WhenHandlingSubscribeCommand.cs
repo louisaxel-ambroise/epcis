@@ -10,12 +10,12 @@ namespace FasTnT.Application.Tests;
 public class WhenHandlingSubscribeCommand
 {
     readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenHandlingSubscribeCommand));
-    readonly static IEnumerable<IStandardQuery> Queries = new IStandardQuery[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
+    readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new StandardSubscription
+        Context.Subscriptions.Add(new Subscription
         {
             Name = "TestSubscription",
             QueryName = Queries.First().Name
@@ -27,39 +27,39 @@ public class WhenHandlingSubscribeCommand
     [TestMethod]
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameAlreadyExist()
     {
-        var subscription = new StandardSubscription
+        var subscription = new Subscription
         {
             Name = "TestSubscription",
             QueryName = "SimpleEventQuery"
         };
         var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StandardQuerySubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheSpecifiedQueryNameDoesNotExist()
     {
-        var subscription = new StandardSubscription
+        var subscription = new Subscription
         {
             Name = "InvalidSubscription",
             QueryName = "UnknownQuery"
         };
         var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StandardQuerySubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheSpecifiedQueryDoesNotAllowSubscription()
     {
-        var subscription = new StandardSubscription
+        var subscription = new Subscription
         {
             Name = "MasterdataTestSubscription",
             QueryName = "SimpleMasterdataQuery"
         };
         var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StandardQuerySubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 }

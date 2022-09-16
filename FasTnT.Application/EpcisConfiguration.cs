@@ -1,13 +1,14 @@
 ﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Services.Users.Providers;
 using FasTnT.Application.Store;
 using FasTnT.Application.Store.Configuration;
 using FasTnT.Application.UseCases.Captures;
-using FasTnT.Application.UseCases.CustomQueries;
 using FasTnT.Application.UseCases.ListTopLevelResources;
-using FasTnT.Application.UseCases.StandardQueries;
+using FasTnT.Application.UseCases.Queries;
 using FasTnT.Application.UseCases.Subscriptions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FasTnT.Application;
@@ -24,26 +25,27 @@ public static class EpcisConfiguration
             configure(options);
         }
 
-        services.AddSqlServer<EpcisContext>(options.ConnectionString, opt => opt.MigrationsAssembly("FasTnT.Migrations.SqlServer").EnableRetryOnFailure().CommandTimeout(options.CommandTimeout));
+        services.AddDbContext<EpcisContext>(opt => opt.UseSqlServer(options.ConnectionString, opt => opt.MigrationsAssembly("FasTnT.Migrations.SqlServer").EnableRetryOnFailure().CommandTimeout(options.CommandTimeout)), ServiceLifetime.Transient);
 
-        services.AddSingleton<IStandardQuery, SimpleEventQuery>();
-        services.AddSingleton<IStandardQuery, SimpleMasterDataQuery>();
+        services.AddSingleton<IEpcisDataSource, SimpleEventQuery>();
+        services.AddSingleton<IEpcisDataSource, SimpleMasterDataQuery>();
 
-        services.AddTransient<IDeleteCustomQueryHandler, CustomQueriesUseCasesHandler>();
-        services.AddTransient<IStoreCustomQueryHandler, CustomQueriesUseCasesHandler>();
-        services.AddTransient<IListCustomQueriesHandler, CustomQueriesUseCasesHandler>();
-        services.AddTransient<IGetCustomQueryDetailsHandler, CustomQueriesUseCasesHandler>();
-        services.AddTransient<IExecuteCustomQueryHandler, CustomQueriesUseCasesHandler>();
+        services.AddTransient<ISubscriptionRunner, SubscriptionRunner>();
+        services.AddSingleton<ISubscriptionService, SubscriptionService>();
+        services.AddSingleton<ISubscriptionListener>(ctx => ctx.GetService<ISubscriptionService>());
+
         services.AddTransient<IListCaptureRequestsHandler, CaptureUseCasesHandler>();
         services.AddTransient<ICaptureRequestDetailsHandler, CaptureUseCasesHandler>();
         services.AddTransient<ICaptureRequestHandler, CaptureUseCasesHandler>();
-        services.AddTransient<IGetStandardQueryNamesHandler, StandardQueriesUseCasesHandler>();
-        services.AddTransient<IExecuteStandardQueryHandler, StandardQueriesUseCasesHandler>();
+        services.AddTransient<IListQueriesHandler, QueriesUseCasesHandler>();
+        services.AddTransient<IGetQueryDetailsHandler, QueriesUseCasesHandler>();
+        services.AddTransient<IStoreQueryHandler, QueriesUseCasesHandler>();
+        services.AddTransient<IDeleteQueryHandler, QueriesUseCasesHandler>();
+        services.AddTransient<IExecuteQueryHandler, QueriesUseCasesHandler>();
         services.AddTransient<ITriggerSubscriptionHandler, SubscriptionsUseCasesHandler>();
         services.AddTransient<IDeleteSubscriptionHandler, SubscriptionsUseCasesHandler>();
         services.AddTransient<IListSubscriptionsHandler, SubscriptionsUseCasesHandler>();
-        services.AddTransient<ICustomQuerySubscriptionHandler, SubscriptionsUseCasesHandler>();
-        services.AddTransient<IStandardQuerySubscriptionHandler, SubscriptionsUseCasesHandler>();
+        services.AddTransient<IRegisterSubscriptionHandler, SubscriptionsUseCasesHandler>();
         services.AddTransient<IGetSubscriptionDetailsHandler, SubscriptionsUseCasesHandler>();
         services.AddTransient<IListEpcsHandler, TopLevelResourceUseCasesHandler>();
         services.AddTransient<IListBizLocationsHandler, TopLevelResourceUseCasesHandler>();

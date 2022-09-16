@@ -2,7 +2,7 @@
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Store;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.UseCases.StandardQueries;
+using FasTnT.Application.UseCases.Queries;
 
 namespace FasTnT.Application.Tests;
 
@@ -15,9 +15,9 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldReturnAllTheQueryNames()
     {
-        var queries = new IStandardQuery[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
-        var handler = new StandardQueriesUseCasesHandler(Context, UserContext, queries);
-        var result = handler.GetQueryNamesAsync(CancellationToken.None).Result;
+        var queries = new IEpcisDataSource[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
+        var handler = new QueriesUseCasesHandler(Context, UserContext, queries);
+        var result = handler.ListQueriesAsync(CancellationToken.None).Result;
 
         Assert.IsInstanceOfType(result, typeof(IEnumerable<string>));
 

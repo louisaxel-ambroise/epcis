@@ -13,12 +13,12 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new StandardSubscription
+        Context.Subscriptions.Add(new Subscription
         {
             Name = "SubscriptionTest",
             QueryName = "TestQuery"
         });
-        Context.Subscriptions.Add(new StandardSubscription
+        Context.Subscriptions.Add(new Subscription
         {
             Name = "OtherSubscription",
             QueryName = "OtherQuery"
