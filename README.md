@@ -92,7 +92,7 @@ This is the list of planned and implemented 2.0 features in the repository:
   - [x] Create a named query
   - [x] Execute a named query
 - Subscriptions:
-  - [ ] Subscribe to an EPCIS request (webhook)
+  - [x] Subscribe to an EPCIS request (webhook)
 - Discovery endpoints
    - [x] EventType discovery endpoint
    - [x] EPCs discovery endpoint
