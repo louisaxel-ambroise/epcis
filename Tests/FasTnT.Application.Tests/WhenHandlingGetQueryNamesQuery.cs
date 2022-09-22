@@ -1,8 +1,9 @@
-﻿using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.EfCore.Services.Queries;
+using FasTnT.Application.EfCore.Store;
+using FasTnT.Application.EfCore.UseCases.Queries;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
-using FasTnT.Application.Store;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.UseCases.Queries;
 using FasTnT.Domain.Model.CustomQueries;
 
 namespace FasTnT.Application.Tests;
@@ -16,7 +17,7 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldReturnAllTheQueryNames()
     {
-        var queries = new IEpcisDataSource[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
+        var queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
         var handler = new QueriesUseCasesHandler(Context, UserContext, queries);
         var result = handler.ListQueriesAsync(CancellationToken.None).Result;
 

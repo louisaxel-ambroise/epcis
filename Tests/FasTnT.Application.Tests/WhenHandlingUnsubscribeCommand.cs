@@ -1,7 +1,8 @@
-﻿using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.EfCore.Services.Queries;
+using FasTnT.Application.EfCore.Store;
+using FasTnT.Application.EfCore.UseCases.Subscriptions;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.Store;
-using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 using Moq;
@@ -12,7 +13,7 @@ namespace FasTnT.Application.Tests;
 public class WhenHandlingUnsubscribeCommand
 {
     readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenHandlingUnsubscribeCommand));
-    readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
+    readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
     readonly static Mock<ISubscriptionListener> Listener = new(MockBehavior.Loose);
 
     [ClassInitialize]

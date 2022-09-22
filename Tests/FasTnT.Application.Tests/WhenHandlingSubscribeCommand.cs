@@ -1,6 +1,7 @@
-﻿using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Store;
-using FasTnT.Application.UseCases.Subscriptions;
+﻿using FasTnT.Application.EfCore.Services.Queries;
+using FasTnT.Application.EfCore.Store;
+using FasTnT.Application.EfCore.UseCases.Subscriptions;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 
@@ -10,7 +11,7 @@ namespace FasTnT.Application.Tests;
 public class WhenHandlingSubscribeCommand
 {
     readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenHandlingSubscribeCommand));
-    readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(), new SimpleMasterDataQuery() };
+    readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
 
     [ClassInitialize]
     public static void Initialize(TestContext _)

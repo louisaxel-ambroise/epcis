@@ -1,5 +1,6 @@
-﻿using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Store;
+﻿using FasTnT.Application.EfCore.Services.Queries;
+using FasTnT.Application.EfCore.Store;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
@@ -17,7 +18,7 @@ namespace FasTnT.Application.Tests.Queries
         public void Initialize()
         {
             Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
-            Query = new SimpleEventQuery();
+            Query = new SimpleEventQuery(Context);
 
             Context.Requests.Add(new Domain.Model.Request
             {
@@ -47,7 +48,7 @@ namespace FasTnT.Application.Tests.Queries
 
             try
             {
-                Query.ExecuteAsync(Context, Parameters, default).Wait();
+                Query.ExecuteAsync(Parameters, default).Wait();
                 Assert.IsFalse(true, "The query should fail");
             }
             catch(Exception ex)

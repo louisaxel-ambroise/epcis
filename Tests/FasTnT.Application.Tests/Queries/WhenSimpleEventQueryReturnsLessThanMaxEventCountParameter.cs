@@ -1,5 +1,6 @@
-﻿using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Store;
+﻿using FasTnT.Application.EfCore.Services.Queries;
+using FasTnT.Application.EfCore.Store;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -16,7 +17,7 @@ namespace FasTnT.Application.Tests.Queries
         public void Initialize()
         {
             Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
-            Query = new SimpleEventQuery();
+            Query = new SimpleEventQuery(Context);
 
             Context.Requests.Add(new Domain.Model.Request
             {
@@ -38,7 +39,7 @@ namespace FasTnT.Application.Tests.Queries
         [TestMethod]
         public void ItShouldThrowAQueryTooLargeExceptionException()
         {
-            var result = Query.ExecuteAsync(Context, Parameters, default).Result;
+            var result = Query.ExecuteAsync(Parameters, default).Result;
 
             Assert.IsNotNull(result);
             Assert.AreEqual(result.EventList.Count, 1);

@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\FasTnT.Application.EfCore\FasTnT.Application.EfCore.csproj" />
     <ProjectReference Include="..\..\FasTnT.Application\FasTnT.Application.csproj" />
     <ProjectReference Include="..\..\FasTnT.Domain\FasTnT.Domain.csproj" />
   </ItemGroup>

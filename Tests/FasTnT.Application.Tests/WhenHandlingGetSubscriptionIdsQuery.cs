@@ -1,5 +1,5 @@
-﻿using FasTnT.Application.Store;
-using FasTnT.Application.UseCases.Subscriptions;
+﻿using FasTnT.Application.EfCore.Store;
+using FasTnT.Application.EfCore.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application.Tests;
