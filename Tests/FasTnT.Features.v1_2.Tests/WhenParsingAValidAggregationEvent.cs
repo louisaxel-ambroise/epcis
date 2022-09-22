@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Infrastructure.Utils;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
 using FasTnT.Features.v1_2.Communication.Parsers;
 
 namespace FasTnT.Features.v1_2.Tests;
@@ -66,7 +66,7 @@ public class WhenParsingAValidAggregationEvent : XmlParsingTestCase
     [TestMethod]
     public void ExtensionFieldsShouldBeParsedCorrectly()
     {
-        Assert.AreEqual(1, Event.CustomFields.Where(x => x.Type == FieldType.CustomField).Count());
+        Assert.AreEqual(1, Event.Fields.Where(x => x.Type == FieldType.CustomField).Count());
     }
 
     [TestMethod]

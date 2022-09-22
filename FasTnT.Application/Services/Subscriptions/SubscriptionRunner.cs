@@ -28,7 +28,8 @@ public class SubscriptionRunner : ISubscriptionRunner
         _logger.LogInformation("Running Subscription {Name} ({Id})", subscription.Name, subscription.Id);
 
         var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = DateTime.UtcNow, ResultsSent = true, Successful = true, SubscriptionId = subscription.Id };
-        var dataSource = _dataSources.Single(x => x.Name == subscription.QueryName);
+        var query = await _context.Queries.SingleAsync(x => x.Name == subscription.QueryName, cancellationToken);
+        var dataSource = _dataSources.Single(x => x.Name == query.DataSource);
         var pendingRequests = await _context.PendingRequests.Where(x => x.SubscriptionId == subscription.Id).ToListAsync(cancellationToken);
         var resultsSent = false;
 

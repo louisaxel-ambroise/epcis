@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Queries.GetStandardVersion;
-using FasTnT.Features.v1_2.Communication.Parsers;
+﻿using FasTnT.Features.v1_2.Communication.Parsers;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Features.v1_2.Tests;
 
@@ -19,6 +19,6 @@ public class WhenParsingAGetStandardVersionQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAGetStandardVersionObject()
     {
-        Assert.IsInstanceOfType(Query, typeof(GetStandardVersionQuery));
+        Assert.IsInstanceOfType(Query, typeof(GetStandardVersion));
     }
 }

@@ -1,7 +1,5 @@
 ﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.Services.Users;
-using FasTnT.Application.Services.Users.Providers;
 using FasTnT.Application.Store;
 using FasTnT.Application.Store.Configuration;
 using FasTnT.Application.UseCases.Captures;
@@ -30,10 +28,6 @@ public static class EpcisConfiguration
         services.AddSingleton<IEpcisDataSource, SimpleEventQuery>();
         services.AddSingleton<IEpcisDataSource, SimpleMasterDataQuery>();
 
-        services.AddTransient<ISubscriptionRunner, SubscriptionRunner>();
-        services.AddSingleton<ISubscriptionService, SubscriptionService>();
-        services.AddSingleton<ISubscriptionListener>(ctx => ctx.GetService<ISubscriptionService>());
-
         services.AddTransient<IListCaptureRequestsHandler, CaptureUseCasesHandler>();
         services.AddTransient<ICaptureRequestDetailsHandler, CaptureUseCasesHandler>();
         services.AddTransient<ICaptureRequestHandler, CaptureUseCasesHandler>();
@@ -60,12 +54,15 @@ public static class EpcisConfiguration
 
         return services;
     }
-}
+    
+    public static IServiceCollection AddEpcisSubscriptionServices(this IServiceCollection services, params IResultSender[] resultSenders)
+    {
+        services.AddTransient<ISubscriptionRunner, SubscriptionRunner>();
+        services.AddSingleton<ISubscriptionService, SubscriptionService>();
+        services.AddSingleton<IEnumerable<IResultSender>>(resultSenders);
 
-public class EpcisOptions
-{
-    public string ConnectionString { get; set; } = string.Empty;
-    public int CommandTimeout { get; set; } = 60;
-    public Func<IServiceProvider, ICurrentUser> CurrentUser { get; set; } = _ => null;
-    public Func<IServiceProvider, IUserProvider> UserProvider { get; set; } = svc => new UserProvider(svc.GetService<EpcisContext>());
+        services.AddSingleton<ISubscriptionListener>(ctx => ctx.GetService<ISubscriptionService>());
+
+        return services;
+    }
 }

@@ -75,24 +75,40 @@ public class SubscriptionsUseCasesHandler :
 
     public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
     {
-        var dataSource = _dataSources.SingleOrDefault(x => x.Name == subscription.QueryName);
+        var query = await _context.Queries
+            .AsNoTracking()
+            .Include(x => x.Parameters)
+            .SingleOrDefaultAsync(x => x.Name == subscription.QueryName, cancellationToken);
 
         if (!SubscriptionValidator.IsValid(subscription))
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Subscription request is not valid");
         }
-        if (dataSource is null) 
+        if (query is null) 
         {
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query with name '{subscription.QueryName}' not found");
         }
-        if(!dataSource.AllowSubscription) 
+
+        var dataSource = _dataSources.SingleOrDefault(x => x.Name == query.DataSource);
+
+        if (dataSource is null) 
+        {
+            throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query '{subscription.QueryName}' has an invalid dataSource");
+        }
+        if (!dataSource.AllowSubscription) 
         {
             throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query '{subscription.QueryName}' does not allow subscription");
         }
-        if(await _context.Subscriptions.AnyAsync(x => x.Name == subscription.Name, cancellationToken)) 
+        if (await _context.Subscriptions.AnyAsync(x => x.Name == subscription.Name, cancellationToken)) 
         {
             throw new EpcisException(ExceptionType.DuplicateSubscriptionException, $"Subscription '{subscription.Name}' already exists");
         }
+
+        subscription.Parameters.AddRange(query.Parameters.Select(x => new SubscriptionParameter
+        {
+            Name = x.Name,
+            Values = x.Values
+        }));
 
         _context.Subscriptions.Add(subscription);
 

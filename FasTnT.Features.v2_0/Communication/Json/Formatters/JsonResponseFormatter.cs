@@ -120,10 +120,10 @@ public static class JsonResponseFormatter
 
     private static string FormatQueryResult(QueryResponse result)
     {
-        var context = BuildContext(result.EventList.SelectMany(x => x.CustomFields).Select(x => x.Namespace).Distinct());
+        var context = BuildContext(result.EventList.SelectMany(x => x.Fields).Select(x => x.Namespace).Where(x => !string.IsNullOrEmpty(x)).Distinct());
         var document = new Dictionary<string, object>
         {
-            ["@context"] = context.Select(x => (object)new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
+            ["@context"] = context.Select(x => (object) new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
             ["id"] = $"fastnt:epcis:2.0:pollquery:{Guid.NewGuid()}",
             ["type"] = "EPCISQueryDocument",
             ["schemaVersion"] = "2.0",

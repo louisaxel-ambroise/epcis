@@ -22,7 +22,7 @@ internal static class JsonSensorElementParser
                 case "sensorReport":
                     sensorElement.Reports.AddRange(ParseSensorReports(property.Value, namespaces)); break;
                 default:
-                    sensorElement.CustomFields.AddRange(ParseCustomField<SensorElementCustomField>(property, FieldType.CustomField, namespaces)); break;
+                    sensorElement.Fields.AddRange(ParseCustomField(property, FieldType.Sensor, namespaces)); break;
             }
         }
 
@@ -57,7 +57,7 @@ internal static class JsonSensorElementParser
                 case "chemicalSubstance":
                     report.ChemicalSubstance = property.Value.GetString(); break;
                 case "value":
-                    report.Value = property.Value.GetRawText(); break;
+                    report.Value = property.Value.GetSingle(); break;
                 case "component":
                     report.Component = property.Value.GetString(); break;
                 case "stringValue":
@@ -85,7 +85,7 @@ internal static class JsonSensorElementParser
                 case "deviceMetadata":
                     report.DeviceMetadata = property.Value.GetString(); break;
                 default:
-                    report.CustomFields.AddRange(ParseCustomField<SensorReportCustomField>(property, FieldType.CustomField, namespaces)); break;
+                    report.Fields.AddRange(ParseCustomField(property, FieldType.SensorReport, namespaces)); break;
             }
         }
 
@@ -115,34 +115,32 @@ internal static class JsonSensorElementParser
                 case "bizRules":
                     sensorElement.BizRules = property.Value.GetString(); break;
                 default:
-                    sensorElement.CustomFields.AddRange(ParseCustomField<SensorElementCustomField>(property, FieldType.SensorMetadata, namespaces)); break;
+                    sensorElement.Fields.AddRange(ParseCustomField(property, FieldType.SensorMetadata, namespaces)); break;
             }
         }
     }
 
-    private static IEnumerable<T> ParseCustomField<T>(JsonProperty jsonProperty, FieldType type, Namespaces namespaces)
-        where T : CustomField, new()
+    private static IEnumerable<Field> ParseCustomField(JsonProperty jsonProperty, FieldType type, Namespaces namespaces)
     {
         var (ns, name) = ParseName(jsonProperty.Name, namespaces);
-        return ParseCustomField<T>(jsonProperty.Value, type, name, ns, namespaces);
+        return ParseCustomField(jsonProperty.Value, type, name, ns, namespaces);
     }
 
-    private static IEnumerable<T> ParseCustomField<T>(JsonElement element, FieldType type, string propName, string propNs, Namespaces namespaces)
-        where T : CustomField, new()
+    private static IEnumerable<Field> ParseCustomField(JsonElement element, FieldType type, string propName, string propNs, Namespaces namespaces)
     {
-        var field = new T { Type = type, Name = propName, Namespace = propNs };
+        var field = new Field { Type = type, Name = propName, Namespace = propNs };
 
         if (element.ValueKind == JsonValueKind.Object)
         {
             field.Children.AddRange(element.EnumerateObject().SelectMany(e =>
             {
                 var (ns, name) = ParseName(e.Name, namespaces);
-                return ParseCustomField<T>(e.Value, type, name, ns, namespaces);
+                return ParseCustomField(e.Value, type, name, ns, namespaces);
             }));
         }
         else if (element.ValueKind == JsonValueKind.Array)
         {
-            return element.EnumerateArray().SelectMany(e => ParseCustomField<T>(e, type, propName, propNs, namespaces));
+            return element.EnumerateArray().SelectMany(e => ParseCustomField(e, type, propName, propNs, namespaces));
         }
         else
         {

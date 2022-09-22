@@ -27,5 +27,5 @@ public class Event
     public List<Destination> Destinations { get; set; } = new();
     public List<SensorElement> SensorElements { get; set; } = new();
     public List<PersistentDisposition> PersistentDispositions { get; set; } = new();
-    public List<CustomField> CustomFields { get; set; } = new();
+    public List<Field> Fields { get; set; } = new();
 }

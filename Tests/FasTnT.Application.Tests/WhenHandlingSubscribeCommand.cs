@@ -18,7 +18,8 @@ public class WhenHandlingSubscribeCommand
         Context.Subscriptions.Add(new Subscription
         {
             Name = "TestSubscription",
-            QueryName = Queries.First().Name
+            QueryName = Queries.First().Name,
+            FormatterName = "TestFormatter"
         });
 
         Context.SaveChanges();

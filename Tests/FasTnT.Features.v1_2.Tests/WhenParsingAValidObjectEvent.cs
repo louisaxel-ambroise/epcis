@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Infrastructure.Utils;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
 using FasTnT.Features.v1_2.Communication.Parsers;
 
 namespace FasTnT.Features.v1_2.Tests;
@@ -74,10 +74,15 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     [TestMethod]
     public void ExtensionFieldsShouldBeParsedCorrectly()
     {
-        Assert.AreEqual(2, Event.CustomFields.Where(x => x.Type == FieldType.Extension).Count());
+        Assert.AreEqual(1, Event.Fields.Where(x => x.Type == FieldType.Extension).Count());
 
-        Assert.AreEqual(1, Event.CustomFields.Single(x => x.Name == "sensorElementList").Children.Count, "sensorElementList should have one children");
-        Assert.AreEqual(1, Event.CustomFields.Single(x => x.Name == "testField").Children.Count, "testField should have one children");
+        Assert.AreEqual(1, Event.Fields.Single(x => x.Name == "testField").Children.Count, "testField should have one children");
+    }
+
+    [TestMethod]
+    public void SensorElementsShouldBeParsedCorrectly()
+    {
+        Assert.AreEqual(1, Event.SensorElements.Count);
     }
 
     [TestMethod]

@@ -33,7 +33,7 @@ public class JsonResultSender : IResultSender
 
     private static async Task<bool> SendRequestAsync(HttpClient request, string content, CancellationToken cancellationToken)
     {
-        var httpContent = new StringContent(content, Encoding.UTF8, "application/json");
+        using var httpContent = new StringContent(content, Encoding.UTF8, "application/json");
 
         try
         {

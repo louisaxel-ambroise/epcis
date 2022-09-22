@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Features.v2_0.Communication.Xml.Utils;
+using FasTnT.Features.v2_0.Endpoints.Interfaces;
 
 namespace FasTnT.Features.v2_0.Communication.Xml.Formatters;
 
@@ -8,8 +9,8 @@ public static class XmlResponseFormatter
 {
     public static string Format<T>(T response)
     {
-        var element = response is QueryResponse poll
-            ? FormatPoll(poll)
+        var element = response is QueryResult poll
+            ? FormatPoll(poll.Response)
             : throw new FormatException();
 
         return element.ToString(SaveOptions.OmitDuplicateNamespaces | SaveOptions.DisableFormatting);
@@ -26,6 +27,8 @@ public static class XmlResponseFormatter
 
         var queryResults = new XElement(XName.Get("QueryResults", Namespaces.Query),
             new XAttribute(XNamespace.Xmlns + "epcisq", Namespaces.Query),
+            new XAttribute(XNamespace.Xmlns + "xsd", Namespaces.XSD),
+            new XAttribute(XNamespace.Xmlns + "xsi", Namespaces.XSI),
             new XElement("queryName", response.QueryName),
             !string.IsNullOrEmpty(response.SubscriptionId) ? new XElement("subscriptionID", response.SubscriptionId) : null,
             new XElement("resultsBody", new XElement(resultName, resultList))
@@ -34,7 +37,7 @@ public static class XmlResponseFormatter
         // TODO: improve.
         if (response is QueryResponse pollResponse)
         {
-            var customNamespaces = pollResponse.EventList.SelectMany(x => x.CustomFields.Select(x => x.Namespace)).Distinct().ToArray();
+            var customNamespaces = pollResponse.EventList.SelectMany(x => x.Fields.Select(x => x.Namespace)).Where(IsCustomNamespace).Distinct().ToArray();
 
             for (var i = 0; i < customNamespaces.Length; i++)
             {
@@ -43,6 +46,11 @@ public static class XmlResponseFormatter
         }
 
         return queryResults;
+    }
+
+    private static bool IsCustomNamespace(string value)
+    {
+        return !string.IsNullOrWhiteSpace(value) && XNamespace.Xmlns != value;
     }
 
     public static XElement FormatError(EpcisException exception)

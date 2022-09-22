@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Queries.GetQueryNames;
-using FasTnT.Features.v1_2.Communication.Parsers;
+﻿using FasTnT.Features.v1_2.Communication.Parsers;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Features.v1_2.Tests;
 
@@ -19,6 +19,6 @@ public class WhenParsingAGetQueryNamesQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAGetQueryNamesObject()
     {
-        Assert.IsInstanceOfType(Query, typeof(GetQueryNamesQuery));
+        Assert.IsInstanceOfType(Query, typeof(GetQueryNames));
     }
 }

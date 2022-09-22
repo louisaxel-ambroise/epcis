@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.Services.Users;
 using FasTnT.Application.Store;
 using FasTnT.Application.Validators;
 using FasTnT.Domain.Infrastructure.Exceptions;
@@ -14,11 +15,13 @@ public class CaptureUseCasesHandler :
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
+    private readonly ISubscriptionListener _subscriptionListener;
 
-    public CaptureUseCasesHandler(EpcisContext context, ICurrentUser currentUser)
+    public CaptureUseCasesHandler(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener subscriptionListener)
     {
         _context = context;
         _currentUser = currentUser;
+        _subscriptionListener = subscriptionListener;
     }
 
     public async Task<IEnumerable<Request>> ListCapturesAsync(CancellationToken cancellationToken)
@@ -56,6 +59,7 @@ public class CaptureUseCasesHandler :
         _context.Requests.Add(request);
 
         await _context.SaveChangesAsync(cancellationToken);
+        await _subscriptionListener.TriggerAsync(new[] { "stream" }, cancellationToken);
 
         return request;
     }

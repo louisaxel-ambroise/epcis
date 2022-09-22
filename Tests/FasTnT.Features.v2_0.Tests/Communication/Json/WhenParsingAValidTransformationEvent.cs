@@ -113,8 +113,8 @@ public class WhenParsingAValidTransformationEvent : JsonParsingTestCase
     [TestMethod]
     public void CustomFieldsShouldBeParsedCorrectly()
     {
-        Assert.AreEqual(2, Event.CustomFields.Count);
-        Assert.IsTrue(Event.CustomFields.Any(x => x.Type == FieldType.CustomField && x.Namespace == "http://ns.example.com/ext1/" && x.Name == "int" && x.TextValue == "10"));
-        Assert.IsTrue(Event.CustomFields.Any(x => x.Type == FieldType.CustomField && x.Namespace == "http://ns.example.com/ext1/" && x.Name == "string" && x.TextValue == "string"));
+        Assert.AreEqual(2, Event.Fields.Count);
+        Assert.IsTrue(Event.Fields.Any(x => x.Type == FieldType.CustomField && x.Namespace == "http://ns.example.com/ext1/" && x.Name == "int" && x.TextValue == "10"));
+        Assert.IsTrue(Event.Fields.Any(x => x.Type == FieldType.CustomField && x.Namespace == "http://ns.example.com/ext1/" && x.Name == "string" && x.TextValue == "string"));
     }
 }

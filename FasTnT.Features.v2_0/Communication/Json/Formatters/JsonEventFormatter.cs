@@ -57,13 +57,13 @@ public static class JsonEventFormatter
 
         AddSensorElements(element, evt.SensorElements, context);
 
-        var ilmd = BuildExtensionFields(evt.CustomFields.OfType<EventCustomField>().Where(x => x.Type == FieldType.Ilmd), context);
+        var ilmd = BuildExtensionFields(evt.Fields.OfType<Field>().Where(x => x.Type == FieldType.Ilmd), context);
         if (ilmd.Count > 0)
         {
             element["ilmd"] = ilmd;
         }
 
-        var customFields = BuildExtensionFields(evt.CustomFields.OfType<EventCustomField>().Where(x => x.Type == FieldType.CustomField), context);
+        var customFields = BuildExtensionFields(evt.Fields.OfType<Field>().Where(x => x.Type == FieldType.CustomField), context);
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -91,7 +91,7 @@ public static class JsonEventFormatter
             ["sensorReport"] = sensor.Reports.Select(x => MapSensorReport(x, context))
         };
 
-        var customFields = BuildExtensionFields(sensor.CustomFields.Where(x => x.Type == FieldType.CustomField), context);
+        var customFields = BuildExtensionFields(sensor.Fields.Where(x => x.Type == FieldType.CustomField), context);
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -114,7 +114,7 @@ public static class JsonEventFormatter
             ["bizRules"] = sensor.Time
         };
 
-        var customFields = BuildExtensionFields(sensor.CustomFields.Where(x => x.Type == FieldType.SensorMetadata), context);
+        var customFields = BuildExtensionFields(sensor.Fields.Where(x => x.Type == FieldType.SensorMetadata), context);
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -150,7 +150,7 @@ public static class JsonEventFormatter
             ["deviceMetadata"] = report.DeviceMetadata
         };
 
-        var customFields = BuildExtensionFields(report.CustomFields, context);
+        var customFields = BuildExtensionFields(report.Fields, context);
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -212,7 +212,7 @@ public static class JsonEventFormatter
     }
 
     // TODO: refactor this mess.
-    private static IDictionary<string, object> BuildExtensionFields(IEnumerable<CustomField> fields, IDictionary<string, string> context)
+    private static IDictionary<string, object> BuildExtensionFields(IEnumerable<Field> fields, IDictionary<string, string> context)
     {
         var extension = new Dictionary<string, object>();
 
@@ -225,14 +225,15 @@ public static class JsonEventFormatter
             else
             {
                 var field = group.Single();
+                var children = field.Children.Where(x => x.Type != FieldType.Attribute);
 
-                if (field.Children.Count > 1)
+                if (children.Count() > 1)
                 {
-                    extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(field.Children, context));
+                    extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(children, context));
                 }
-                else if (field.Children.Count == 1)
+                else if (children.Count() == 1)
                 {
-                    extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(field.Children, context).First().Value);
+                    extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(children, context).First().Value);
                 }
                 else
                 {
@@ -244,7 +245,7 @@ public static class JsonEventFormatter
         return extension;
     }
 
-    private static Dictionary<string, object> BuildElement(IEnumerable<CustomField> fields, IDictionary<string, string> context)
+    private static Dictionary<string, object> BuildElement(IEnumerable<Field> fields, IDictionary<string, string> context)
     {
         var element = new Dictionary<string, object>();
 
@@ -257,10 +258,11 @@ public static class JsonEventFormatter
             else
             {
                 var field = group.Single();
+                var children = field.Children.Where(x => x.Type != FieldType.Attribute);
 
-                if (field.Children.Any())
+                if (children.Any())
                 {
-                    element.Add(context[field.Namespace] + ":" + field.Name, BuildElement(field.Children, context));
+                    element.Add(context[field.Namespace] + ":" + field.Name, BuildElement(children, context));
                 }
                 else
                 {
@@ -272,19 +274,21 @@ public static class JsonEventFormatter
         return element;
     }
 
-    private static List<object> BuildArrayElement(IEnumerable<CustomField> fields, IDictionary<string, string> context)
+    private static List<object> BuildArrayElement(IEnumerable<Field> fields, IDictionary<string, string> context)
     {
         var array = new List<object>();
 
         foreach (var field in fields)
         {
-            if (field.Children.Count > 1 && field.Children.All(x => x.Name == field.Name && x.Namespace == field.Namespace))
+            var children = field.Children.Where(x => x.Type != FieldType.Attribute);
+
+            if (children.Count() > 1 && field.Children.All(x => x.Name == field.Name && x.Namespace == field.Namespace))
             {
-                array.Add(BuildArrayElement(field.Children, context));
+                array.Add(BuildArrayElement(children, context));
             }
-            else if (field.Children.Any())
+            else if (children.Any())
             {
-                array.Add(BuildElement(field.Children, context));
+                array.Add(BuildElement(children, context));
             }
             else
             {

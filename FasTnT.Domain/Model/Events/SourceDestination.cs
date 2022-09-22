@@ -25,7 +25,7 @@ public class SensorElement
     public string DataProcessingMethod { get; set; }
     public string BizRules { get; set; }
     public List<SensorReport> Reports { get; set; } = new();
-    public List<SensorElementCustomField> CustomFields { get; set; } = new();
+    public List<Field> Fields { get; set; } = new();
 }
 
 public class SensorReport
@@ -38,7 +38,7 @@ public class SensorReport
     public DateTime? Time { get; set; }
     public string Microorganism { get; set; }
     public string ChemicalSubstance { get; set; }
-    public string Value { get; set; }
+    public float? Value { get; set; }
     public string Component { get; set; }
     public string StringValue { get; set; }
     public bool BooleanValue { get; set; }
@@ -52,5 +52,5 @@ public class SensorReport
     public string UnitOfMeasure { get; set; }
     public float? SDev { get; set; }
     public string DeviceMetadata { get; set; }
-    public List<SensorReportCustomField> CustomFields { get; set; } = new();
+    public List<Field> Fields { get; set; } = new();
 }

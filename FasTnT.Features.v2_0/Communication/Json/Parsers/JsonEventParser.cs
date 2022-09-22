@@ -82,14 +82,14 @@ public class JsonEventParser
                 case "persistentDisposition":
                     evt.PersistentDispositions.AddRange(ParsePersistentDispositions(property.Value)); break;
                 case "ilmd":
-                    evt.CustomFields.AddRange(ParseIlmd(property)); break;
+                    evt.Fields.AddRange(ParseIlmd(property)); break;
                 case "recordTime":
                 /* Don't do anything - record time is set to the time the event was inserted. */
                 case "@context":
                     /* Don't do anything - context was already parsed. */
                     break;
                 default:
-                    evt.CustomFields.AddRange(ParseCustomField(property)); break;
+                    evt.Fields.AddRange(ParseCustomField(property)); break;
             }
         }
 
@@ -162,7 +162,7 @@ public class JsonEventParser
         return value.EnumerateArray().Select(x => JsonSensorElementParser.ParseSensorElement(x, _extensions));
     }
 
-    private IEnumerable<EventCustomField> ParseIlmd(JsonProperty jsonProperty)
+    private IEnumerable<Field> ParseIlmd(JsonProperty jsonProperty)
     {
         return jsonProperty.Value.EnumerateObject().SelectMany(e =>
         {
@@ -171,15 +171,15 @@ public class JsonEventParser
         });
     }
 
-    private IEnumerable<EventCustomField> ParseCustomField(JsonProperty jsonProperty)
+    private IEnumerable<Field> ParseCustomField(JsonProperty jsonProperty)
     {
         var (ns, name) = ParseName(jsonProperty.Name);
         return ParseCustomField(jsonProperty.Value, FieldType.CustomField, name, ns);
     }
 
-    private IEnumerable<EventCustomField> ParseCustomField(JsonElement element, FieldType type, string propName, string propNs)
+    private IEnumerable<Field> ParseCustomField(JsonElement element, FieldType type, string propName, string propNs)
     {
-        var field = new EventCustomField { Type = type, Name = propName, Namespace = propNs };
+        var field = new Field { Type = type, Name = propName, Namespace = propNs };
 
         if (element.ValueKind == JsonValueKind.Object)
         {

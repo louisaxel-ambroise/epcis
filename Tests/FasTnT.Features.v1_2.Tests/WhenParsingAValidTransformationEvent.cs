@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Infrastructure.Utils;
-using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
 using FasTnT.Features.v1_2.Communication.Parsers;
 
 namespace FasTnT.Features.v1_2.Tests;
@@ -60,16 +60,16 @@ public class WhenParsingAValidTransformationEvent : XmlParsingTestCase
     [TestMethod]
     public void IlmdShouldBeParsedCorrectly()
     {
-        Assert.AreEqual(2, Event.CustomFields.Count(x => x.Type == FieldType.Ilmd));
+        Assert.AreEqual(2, Event.Fields.Count(x => x.Type == FieldType.Ilmd));
 
-        Assert.IsTrue(Event.CustomFields.Any(x => x.Type == FieldType.Ilmd && x.Name == "bestBeforeDate" && x.Namespace == "http://ns.example.com/epcis" && x.TextValue == "2014-12-10"));
-        Assert.IsTrue(Event.CustomFields.Any(x => x.Type == FieldType.Ilmd && x.Name == "batch" && x.Namespace == "http://ns.example.com/epcis" && x.TextValue == "XYZ"));
+        Assert.IsTrue(Event.Fields.Any(x => x.Type == FieldType.Ilmd && x.Name == "bestBeforeDate" && x.Namespace == "http://ns.example.com/epcis" && x.TextValue == "2014-12-10"));
+        Assert.IsTrue(Event.Fields.Any(x => x.Type == FieldType.Ilmd && x.Name == "batch" && x.Namespace == "http://ns.example.com/epcis" && x.TextValue == "XYZ"));
     }
 
     [TestMethod]
     public void ExtensionFieldsShouldBeParsedCorrectly()
     {
-        Assert.AreEqual(1, Event.CustomFields.Where(x => x.Type == FieldType.CustomField).Count());
+        Assert.AreEqual(1, Event.Fields.Where(x => x.Type == FieldType.CustomField).Count());
     }
 
     // TODO: EPCs (input/output and lists)

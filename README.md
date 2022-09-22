@@ -24,7 +24,7 @@ You can also setup FasTnT EPCIS using the Docker image or in Azure quite easily.
 
 ## HTTP Endpoints
 
-The API is secured using HTTP Basic authentication. 
+The API is secured using HTTP Basic authentication by default. 
 There is no default user, but when in Development environment the unknown users will be created autmatically. A user is limited to see only the events and masterdata he captured by default.
 
 ### EPCIS 1.2 endpoints:
@@ -85,21 +85,21 @@ This is the list of planned and implemented 2.0 features in the repository:
 
 - Capture
   - [x] Capture list of Events
-  - [ ] Capture a single Event
+  - [x] Capture a single Event
 - Queries:
   - [x] List events
   - [ ] Event pagination
-  - [ ] Create a named query
-  - [ ] Execute a named query
+  - [x] Create a named query
+  - [x] Execute a named query
 - Subscriptions:
-  - [ ] Subscribe to an EPCIS request (websocket)
+  - [ ] Subscribe to an EPCIS request (webhook)
 - Discovery endpoints
-   - [ ] EventType discovery endpoint
-   - [ ] EPCs discovery endpoint
-   - [ ] Business Steps discovery endpoint
-   - [ ] Business Locations discovery endpoint
-   - [ ] Read Points discovery endpoint
-   - [ ] Dispositions discovery endpoint
+   - [x] EventType discovery endpoint
+   - [x] EPCs discovery endpoint
+   - [x] Business Steps discovery endpoint
+   - [x] Business Locations discovery endpoint
+   - [x] Read Points discovery endpoint
+   - [x] Dispositions discovery endpoint
 
 # Authors
 

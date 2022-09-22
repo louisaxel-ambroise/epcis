@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Queries.GetSubscriptionIds;
-using FasTnT.Features.v1_2.Communication.Parsers;
+﻿using FasTnT.Features.v1_2.Communication.Parsers;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Features.v1_2.Tests;
 
@@ -19,12 +19,12 @@ public class WhenParsingAGetSubscriptionIDsQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAGetSubscriptionIDsObject()
     {
-        Assert.IsInstanceOfType(Query, typeof(GetSubscriptionIdsQuery));
+        Assert.IsInstanceOfType(Query, typeof(GetSubscriptionIDs));
     }
 
     [TestMethod]
     public void TheGetSubscriptionIDsQueryShouldHaveTheCorrectQueryName()
     {
-        Assert.AreEqual("SimpleEventQuery", (Query as GetSubscriptionIdsQuery).QueryName);
+        Assert.AreEqual("SimpleEventQuery", (Query as GetSubscriptionIDs).QueryName);
     }
 }

@@ -19,7 +19,11 @@ public static class SoapExtensions
         var envelope = new XElement(XName.Get("Envelope", Namespaces.SoapEnvelop), body);
         var xmlResponse = new XDocument(envelope);
 
-        envelope.Add(new XAttribute(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), new XAttribute(XNamespace.Xmlns + "epcisq", Namespaces.Query));
+        envelope.Add(
+            new XAttribute(XNamespace.Xmlns + "soapenv", Namespaces.SoapEnvelop), 
+            new XAttribute(XNamespace.Xmlns + "epcisq", Namespaces.Query),
+            new XAttribute(XNamespace.Xmlns + "xsd", Namespaces.XSD),
+            new XAttribute(XNamespace.Xmlns + "xsi", Namespaces.XSI));
 
         await using var xmlWriter = XmlWriter.Create(response.Body, _soapsettings);
 

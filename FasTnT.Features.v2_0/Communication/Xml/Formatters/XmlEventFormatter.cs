@@ -39,6 +39,8 @@ public static class XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateQuantityList(evt, EpcType.Quantity, "quantityList"));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));
         xmlEvent.AddIfNotNull(CreateDestinationList(evt));
+        xmlEvent.AddIfNotNull(CreateSensorElementList(evt));
+        xmlEvent.AddIfNotNull(CreatePersistentDispositionList(evt));
         xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Ilmd, "ilmd"));
         xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Extension, "extension"));
         xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));
@@ -162,6 +164,94 @@ public static class XmlEventFormatter
         return new XElement("destinationList", evt.Destinations.Select(x => new XElement("destination", new XAttribute("type", x.Type), x.Id)));
     }
 
+    private static XElement CreateSensorElementList(Event evt)
+    {
+        var sensorElements = evt.SensorElements.Select(CreateSensorElement);
+
+        return new XElement("sensorElementList", sensorElements);
+    }
+
+    private static XElement CreateSensorElement(SensorElement element)
+    {
+        var xmlElement = new XElement("sensorElement");
+
+        var metadata = new XElement("sensorMetadata");
+        metadata.AddIfNotNull(CreateAttribute("time", element.Time));
+        metadata.AddIfNotNull(CreateAttribute("deviceID", element.DeviceId));
+        metadata.AddIfNotNull(CreateAttribute("deviceMetadata", element.DeviceMetadata));
+        metadata.AddIfNotNull(CreateAttribute("rawData", element.RawData));
+        metadata.AddIfNotNull(CreateAttribute("startTime", element.StartTime));
+        metadata.AddIfNotNull(CreateAttribute("endTime", element.EndTime));
+        metadata.AddIfNotNull(CreateAttribute("bizRules", element.BizRules));
+        metadata.AddIfNotNull(CreateAttribute("dataProcessingMethod", element.DataProcessingMethod));
+    
+        foreach(var field in element.Fields.Where(x => x.Type == FieldType.SensorMetadata))
+        {
+            metadata.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
+        }
+
+        xmlElement.Add(metadata);
+        xmlElement.AddIfNotNull(element.Reports.Select(CreateSensorReport));
+        xmlElement.AddIfNotNull(element.Fields.Where(x => x.Type == FieldType.Sensor).Select(FormatField));
+
+        return xmlElement;
+    }
+
+    private static XElement CreateSensorReport(SensorReport report)
+    {
+        var xmlElement = new XElement("sensorReport");
+        xmlElement.AddIfNotNull(CreateAttribute("value", report.Value));
+        xmlElement.AddIfNotNull(CreateAttribute("type", report.Type));
+        xmlElement.AddIfNotNull(CreateAttribute("component", report.Component));
+        xmlElement.AddIfNotNull(CreateAttribute("stringValue", report.StringValue));
+        xmlElement.AddIfNotNull(CreateAttribute("booleanValue", report.BooleanValue));
+        xmlElement.AddIfNotNull(CreateAttribute("hexBinaryValue", report.HexBinaryValue));
+        xmlElement.AddIfNotNull(CreateAttribute("uriValue", report.UriValue));
+        xmlElement.AddIfNotNull(CreateAttribute("uom", report.UnitOfMeasure));
+        xmlElement.AddIfNotNull(CreateAttribute("minValue", report.MinValue));
+        xmlElement.AddIfNotNull(CreateAttribute("maxValue", report.MaxValue));
+        xmlElement.AddIfNotNull(CreateAttribute("sDev", report.SDev));
+        xmlElement.AddIfNotNull(CreateAttribute("chemicalSubstance", report.ChemicalSubstance));
+        xmlElement.AddIfNotNull(CreateAttribute("microorganism", report.Microorganism));
+        xmlElement.AddIfNotNull(CreateAttribute("deviceID", report.DeviceId));
+        xmlElement.AddIfNotNull(CreateAttribute("deviceMetadata", report.DeviceMetadata));
+        xmlElement.AddIfNotNull(CreateAttribute("rawData", report.RawData));
+        xmlElement.AddIfNotNull(CreateAttribute("time", report.Time));
+        xmlElement.AddIfNotNull(CreateAttribute("meanValue", report.MeanValue));
+        xmlElement.AddIfNotNull(CreateAttribute("percRank", report.PercRank));
+        xmlElement.AddIfNotNull(CreateAttribute("percValue", report.PercValue));
+        xmlElement.AddIfNotNull(CreateAttribute("dataProcessingMethod", report.DataProcessingMethod));
+
+        foreach (var field in report.Fields)
+        {
+            xmlElement.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
+        }
+
+        return xmlElement;
+    }
+
+    private static XAttribute CreateAttribute(string name, object value)
+    {
+        return value != null
+            ? new XAttribute(name, value)
+            : null;
+    }
+
+    private static XElement CreatePersistentDispositionList(Event evt)
+    {
+        var xmlElement = new XElement("persistentDisposition");
+        xmlElement.AddIfNotNull(evt.PersistentDispositions.Select(CreatePersistentDisposition));
+
+        return xmlElement;
+    }
+
+    private static XElement CreatePersistentDisposition(PersistentDisposition disposition)
+    {
+        var name = disposition.Type == PersistentDispositionType.Set ? "set" : "unset";
+
+        return new XElement(name, disposition.Id);
+    }
+
     private static XElement CreateFromCustomFields(Event evt, FieldType type, string elementName)
     {
         var extension = new XElement(elementName);
@@ -228,10 +318,10 @@ public static class XmlEventFormatter
 
     private static IEnumerable<XElement> CreateCustomFields(Event evt, FieldType type)
     {
-        return evt.CustomFields.Where(x => x.Type == type && x.Parent is null).Select(FormatField);
+        return evt.Fields.Where(x => x.Type == type && x.Parent is null).Select(FormatField);
     }
 
-    private static XElement FormatField(CustomField field)
+    private static XElement FormatField(Field field)
     {
         var attributes = field.Children.Where(x => x.Type == FieldType.Attribute).Select(x => new XAttribute(XName.Get(x.Name, x.Namespace), x.TextValue));
         var element = new XElement(XName.Get(field.Name, field.Namespace ?? string.Empty), field.TextValue, attributes);

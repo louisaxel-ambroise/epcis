@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -13,6 +12,10 @@ namespace FasTnT.Application.Migrations
                 name: "FK_Subscription_SubscriptionSchedule_ScheduleId",
                 schema: "Subscription",
                 table: "Subscription");
+
+            migrationBuilder.DropTable(
+                name: "CustomField",
+                schema: "Epcis");
 
             migrationBuilder.DropIndex(
                 name: "IX_Subscription_ScheduleId",
@@ -71,35 +74,6 @@ namespace FasTnT.Application.Migrations
                 table: "Subscription",
                 type: "nvarchar(256)",
                 maxLength: 256,
-                nullable: true);
-
-            migrationBuilder.AddColumn<short>(
-                name: "FieldType",
-                schema: "Epcis",
-                table: "CustomField",
-                type: "smallint",
-                nullable: false,
-                defaultValue: (short)0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "ReportId",
-                schema: "Epcis",
-                table: "CustomField",
-                type: "int",
-                nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "SensorId",
-                schema: "Epcis",
-                table: "CustomField",
-                type: "int",
-                nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "SensorReportCustomField_SensorId",
-                schema: "Epcis",
-                table: "CustomField",
-                type: "int",
                 nullable: true);
 
             migrationBuilder.CreateTable(
@@ -182,7 +156,7 @@ namespace FasTnT.Application.Migrations
                     Time = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Microorganism = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ChemicalSubstance = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Value = table.Column<float>(type: "real", nullable: true),
                     Component = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     StringValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BooleanValue = table.Column<bool>(type: "bit", nullable: false),
@@ -230,6 +204,54 @@ namespace FasTnT.Application.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Field",
+                schema: "Epcis",
+                columns: table => new
+                {
+                    EventId = table.Column<long>(type: "bigint", nullable: false),
+                    FieldId = table.Column<int>(type: "int", nullable: false),
+                    SensorId = table.Column<int>(type: "int", nullable: true),
+                    ReportId = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<short>(type: "smallint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Namespace = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    TextValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NumericValue = table.Column<double>(type: "float", nullable: true),
+                    DateValue = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    HasParent = table.Column<bool>(type: "bit", nullable: false, computedColumnSql: "(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", stored: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Field", x => new { x.EventId, x.FieldId });
+                    table.ForeignKey(
+                        name: "FK_Field_Event_EventId",
+                        column: x => x.EventId,
+                        principalSchema: "Epcis",
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Field_Field_EventId_ParentId",
+                        columns: x => new { x.EventId, x.ParentId },
+                        principalSchema: "Epcis",
+                        principalTable: "Field",
+                        principalColumns: new[] { "EventId", "FieldId" });
+                    table.ForeignKey(
+                        name: "FK_Field_SensorElement_EventId_SensorId",
+                        columns: x => new { x.EventId, x.SensorId },
+                        principalSchema: "Epcis",
+                        principalTable: "SensorElement",
+                        principalColumns: new[] { "EventId", "SensorId" });
+                    table.ForeignKey(
+                        name: "FK_Field_SensorReport_EventId_SensorId_ReportId",
+                        columns: x => new { x.EventId, x.SensorId, x.ReportId },
+                        principalSchema: "Epcis",
+                        principalTable: "SensorReport",
+                        principalColumns: new[] { "EventId", "SensorId", "ReportId" });
+                });
+
             migrationBuilder.InsertData(
                 schema: "Queries",
                 table: "StoredQuery",
@@ -251,16 +273,16 @@ namespace FasTnT.Application.Migrations
                 filter: "[SubscriptionId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomField_EventId_SensorId",
+                name: "IX_Field_EventId_ParentId",
                 schema: "Epcis",
-                table: "CustomField",
-                columns: new[] { "EventId", "SensorId" });
+                table: "Field",
+                columns: new[] { "EventId", "ParentId" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomField_EventId_SensorReportCustomField_SensorId_ReportId",
+                name: "IX_Field_EventId_SensorId_ReportId",
                 schema: "Epcis",
-                table: "CustomField",
-                columns: new[] { "EventId", "SensorReportCustomField_SensorId", "ReportId" });
+                table: "Field",
+                columns: new[] { "EventId", "SensorId", "ReportId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_StoredQuery_Name",
@@ -268,24 +290,6 @@ namespace FasTnT.Application.Migrations
                 table: "StoredQuery",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_CustomField_SensorElement_EventId_SensorId",
-                schema: "Epcis",
-                table: "CustomField",
-                columns: new[] { "EventId", "SensorId" },
-                principalSchema: "Epcis",
-                principalTable: "SensorElement",
-                principalColumns: new[] { "EventId", "SensorId" });
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_CustomField_SensorReport_EventId_SensorReportCustomField_SensorId_ReportId",
-                schema: "Epcis",
-                table: "CustomField",
-                columns: new[] { "EventId", "SensorReportCustomField_SensorId", "ReportId" },
-                principalSchema: "Epcis",
-                principalTable: "SensorReport",
-                principalColumns: new[] { "EventId", "SensorId", "ReportId" });
 
             migrationBuilder.AddForeignKey(
                 name: "FK_SubscriptionSchedule_Subscription_SubscriptionId",
@@ -301,26 +305,16 @@ namespace FasTnT.Application.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_CustomField_SensorElement_EventId_SensorId",
-                schema: "Epcis",
-                table: "CustomField");
-
-            migrationBuilder.DropForeignKey(
-                name: "FK_CustomField_SensorReport_EventId_SensorReportCustomField_SensorId_ReportId",
-                schema: "Epcis",
-                table: "CustomField");
-
-            migrationBuilder.DropForeignKey(
                 name: "FK_SubscriptionSchedule_Subscription_SubscriptionId",
                 schema: "Subscription",
                 table: "SubscriptionSchedule");
 
             migrationBuilder.DropTable(
-                name: "PersistentDisposition",
+                name: "Field",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
-                name: "SensorReport",
+                name: "PersistentDisposition",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
@@ -328,27 +322,21 @@ namespace FasTnT.Application.Migrations
                 schema: "Subscription");
 
             migrationBuilder.DropTable(
-                name: "SensorElement",
+                name: "SensorReport",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
                 name: "StoredQuery",
                 schema: "Queries");
 
+            migrationBuilder.DropTable(
+                name: "SensorElement",
+                schema: "Epcis");
+
             migrationBuilder.DropIndex(
                 name: "IX_SubscriptionSchedule_SubscriptionId",
                 schema: "Subscription",
                 table: "SubscriptionSchedule");
-
-            migrationBuilder.DropIndex(
-                name: "IX_CustomField_EventId_SensorId",
-                schema: "Epcis",
-                table: "CustomField");
-
-            migrationBuilder.DropIndex(
-                name: "IX_CustomField_EventId_SensorReportCustomField_SensorId_ReportId",
-                schema: "Epcis",
-                table: "CustomField");
 
             migrationBuilder.DropColumn(
                 name: "SubscriptionId",
@@ -364,26 +352,6 @@ namespace FasTnT.Application.Migrations
                 name: "SignatureToken",
                 schema: "Subscription",
                 table: "Subscription");
-
-            migrationBuilder.DropColumn(
-                name: "FieldType",
-                schema: "Epcis",
-                table: "CustomField");
-
-            migrationBuilder.DropColumn(
-                name: "ReportId",
-                schema: "Epcis",
-                table: "CustomField");
-
-            migrationBuilder.DropColumn(
-                name: "SensorId",
-                schema: "Epcis",
-                table: "CustomField");
-
-            migrationBuilder.DropColumn(
-                name: "SensorReportCustomField_SensorId",
-                schema: "Epcis",
-                table: "CustomField");
 
             migrationBuilder.RenameColumn(
                 name: "Values",
@@ -414,6 +382,40 @@ namespace FasTnT.Application.Migrations
                 type: "int",
                 nullable: true);
 
+            migrationBuilder.CreateTable(
+                name: "CustomField",
+                schema: "Epcis",
+                columns: table => new
+                {
+                    EventId = table.Column<long>(type: "bigint", nullable: false),
+                    FieldId = table.Column<int>(type: "int", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true),
+                    DateValue = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    HasParent = table.Column<bool>(type: "bit", nullable: false, computedColumnSql: "(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", stored: true),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Namespace = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NumericValue = table.Column<double>(type: "float", nullable: true),
+                    TextValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<short>(type: "smallint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomField", x => new { x.EventId, x.FieldId });
+                    table.ForeignKey(
+                        name: "FK_CustomField_CustomField_EventId_ParentId",
+                        columns: x => new { x.EventId, x.ParentId },
+                        principalSchema: "Epcis",
+                        principalTable: "CustomField",
+                        principalColumns: new[] { "EventId", "FieldId" });
+                    table.ForeignKey(
+                        name: "FK_CustomField_Event_EventId",
+                        column: x => x.EventId,
+                        principalSchema: "Epcis",
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Subscription_ScheduleId",
                 schema: "Subscription",
@@ -421,6 +423,12 @@ namespace FasTnT.Application.Migrations
                 column: "ScheduleId",
                 unique: true,
                 filter: "[ScheduleId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CustomField_EventId_ParentId",
+                schema: "Epcis",
+                table: "CustomField",
+                columns: new[] { "EventId", "ParentId" });
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Subscription_SubscriptionSchedule_ScheduleId",

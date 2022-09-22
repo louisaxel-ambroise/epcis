@@ -20,4 +20,6 @@ public static class Namespaces
     public static string Capture => "urn:epcglobal:epcis:xsd:1";
     public static string MasterData => "urn:epcglobal:epcis-masterdata:xsd:1";
     public static string SBDH => "http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader";
+    public static string XSD => "http://www.w3.org/2001/XMLSchema-instance";
+    public static string XSI => "http://www.w3.org/2001/XMLSchema";
 }

@@ -30,6 +30,7 @@ builder.Services.AddEpcisServices(opt =>
 });
 
 // Add the subscription manager as background service
+builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResultSender.Instance);
 builder.Services.AddSingleton<IResultSender>(XmlResultSender.Instance);
 builder.Services.AddSingleton<IResultSender>(JsonResultSender.Instance);
 builder.Services.AddHostedService<SubscriptionBackgroundService>();

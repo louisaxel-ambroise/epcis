@@ -44,6 +44,8 @@ public class SubscriptionEndpoints
     private static async Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, IRegisterSubscriptionHandler handler, CancellationToken cancellationToken)
     {
         request.Subscription.QueryName = query;
+        request.Subscription.Name = Guid.NewGuid().ToString();
+
         var response = await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
 
         return Results.Created($"v2_0/queries/{query}/subscriptions/{response.Name}", null);

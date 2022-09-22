@@ -145,7 +145,7 @@ internal static class EpcisModelConfiguration
         evt.HasMany(x => x.Transactions).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.PersistentDispositions).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.SensorElements).WithOne(x => x.Event).HasForeignKey("EventId");
-        evt.HasMany(x => x.CustomFields).WithOne(x => x.Event).HasForeignKey("EventId");
+        evt.HasMany(x => x.Fields).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasMany(x => x.CorrectiveEventIds).WithOne(x => x.Event).HasForeignKey("EventId");
         evt.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
 
@@ -188,13 +188,8 @@ internal static class EpcisModelConfiguration
         bizTrans.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
         bizTrans.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
 
-        var customField = modelBuilder.Entity<CustomField>();
-        customField.HasDiscriminator<short>("FieldType")
-            .HasValue<EventCustomField>(0)
-            .HasValue<SensorElementCustomField>(1)
-            .HasValue<SensorReportCustomField>(2);
-        customField.Property<short>("FieldType");
-        customField.ToTable(nameof(CustomField), nameof(EpcisSchema.Epcis));
+        var customField = modelBuilder.Entity<Field>();
+        customField.ToTable(nameof(Field), nameof(EpcisSchema.Epcis));
         customField.Property<int>("FieldId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
         customField.Property<long>("EventId").HasColumnType("bigint");
         customField.Property<int?>("ParentId");
@@ -205,16 +200,9 @@ internal static class EpcisModelConfiguration
         customField.Property(x => x.TextValue).IsRequired(false);
         customField.Property(x => x.NumericValue).IsRequired(false);
         customField.Property(x => x.DateValue).IsRequired(false);
-        customField.HasOne(x => x.Event).WithMany(x => x.CustomFields).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
-
-        var sensorReportCustomField = modelBuilder.Entity<SensorReportCustomField>();
-        sensorReportCustomField.Property<int?>("SensorId");
-        sensorReportCustomField.Property<int?>("ReportId");
-        sensorReportCustomField.HasOne(x => x.Report).WithMany(x => x.CustomFields).IsRequired(false).HasForeignKey("EventId", "SensorId", "ReportId").OnDelete(DeleteBehavior.NoAction);
-
-        var sensorElementCustomField = modelBuilder.Entity<SensorElementCustomField>();
-        sensorElementCustomField.Property<int?>("SensorId");
-        sensorElementCustomField.HasOne(x => x.Element).WithMany(x => x.CustomFields).IsRequired(false).HasForeignKey("EventId", "SensorId").OnDelete(DeleteBehavior.NoAction);
+        customField.HasOne(x => x.Event).WithMany(x => x.Fields).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);
+        customField.HasOne(x => x.Report).WithMany(x => x.Fields).IsRequired(false).HasForeignKey("EventId", "SensorId", "ReportId").OnDelete(DeleteBehavior.NoAction);
+        customField.HasOne(x => x.Element).WithMany(x => x.Fields).IsRequired(false).HasForeignKey("EventId", "SensorId").OnDelete(DeleteBehavior.NoAction);
 
         var customFieldHasParent = customField.Property(x => x.HasParent);
         customFieldHasParent.HasComputedColumnSql("(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", stored: true);

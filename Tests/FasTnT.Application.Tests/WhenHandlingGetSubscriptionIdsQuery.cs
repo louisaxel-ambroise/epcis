@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.Store;
+﻿using FasTnT.Application.Store;
 using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
 
@@ -16,12 +15,14 @@ public class WhenHandlingGetSubscriptionIdsQuery
         Context.Subscriptions.Add(new Subscription
         {
             Name = "SubscriptionTest",
-            QueryName = "TestQuery"
+            QueryName = "TestQuery",
+            FormatterName = "TestFormatter"
         });
         Context.Subscriptions.Add(new Subscription
         {
             Name = "OtherSubscription",
-            QueryName = "OtherQuery"
+            QueryName = "OtherQuery",
+            FormatterName = "TestFormatter"
         });
 
         Context.SaveChanges();

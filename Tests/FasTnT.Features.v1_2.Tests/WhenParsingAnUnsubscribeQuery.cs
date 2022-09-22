@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Commands.Unsubscribe;
-using FasTnT.Features.v1_2.Communication.Parsers;
+﻿using FasTnT.Features.v1_2.Communication.Parsers;
+using FasTnT.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Features.v1_2.Tests;
 
@@ -19,12 +19,12 @@ public class WhenParsingAnUnsubscribeQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAnUnsubscribeObject()
     {
-        Assert.IsInstanceOfType(Query, typeof(UnsubscribeCommand));
+        Assert.IsInstanceOfType(Query, typeof(Unsubscribe));
     }
 
     [TestMethod]
     public void TheUnsubscribeCommandShouldHaveTheCorrectSubscriptionId()
     {
-        Assert.AreEqual("TestSubscription", (Query as UnsubscribeCommand).SubscriptionId);
+        Assert.AreEqual("TestSubscription", (Query as Unsubscribe).SubscriptionId);
     }
 }
