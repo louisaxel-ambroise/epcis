@@ -5,6 +5,8 @@ using System.Collections.Concurrent;
 
 namespace FasTnT.Application.Services.Subscriptions;
 
+public record SubscriptionContext(int Id, IResultSender ResultSender, SubscriptionSchedule Schedule);
+
 public sealed class SubscriptionService : ISubscriptionService, ISubscriptionListener
 {
     private static readonly object _monitor = new();
@@ -12,8 +14,8 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
     private readonly IEnumerable<IResultSender> _resultSenders;
     private readonly ILogger<SubscriptionService> _logger;
 
-    private readonly ConcurrentDictionary<Subscription, DateTime> _scheduledExecutions = new();
-    private readonly ConcurrentDictionary<string, List<Subscription>> _triggeredSubscriptions = new();
+    private readonly ConcurrentDictionary<SubscriptionContext, DateTime> _scheduledExecutions = new();
+    private readonly ConcurrentDictionary<string, List<SubscriptionContext>> _triggeredSubscriptions = new();
     private readonly ConcurrentQueue<string> _triggeredValues = new();
 
     public SubscriptionService(IServiceProvider serviceProvider, IEnumerable<IResultSender> resultSenders, ILogger<SubscriptionService> logger)
@@ -41,21 +43,19 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         }
     }
 
-    private IEnumerable<ExecutionContext> GetTriggeredSubscriptions()
+    private IEnumerable<SubscriptionContext> GetTriggeredSubscriptions()
     {
-        var subscriptions = new List<ExecutionContext>();
+        var subscriptions = new List<SubscriptionContext>();
 
         while (_triggeredValues.TryDequeue(out string trigger))
         {
-            subscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out var sub)
-                ? sub.Select(x => new ExecutionContext(x, DateTime.UtcNow))
-                : Array.Empty<ExecutionContext>());
+            subscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out var sub) ? sub : Array.Empty<SubscriptionContext>());
         }
 
         return subscriptions;
     }
 
-    private IEnumerable<ExecutionContext> GetScheduledSubscriptions(DateTime executionDate)
+    private IEnumerable<SubscriptionContext> GetScheduledSubscriptions(DateTime executionDate)
     {
         var plannedExecutions = _scheduledExecutions.Where(x => x.Value <= executionDate).ToArray();
 
@@ -66,10 +66,10 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
             _scheduledExecutions.TryUpdate(plannedExecution.Key, nextOccurence, plannedExecution.Value);
         }
 
-        return plannedExecutions.Select(x => new ExecutionContext(x.Key, x.Value));
+        return plannedExecutions.Select(x => x.Key);
     }
 
-    private void Execute(ExecutionContext[] subscriptions, CancellationToken cancellationToken)
+    private void Execute(SubscriptionContext[] subscriptions, CancellationToken cancellationToken)
     {
         using var scope = _serviceProvider.CreateScope();
 
@@ -78,9 +78,8 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         for (var i = 0; i < subscriptions.Length; i++)
         {
             var subscriptionRunner = scope.ServiceProvider.GetService<ISubscriptionRunner>();
-            var resultSender = _resultSenders.FirstOrDefault(x => x.Name == subscriptions[i].Subscription.FormatterName);
 
-            subscriptionTasks[i] = subscriptionRunner.RunAsync(subscriptions[i], resultSender, cancellationToken);
+            subscriptionTasks[i] = subscriptionRunner.RunAsync(subscriptions[i], cancellationToken);
         }
 
         try
@@ -96,25 +95,25 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
 
     public Task RegisterAsync(Subscription subscription, CancellationToken _)
     {
-        if (subscription is Subscription standardSubscription)
+        Pulse(() =>
         {
-            Pulse(() =>
-            {
-                if (string.IsNullOrEmpty(standardSubscription.Trigger))
-                {
-                    _scheduledExecutions[standardSubscription] = SubscriptionSchedule.GetNextOccurence(standardSubscription.Schedule, DateTime.UtcNow);
-                }
-                else
-                {
-                    if (!_triggeredSubscriptions.ContainsKey(standardSubscription.Trigger))
-                    {
-                        _triggeredSubscriptions[standardSubscription.Trigger] = new();
-                    }
+            var resultSender = _resultSenders.FirstOrDefault(x => x.Name == subscription.FormatterName);
+            var context = new SubscriptionContext(subscription.Id, resultSender, subscription.Schedule);
 
-                    _triggeredSubscriptions[standardSubscription.Trigger].Add(standardSubscription);
+            if (string.IsNullOrEmpty(subscription.Trigger))
+            {
+                _scheduledExecutions[context] = SubscriptionSchedule.GetNextOccurence(subscription.Schedule, DateTime.UtcNow);
+            }
+            else
+            {
+                if (!_triggeredSubscriptions.ContainsKey(subscription.Trigger))
+                {
+                    _triggeredSubscriptions[subscription.Trigger] = new();
                 }
-            });
-        }
+
+                _triggeredSubscriptions[subscription.Trigger].Add(context);
+            }
+        });
 
         return Task.CompletedTask;
     }

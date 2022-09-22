@@ -53,7 +53,7 @@ namespace FasTnT.Features.v2_0.Communication.Json.Parsers
                 };
         }
 
-        private static IEnumerable<StoredQueryParameter> ParseQueryParameters(JsonElement jsonElement)
+        private static List<StoredQueryParameter> ParseQueryParameters(JsonElement jsonElement)
         {
             var parameters = new List<StoredQueryParameter>();
 

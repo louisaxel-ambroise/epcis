@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using System.Text;
@@ -15,17 +16,17 @@ public class JsonResultSender : IResultSender
 
     private JsonResultSender() { }
 
-    public Task<bool> SendResultAsync(Application.Services.Subscriptions.ExecutionContext context, QueryResponse response, CancellationToken cancellationToken)
+    public Task<bool> SendResultAsync(Subscription context, QueryResponse response, CancellationToken cancellationToken)
     {
-        using var client = GetHttpClient(context.Subscription.Destination, context.Subscription.SignatureToken);
+        using var client = GetHttpClient(context.Destination, context.SignatureToken);
         var formattedResponse = JsonResponseFormatter.Format(new QueryResult(response));
 
         return SendRequestAsync(client, formattedResponse, cancellationToken);
     }
 
-    public Task<bool> SendErrorAsync(Application.Services.Subscriptions.ExecutionContext context, EpcisException error, CancellationToken cancellationToken)
+    public Task<bool> SendErrorAsync(Subscription context, EpcisException error, CancellationToken cancellationToken)
     {
-        using var client = GetHttpClient(context.Subscription.Destination, context.Subscription.SignatureToken);
+        using var client = GetHttpClient(context.Destination, context.SignatureToken);
         var formattedResponse = JsonResponseFormatter.FormatError(error);
 
         return SendRequestAsync(client, formattedResponse, cancellationToken);

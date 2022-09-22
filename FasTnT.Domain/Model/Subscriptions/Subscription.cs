@@ -1,4 +1,6 @@
-﻿namespace FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Domain.Model.CustomQueries;
+
+namespace FasTnT.Domain.Model.Subscriptions;
 
 public class Subscription
 {
@@ -11,6 +13,7 @@ public class Subscription
     public string Trigger { get; set; }
     public bool ReportIfEmpty { get; set; }
     public string Destination { get; set; }
+    public StoredQuery Query { get; set; }
     public List<SubscriptionParameter> Parameters { get; set; } = new();
     public List<SubscriptionExecutionRecord> ExecutionRecords { get; set; } = new();
     public DateTime? InitialRecordTime { get; set; }

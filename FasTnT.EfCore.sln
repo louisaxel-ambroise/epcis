@@ -23,14 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Features.v2_0", "Fas
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Features", "Features", "{C51D4B97-60B3-46C0-AD62-8CC5709A217C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D4A53D38-52BE-4C2D-A92D-B22948C80BDD}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Features.v1_2.Tests", "Tests\FasTnT.Features.v1_2.Tests\FasTnT.Features.v1_2.Tests.csproj", "{8A1E27B2-6769-4A5A-8498-127E939C3021}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Features.v2_0.Tests", "Tests\FasTnT.Features.v2_0.Tests\FasTnT.Features.v2_0.Tests.csproj", "{431685B9-7DA1-4572-8D59-253593FD8E7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Epcis", "Epcis", "{201465B7-EDFB-488B-B7D6-D62AC59FD479}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,6 +76,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{BD0FD839-B1D0-4CD1-A0EE-8192E8460532} = {201465B7-EDFB-488B-B7D6-D62AC59FD479}
+		{69116A3C-F1E7-4411-99D1-CE89C79E1114} = {201465B7-EDFB-488B-B7D6-D62AC59FD479}
 		{A57CDC30-C080-4671-A575-7954A219BB5F} = {0D9E736D-BF92-400A-964E-FB0E708ED015}
 		{3A63605F-7A83-4618-8A7D-A3AC8703FE6F} = {91390250-5085-4334-823A-334F36A02D54}
 		{B041DB81-A0A4-4E9A-985D-572B07E69E59} = {C51D4B97-60B3-46C0-AD62-8CC5709A217C}

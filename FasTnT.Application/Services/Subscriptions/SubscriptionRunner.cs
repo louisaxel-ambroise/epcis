@@ -21,15 +21,18 @@ public class SubscriptionRunner : ISubscriptionRunner
         _logger = logger;
     }
 
-    public async Task RunAsync(ExecutionContext executionContext, IResultSender resultSender, CancellationToken cancellationToken)
+    public async Task RunAsync(SubscriptionContext executionContext, CancellationToken cancellationToken)
     {
-        var subscription = executionContext.Subscription;
+        var subscription = await _context.Subscriptions
+            .AsNoTracking()
+            .Include(x => x.Parameters)
+            .Include(x => x.Query)
+            .SingleOrDefaultAsync(x => x.Id == executionContext.Id);
 
         _logger.LogInformation("Running Subscription {Name} ({Id})", subscription.Name, subscription.Id);
 
         var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = DateTime.UtcNow, ResultsSent = true, Successful = true, SubscriptionId = subscription.Id };
-        var query = await _context.Queries.SingleAsync(x => x.Name == subscription.QueryName, cancellationToken);
-        var dataSource = _dataSources.Single(x => x.Name == query.DataSource);
+        var dataSource = _dataSources.Single(x => x.Name == subscription.Query.DataSource);
         var pendingRequests = await _context.PendingRequests.Where(x => x.SubscriptionId == subscription.Id).ToListAsync(cancellationToken);
         var resultsSent = false;
 
@@ -47,13 +50,13 @@ public class SubscriptionRunner : ISubscriptionRunner
                 response = new QueryResponse(subscription.QueryName, subscription.Name, epcisData.EventList, epcisData.VocabularyList);
             }
 
-            resultsSent = await SendQueryResults(executionContext, response, resultSender, cancellationToken).ConfigureAwait(false);
+            resultsSent = await SendQueryResults(subscription, response, executionContext.ResultSender, cancellationToken).ConfigureAwait(false);
         }
         catch (EpcisException ex)
         {
             ex.SubscriptionId = subscription.Name;
 
-            resultsSent = await SendExceptionResult(executionContext, ex, resultSender, cancellationToken).ConfigureAwait(false);
+            resultsSent = await SendExceptionResult(subscription, ex, executionContext.ResultSender, cancellationToken).ConfigureAwait(false);
         }
 
 
@@ -74,9 +77,9 @@ public class SubscriptionRunner : ISubscriptionRunner
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    private static Task<bool> SendQueryResults(ExecutionContext context, QueryResponse response, IResultSender resultSender, CancellationToken cancellationToken)
+    private static Task<bool> SendQueryResults(Subscription context, QueryResponse response, IResultSender resultSender, CancellationToken cancellationToken)
     {
-        if (response.EventList.Count > 0 || context.Subscription.ReportIfEmpty)
+        if (response.EventList.Count > 0 || context.ReportIfEmpty)
         {
             return resultSender.SendResultAsync(context, response, cancellationToken);
         }
@@ -84,7 +87,7 @@ public class SubscriptionRunner : ISubscriptionRunner
         return Task.FromResult(true);
     }
 
-    private static Task<bool> SendExceptionResult(ExecutionContext context, EpcisException response, IResultSender resultSender, CancellationToken cancellationToken)
+    private static Task<bool> SendExceptionResult(Subscription context, EpcisException response, IResultSender resultSender, CancellationToken cancellationToken)
     {
         return resultSender.SendErrorAsync(context, response, cancellationToken);
     }

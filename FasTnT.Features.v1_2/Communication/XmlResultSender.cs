@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Features.v1_2.Communication.Formatters;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
 using System.Net;
@@ -17,21 +18,21 @@ public class XmlResultSender : IResultSender
 
     private XmlResultSender() { }
 
-    public async Task<bool> SendResultAsync(Application.Services.Subscriptions.ExecutionContext context, QueryResponse response, CancellationToken cancellationToken)
+    public async Task<bool> SendResultAsync(Subscription context, QueryResponse response, CancellationToken cancellationToken)
     {
         var formattedResponse = XmlResponseFormatter.FormatPoll(new PollResult(response));
 
-        using var client = GetHttpClient(context.Subscription.Destination);
-        using var stream = await GetResponseStream(formattedResponse, context.DateTime, cancellationToken);
+        using var client = GetHttpClient(context.Destination);
+        using var stream = await GetResponseStream(formattedResponse, cancellationToken);
 
         return await SendRequestAsync(client, stream, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<bool> SendErrorAsync(Application.Services.Subscriptions.ExecutionContext context, EpcisException error, CancellationToken cancellationToken)
+    public async Task<bool> SendErrorAsync(Subscription context, EpcisException error, CancellationToken cancellationToken)
     {
         var formattedResponse = XmlResponseFormatter.FormatError(error);
-        using var client = GetHttpClient(context.Subscription.Destination);
-        using var stream = await GetResponseStream(formattedResponse, context.DateTime, cancellationToken);
+        using var client = GetHttpClient(context.Destination);
+        using var stream = await GetResponseStream(formattedResponse, cancellationToken);
 
         return await SendRequestAsync(client, stream, cancellationToken).ConfigureAwait(false);
     }
@@ -54,13 +55,13 @@ public class XmlResultSender : IResultSender
         }
     }
 
-    private static async Task<Stream> GetResponseStream(XElement content, DateTime executionDate, CancellationToken cancellationToken)
+    private static async Task<Stream> GetResponseStream(XElement content, CancellationToken cancellationToken)
     {
         var stream = new MemoryStream();
 
         using var writer = XmlWriter.Create(stream, new XmlWriterSettings { Async = true, CloseOutput = false });
 
-        var requestPayload = FormatResponse(content, executionDate);
+        var requestPayload = FormatResponse(content);
 
         await requestPayload.WriteToAsync(writer, cancellationToken);
         await writer.FlushAsync();
@@ -83,12 +84,12 @@ public class XmlResultSender : IResultSender
         return client;
     }
 
-    private static XDocument FormatResponse(XElement content, DateTime executionDate)
+    private static XDocument FormatResponse(XElement content)
     {
         var rootName = XName.Get("EPCISQueryDocument", "urn:epcglobal:epcis-query:xsd:1");
         var attributes = new[]
         {
-            new XAttribute("creationDate", executionDate),
+            new XAttribute("creationDate", DateTime.UtcNow),
             new XAttribute("schemaVersion", "1")
         };
 

@@ -76,7 +76,6 @@ public class SubscriptionsUseCasesHandler :
     public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
     {
         var query = await _context.Queries
-            .AsNoTracking()
             .Include(x => x.Parameters)
             .SingleOrDefaultAsync(x => x.Name == subscription.QueryName, cancellationToken);
 
@@ -104,6 +103,7 @@ public class SubscriptionsUseCasesHandler :
             throw new EpcisException(ExceptionType.DuplicateSubscriptionException, $"Subscription '{subscription.Name}' already exists");
         }
 
+        subscription.Query = query;
         subscription.Parameters.AddRange(query.Parameters.Select(x => new SubscriptionParameter
         {
             Name = x.Name,

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -22,11 +23,6 @@ namespace FasTnT.Application.Migrations
                 schema: "Subscription",
                 table: "Subscription");
 
-            migrationBuilder.DropColumn(
-                name: "ScheduleId",
-                schema: "Subscription",
-                table: "Subscription");
-
             migrationBuilder.EnsureSchema(
                 name: "Queries");
 
@@ -35,6 +31,12 @@ namespace FasTnT.Application.Migrations
                 schema: "Subscription",
                 table: "SubscriptionParameter",
                 newName: "Values");
+
+            migrationBuilder.RenameColumn(
+                name: "ScheduleId",
+                schema: "Subscription",
+                table: "Subscription",
+                newName: "QueryId");
 
             migrationBuilder.RenameColumn(
                 name: "RecordIfEmpty",
@@ -273,6 +275,12 @@ namespace FasTnT.Application.Migrations
                 filter: "[SubscriptionId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Subscription_QueryId",
+                schema: "Subscription",
+                table: "Subscription",
+                column: "QueryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Field_EventId_ParentId",
                 schema: "Epcis",
                 table: "Field",
@@ -292,6 +300,16 @@ namespace FasTnT.Application.Migrations
                 unique: true);
 
             migrationBuilder.AddForeignKey(
+                name: "FK_Subscription_StoredQuery_QueryId",
+                schema: "Subscription",
+                table: "Subscription",
+                column: "QueryId",
+                principalSchema: "Queries",
+                principalTable: "StoredQuery",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_SubscriptionSchedule_Subscription_SubscriptionId",
                 schema: "Subscription",
                 table: "SubscriptionSchedule",
@@ -304,6 +322,11 @@ namespace FasTnT.Application.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Subscription_StoredQuery_QueryId",
+                schema: "Subscription",
+                table: "Subscription");
+
             migrationBuilder.DropForeignKey(
                 name: "FK_SubscriptionSchedule_Subscription_SubscriptionId",
                 schema: "Subscription",
@@ -338,6 +361,11 @@ namespace FasTnT.Application.Migrations
                 schema: "Subscription",
                 table: "SubscriptionSchedule");
 
+            migrationBuilder.DropIndex(
+                name: "IX_Subscription_QueryId",
+                schema: "Subscription",
+                table: "Subscription");
+
             migrationBuilder.DropColumn(
                 name: "SubscriptionId",
                 schema: "Subscription",
@@ -365,6 +393,12 @@ namespace FasTnT.Application.Migrations
                 table: "Subscription",
                 newName: "RecordIfEmpty");
 
+            migrationBuilder.RenameColumn(
+                name: "QueryId",
+                schema: "Subscription",
+                table: "Subscription",
+                newName: "ScheduleId");
+
             migrationBuilder.AlterColumn<string>(
                 name: "Username",
                 schema: "Users",
@@ -374,13 +408,6 @@ namespace FasTnT.Application.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(80)",
                 oldMaxLength: 80);
-
-            migrationBuilder.AddColumn<int>(
-                name: "ScheduleId",
-                schema: "Subscription",
-                table: "Subscription",
-                type: "int",
-                nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "CustomField",

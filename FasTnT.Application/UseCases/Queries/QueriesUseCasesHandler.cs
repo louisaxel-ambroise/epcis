@@ -69,15 +69,20 @@ public class QueriesUseCasesHandler :
     public async Task<StoredQuery> DeleteQueryAsync(string queryName, CancellationToken cancellationToken)
     {
         var query = await _context.Queries
+               .Include(x => x.Subscriptions)
                .SingleOrDefaultAsync(x => x.Name == queryName, cancellationToken);
 
-        if(query is null)
+        if (query is null)
         {
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
         }
-        if(query.Username != _currentUser.Username)
+        if (query.Username != _currentUser.Username)
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' was stored by another user.");
+        }
+        if (query.Subscriptions.Any())
+        {
+            throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' has active subscriptions.");
         }
 
         _context.Queries.Remove(query);

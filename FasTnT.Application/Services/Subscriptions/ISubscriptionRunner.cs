@@ -2,5 +2,5 @@
 
 public interface ISubscriptionRunner
 {
-    Task RunAsync(ExecutionContext executionContext, IResultSender resultSender, CancellationToken cancellationToken);
+    Task RunAsync(SubscriptionContext executionContext, CancellationToken cancellationToken);
 }

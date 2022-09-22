@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FasTnT.Application.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20220920164019_UpdateDatabaseEpcisV2_0")]
+    [Migration("20220922113301_UpdateDatabaseEpcisV2_0")]
     partial class UpdateDatabaseEpcisV2_0
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -696,6 +696,9 @@ namespace FasTnT.Application.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int?>("QueryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("QueryName")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -713,6 +716,8 @@ namespace FasTnT.Application.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("QueryId");
 
                     b.ToTable("Subscription", "Subscription");
                 });
@@ -1099,6 +1104,16 @@ namespace FasTnT.Application.Migrations
                     b.Navigation("Request");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.CustomQueries.StoredQuery", "Query")
+                        .WithMany("Subscriptions")
+                        .HasForeignKey("QueryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Query");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.Request", "Request")
@@ -1155,6 +1170,8 @@ namespace FasTnT.Application.Migrations
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
                 {
                     b.Navigation("Parameters");
+
+                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>

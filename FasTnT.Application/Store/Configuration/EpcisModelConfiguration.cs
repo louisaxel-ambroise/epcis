@@ -243,6 +243,7 @@ internal static class EpcisModelConfiguration
         subscription.Property(x => x.FormatterName).IsRequired(true).HasMaxLength(30);
         subscription.HasMany(x => x.Parameters).WithOne(x => x.Subscription).HasForeignKey("SubscriptionId");
         subscription.HasOne(x => x.Schedule).WithOne(x => x.Subscription).HasForeignKey<SubscriptionSchedule>("SubscriptionId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+        subscription.HasOne(x => x.Query).WithMany().HasForeignKey("QueryId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         subscription.HasMany(x => x.ExecutionRecords).WithOne(x => x.Subscription);
 
         var subscriptionParam = modelBuilder.Entity<SubscriptionParameter>();
@@ -283,6 +284,7 @@ internal static class EpcisModelConfiguration
         storedQuery.Property(x => x.Username).IsRequired(false).HasMaxLength(80);
         storedQuery.HasMany(x => x.Parameters).WithOne(x => x.Query).HasForeignKey("QueryId");
         storedQuery.HasIndex(x => x.Name).IsUnique();
+        storedQuery.HasMany(x => x.Subscriptions).WithOne(x => x.Query);
         storedQuery.HasData
         (
             new StoredQuery { Id = -2, Name = nameof(SimpleEventQuery), DataSource = nameof(SimpleEventQuery) },
