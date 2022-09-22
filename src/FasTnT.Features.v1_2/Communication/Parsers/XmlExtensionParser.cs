@@ -98,6 +98,8 @@ public static class XmlExtensionParser
                         report.PercValue = float.Parse(field.Value); break;
                     case "dataProcessingMethod":
                         report.DataProcessingMethod = field.Value; break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }
             }
             else
