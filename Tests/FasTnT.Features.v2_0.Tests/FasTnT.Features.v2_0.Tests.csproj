@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FasTnT.Features.v2_0\FasTnT.Features.v2_0.csproj" />
+    <ProjectReference Include="..\..\src\FasTnT.Features.v2_0\FasTnT.Features.v2_0.csproj" />
   </ItemGroup>
 
 </Project>

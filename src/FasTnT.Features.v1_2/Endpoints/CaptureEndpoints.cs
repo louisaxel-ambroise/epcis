@@ -7,13 +7,11 @@ using FasTnT.Application.UseCases.Captures;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
-public class CaptureEndpoints
+public static class CaptureEndpoints
 {
-    protected CaptureEndpoints() { }
-
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("v1_2/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
+        app.TryMapPost("v1_2/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
 
         return app;
     }

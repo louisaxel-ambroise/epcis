@@ -28,7 +28,7 @@ public class SubscriptionRunner : ISubscriptionRunner
             .AsNoTracking()
             .Include(x => x.Parameters)
             .Include(x => x.Query)
-            .SingleOrDefaultAsync(x => x.Id == executionContext.Id);
+            .SingleOrDefaultAsync(x => x.Id == executionContext.Id, cancellationToken);
 
         _logger.LogInformation("Running Subscription {Name} ({Id})", subscription.Name, subscription.Id);
 
@@ -59,7 +59,6 @@ public class SubscriptionRunner : ISubscriptionRunner
 
             resultsSent = await SendExceptionResult(subscription, ex, executionContext.ResultSender, cancellationToken).ConfigureAwait(false);
         }
-
 
         if (resultsSent)
         {

@@ -5,16 +5,14 @@ using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
-public class CaptureEndpoints
+public static class CaptureEndpoints
 {
-    protected CaptureEndpoints() { }
-
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("v2_0/capture", HandleListCapturesQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
-        app.MapGet("v2_0/capture/{captureId}", HandleCaptureDetailQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
-        app.MapPost("v2_0/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
-        app.MapPost("v2_0/events", HandleCaptureSingleEventRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
+        app.TryMapGet("v2_0/capture", HandleListCapturesQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
+        app.TryMapGet("v2_0/capture/{captureId}", HandleCaptureDetailQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
+        app.TryMapPost("v2_0/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
+        app.TryMapPost("v2_0/events", HandleCaptureSingleEventRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
 
         return app;
     }
@@ -47,4 +45,3 @@ public class CaptureEndpoints
         return Results.Created($"v2_0/events/{response.Events.First().EventId}", null);
     }
 }
-

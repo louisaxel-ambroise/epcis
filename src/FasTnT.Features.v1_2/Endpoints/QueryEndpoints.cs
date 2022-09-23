@@ -9,11 +9,9 @@ using FasTnT.Application.UseCases.Queries;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
-public class QueryEndpoints
+public static class QueryEndpoints
 {
     internal const string WsdlPath = "FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
-
-    protected QueryEndpoints() { }
 
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {

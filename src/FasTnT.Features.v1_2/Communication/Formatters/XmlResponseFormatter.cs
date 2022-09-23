@@ -39,6 +39,18 @@ public static class XmlResponseFormatter
         return queryResults;
     }
 
+    public static int GetHttpStatusCode(EpcisException error)
+    {
+        return error.ExceptionType switch
+        {
+            ExceptionType.NoSuchNameException => 404,
+            ExceptionType.NoSuchSubscriptionException => 404,
+            ExceptionType.QueryTooComplexException => 413,
+            ExceptionType.ImplementationException => 500,
+            _ => 400
+        };
+    }
+
     public static XElement FormatError(EpcisException exception)
     {
         var reason = !string.IsNullOrEmpty(exception.Message) ? new XElement("reason", exception.Message) : default;

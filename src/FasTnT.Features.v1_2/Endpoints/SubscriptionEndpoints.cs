@@ -8,10 +8,8 @@ using FasTnT.Application.UseCases.Subscriptions;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
-public class SubscriptionEndpoints
+public static class SubscriptionEndpoints
 {
-    protected SubscriptionEndpoints() { }
-
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("v1_2/Trigger", HandleTriggerSubscription).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));

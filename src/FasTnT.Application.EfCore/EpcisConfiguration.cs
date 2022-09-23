@@ -12,7 +12,6 @@ using FasTnT.Application.UseCases.Captures;
 using FasTnT.Application.UseCases.Queries;
 using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Application.UseCases.TopLevelResources;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FasTnT.Application.EfCore;
@@ -29,7 +28,8 @@ public static class EpcisConfiguration
             configure(options);
         }
 
-        services.AddDbContext<EpcisContext>(opt => opt.UseSqlServer(options.ConnectionString, opt => opt.EnableRetryOnFailure().CommandTimeout(options.CommandTimeout)), ServiceLifetime.Transient);
+        services.AddSqlServer<EpcisContext>(options.ConnectionString, opt => opt.EnableRetryOnFailure().CommandTimeout(options.CommandTimeout));
+        services.AddScoped<IncrementGenerator.Identity>();
 
         services.AddScoped<IEpcisDataSource, SimpleEventQuery>();
         services.AddScoped<IEpcisDataSource, SimpleMasterDataQuery>();
@@ -54,7 +54,6 @@ public static class EpcisConfiguration
         services.AddTransient<IListReadPointsHandler, TopLevelResourceUseCasesHandler>();
         services.AddTransient<IListDispositionsHandler, TopLevelResourceUseCasesHandler>();
 
-        services.AddScoped<IncrementGenerator.Identity>();
         services.AddScoped(options.CurrentUser);
         services.AddScoped(options.UserProvider);
 

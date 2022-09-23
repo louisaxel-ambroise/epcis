@@ -31,8 +31,6 @@ builder.Services.AddEpcisServices(opt =>
 
 // Add the subscription manager as background service
 builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResultSender.Instance);
-builder.Services.AddSingleton<IResultSender>(XmlResultSender.Instance);
-builder.Services.AddSingleton<IResultSender>(JsonResultSender.Instance);
 builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
 var app = builder.Build();
@@ -50,11 +48,11 @@ app.UseRouting();
 app.UseHttpLogging();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseExceptionHandler(Options.ExceptionHandler);
-app.UseEndpoints(builder =>
+
+app.UseEndpoints(endpoints =>
 {
-    builder.MapEpcis12Endpoints();
-    builder.MapEpcis20Endpoints();
+    endpoints.UseEpcis12Endpoints();
+    endpoints.UseEpcis20Endpoints();
 });
 
 app.Run();

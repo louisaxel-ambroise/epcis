@@ -5,17 +5,15 @@ using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
-public class SubscriptionEndpoints
+public static class SubscriptionEndpoints
 {
-    protected SubscriptionEndpoints() { }
-
     // TODO: add WebSocket endpoints.
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/v2_0/queries/{query}/subscriptions", HandleSubscriptionQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.MapGet("/v2_0/queries/{query}/subscriptions/{name}", HandleSubscriptionDetailQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery)).WithName("SubscriptionDetail");
+        app.TryMapGet("/v2_0/queries/{query}/subscriptions", HandleSubscriptionQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("/v2_0/queries/{query}/subscriptions/{name}", HandleSubscriptionDetailQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery)).WithName("SubscriptionDetail");
         app.MapDelete("/v2_0/queries/{query}/subscriptions/{name}", HandleDeleteSubscription).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.MapPost("/v2_0/queries/{query}/subscriptions", HandleSubscribeRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.TryMapPost("/v2_0/queries/{query}/subscriptions", HandleSubscribeRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
 
         return app;
     }
@@ -51,4 +49,3 @@ public class SubscriptionEndpoints
         return Results.Created($"v2_0/queries/{query}/subscriptions/{response.Name}", null);
     }
 }
-

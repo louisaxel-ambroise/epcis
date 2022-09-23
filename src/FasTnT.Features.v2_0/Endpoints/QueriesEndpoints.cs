@@ -5,16 +5,14 @@ using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
-public class QueriesEndpoints
+public static class QueriesEndpoints
 {
-    protected QueriesEndpoints() { }
-
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("v2_0/queries", HandleListNamedQueries).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/queries/{queryName}", HandleGetQueryDefinition).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/queries/{queryName}/events", HandleGetQueryEvents).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.MapPost("v2_0/queries", HandleCreateNamedQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/queries", HandleListNamedQueries).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/queries/{queryName}", HandleGetQueryDefinition).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/queries/{queryName}/events", HandleGetQueryEvents).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.TryMapPost("v2_0/queries", HandleCreateNamedQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
         app.MapDelete("v2_0/queries/{queryName}", HandleDeleteNamedQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
 
         return app;
@@ -55,4 +53,3 @@ public class QueriesEndpoints
         return Results.NoContent();
     }
 }
-

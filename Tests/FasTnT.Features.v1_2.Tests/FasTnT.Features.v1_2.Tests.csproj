@@ -52,8 +52,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FasTnT.Domain\FasTnT.Domain.csproj" />
-    <ProjectReference Include="..\..\FasTnT.Features.v1_2\FasTnT.Features.v1_2.csproj" />
+    <ProjectReference Include="..\..\src\FasTnT.Domain\FasTnT.Domain.csproj" />
+    <ProjectReference Include="..\..\src\FasTnT.Features.v1_2\FasTnT.Features.v1_2.csproj" />
   </ItemGroup>
 
 </Project>

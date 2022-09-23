@@ -4,13 +4,11 @@ using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
-public class DiscoveryEndpoints
+public static class DiscoveryEndpoints
 {
-    protected DiscoveryEndpoints() { }
-
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("v2_0/", HandleTopLevelResources).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/", HandleTopLevelResources).RequireAuthorization(nameof(ICurrentUser.CanQuery));
 
         return app;
     }
@@ -33,4 +31,3 @@ public class DiscoveryEndpoints
         return Task.FromResult(EpcisResults.Ok(new CollectionResult(resources)));
     }
 }
-

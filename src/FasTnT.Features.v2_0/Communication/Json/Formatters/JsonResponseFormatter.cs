@@ -32,7 +32,7 @@ public static class JsonResponseFormatter
         var formatted = new Dictionary<string, object>
         {
             ["@context"] = "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld",
-            ["type"] = "collection",
+            ["type"] = "Collection",
             ["member"] = values
         };
 
@@ -66,10 +66,22 @@ public static class JsonResponseFormatter
     {
         return JsonSerializer.Serialize(new
         {
-            Type = $"epcisException:{error.ExceptionType}",
-            Title = error.Message,
-            Status = 400
+            type = $"epcisException:{error.ExceptionType}",
+            title = error.Message,
+            status = GetHttpStatusCode(error)
         });
+    }
+
+    public static int GetHttpStatusCode(EpcisException error)
+    {
+        return error.ExceptionType switch
+        {
+            ExceptionType.NoSuchNameException => 404,
+            ExceptionType.NoSuchSubscriptionException => 404,
+            ExceptionType.QueryTooComplexException => 413,
+            ExceptionType.ImplementationException => 500,
+            _ => 400
+        };
     }
 
     private static string FormatCustomQuery(CustomQueryDefinitionResult result)
@@ -125,7 +137,7 @@ public static class JsonResponseFormatter
         {
             ["@context"] = context.Select(x => (object) new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
             ["id"] = $"fastnt:epcis:2.0:pollquery:{Guid.NewGuid()}",
-            ["type"] = "EPCISQueryDocument",
+            ["isA"] = "EPCISQueryDocument",
             ["schemaVersion"] = "2.0",
             ["creationDate"] = DateTime.UtcNow,
             ["epcisBody"] = new

@@ -5,24 +5,22 @@ using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
-public class TopLevelEndpoints
+public static class TopLevelEndpoints
 {
-    protected TopLevelEndpoints() { }
-
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("v2_0/eventTypes", HandleListEventTypes).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/epcs", HandleListEpcs).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/bizSteps", HandleListBizSteps).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/bizLocations", HandleListBizLocations).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/readPoints", HandleListReadPoints).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/dispositions", HandleListDispositions).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/eventTypes/{eventType}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/epcs/{epc}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/bizSteps/{bizStep}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/bizLocations/{bizLocation}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/readPoints/{readPoint}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
-        app.MapGet("v2_0/dispositions/{disposition}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/eventTypes", HandleListEventTypes).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/epcs", HandleListEpcs).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/bizSteps", HandleListBizSteps).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/bizLocations", HandleListBizLocations).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/readPoints", HandleListReadPoints).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/dispositions", HandleListDispositions).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/eventTypes/{eventType}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/epcs/{epc}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/bizSteps/{bizStep}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/bizLocations/{bizLocation}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/readPoints/{readPoint}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/dispositions/{disposition}", HandleSubResourceRequest).RequireAuthorization(nameof(ICurrentUser.CanQuery));
 
         return app;
     }
@@ -74,4 +72,3 @@ public class TopLevelEndpoints
         return EpcisResults.Ok(new CollectionResult(new[] { "events" }));
     }
 }
-
