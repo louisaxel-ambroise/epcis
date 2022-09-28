@@ -12,5 +12,6 @@ public enum ExceptionType
     NoSuchSubscriptionException,
     DuplicateSubscriptionException,
     QueryTooComplexException,
-    InvalidURIException
+    InvalidURIException, 
+    CaptureLimitExceededException
 }

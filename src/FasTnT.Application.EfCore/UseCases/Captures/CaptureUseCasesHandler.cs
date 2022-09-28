@@ -3,6 +3,7 @@ using FasTnT.Application.EfCore.Validators;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.UseCases.Captures;
+using FasTnT.Domain;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
 using Microsoft.EntityFrameworkCore;
@@ -54,6 +55,10 @@ public class CaptureUseCasesHandler :
         if (!EpcisCaptureRequestValidator.IsValid(request))
         {
             throw new EpcisException(ExceptionType.ValidationException, "EPCIS request is not valid");
+        }
+        if(request.Events.Count >= Constants.MaxEventsCapturePerCall)
+        {
+            throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }
 
         request.UserId = _currentUser.UserId;

@@ -8,11 +8,11 @@ public static class EpcisCaptureRequestValidator
 {
     public static bool IsValid(Request request)
     {
-        return HaveEventOrMasterdataOrBeACallback(request)
+        return HasEventOrMasterdataOrBeACallback(request)
             && request.Events.All(evt => !IsAddOrDeleteAggregation(evt) || HaveAParentIdEpc(evt));
     }
 
-    private static bool HaveEventOrMasterdataOrBeACallback(Request request)
+    private static bool HasEventOrMasterdataOrBeACallback(Request request)
     {
         return request.Events.Count + request.Masterdata.Count > 0
             || request.SubscriptionCallback != null;
