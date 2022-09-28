@@ -18,10 +18,10 @@ public static class Epcis2_0Configuration
 
     internal static RouteHandlerBuilder TryMapGet(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
     {
-        return endpoints.MapGet(pattern, ErrorHandlingFactory.Create(handler));
+        return endpoints.MapGet(pattern, DelegateFactory.Create(handler));
     }
     internal static RouteHandlerBuilder TryMapPost(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
     {
-        return endpoints.MapPost(pattern, ErrorHandlingFactory.Create(handler));
+        return endpoints.MapPost(pattern, DelegateFactory.Create(handler));
     }
 }
