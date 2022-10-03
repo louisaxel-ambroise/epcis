@@ -5,11 +5,12 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["FasTnT.Host/FasTnT.Host.csproj", "FasTnT.Host/"]
-COPY ["FasTnT.Formatter.Xml/FasTnT.Formatter.Xml.csproj", "FasTnT.Formatter.Xml/"]
-COPY ["FasTnT.Application/FasTnT.Application.csproj", "FasTnT.Application/"]
-COPY ["FasTnT.Domain/FasTnT.Domain.csproj", "FasTnT.Domain/"]
-COPY ["FasTnT.Subscriptions/FasTnT.Subscriptions.csproj", "FasTnT.Subscriptions/"]
+COPY ["src/FasTnT.Host/FasTnT.Host.csproj", "FasTnT.Host/"]
+COPY ["src/FasTnT.Application/FasTnT.Application.csproj", "FasTnT.Application/"]
+COPY ["src/FasTnT.Application.EfCore/FasTnT.Application.EfCore.csproj", "FasTnT.Application.EfCore/"]
+COPY ["src/FasTnT.Domain/FasTnT.Domain.csproj", "FasTnT.Domain/"]
+COPY ["src/FasTnT.Features.v1_2/FasTnT.Features.v1_2.csproj", "FasTnT.Features.v1_2/"]
+COPY ["src/FasTnT.Features.v2_0/FasTnT.Features.v2_0.csproj", "FasTnT.Features.v2_0/"]
 RUN dotnet restore "FasTnT.Host/FasTnT.Host.csproj"
 
 COPY . .
