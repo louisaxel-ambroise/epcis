@@ -37,12 +37,23 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push Docker image
+    - name: Build and push Development Docker image
+      if: ${{ github.event.release.tag_name == '' }}
       uses: docker/build-push-action@v2
       with:
         context: .
         file: src/FasTnT.Host/Dockerfile
         push: true
         tags: |
-          ghcr.io/${{ env.REPO }}/epcis:${{ github.event.release.tag_name }}
-          ghcr.io/${{ env.REPO }}/epcis:latest
+          ghcr.io/${{ env.REPO }}:develop
+
+    - name: Build and push Release Docker image
+      if: ${{ github.event.release.tag_name != '' }}
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: src/FasTnT.Host/Dockerfile
+        push: true
+        tags: |
+          ghcr.io/${{ env.REPO }}:${{ github.event.release.tag_name }}
+          ghcr.io/${{ env.REPO }}:develop
