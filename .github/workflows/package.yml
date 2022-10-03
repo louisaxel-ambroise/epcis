@@ -3,7 +3,6 @@ name: Package
 on:
   release:
     types: [published]
-  workflow_dispatch:
     
 permissions:
   packages: write
@@ -44,5 +43,5 @@ jobs:
         file: src/FasTnT.Host/Dockerfile
         push: true
         tags: |
-          ghcr.io/${{ env.REPO }}/epcis:${{ github.event.release.tag_name }}
-          ghcr.io/${{ env.REPO }}/epcis:latest
+          ghcr.io/${{ env.REPO }}:${{ github.event.release.tag_name }}
+          ghcr.io/${{ env.REPO }}:latest
