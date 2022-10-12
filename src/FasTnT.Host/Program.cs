@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-Constants.MaxEventsReturnedInQuery = builder.Configuration.GetSection(nameof(Constants)).GetValue(nameof(Constants.MaxEventsReturnedInQuery), Constants.MaxEventsReturnedInQuery);
+Constants.Instance = builder.Configuration.GetSection(nameof(Constants)).Get<Constants>();
 
 builder.Services.AddAuthentication(BasicAuthenticationHandler.SchemeName).AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, null);
 builder.Services.AddAuthorization(Options.AuthorizationPolicies);
