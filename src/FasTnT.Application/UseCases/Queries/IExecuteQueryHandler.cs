@@ -1,9 +1,8 @@
 ﻿using FasTnT.Domain.Model.Queries;
 
-namespace FasTnT.Application.UseCases.Queries
+namespace FasTnT.Application.UseCases.Queries;
+
+public interface IExecuteQueryHandler
 {
-    public interface IExecuteQueryHandler
-    {
-        Task<QueryResponse> ExecuteQueryAsync(string queryName, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken);
-    }
+    Task<QueryResponse> ExecuteQueryAsync(string queryName, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken);
 }

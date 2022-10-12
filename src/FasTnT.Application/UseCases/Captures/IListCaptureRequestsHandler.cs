@@ -1,9 +1,8 @@
 ﻿using FasTnT.Domain.Model;
 
-namespace FasTnT.Application.UseCases.Captures
+namespace FasTnT.Application.UseCases.Captures;
+
+public interface IListCaptureRequestsHandler
 {
-    public interface IListCaptureRequestsHandler
-    {
-        Task<IEnumerable<Request>> ListCapturesAsync(CancellationToken cancellationToken);
-    }
+    Task<IEnumerable<Request>> ListCapturesAsync(CancellationToken cancellationToken);
 }

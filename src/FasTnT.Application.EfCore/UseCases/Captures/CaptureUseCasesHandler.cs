@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.EfCore.Validators;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.UseCases.Captures;
@@ -56,7 +55,7 @@ public class CaptureUseCasesHandler :
         {
             throw new EpcisException(ExceptionType.ValidationException, "EPCIS request is not valid");
         }
-        if(request.Events.Count >= Constants.MaxEventsCapturePerCall)
+        if(request.Events.Count >= Constants.Instance.MaxEventsCapturePerCall)
         {
             throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }

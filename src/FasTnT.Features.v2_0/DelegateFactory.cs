@@ -42,8 +42,8 @@ public static class DelegateFactory
         response.Headers.Add("GS1-EPCIS-Min", "2.0");
         response.Headers.Add("GS1-EPCIS-Max", "2.0");
         response.Headers.Add("GS1-EPC-Format", "Never_Translates");
-        response.Headers.Add("GS1-EPCIS-Capture-Limit", Constants.MaxEventsCapturePerCall.ToString());
-        response.Headers.Add("GS1-Vendor-Version", Constants.VendorVersion);
+        response.Headers.Add("GS1-EPCIS-Capture-Limit", Constants.Instance.MaxEventsCapturePerCall.ToString());
+        response.Headers.Add("GS1-Vendor-Version", Constants.Instance.VendorVersion);
     }
 
     private static void ValidateHeaders(IDictionary<string, string> epcisHeaders)

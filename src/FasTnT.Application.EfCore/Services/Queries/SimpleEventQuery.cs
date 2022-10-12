@@ -18,7 +18,7 @@ public class SimpleEventQuery : IEpcisDataSource
 {
     const string Comparison = "(GE|GT|LE|LT)";
     private int? _maxEventCount = default,
-                 _eventCountLimit = Constants.MaxEventsReturnedInQuery + 1;
+                 _eventCountLimit = Constants.Instance.MaxEventsReturnedInQuery + 1;
     private OrderDirection _orderDirection = OrderDirection.Ascending;
     private Expression<Func<Event, object>> _orderExpression = e => e.CaptureTime;
     private readonly EpcisContext _context;
@@ -54,7 +54,7 @@ public class SimpleEventQuery : IEpcisDataSource
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount || eventIds.Count > Constants.MaxEventsReturnedInQuery)
+            if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount || eventIds.Count > Constants.Instance.MaxEventsReturnedInQuery)
             {
                 throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
                 {

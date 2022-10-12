@@ -2,7 +2,7 @@
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 
-namespace FasTnT.Application.EfCore.Validators;
+namespace FasTnT.Application.EfCore.UseCases.Captures;
 
 public static class EpcisCaptureRequestValidator
 {

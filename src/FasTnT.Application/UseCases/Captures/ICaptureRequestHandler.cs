@@ -1,9 +1,8 @@
 ﻿using FasTnT.Domain.Model;
 
-namespace FasTnT.Application.UseCases.Captures
+namespace FasTnT.Application.UseCases.Captures;
+
+public interface ICaptureRequestHandler
 {
-    public interface ICaptureRequestHandler
-    {
-        Task<Request> StoreAsync(Request request, CancellationToken cancellationToken);
-    }
+    Task<Request> StoreAsync(Request request, CancellationToken cancellationToken);
 }

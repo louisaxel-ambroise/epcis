@@ -4,50 +4,49 @@ using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
-namespace FasTnT.Application.Tests.Queries
+namespace FasTnT.Application.Tests.Queries;
+
+[TestClass]
+public class WhenApplyingeventTypeFilter
 {
-    [TestClass]
-    public class WhenApplyingeventTypeFilter
+    public EpcisContext Context { get; set; }
+    public IEpcisDataSource Query { get; set; }
+    public IList<QueryParameter> Parameters { get; set; }
+
+    [TestInitialize]
+    public void Initialize()
     {
-        public EpcisContext Context { get; set; }
-        public IEpcisDataSource Query { get; set; }
-        public IList<QueryParameter> Parameters { get; set; }
+        Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
+        Query = new SimpleEventQuery(Context);
 
-        [TestInitialize]
-        public void Initialize()
+        Context.Requests.Add(new Domain.Model.Request
         {
-            Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
-            Query = new SimpleEventQuery(Context);
+            Events = new[] {
+                new Event
+                {
+                    Type = Domain.Enumerations.EventType.ObjectEvent,
+                    Action = Domain.Enumerations.EventAction.Observe
+                },
+                new Event
+                {
+                    Type = Domain.Enumerations.EventType.TransactionEvent,
+                    Action = Domain.Enumerations.EventAction.Observe
+                }
+            }.ToList(),
+            CaptureDate = DateTime.Now,
+            DocumentTime = DateTime.Now,
+            SchemaVersion = "1.2"
+        });
+        Context.SaveChanges();
 
-            Context.Requests.Add(new Domain.Model.Request
-            {
-                Events = new[] {
-                    new Event
-                    {
-                        Type = Domain.Enumerations.EventType.ObjectEvent,
-                        Action = Domain.Enumerations.EventAction.Observe
-                    },
-                    new Event
-                    {
-                        Type = Domain.Enumerations.EventType.TransactionEvent,
-                        Action = Domain.Enumerations.EventAction.Observe
-                    }
-                }.ToList(),
-                CaptureDate = DateTime.Now,
-                DocumentTime = DateTime.Now,
-                SchemaVersion = "1.2"
-            });
-            Context.SaveChanges();
+        Parameters = new[] { QueryParameter.Create("eventType", "ObjectEvent") }.ToList();
+    }
 
-            Parameters = new[] { QueryParameter.Create("eventType", "ObjectEvent") }.ToList();
-        }
-
-        [TestMethod]
-        public void ItShouldOnlyReturnTheEventsOfTheSpecifiedType()
-        {
-            var result = Query.ExecuteAsync(Parameters, CancellationToken.None).Result;
-            Assert.AreEqual(1, result.EventList.Count);
-            Assert.IsTrue(result.EventList.All(x => x.Type == Domain.Enumerations.EventType.ObjectEvent));
-        }
+    [TestMethod]
+    public void ItShouldOnlyReturnTheEventsOfTheSpecifiedType()
+    {
+        var result = Query.ExecuteAsync(Parameters, CancellationToken.None).Result;
+        Assert.AreEqual(1, result.EventList.Count);
+        Assert.IsTrue(result.EventList.All(x => x.Type == Domain.Enumerations.EventType.ObjectEvent));
     }
 }

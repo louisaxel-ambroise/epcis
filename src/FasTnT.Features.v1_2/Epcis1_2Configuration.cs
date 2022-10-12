@@ -1,10 +1,7 @@
 ﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Infrastructure.Exceptions;
-using FasTnT.Features.v1_2.Communication.Formatters;
 using FasTnT.Features.v1_2.Endpoints;
 using FasTnT.Features.v1_2.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 namespace FasTnT.Features.v1_2;

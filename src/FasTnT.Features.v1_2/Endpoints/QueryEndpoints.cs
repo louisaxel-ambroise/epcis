@@ -52,7 +52,7 @@ public static class QueryEndpoints
 
     private static Task<GetVendorVersionResult> HandleGetVendorVersionQuery()
     {
-        return Task.FromResult(new GetVendorVersionResult(Constants.VendorVersion));
+        return Task.FromResult(new GetVendorVersionResult(Constants.Instance.VendorVersion));
     }
 
     private static async Task HandleGetWsdl(HttpResponse response, CancellationToken cancellationToken)

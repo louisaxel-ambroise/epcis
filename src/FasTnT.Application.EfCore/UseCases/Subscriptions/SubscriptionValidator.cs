@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Model.Subscriptions;
 using System.Text.RegularExpressions;
 
-namespace FasTnT.Application.EfCore.Validators;
+namespace FasTnT.Application.EfCore.UseCases.Subscriptions;
 
 public static class SubscriptionValidator
 {
