@@ -18,13 +18,6 @@ public class WhenParsingAQueryTooLargeExceptionCallback : XmlParsingTestCase
     }
 
     [TestMethod]
-    public void RequestShouldNotSpecifyUser()
-    {
-        Assert.IsNull(Request.User);
-        Assert.AreEqual(default, Request.UserId);
-    }
-
-    [TestMethod]
     public void RequestShouldContainASubscriptionCallback()
     {
         Assert.IsNotNull(Request.SubscriptionCallback, "Request should contain a subscription callback");

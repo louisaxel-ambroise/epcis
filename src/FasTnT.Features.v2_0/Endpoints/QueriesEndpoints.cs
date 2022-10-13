@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.Queries;
+﻿using FasTnT.Application.UseCases.Queries;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
@@ -9,11 +8,11 @@ public static class QueriesEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapGet("v2_0/queries", HandleListNamedQueries).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.TryMapGet("v2_0/queries/{queryName}", HandleGetQueryDefinition).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.TryMapGet("v2_0/queries/{queryName}/events", HandleGetQueryEvents).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.TryMapPost("v2_0/queries", HandleCreateNamedQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
-        app.MapDelete("v2_0/queries/{queryName}", HandleDeleteNamedQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/queries", HandleListNamedQueries).RequireAuthorization("query");
+        app.TryMapGet("v2_0/queries/{queryName}", HandleGetQueryDefinition).RequireAuthorization("query");
+        app.TryMapGet("v2_0/queries/{queryName}/events", HandleGetQueryEvents).RequireAuthorization("query");
+        app.TryMapPost("v2_0/queries", HandleCreateNamedQuery).RequireAuthorization("query");
+        app.MapDelete("v2_0/queries/{queryName}", HandleDeleteNamedQuery).RequireAuthorization("query");
 
         return app;
     }
@@ -32,7 +31,7 @@ public static class QueriesEndpoints
         return EpcisResults.Ok(new CustomQueryDefinitionResult(response.Name, response.Parameters));
     }
 
-    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryParameters parameters, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryContext parameters, IExecuteQueryHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.ExecuteQueryAsync(queryName, parameters.Parameters, cancellationToken);
 

@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services.Users;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
@@ -11,7 +10,7 @@ public static class CaptureEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapPost("v1_2/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
+        app.TryMapPost("v1_2/capture", HandleCaptureRequest).RequireAuthorization("capture");
 
         return app;
     }

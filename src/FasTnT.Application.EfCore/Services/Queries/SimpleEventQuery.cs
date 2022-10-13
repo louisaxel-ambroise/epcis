@@ -131,7 +131,7 @@ public class SimpleEventQuery : IEpcisDataSource
             "EQ_eventID" => query.Where(x => param.Values.Contains(x.EventId)),
             "EQ_transformationID" => query.Where(x => param.Values.Contains(x.TransformationId)),
             "EQ_readPoint" => query.Where(x => param.Values.Contains(x.ReadPoint)),
-            "EQ_username" => query.Where(x => param.Values.Contains(x.Request.User.Username)),
+            "EQ_userID" => query.Where(x => param.Values.Contains(x.Request.UserId)),
             "EXISTS_errorDeclaration" => query.Where(x => x.CorrectiveDeclarationTime.HasValue),
             "EQ_errorReason" => query.Where(x => param.Values.Contains(x.CorrectiveReason)),
             "EQ_correctiveEventID" => query.Where(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))),

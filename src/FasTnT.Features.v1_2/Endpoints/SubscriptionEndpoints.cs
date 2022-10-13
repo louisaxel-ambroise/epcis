@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services.Users;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Extensions;
@@ -12,7 +11,7 @@ public static class SubscriptionEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("v1_2/Trigger", HandleTriggerSubscription).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        app.MapGet("v1_2/Trigger", HandleTriggerSubscription).RequireAuthorization("query");
 
         return app;
     }
