@@ -4,9 +4,7 @@ namespace FasTnT.Application.Services.Users;
 
 public interface ICurrentUser
 {
-    public int UserId { get; }
-    public string Username { get; }
-    public bool CanQuery { get; }
-    public bool CanCapture { get; }
-    public List<QueryParameter> DefaultQueryParameters { get; }
+    public string UserName { get; }
+    public string UserId { get; }
+    public IEnumerable<QueryParameter> DefaultQueryParameters { get; }
 }

@@ -211,7 +211,6 @@ public static class JsonEventFormatter
         element["persistentDisposition"] = dispositions;
     }
 
-    // TODO: refactor this mess.
     private static IDictionary<string, object> BuildExtensionFields(IEnumerable<Field> fields, IDictionary<string, string> context)
     {
         var extension = new Dictionary<string, object>();

@@ -30,9 +30,9 @@ public static class EpcisConfiguration
 
         services.AddSqlServer<EpcisContext>(options.ConnectionString, opt => opt.EnableRetryOnFailure().CommandTimeout(options.CommandTimeout));
         services.AddScoped<IncrementGenerator.Identity>();
-
         services.AddScoped<IEpcisDataSource, SimpleEventQuery>();
         services.AddScoped<IEpcisDataSource, SimpleMasterDataQuery>();
+        services.AddScoped(options.CurrentUser);
 
         services.AddTransient<IListCaptureRequestsHandler, CaptureUseCasesHandler>();
         services.AddTransient<ICaptureRequestDetailsHandler, CaptureUseCasesHandler>();
@@ -54,8 +54,6 @@ public static class EpcisConfiguration
         services.AddTransient<IListReadPointsHandler, TopLevelResourceUseCasesHandler>();
         services.AddTransient<IListDispositionsHandler, TopLevelResourceUseCasesHandler>();
 
-        services.AddScoped(options.CurrentUser);
-        services.AddScoped(options.UserProvider);
 
         return services;
     }

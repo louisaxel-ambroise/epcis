@@ -1,17 +1,14 @@
 ﻿using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Model.Queries;
-using System.Security.Claims;
 using System.Text.Json;
 
 namespace FasTnT.Host.Services.User;
 
 public class HttpContextCurrentUser : ICurrentUser
 {
-    public int UserId { get; init; }
-    public string Username { get; init; }
-    public bool CanQuery { get; init; }
-    public bool CanCapture { get; init; }
-    public List<QueryParameter> DefaultQueryParameters { get; init; } = new();
+    public string UserName { get; init; }
+    public string UserId { get; init; }
+    public IEnumerable<QueryParameter> DefaultQueryParameters { get; init; }
 
     public HttpContextCurrentUser(IHttpContextAccessor contextAccessor)
     {
@@ -21,11 +18,12 @@ public class HttpContextCurrentUser : ICurrentUser
         {
             return;
         }
+        var parameters = user.Claims.SingleOrDefault(x => x.Type == nameof(DefaultQueryParameters));
 
-        UserId = int.Parse(user.Claims.SingleOrDefault(x => x.Type == nameof(UserId)).Value);
-        Username = user.Claims.SingleOrDefault(x => x.Type == ClaimTypes.Name).Value;
-        CanQuery = bool.TryParse(user.Claims.SingleOrDefault(x => x.Type == nameof(CanQuery)).Value, out bool canQuery) && canQuery;
-        CanCapture = bool.TryParse(user.Claims.SingleOrDefault(x => x.Type == nameof(CanCapture)).Value, out bool canCapture) && canCapture;
-        DefaultQueryParameters = JsonSerializer.Deserialize<List<QueryParameter>>(user.Claims.SingleOrDefault(x => x.Type == nameof(DefaultQueryParameters)).Value);
+        UserName = user.Claims.Single(x => x.Type == nameof(UserName)).Value;
+        UserId = user.Claims.Single(x => x.Type == nameof(UserId)).Value;
+        DefaultQueryParameters = parameters != null 
+            ? JsonSerializer.Deserialize<IEnumerable<QueryParameter>>(parameters.Value) 
+            : Enumerable.Empty<QueryParameter>();
     }
 }

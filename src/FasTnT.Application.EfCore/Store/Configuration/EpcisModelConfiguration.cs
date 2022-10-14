@@ -3,7 +3,6 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Domain.Model.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -13,25 +12,11 @@ internal static class EpcisModelConfiguration
 {
     internal static void Apply(ModelBuilder modelBuilder, DatabaseFacade database)
     {
-        var user = modelBuilder.Entity<User>();
-        user.ToTable(nameof(User), nameof(EpcisSchema.Users));
-        user.HasKey(x => x.Id);
-        user.Property(x => x.Username).IsRequired(true).HasMaxLength(80);
-        user.Property(x => x.Salt).IsRequired(true).HasMaxLength(20);
-        user.Property(x => x.SecuredKey).IsRequired(true);
-        user.Property(x => x.RegisteredOn).IsRequired(true);
-        user.HasMany(x => x.DefaultQueryParameters).WithOne(x => x.User);
-
-        var userParameter = modelBuilder.Entity<UserDefaultQueryParameter>();
-        userParameter.ToTable(nameof(UserDefaultQueryParameter), nameof(EpcisSchema.Users));
-        userParameter.HasKey("UserId", "Name");
-        userParameter.Property(x => x.Name).IsRequired(true);
-        userParameter.Property(x => x.Values).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
-        userParameter.HasOne(x => x.User).WithMany(x => x.DefaultQueryParameters).OnDelete(DeleteBehavior.Cascade);
-
+        
         var request = modelBuilder.Entity<Request>();
         request.ToTable(nameof(Request), nameof(EpcisSchema.Epcis));
         request.HasKey(x => x.Id);
+        request.Property(x => x.UserId).HasMaxLength(50);
         request.Property(x => x.DocumentTime);
         request.Property(x => x.CaptureDate);
         request.Property(x => x.SchemaVersion).IsRequired(true);
@@ -39,7 +24,6 @@ internal static class EpcisModelConfiguration
         request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId");
         request.HasOne(x => x.StandardBusinessHeader).WithOne(x => x.Request).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         request.HasOne(x => x.SubscriptionCallback).WithOne(x => x.Request).HasForeignKey<SubscriptionCallback>("RequestId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
-        request.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
 
         var header = modelBuilder.Entity<StandardBusinessHeader>();
         header.ToTable(nameof(StandardBusinessHeader), nameof(EpcisSchema.Sbdh));
@@ -281,7 +265,7 @@ internal static class EpcisModelConfiguration
         storedQuery.ToTable(nameof(StoredQuery), nameof(EpcisSchema.Queries));
         storedQuery.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         storedQuery.Property(x => x.DataSource).IsRequired(true).HasMaxLength(30);
-        storedQuery.Property(x => x.Username).IsRequired(false).HasMaxLength(80);
+        storedQuery.Property(x => x.UserId).IsRequired(false).HasMaxLength(80);
         storedQuery.HasMany(x => x.Parameters).WithOne(x => x.Query).HasForeignKey("QueryId");
         storedQuery.HasIndex(x => x.Name).IsUnique();
         storedQuery.HasMany(x => x.Subscriptions).WithOne(x => x.Query);

@@ -9,7 +9,6 @@ public record RestResponse<T>(T Response) : IResult
     {
         var accept = context.Request.Headers.Accept.FirstOrDefault("application/json");
 
-        // TODO: fix formatting (root/document)
         if (accept.Contains("xml", StringComparison.OrdinalIgnoreCase))
         {
             var formattedResponse = XmlResponseFormatter.Format(Response);

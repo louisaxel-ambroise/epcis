@@ -9,7 +9,7 @@ public static class EpcisCaptureRequestValidator
     public static bool IsValid(Request request)
     {
         return HasEventOrMasterdataOrBeACallback(request)
-            && request.Events.All(evt => !IsAddOrDeleteAggregation(evt) || HaveAParentIdEpc(evt));
+            && request.Events.All(evt => !IsAddOrDeleteAggregation(evt) || HasParentIdEpc(evt));
     }
 
     private static bool HasEventOrMasterdataOrBeACallback(Request request)
@@ -23,7 +23,7 @@ public static class EpcisCaptureRequestValidator
         return evt.Type == EventType.AggregationEvent && (evt.Action == EventAction.Add || evt.Action == EventAction.Delete);
     }
 
-    private static bool HaveAParentIdEpc(Event evt)
+    private static bool HasParentIdEpc(Event evt)
     {
         return evt.Epcs.Any(epc => epc.Type == EpcType.ParentId);
     }

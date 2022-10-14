@@ -59,7 +59,7 @@ public class QueriesUseCasesHandler :
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{query.Name}' already exists.");
         }
 
-        query.Username = _currentUser.Username;
+        query.UserId = _currentUser.UserId;
 
         _context.Queries.Add(query);
         await _context.SaveChangesAsync(cancellationToken);
@@ -77,7 +77,7 @@ public class QueriesUseCasesHandler :
         {
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
         }
-        if (query.Username != _currentUser.Username)
+        if (query.UserId != _currentUser.UserId)
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' was stored by another user.");
         }
@@ -104,7 +104,7 @@ public class QueriesUseCasesHandler :
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
         }
 
-        var performer = _queries.SingleOrDefault(x => x.Name == query.DataSource);
+        var performer = _queries.Single(x => x.Name == query.DataSource);
         var context = new EpcisQueryContext(performer, query.Parameters)
             .MergeParameters(parameters)
             .MergeParameters(_currentUser.DefaultQueryParameters);

@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.Captures;
+﻿using FasTnT.Application.UseCases.Captures;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
@@ -9,10 +8,10 @@ public static class CaptureEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapGet("v2_0/capture", HandleListCapturesQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
-        app.TryMapGet("v2_0/capture/{captureId}", HandleCaptureDetailQuery).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
-        app.TryMapPost("v2_0/capture", HandleCaptureRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
-        app.TryMapPost("v2_0/events", HandleCaptureSingleEventRequest).RequireAuthorization(policyNames: nameof(ICurrentUser.CanCapture));
+        app.TryMapGet("v2_0/capture", HandleListCapturesQuery).RequireAuthorization();
+        app.TryMapGet("v2_0/capture/{captureId}", HandleCaptureDetailQuery).RequireAuthorization();
+        app.TryMapPost("v2_0/capture", HandleCaptureRequest).RequireAuthorization("capture");
+        app.TryMapPost("v2_0/events", HandleCaptureSingleEventRequest).RequireAuthorization("capture");
 
         return app;
     }

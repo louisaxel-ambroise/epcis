@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services.Users;
-using FasTnT.Features.v1_2.Endpoints;
+﻿using FasTnT.Features.v1_2.Endpoints;
 using FasTnT.Features.v1_2.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -18,7 +17,7 @@ public static class Epcis1_2Configuration
         {
             QueryEndpoints.AddSoapActions(action);
             SubscriptionEndpoints.AddSoapActions(action);
-        }).RequireAuthorization(policyNames: nameof(ICurrentUser.CanQuery));
+        }).RequireAuthorization(policyNames: "query");
 
         return endpoints;
     }

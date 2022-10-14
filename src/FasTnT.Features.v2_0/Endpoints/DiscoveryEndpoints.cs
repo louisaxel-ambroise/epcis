@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Services.Users;
-using FasTnT.Features.v2_0.Endpoints.Interfaces;
+﻿using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Features.v2_0.Endpoints;
@@ -8,7 +7,7 @@ public static class DiscoveryEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapGet("v2_0/", HandleTopLevelResources).RequireAuthorization(nameof(ICurrentUser.CanQuery));
+        app.TryMapGet("v2_0/", HandleTopLevelResources).RequireAuthorization("query");
 
         return app;
     }

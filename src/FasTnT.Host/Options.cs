@@ -1,13 +1,12 @@
-﻿using FasTnT.Application.Services.Users;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
 
 static class Options
 {
     public static readonly Action<AuthorizationOptions> AuthorizationPolicies = (options) =>
-    {
-        options.AddPolicy(nameof(ICurrentUser.CanQuery), policy => policy.RequireClaim(nameof(ICurrentUser.CanQuery), bool.TrueString));
-        options.AddPolicy(nameof(ICurrentUser.CanCapture), policy => policy.RequireClaim(nameof(ICurrentUser.CanCapture), bool.TrueString));
+    { 
+        options.AddPolicy("query", policy => policy.RequireClaim("fastnt.query"));
+        options.AddPolicy("capture", policy => policy.RequireClaim("fastnt.capture"));
     };
 
     public static readonly Action<HttpLoggingOptions> LoggingPolicy = (options) =>

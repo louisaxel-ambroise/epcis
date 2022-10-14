@@ -1,14 +1,12 @@
 ﻿using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Domain.Model.Users;
 
 namespace FasTnT.Domain.Model;
 
 public class Request
 {
     public int Id { get; set; }
-    public int UserId { get; set; }
-    public User User { get; set; }
+    public string UserId { get; set; }
     public StandardBusinessHeader StandardBusinessHeader { get; set; }
     public DateTime CaptureDate { get; set; } = DateTime.UtcNow;
     public DateTime DocumentTime { get; set; }
