@@ -8,7 +8,7 @@ using FasTnT.Application.Services.Users;
 using System.Text.Json;
 using System.Security.Cryptography;
 
-namespace FasTnT.Host.Authorization;
+namespace FasTnT.Host.Services.User;
 
 public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
@@ -66,11 +66,11 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
     private AuthenticateResult Authenticated(string username, string password, IEnumerable<string> requiredClaims)
     {
         var userHash = Hash(username, password);
-        var claims = new List<Claim>()
+        var claims = new List<Claim>
         {
             new Claim(nameof(ICurrentUser.UserName), username),
-            new Claim(nameof(ICurrentUser.UserId), userHash.ToString(), typeof(Guid).Name),
-            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(new[]{ new { Name = "EQ_userID", Values = new[] { userHash.ToString() } } }))
+            new Claim(nameof(ICurrentUser.UserId), userHash),
+            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(new[]{ new { Name = "EQ_userID", Values = new[] { userHash } } }))
         };
         claims.AddRange(requiredClaims.Select(x => new Claim(x, x)));
 
@@ -85,7 +85,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
     private static string Hash(string username, string password)
     {
         var hash = MD5.HashData(Encoding.UTF8.GetBytes(string.Join('#', username, password)));
-        
+
         return string.Concat(hash.Select(x => x.ToString("X2")));
     }
 }
