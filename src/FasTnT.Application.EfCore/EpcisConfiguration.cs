@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FasTnT.Application.EfCore;
 
-public static class EpcisConfiguration
+public static partial class EpcisConfiguration
 {
     public static IServiceCollection AddEpcisServices(this IServiceCollection services) => services.AddEpcisServices(null);
 
@@ -54,6 +54,12 @@ public static class EpcisConfiguration
         services.AddTransient<IListReadPointsHandler, TopLevelResourceUseCasesHandler>();
         services.AddTransient<IListDispositionsHandler, TopLevelResourceUseCasesHandler>();
 
+        services.AddHealthChecks().AddDbContextCheck<EpcisContext>();
+
+        if (!services.Any(x => x.ServiceType == typeof(ISubscriptionListener)))
+        {
+            services.AddSingleton<ISubscriptionListener, NullSubscriptionListener>();
+        }
 
         return services;
     }
