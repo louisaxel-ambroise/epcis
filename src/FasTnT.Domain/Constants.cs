@@ -4,7 +4,7 @@ public sealed class Constants
 {
     public static Constants Instance { get; set; } = new();
 
-    public int MaxEventsCapturePerCall { get; set; } = 500;
-    public int MaxEventsReturnedInQuery { get; set; } = 20_000;
-    public string VendorVersion { get; set; } = "2.0.1";
+    public int MaxEventsCapturePerCall { get; init; } = 500;
+    public int MaxEventsReturnedInQuery { get; init; } = 20_000;
+    public string VendorVersion { get; init; } = "2.1.0";
 }

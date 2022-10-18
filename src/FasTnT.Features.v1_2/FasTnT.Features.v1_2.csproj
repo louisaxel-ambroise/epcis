@@ -3,7 +3,6 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-  
   <ItemGroup>
     <None Remove="Artifacts\epcis1_2.wsdl" />
     <None Remove="Communication\Schemas\BasicTypes.xsd" />
@@ -28,7 +27,6 @@
     <EmbeddedResource Include="Communication\Schemas\Partner.xsd" />
     <EmbeddedResource Include="Communication\Schemas\StandardBusinessDocumentHeader.xsd" />
   </ItemGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />

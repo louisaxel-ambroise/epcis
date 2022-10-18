@@ -27,15 +27,12 @@
     <EmbeddedResource Include="Communication\Xml\Schemas\Partner.xsd" />
     <EmbeddedResource Include="Communication\Xml\Schemas\StandardBusinessDocumentHeader.xsd" />
   </ItemGroup>
-
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="JsonSchema.Net" Version="3.2.1" />
   </ItemGroup>
