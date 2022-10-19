@@ -43,6 +43,7 @@ app.UseRouting();
 app.UseHttpLogging();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHealthChecks("/health");
 
 app.UseEndpoints(endpoints =>
 {

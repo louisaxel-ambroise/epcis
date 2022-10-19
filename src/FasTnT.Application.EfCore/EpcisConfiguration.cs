@@ -12,6 +12,7 @@ using FasTnT.Application.UseCases.Captures;
 using FasTnT.Application.UseCases.Queries;
 using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Application.UseCases.TopLevelResources;
+using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FasTnT.Application.EfCore;
@@ -54,6 +55,12 @@ public static class EpcisConfiguration
         services.AddTransient<IListReadPointsHandler, TopLevelResourceUseCasesHandler>();
         services.AddTransient<IListDispositionsHandler, TopLevelResourceUseCasesHandler>();
 
+        services.AddHealthChecks().AddDbContextCheck<EpcisContext>();
+
+        if (!services.Any(x => x.ServiceType == typeof(ISubscriptionListener)))
+        {
+            services.AddSingleton<ISubscriptionListener, NullSubscriptionListener>();
+        }
 
         return services;
     }
@@ -67,5 +74,12 @@ public static class EpcisConfiguration
         services.AddSingleton<ISubscriptionListener>(ctx => ctx.GetService<ISubscriptionService>());
 
         return services;
+    }
+
+    private class NullSubscriptionListener : ISubscriptionListener
+    {
+        public Task RegisterAsync(Subscription subscription, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task RemoveAsync(Subscription subscription, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task TriggerAsync(string[] triggers, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }
