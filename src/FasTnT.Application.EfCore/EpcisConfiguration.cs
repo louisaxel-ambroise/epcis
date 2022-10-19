@@ -12,15 +12,12 @@ using FasTnT.Application.UseCases.Captures;
 using FasTnT.Application.UseCases.Queries;
 using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Application.UseCases.TopLevelResources;
-using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FasTnT.Application.EfCore;
 
 public static class EpcisConfiguration
 {
-    public static IServiceCollection AddEpcisServices(this IServiceCollection services) => services.AddEpcisServices(null);
-
     public static IServiceCollection AddEpcisServices(this IServiceCollection services, Action<EpcisOptions> configure)
     {
         var options = new EpcisOptions();
@@ -59,7 +56,7 @@ public static class EpcisConfiguration
 
         if (!services.Any(x => x.ServiceType == typeof(ISubscriptionListener)))
         {
-            services.AddSingleton<ISubscriptionListener, NullSubscriptionListener>();
+            services.AddSingleton<ISubscriptionListener, NoOpSubscriptionListener>();
         }
 
         return services;
@@ -76,10 +73,7 @@ public static class EpcisConfiguration
         return services;
     }
 
-    private class NullSubscriptionListener : ISubscriptionListener
+    private class NoOpSubscriptionListener : ISubscriptionListener
     {
-        public Task RegisterAsync(Subscription subscription, CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task RemoveAsync(Subscription subscription, CancellationToken cancellationToken) => Task.CompletedTask;
-        public Task TriggerAsync(string[] triggers, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 }
