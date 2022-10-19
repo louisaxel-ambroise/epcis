@@ -43,6 +43,7 @@ app.UseRouting();
 app.UseHttpLogging();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapHealthChecks("/health");
 
 app.UseEpcis12Endpoints();
 app.UseEpcis20Endpoints();

@@ -18,8 +18,6 @@ namespace FasTnT.Application.EfCore;
 
 public static class EpcisConfiguration
 {
-    public static IServiceCollection AddEpcisServices(this IServiceCollection services) => services.AddEpcisServices(null);
-
     public static IServiceCollection AddEpcisServices(this IServiceCollection services, Action<EpcisOptions> configure)
     {
         var options = new EpcisOptions();
@@ -54,6 +52,12 @@ public static class EpcisConfiguration
         services.AddTransient<IListReadPointsHandler, TopLevelResourceUseCasesHandler>();
         services.AddTransient<IListDispositionsHandler, TopLevelResourceUseCasesHandler>();
 
+        services.AddHealthChecks().AddDbContextCheck<EpcisContext>();
+
+        if (!services.Any(x => x.ServiceType == typeof(ISubscriptionListener)))
+        {
+            services.AddSingleton<ISubscriptionListener, NoOpSubscriptionListener>();
+        }
 
         return services;
     }
@@ -67,5 +71,9 @@ public static class EpcisConfiguration
         services.AddSingleton<ISubscriptionListener>(ctx => ctx.GetService<ISubscriptionService>());
 
         return services;
+    }
+
+    private class NoOpSubscriptionListener : ISubscriptionListener
+    {
     }
 }
