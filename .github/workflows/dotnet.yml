@@ -16,7 +16,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '7.0'
+        dotnet-version: '6.0'
         include-prerelease: True
 
     - name: Restore dependencies
@@ -29,6 +29,6 @@ jobs:
       run: dotnet test --no-build --verbosity normal -c Debug /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       
     - name: Upload Coverage
-      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r tests/FasTnT.Features.v1_2.Tests/coverage.opencover.xml  -r tests/FasTnT.Features.v2_0.Tests/coverage.opencover.xml -r tests/FasTnT.Application.Tests/coverage.opencover.xml
+      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r tests/FasTnT.Features.v1_2.Tests/coverage.json  -r tests/FasTnT.Features.v2_0.Tests/coverage.json -r tests/FasTnT.Application.Tests/coverage.json
       env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
