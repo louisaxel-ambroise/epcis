@@ -26,7 +26,7 @@ jobs:
       run: dotnet build --no-restore
 
     - name: Test
-      run: dotnet test --no-build --verbosity normal -c Debug /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      run: dotnet test --no-build --verbosity normal -c Debug --collect:"XPlat Code Coverage"
 
     - name: Move Coverage files
       run: mv tests/FasTnT.Features.v1_2.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Features.v1_2.Tests/; mv tests/FasTnT.Features.v2_0.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Features.v2_0.Tests/; mv tests/FasTnT.Application.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Application.Tests/
