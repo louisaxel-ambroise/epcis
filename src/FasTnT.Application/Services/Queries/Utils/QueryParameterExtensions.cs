@@ -41,6 +41,9 @@ public static class QueryParameterExtensions
     public static string FieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[0];
     public static string GetAttributeName(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
     public static string ReportFieldUom(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
+    public static string ReportField(this QueryParameter parameter) => Capitalize(parameter.Name.Split('_', 3)[1]);
+
+    private static string Capitalize(string value) => char.ToUpper(value[0]) + value[1..];
 
     public static EpcType[] GetMatchEpcTypes(this QueryParameter parameter)
     {

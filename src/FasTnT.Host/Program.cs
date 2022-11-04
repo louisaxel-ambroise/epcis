@@ -17,16 +17,17 @@ builder.Services.AddAuthentication(BasicAuthenticationHandler.SchemeName).AddSch
 builder.Services.AddAuthorization(Options.AuthorizationPolicies);
 builder.Services.AddHttpLogging(Options.LoggingPolicy);
 builder.Services.AddHttpContextAccessor();
+
+// Add the subscription manager as background service
+builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResultSender.Instance);
+builder.Services.AddHostedService<SubscriptionBackgroundService>();
+
 builder.Services.AddEpcisServices(opt =>
 {
     opt.ConnectionString = builder.Configuration.GetConnectionString("FasTnT.Database");
     opt.CommandTimeout = builder.Configuration.GetValue("FasTnT.Database.ConnectionTimeout", 60);
     opt.CurrentUser = svc => new HttpContextCurrentUser(svc.GetRequiredService<IHttpContextAccessor>());
 });
-
-// Add the subscription manager as background service
-builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResultSender.Instance);
-builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
 var app = builder.Build();
 

@@ -61,28 +61,26 @@ public class SimpleEventQuery : IEpcisDataSource
                     QueryName = Name
                 };
             }
-
-            if (eventIds.Count > 0)
-            {
-                query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
-                    .Include(x => x.Epcs)
-                    .Include(x => x.Sources)
-                    .Include(x => x.Destinations)
-                    .Include(x => x.Fields)
-                    .Include(x => x.Transactions)
-                    .Include(x => x.PersistentDispositions)
-                    .Include(x => x.SensorElements).ThenInclude(x => x.Reports)
-                    .Where(evt => eventIds.Contains(evt.Id));
-
-                var result = await query.ToListAsync(cancellationToken)
-                    .ContinueWith(x => ApplyOrderByLimit(x.Result.AsQueryable()).ToList());
-
-                return result;
-            }
-            else
+            if (!eventIds.Any())
             {
                 return QueryData.Empty;
             }
+
+            query = _context.Events.AsSplitQuery().AsNoTrackingWithIdentityResolution()
+                .Include(x => x.Epcs)
+                .Include(x => x.Sources)
+                .Include(x => x.Destinations)
+                .Include(x => x.Fields)
+                .Include(x => x.Transactions)
+                .Include(x => x.PersistentDispositions)
+                .Include(x => x.SensorElements).ThenInclude(x => x.Reports)
+                .Where(evt => eventIds.Contains(evt.Id));
+
+            var result = await query
+                .ToListAsync(cancellationToken)
+                .ContinueWith(x => ApplyOrderByLimit(x.Result.AsQueryable()).ToList());
+
+            return result;
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
         {
@@ -192,11 +190,7 @@ public class SimpleEventQuery : IEpcisDataSource
             var r when Regex.IsMatch(r, $"^{Comparison}_SENSOREPORT_") => ApplyComparison(param, query, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), false),
             var r when Regex.IsMatch(r, $"^{Comparison}_INNER_SENSOREPORT_") => ApplyComparison(param, query, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), true),
             var r when Regex.IsMatch(r, $"^{Comparison}_INNER_") => ApplyComparison(param, query, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regex.IsMatch(r, $"^{Comparison}_minValue_") => ApplyMinValueUomComparison(param, query, param.ReportFieldUom()),
-            var r when Regex.IsMatch(r, $"^{Comparison}_maxValue_") => ApplyMaxValueUomComparison(param, query, param.ReportFieldUom()),
-            var r when Regex.IsMatch(r, $"^{Comparison}_meanValue_") => ApplyMeanValueUomComparison(param, query, param.ReportFieldUom()),
-            var r when Regex.IsMatch(r, $"^{Comparison}_sDev_") => ApplySDevUomComparison(param, query, param.ReportFieldUom()),
-            var r when Regex.IsMatch(r, $"^{Comparison}_percValue_") => ApplyPercValueUomComparison(param, query, param.ReportFieldUom()),
+            var r when Regex.IsMatch(r, $"^{Comparison}_[sDev|((min|max|mean|perc)Value)]_") => ApplyUomComparison(param, query),
             var r when Regex.IsMatch(r, $"^{Comparison}_") => ApplyComparison(param, query, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false),
             // Regex HasAttr/EqAttr filters
             var r when Regex.IsMatch(r, $"^EQATTR_") => throw new EpcisException(ExceptionType.ImplementationException, "EQATTR_ parameter family is not implemented"),
@@ -290,91 +284,15 @@ public class SimpleEventQuery : IEpcisDataSource
         return query.Where(x => x.PersistentDispositions.AsQueryable().Any(finalPredicate));
     }
 
-    // TODO: refactor
-    private static IQueryable<Event> ApplyValueUomComparison(QueryParameter param, IQueryable<Event> query, string uom)
+    private static IQueryable<Event> ApplyUomComparison(QueryParameter param, IQueryable<Event> query)
     {
-        var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == uom);
+        var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == param.ReportFieldUom());
         var fieldValuePredicate = param.Name[..2] switch
         {
-            "GE" => PredicateBuilder.New<SensorReport>(r => r.Value >= param.GetNumeric()),
-            "GT" => PredicateBuilder.New<SensorReport>(r => r.Value > param.GetNumeric()),
-            "LE" => PredicateBuilder.New<SensorReport>(r => r.Value <= param.GetNumeric()),
-            "LT" => PredicateBuilder.New<SensorReport>(r => r.Value < param.GetNumeric()),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        };
-
-        return query.Where(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(reportPredicate.And(fieldValuePredicate))));
-    }
-
-    private static IQueryable<Event> ApplyMinValueUomComparison(QueryParameter param, IQueryable<Event> query, string uom)
-    {
-        var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == uom);
-        var fieldValuePredicate = param.Name[..2] switch
-        {
-            "GE" => PredicateBuilder.New<SensorReport>(r => r.MinValue >= param.GetNumeric()),
-            "GT" => PredicateBuilder.New<SensorReport>(r => r.MinValue > param.GetNumeric()),
-            "LE" => PredicateBuilder.New<SensorReport>(r => r.MinValue <= param.GetNumeric()),
-            "LT" => PredicateBuilder.New<SensorReport>(r => r.MinValue < param.GetNumeric()),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        };
-
-        return query.Where(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(reportPredicate.And(fieldValuePredicate))));
-    }
-
-    private static IQueryable<Event> ApplyMaxValueUomComparison(QueryParameter param, IQueryable<Event> query, string uom)
-    {
-        var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == uom);
-        var fieldValuePredicate = param.Name[..2] switch
-        {
-            "GE" => PredicateBuilder.New<SensorReport>(r => r.MaxValue >= param.GetNumeric()),
-            "GT" => PredicateBuilder.New<SensorReport>(r => r.MaxValue > param.GetNumeric()),
-            "LE" => PredicateBuilder.New<SensorReport>(r => r.MaxValue <= param.GetNumeric()),
-            "LT" => PredicateBuilder.New<SensorReport>(r => r.MaxValue < param.GetNumeric()),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        };
-
-        return query.Where(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(reportPredicate.And(fieldValuePredicate))));
-    }
-
-    private static IQueryable<Event> ApplyMeanValueUomComparison(QueryParameter param, IQueryable<Event> query, string uom)
-    {
-        var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == uom);
-        var fieldValuePredicate = param.Name[..2] switch
-        {
-            "GE" => PredicateBuilder.New<SensorReport>(r => r.MeanValue >= param.GetNumeric()),
-            "GT" => PredicateBuilder.New<SensorReport>(r => r.MeanValue > param.GetNumeric()),
-            "LE" => PredicateBuilder.New<SensorReport>(r => r.MeanValue <= param.GetNumeric()),
-            "LT" => PredicateBuilder.New<SensorReport>(r => r.MeanValue < param.GetNumeric()),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        };
-
-        return query.Where(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(reportPredicate.And(fieldValuePredicate))));
-    }
-
-    private static IQueryable<Event> ApplySDevUomComparison(QueryParameter param, IQueryable<Event> query, string uom)
-    {
-        var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == uom);
-        var fieldValuePredicate = param.Name[..2] switch
-        {
-            "GE" => PredicateBuilder.New<SensorReport>(r => r.SDev >= param.GetNumeric()),
-            "GT" => PredicateBuilder.New<SensorReport>(r => r.SDev > param.GetNumeric()),
-            "LE" => PredicateBuilder.New<SensorReport>(r => r.SDev <= param.GetNumeric()),
-            "LT" => PredicateBuilder.New<SensorReport>(r => r.SDev < param.GetNumeric()),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        };
-
-        return query.Where(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(reportPredicate.And(fieldValuePredicate))));
-    }
-
-    private static IQueryable<Event> ApplyPercValueUomComparison(QueryParameter param, IQueryable<Event> query, string uom)
-    {
-        var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == uom);
-        var fieldValuePredicate = param.Name[..2] switch
-        {
-            "GE" => PredicateBuilder.New<SensorReport>(r => r.PercValue >= param.GetNumeric()),
-            "GT" => PredicateBuilder.New<SensorReport>(r => r.PercValue > param.GetNumeric()),
-            "LE" => PredicateBuilder.New<SensorReport>(r => r.PercValue <= param.GetNumeric()),
-            "LT" => PredicateBuilder.New<SensorReport>(r => r.PercValue < param.GetNumeric()),
+            "GE" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) >= param.GetNumeric()),
+            "GT" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) > param.GetNumeric()),
+            "LE" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) <= param.GetNumeric()),
+            "LT" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) < param.GetNumeric()),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
         };
 
