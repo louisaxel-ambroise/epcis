@@ -25,7 +25,7 @@ jobs:
 
     steps:
     - name: Use .NET 7
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '7.0'
         include-prerelease: True
@@ -35,7 +35,7 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
+      uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
         
@@ -43,4 +43,4 @@ jobs:
         dotnet build /p:UseSharedCompilation=false
       
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
+      uses: github/codeql-action/analyze@v2

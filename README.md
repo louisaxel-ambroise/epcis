@@ -20,7 +20,7 @@ Steps:
 
 That's it! You have a properly working EPCIS repository.
 
-You can also setup FasTnT EPCIS using the Docker image or in Azure quite easily. Check the [wiki](https://github.com/FasTnT/epcis-ef-core/wiki/Installation) for more details.
+You can also setup FasTnT EPCIS using the Docker image or in Azure quite easily. Check the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki/Installation) for more details.
 
 ## HTTP Endpoints
 
@@ -38,7 +38,7 @@ FasT&T provides a full implementation of the EPCIS 1.2 specification. The endpoi
 
 **Queries** endpoint supports SOAP requests on endpoint `/v1_2/Query.svc`.
 
-See the [wiki](https://github.com/FasTnT/epcis-ef-core/wiki) for more details.
+See the [wiki](https://github.com/louisaxel-ambroise/wiki) for more details.
 
 #### Implemented Features
 
@@ -77,7 +77,7 @@ A subset of EPCIS 2.0 specification is currently implemented in FasT&T repositor
 
 **Queries** endpoint supports HTTP requests and supports both `accept: application/json` and `accept: application/xml` headers.
 
-See the [wiki](https://github.com/FasTnT/epcis-ef-core/wiki) for more details.
+See the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki) for more details.
 
 #### Implemented Features
 
