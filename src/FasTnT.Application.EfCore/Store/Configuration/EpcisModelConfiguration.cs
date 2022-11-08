@@ -14,7 +14,7 @@ internal static class EpcisModelConfiguration
     {
         
         var request = modelBuilder.Entity<Request>();
-        request.ToTable(nameof(Request), nameof(EpcisSchema.Epcis));
+        request.ToTable(nameof(Request), nameof(EpcisSchema.Epcis), builder => builder.HasTrigger("[Epcis].[InsertPendingRequests]"));
         request.HasKey(x => x.Id);
         request.Property(x => x.UserId).HasMaxLength(50);
         request.Property(x => x.DocumentTime);

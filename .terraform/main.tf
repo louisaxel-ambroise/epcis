@@ -152,7 +152,7 @@ resource "azurerm_app_service" "api_app" {
   https_only          = true
   tags                = local.tags
   site_config {
-    dotnet_framework_version  = "v6.0"
+    dotnet_framework_version  = "v7.0"
     use_32_bit_worker_process = true
     http2_enabled             = true
   }
@@ -170,6 +170,6 @@ resource "azurerm_app_service" "api_app" {
 
 resource "azurerm_app_service_source_control" "api_source_control" {
   app_id   = azurerm_app_service.api_app.id
-  repo_url = "https://github.com/FasTnT/epcis-ef-core"
+  repo_url = "https://github.com/louisaxel-ambroise/epcis"
   branch   = "main"
 }

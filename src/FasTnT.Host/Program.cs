@@ -46,10 +46,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health");
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.UseEpcis12Endpoints();
-    endpoints.UseEpcis20Endpoints();
-});
+app.UseEpcis12Endpoints();
+app.UseEpcis20Endpoints();
 
 app.Run();

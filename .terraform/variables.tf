@@ -10,7 +10,7 @@ variable "environment" {
 
 variable "aspnetcore_environment" {
   type    = string
-  default = "production"
+  default = "development"
 }
 
 variable "location" {
