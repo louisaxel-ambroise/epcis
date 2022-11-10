@@ -3,7 +3,7 @@ using FasTnT.Domain;
 using FasTnT.Features.v1_2;
 using FasTnT.Features.v1_2.Communication;
 using FasTnT.Features.v2_0;
-using FasTnT.Features.v2_0.Communication.Json;
+using FasTnT.Features.v2_0.Subscriptions;
 using FasTnT.Host.Extensions;
 using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
@@ -45,6 +45,7 @@ app.UseHttpLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health");
+app.UseWebSockets();
 
 app.UseEpcis12Endpoints();
 app.UseEpcis20Endpoints();

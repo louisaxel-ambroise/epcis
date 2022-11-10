@@ -16,13 +16,15 @@ public class SubscriptionsUseCasesHandler :
     IRegisterSubscriptionHandler
 {
     private readonly EpcisContext _context;
-    private readonly IEnumerable<IEpcisDataSource> _dataSources;
+    private readonly IEnumerable<IEpcisDataSource> _queries;
+    private readonly IEnumerable<IResultSender> _resultSenders;
     private readonly ISubscriptionListener _listener;
 
-    public SubscriptionsUseCasesHandler(EpcisContext context, IEnumerable<IEpcisDataSource> queries, ISubscriptionListener listener)
+    public SubscriptionsUseCasesHandler(EpcisContext context, IEnumerable<IEpcisDataSource> queries, IEnumerable<IResultSender> resultSenders, ISubscriptionListener listener)
     {
         _context = context;
-        _dataSources = queries;
+        _queries = queries;
+        _resultSenders = resultSenders;
         _listener = listener;
     }
 
@@ -37,7 +39,7 @@ public class SubscriptionsUseCasesHandler :
 
         _context.Subscriptions.Remove(subscription);
         await _context.SaveChangesAsync(cancellationToken);
-        await _listener.RemoveAsync(subscription, cancellationToken);
+        await _listener.RemoveAsync(subscription.Id, cancellationToken);
 
         return subscription;
     }
@@ -73,7 +75,7 @@ public class SubscriptionsUseCasesHandler :
         await _listener.TriggerAsync(triggers, cancellationToken);
     }
 
-    public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
+    public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, IResultSender resultSender, CancellationToken cancellationToken)
     {
         var query = await _context.Queries
             .Include(x => x.Parameters)
@@ -88,8 +90,12 @@ public class SubscriptionsUseCasesHandler :
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query with name '{subscription.QueryName}' not found");
         }
 
-        var dataSource = _dataSources.SingleOrDefault(x => x.Name == query.DataSource);
+        var dataSource = _queries.SingleOrDefault(x => x.Name == query.DataSource);
 
+        if(resultSender is null)
+        {
+            throw new EpcisException(ExceptionType.ImplementationException, $"Subscription result formatter '{subscription.FormatterName}' not found");
+        }
         if (dataSource is null)
         {
             throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query '{subscription.QueryName}' has an invalid dataSource");
@@ -113,7 +119,7 @@ public class SubscriptionsUseCasesHandler :
         _context.Subscriptions.Add(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await _listener.RegisterAsync(subscription, cancellationToken);
+        await _listener.RegisterAsync(new SubscriptionContext(subscription, resultSender), cancellationToken);
 
         return subscription;
     }

@@ -1,5 +1,6 @@
 ﻿using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Features.v2_0.Subscriptions;
 using System.Text.Json;
 
 namespace FasTnT.Features.v2_0.Communication.Json.Parsers

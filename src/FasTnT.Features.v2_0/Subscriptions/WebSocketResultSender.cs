@@ -4,32 +4,54 @@ using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
+using System.Net.WebSockets;
 using System.Text;
 
-namespace FasTnT.Features.v2_0.Communication.Json;
+namespace FasTnT.Features.v2_0.Subscriptions;
 
-public class JsonResultSender : IResultSender
+public class WebSocketResultSender : IResultSender
 {
-    public static readonly IResultSender Instance = new JsonResultSender();
+    private readonly WebSocket _webSocket;
 
-    public string Name => nameof(JsonResultSender);
+    public string Name => nameof(WebSocketResultSender);
 
-    private JsonResultSender() { }
-
-    public Task<bool> SendResultAsync(Subscription context, QueryResponse response, CancellationToken cancellationToken)
+    public WebSocketResultSender(WebSocket webSocket)
     {
-        using var client = GetHttpClient(context.Destination, context.SignatureToken);
-        var formattedResponse = JsonResponseFormatter.Format(new QueryResult(response));
-
-        return SendRequestAsync(client, formattedResponse, cancellationToken);
+        _webSocket = webSocket;
     }
 
-    public Task<bool> SendErrorAsync(Subscription context, EpcisException error, CancellationToken cancellationToken)
+    public async Task<bool> SendResultAsync(Subscription context, QueryResponse response, CancellationToken cancellationToken)
     {
-        using var client = GetHttpClient(context.Destination, context.SignatureToken);
-        var formattedResponse = JsonResponseFormatter.FormatError(error);
+        var formattedResponse = JsonResponseFormatter.Format(new QueryResult(response));
+        var responseByteArray = Encoding.UTF8.GetBytes(formattedResponse);
 
-        return SendRequestAsync(client, formattedResponse, cancellationToken);
+        try
+        {
+            await _webSocket.SendAsync(responseByteArray, WebSocketMessageType.Text, true, cancellationToken);
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> SendErrorAsync(Subscription context, EpcisException error, CancellationToken cancellationToken)
+    {
+        var formattedResponse = JsonResponseFormatter.FormatError(error);
+        var responseByteArray = Encoding.UTF8.GetBytes(formattedResponse);
+
+        try
+        {
+            await _webSocket.SendAsync(responseByteArray, WebSocketMessageType.Text, true, cancellationToken);
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static async Task<bool> SendRequestAsync(HttpClient request, string content, CancellationToken cancellationToken)

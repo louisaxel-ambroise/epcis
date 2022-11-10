@@ -29,13 +29,15 @@ public class SubscriptionBackgroundService : BackgroundService
 
         var subscriptions = context.Subscriptions
             .AsNoTracking()
+            .Include(x => x.Query).ThenInclude(x => x.Parameters)
             .Include(x => x.Parameters)
             .Include(x => x.Schedule)
             .ToList();
 
         foreach (var subscription in subscriptions)
         {
-            _subscriptionService.RegisterAsync(subscription, stoppingToken).Wait(stoppingToken);
+            var subscriptionContext = new SubscriptionContext(subscription, null);
+            _subscriptionService.RegisterAsync(subscriptionContext, stoppingToken).Wait(stoppingToken);
         }
     }
 }

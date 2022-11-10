@@ -1,4 +1,8 @@
-﻿using FasTnT.Application.UseCases.Queries;
+﻿using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.UseCases.Queries;
+using FasTnT.Application.UseCases.Subscriptions;
+using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Features.v2_0.Communication.Json;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
@@ -31,11 +35,20 @@ public static class QueriesEndpoints
         return EpcisResults.Ok(new CustomQueryDefinitionResult(response.Name, response.Parameters));
     }
 
-    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryContext parameters, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleGetQueryEvents(string queryName, HttpContext context, QueryContext parameters, IExecuteQueryHandler queryHandler, CancellationToken cancellationToken)
     {
-        var response = await handler.ExecuteQueryAsync(queryName, parameters.Parameters, cancellationToken);
+        if (context.WebSockets.IsWebSocketRequest)
+        {
+            await Application.Services.Subscriptions.WebSocketManager.SubscribeAsync(context, queryName, parameters.Parameters);
 
-        return EpcisResults.Ok(new QueryResult(response));
+            return Results.Empty;
+        }
+        else
+        {
+            var response = await queryHandler.ExecuteQueryAsync(queryName, parameters.Parameters, cancellationToken);
+
+            return EpcisResults.Ok(new QueryResult(response));
+        }
     }
 
     private static async Task<IResult> HandleCreateNamedQuery(CreateCustomQueryRequest command, IStoreQueryHandler handler, CancellationToken cancellationToken)
