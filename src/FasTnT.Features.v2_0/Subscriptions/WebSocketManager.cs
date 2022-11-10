@@ -51,7 +51,7 @@ public static class WebSocketManager
 
         while (!tokenSource.IsCancellationRequested)
         {
-            var receied = await webSocket.ReceiveAsync(arraySegment, CancellationToken.None);
+            await webSocket.ReceiveAsync(arraySegment, CancellationToken.None);
 
             if (webSocket.State == WebSocketState.CloseReceived)
             {
