@@ -53,33 +53,4 @@ public class WebSocketResultSender : IResultSender
             return false;
         }
     }
-
-    private static async Task<bool> SendRequestAsync(HttpClient request, string content, CancellationToken cancellationToken)
-    {
-        using var httpContent = new StringContent(content, Encoding.UTF8, "application/json");
-
-        try
-        {
-            var httpResponse = await request.PostAsync(string.Empty, httpContent, cancellationToken);
-            httpResponse.EnsureSuccessStatusCode();
-
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    private static HttpClient GetHttpClient(string destination, string signatureToken)
-    {
-        var client = new HttpClient { BaseAddress = new Uri(destination) };
-
-        if (!string.IsNullOrEmpty(signatureToken))
-        {
-            client.DefaultRequestHeaders.Add("GS1-Signature", signatureToken);
-        }
-
-        return client;
-    }
 }
