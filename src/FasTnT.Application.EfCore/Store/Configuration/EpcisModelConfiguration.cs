@@ -218,7 +218,7 @@ internal static class EpcisModelConfiguration
         sensorReport.HasOne(x => x.SensorElement).WithMany(x => x.Reports).HasForeignKey("EventId", "SensorId").OnDelete(DeleteBehavior.Cascade);
 
         var subscription = modelBuilder.Entity<Subscription>();
-        subscription.ToTable(nameof(Subscription), nameof(EpcisSchema.Subscription));
+        subscription.ToTable(nameof(Subscription), nameof(EpcisSchema.Subscription), builder => builder.HasTrigger("[Subscription].[SubscriptionInitialRequests]"));
         subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.ReportIfEmpty).IsRequired(true);
