@@ -29,7 +29,6 @@ public class SubscriptionBackgroundService : BackgroundService
 
         var resultSenders = scope.ServiceProvider.GetServices<IResultSender>();
         var subscriptions = context.Subscriptions
-            .AsNoTracking()
             .Include(x => x.Query).ThenInclude(x => x.Parameters)
             .Include(x => x.Parameters)
             .Include(x => x.Schedule)
@@ -46,10 +45,11 @@ public class SubscriptionBackgroundService : BackgroundService
             }
             else
             {
-                // This is a websocket subscription that was not properly removed.
-                // As the websocket connection is lost at this point, it's safe to remove the subscription from the DB
-                _subscriptionService.RemoveAsync(subscription.Id, stoppingToken).Wait(stoppingToken);
+                // This is a websocket subscription that was not properly removed. As the connection is lost at this point, it's safe to remove the subscription from the DB
+                context.Remove(subscription);
             }
         }
+
+        context.SaveChanges();
     }
 }

@@ -11,7 +11,7 @@ public static class QueriesEndpoints
     {
         app.TryMapGet("v2_0/queries", HandleListNamedQueries).RequireAuthorization("query");
         app.TryMapGet("v2_0/queries/{queryName}", HandleGetQueryDefinition).RequireAuthorization("query");
-        app.TryMapGet("v2_0/queries/{queryName}/events", (HttpContext ctx) => ctx.WebSockets.IsWebSocketRequest ? WebSocketSubscription.SubscribeAsync : HandleGetQueryEvents).RequireAuthorization("query");
+        app.TryMapGet("v2_0/queries/{queryName}/events", ctx => ctx.WebSockets.IsWebSocketRequest ? WebSocketSubscription.SubscribeAsync : HandleGetQueryEvents).RequireAuthorization("query");
         app.TryMapPost("v2_0/queries", HandleCreateNamedQuery).RequireAuthorization("query");
         app.MapDelete("v2_0/queries/{queryName}", HandleDeleteNamedQuery).RequireAuthorization("query");
 
