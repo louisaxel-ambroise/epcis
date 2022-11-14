@@ -1,5 +1,4 @@
-﻿using Azure;
-using FasTnT.Application.Services.Subscriptions;
+﻿using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
