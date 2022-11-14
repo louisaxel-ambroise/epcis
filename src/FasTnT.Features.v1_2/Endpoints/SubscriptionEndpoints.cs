@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Extensions;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Application.UseCases.Subscriptions;
-using FasTnT.Features.v1_2.Communication;
+using FasTnT.Features.v1_2.Subscriptions;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 

@@ -26,7 +26,7 @@ public class SubscriptionSchedule
 
     private static DateTime SetMinutes(DateTime tentative, SubscriptionScheduleEntry scheduleEntry)
     {
-        if (!scheduleEntry.DayOfWeek.HasValue(tentative.Minute))
+        if (!scheduleEntry.Minutes.HasValue(tentative.Minute))
         {
             tentative = new DateTime(tentative.Year, tentative.Month, tentative.Day, tentative.Hour, Math.Max(tentative.Minute, scheduleEntry.Minutes.Min), scheduleEntry.Seconds.Min);
         }

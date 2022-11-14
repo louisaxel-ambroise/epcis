@@ -15,7 +15,6 @@ public class WhenHandlingUnsubscribeCommand
 {
     readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenHandlingUnsubscribeCommand));
     readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-    readonly static IEnumerable<IResultSender> ResultSenders = new IResultSender[] { new TestResultSender() };
     readonly static Mock<ISubscriptionListener> Listener = new(MockBehavior.Loose);
 
     [ClassInitialize]
@@ -35,7 +34,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldReturnAnUnubscribeResult()
     {
         var subscription = "TestSubscription";
-        var handler = new SubscriptionsUseCasesHandler(Context, Queries, ResultSenders, Listener.Object);
+        var handler = new SubscriptionsUseCasesHandler(Context, Queries, Listener.Object);
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
             
         Assert.AreEqual(0, Context.Subscriptions.Count());
@@ -46,7 +45,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameDoesNotExist()
     {
         var subscription = "UnknownSubscription";
-        var handler = new SubscriptionsUseCasesHandler(Context, null, ResultSenders, default);
+        var handler = new SubscriptionsUseCasesHandler(Context, null, default);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
     }

@@ -54,7 +54,7 @@ public static class EpcisConfiguration
 
         services.AddHealthChecks().AddDbContextCheck<EpcisContext>();
 
-        if (!services.Any(x => x.ServiceType == typeof(ISubscriptionListener)))
+        if (!services.Any(x => typeof(ISubscriptionListener).IsAssignableFrom(x.ServiceType)))
         {
             services.AddSingleton<ISubscriptionListener, NoOpSubscriptionListener>();
         }

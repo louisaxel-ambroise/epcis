@@ -112,19 +112,19 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         return Task.CompletedTask;
     }
 
-    public Task RemoveAsync(Subscription subscription, CancellationToken _)
+    public Task RemoveAsync(int subscriptionId, CancellationToken cancellationToken)
     {
         Pulse(() =>
         {
-            if (_scheduledExecutions.Any(x => x.Key.Subscription.Id == subscription.Id))
+            if (_scheduledExecutions.Any(x => x.Key.Subscription.Id == subscriptionId))
             {
-                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Subscription.Id == subscription.Id).Key, out DateTime value);
+                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Subscription.Id == subscriptionId).Key, out DateTime value);
             }
             else
             {
                 foreach (var triggered in _triggeredSubscriptions)
                 {
-                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Subscription.Id == subscription.Id));
+                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Subscription.Id == subscriptionId));
                 }
             }
         });

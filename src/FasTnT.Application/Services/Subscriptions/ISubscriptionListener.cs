@@ -1,7 +1,4 @@
-﻿using Azure.Core;
-using FasTnT.Domain.Model.Subscriptions;
-
-namespace FasTnT.Application.Services.Subscriptions;
+﻿namespace FasTnT.Application.Services.Subscriptions;
 
 public interface ISubscriptionListener
 {

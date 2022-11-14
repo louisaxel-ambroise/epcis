@@ -14,7 +14,6 @@ public class WhenHandlingSubscribeCommand
 {
     readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenHandlingSubscribeCommand));
     readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-    readonly static IEnumerable<IResultSender> ResultSenders = new IResultSender[] { new TestResultSender() };
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
@@ -37,7 +36,7 @@ public class WhenHandlingSubscribeCommand
             Name = "TestSubscription",
             QueryName = "SimpleEventQuery"
         };
-        var handler = new SubscriptionsUseCasesHandler(Context, Queries, ResultSenders, null);
+        var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
@@ -50,7 +49,7 @@ public class WhenHandlingSubscribeCommand
             Name = "InvalidSubscription",
             QueryName = "UnknownQuery"
         };
-        var handler = new SubscriptionsUseCasesHandler(Context, Queries, ResultSenders, null);
+        var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
@@ -63,7 +62,7 @@ public class WhenHandlingSubscribeCommand
             Name = "MasterdataTestSubscription",
             QueryName = "SimpleMasterdataQuery"
         };
-        var handler = new SubscriptionsUseCasesHandler(Context, Queries, ResultSenders, null);
+        var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }

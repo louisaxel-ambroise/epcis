@@ -17,14 +17,12 @@ public class SubscriptionsUseCasesHandler :
 {
     private readonly EpcisContext _context;
     private readonly IEnumerable<IEpcisDataSource> _queries;
-    private readonly IEnumerable<IResultSender> _resultSenders;
     private readonly ISubscriptionListener _listener;
 
-    public SubscriptionsUseCasesHandler(EpcisContext context, IEnumerable<IEpcisDataSource> queries, IEnumerable<IResultSender> resultSenders, ISubscriptionListener listener)
+    public SubscriptionsUseCasesHandler(EpcisContext context, IEnumerable<IEpcisDataSource> queries, ISubscriptionListener listener)
     {
         _context = context;
         _queries = queries;
-        _resultSenders = resultSenders;
         _listener = listener;
     }
 

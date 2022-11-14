@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.UseCases.Queries;
-using FasTnT.Application.UseCases.Subscriptions;
+﻿using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Features.v2_0.Subscriptions;
@@ -8,7 +7,7 @@ using System.Net.WebSockets;
 
 namespace FasTnT.Application.Services.Subscriptions;
 
-public static class WebSocketManager
+public static class WebSocketSubscription
 {
     public async static Task SubscribeAsync(HttpContext httpContext, string queryName, IEnumerable<QueryParameter> parameters)
     {
@@ -24,14 +23,15 @@ public static class WebSocketManager
     private static async Task<Subscription> RegisterSubscription(HttpContext httpContext, WebSocket webSocket, string queryName, IEnumerable<QueryParameter> parameters)
     {
         var registerHandler = httpContext.RequestServices.GetService<IRegisterSubscriptionHandler>();
+
         var resultSender = new WebSocketResultSender(webSocket);
         var subscription = new Subscription
         {
-            Name = Guid.NewGuid().ToString(),
+            Name = $"ws-{Guid.NewGuid()}",
             Parameters = parameters.Select(x => new SubscriptionParameter { Name = x.Name, Values = x.Values }).ToList(),
             QueryName = queryName,
             ReportIfEmpty = false,
-            Schedule = new SubscriptionSchedule { Second = "0" },
+            Schedule = new SubscriptionSchedule { Second = "0,20,40" },
             FormatterName = resultSender.Name
         };
 
