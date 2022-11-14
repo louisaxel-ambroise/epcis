@@ -86,6 +86,7 @@ This is the list of planned and implemented 2.0 features in the repository:
 - Capture
   - [x] Capture list of Events
   - [x] Capture a single Event
+  - [ ] Capture CBV masterdata
 - Queries:
   - [x] List events
   - [ ] Event pagination
@@ -93,6 +94,7 @@ This is the list of planned and implemented 2.0 features in the repository:
   - [x] Execute a named query
 - Subscriptions:
   - [x] Subscribe to an EPCIS request (webhook)
+  - [x] Subscribe to an EPCIS request (websocket)
 - Discovery endpoints
    - [x] EventType discovery endpoint
    - [x] EPCs discovery endpoint

@@ -37,7 +37,7 @@ public class WhenHandlingUnsubscribeCommand
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
             
         Assert.AreEqual(0, Context.Subscriptions.Count());
-        Listener.Verify(x => x.RemoveAsync(It.Is<Subscription>(s => s.Name == "TestSubscription"), It.IsAny<CancellationToken>()), Times.Once);
+        Listener.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [TestMethod]

@@ -6,22 +6,19 @@ using System.Collections.Concurrent;
 
 namespace FasTnT.Application.EfCore.Services.Subscriptions;
 
-
 public sealed class SubscriptionService : ISubscriptionService, ISubscriptionListener
 {
     private static readonly object _monitor = new();
     private readonly IServiceProvider _serviceProvider;
-    private readonly IEnumerable<IResultSender> _resultSenders;
     private readonly ILogger<SubscriptionService> _logger;
 
     private readonly ConcurrentDictionary<SubscriptionContext, DateTime> _scheduledExecutions = new();
     private readonly ConcurrentDictionary<string, List<SubscriptionContext>> _triggeredSubscriptions = new();
     private readonly ConcurrentQueue<string> _triggeredValues = new();
 
-    public SubscriptionService(IServiceProvider serviceProvider, IEnumerable<IResultSender> resultSenders, ILogger<SubscriptionService> logger)
+    public SubscriptionService(IServiceProvider serviceProvider, ILogger<SubscriptionService> logger)
     {
         _serviceProvider = serviceProvider;
-        _resultSenders = resultSenders;
         _logger = logger;
     }
 
@@ -61,7 +58,7 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
 
         foreach (var plannedExecution in plannedExecutions)
         {
-            var nextOccurence = SubscriptionSchedule.GetNextOccurence(plannedExecution.Key.Schedule, plannedExecution.Value);
+            var nextOccurence = SubscriptionSchedule.GetNextOccurence(plannedExecution.Key.Subscription.Schedule, plannedExecution.Value);
 
             _scheduledExecutions.TryUpdate(plannedExecution.Key, nextOccurence, plannedExecution.Value);
         }
@@ -93,44 +90,41 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         }
     }
 
-    public Task RegisterAsync(Subscription subscription, CancellationToken _)
+    public Task RegisterAsync(SubscriptionContext context, CancellationToken _)
     {
         Pulse(() =>
         {
-            var resultSender = _resultSenders.FirstOrDefault(x => x.Name == subscription.FormatterName);
-            var context = new SubscriptionContext(subscription.Id, resultSender, subscription.Schedule);
-
-            if (string.IsNullOrEmpty(subscription.Trigger))
+            if (context.SubscriptionMethod == SubscriptionMethod.Scheduled)
             {
-                _scheduledExecutions[context] = SubscriptionSchedule.GetNextOccurence(subscription.Schedule, DateTime.UtcNow);
+                _scheduledExecutions[context] = SubscriptionSchedule.GetNextOccurence(context.Subscription.Schedule, DateTime.UtcNow);
             }
-            else
+            else if(context.SubscriptionMethod == SubscriptionMethod.Triggered)
             {
-                if (!_triggeredSubscriptions.ContainsKey(subscription.Trigger))
+                if (!_triggeredSubscriptions.ContainsKey(context.Subscription.Trigger))
                 {
-                    _triggeredSubscriptions[subscription.Trigger] = new();
+                    _triggeredSubscriptions[context.Subscription.Trigger] = new();
                 }
 
-                _triggeredSubscriptions[subscription.Trigger].Add(context);
+                _triggeredSubscriptions[context.Subscription.Trigger].Add(context);
             }
         });
 
         return Task.CompletedTask;
     }
 
-    public Task RemoveAsync(Subscription subscription, CancellationToken _)
+    public Task RemoveAsync(int subscriptionId, CancellationToken cancellationToken)
     {
         Pulse(() =>
         {
-            if (_scheduledExecutions.Any(x => x.Key.Id == subscription.Id))
+            if (_scheduledExecutions.Any(x => x.Key.Subscription.Id == subscriptionId))
             {
-                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Id == subscription.Id).Key, out DateTime value);
+                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Subscription.Id == subscriptionId).Key, out DateTime value);
             }
             else
             {
                 foreach (var triggered in _triggeredSubscriptions)
                 {
-                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Id == subscription.Id));
+                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Subscription.Id == subscriptionId));
                 }
             }
         });

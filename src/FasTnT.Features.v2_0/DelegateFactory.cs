@@ -6,7 +6,7 @@ namespace FasTnT.Features.v2_0;
 
 public static class DelegateFactory
 {
-    public static Delegate Create(Delegate handler)
+    public static Delegate Create(Func<HttpContext, Delegate> handlerProvider)
     {
         return async (HttpContext context) =>
         {
@@ -17,6 +17,7 @@ public static class DelegateFactory
                 ValidateHeaders(epcisHeaders);
                 SetResponseHeaders(context.Response);
 
+                var handler = handlerProvider(context);
                 await RequestDelegateFactory.Create(handler, new() { ServiceProvider = context.RequestServices }).RequestDelegate.Invoke(context);
             }
             catch (Exception ex)

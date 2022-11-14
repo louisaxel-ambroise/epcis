@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.UseCases.Queries;
+﻿using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.UseCases.Queries;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
@@ -10,7 +11,7 @@ public static class QueriesEndpoints
     {
         app.TryMapGet("v2_0/queries", HandleListNamedQueries).RequireAuthorization("query");
         app.TryMapGet("v2_0/queries/{queryName}", HandleGetQueryDefinition).RequireAuthorization("query");
-        app.TryMapGet("v2_0/queries/{queryName}/events", HandleGetQueryEvents).RequireAuthorization("query");
+        app.TryMapGet("v2_0/queries/{queryName}/events", ctx => ctx.WebSockets.IsWebSocketRequest ? WebSocketSubscription.SubscribeAsync : HandleGetQueryEvents).RequireAuthorization("query");
         app.TryMapPost("v2_0/queries", HandleCreateNamedQuery).RequireAuthorization("query");
         app.MapDelete("v2_0/queries/{queryName}", HandleDeleteNamedQuery).RequireAuthorization("query");
 
@@ -31,9 +32,9 @@ public static class QueriesEndpoints
         return EpcisResults.Ok(new CustomQueryDefinitionResult(response.Name, response.Parameters));
     }
 
-    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryContext parameters, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryContext parameters, IExecuteQueryHandler queryHandler, CancellationToken cancellationToken)
     {
-        var response = await handler.ExecuteQueryAsync(queryName, parameters.Parameters, cancellationToken);
+        var response = await queryHandler.ExecuteQueryAsync(queryName, parameters.Parameters, cancellationToken);
 
         return EpcisResults.Ok(new QueryResult(response));
     }

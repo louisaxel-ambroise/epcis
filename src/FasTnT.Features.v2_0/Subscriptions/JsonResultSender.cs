@@ -6,7 +6,7 @@ using FasTnT.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using System.Text;
 
-namespace FasTnT.Features.v2_0.Communication.Json;
+namespace FasTnT.Features.v2_0.Subscriptions;
 
 public class JsonResultSender : IResultSender
 {

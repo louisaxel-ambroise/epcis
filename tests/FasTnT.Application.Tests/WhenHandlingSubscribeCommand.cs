@@ -2,6 +2,7 @@
 using FasTnT.Application.EfCore.Store;
 using FasTnT.Application.EfCore.UseCases.Subscriptions;
 using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Tests.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 
@@ -36,7 +37,7 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
 
     [TestMethod]
@@ -49,7 +50,7 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
 
     [TestMethod]
@@ -62,6 +63,6 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsUseCasesHandler(Context, Queries, null);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
 }

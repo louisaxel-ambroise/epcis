@@ -8,7 +8,7 @@ using System.Net;
 using System.Text;
 using System.Xml;
 
-namespace FasTnT.Features.v1_2.Communication;
+namespace FasTnT.Features.v1_2.Subscriptions;
 
 public class XmlResultSender : IResultSender
 {

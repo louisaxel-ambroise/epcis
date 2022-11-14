@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
+using FasTnT.Features.v2_0.Subscriptions;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 
@@ -43,7 +44,7 @@ public static class SubscriptionEndpoints
         request.Subscription.QueryName = query;
         request.Subscription.Name = Guid.NewGuid().ToString();
 
-        var response = await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
+        var response = await handler.RegisterSubscriptionAsync(request.Subscription, JsonResultSender.Instance, cancellationToken);
 
         return Results.Created($"v2_0/queries/{query}/subscriptions/{response.Name}", null);
     }

@@ -3,12 +3,12 @@
 public class SubscriptionSchedule
 {
     public Subscription Subscription { get; set; }
-    public string Second { get; set; }
-    public string Minute { get; set; }
-    public string Hour { get; set; }
-    public string DayOfMonth { get; set; }
-    public string Month { get; set; }
-    public string DayOfWeek { get; set; }
+    public string Second { get; set; } = string.Empty;
+    public string Minute { get; set; } = string.Empty;
+    public string Hour { get; set; } = string.Empty;
+    public string DayOfMonth { get; set; } = string.Empty;
+    public string Month { get; set; } = string.Empty;
+    public string DayOfWeek { get; set; } = string.Empty;
 
     public static DateTime GetNextOccurence(SubscriptionSchedule schedule, DateTime startDate)
     {
@@ -26,7 +26,7 @@ public class SubscriptionSchedule
 
     private static DateTime SetMinutes(DateTime tentative, SubscriptionScheduleEntry scheduleEntry)
     {
-        if (!scheduleEntry.DayOfWeek.HasValue(tentative.Minute))
+        if (!scheduleEntry.Minutes.HasValue(tentative.Minute))
         {
             tentative = new DateTime(tentative.Year, tentative.Month, tentative.Day, tentative.Hour, Math.Max(tentative.Minute, scheduleEntry.Minutes.Min), scheduleEntry.Seconds.Min);
         }

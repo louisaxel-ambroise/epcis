@@ -15,8 +15,8 @@ public static class TaskExtensions
 
     public static async Task<TResult> CastTaskInner<T, TResult>(Task<T> task)
     {
-        var t = await task;
-        var tObj = (object)t;
-        return (TResult)tObj;
+        var result = await task as object;
+
+        return (TResult)result;
     }
 }

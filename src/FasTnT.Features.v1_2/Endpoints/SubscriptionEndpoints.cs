@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using FasTnT.Features.v1_2.Extensions;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Application.UseCases.Subscriptions;
+using FasTnT.Features.v1_2.Subscriptions;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
@@ -34,7 +35,7 @@ public static class SubscriptionEndpoints
 
     private static async Task<SubscribeResult> HandleSubscribe(Subscribe request, IRegisterSubscriptionHandler handler, CancellationToken cancellationToken)
     {
-        await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
+        await handler.RegisterSubscriptionAsync(request.Subscription, XmlResultSender.Instance, cancellationToken);
 
         return new();
     }
