@@ -115,6 +115,7 @@ internal static class EpcisModelConfiguration
         evt.Property(x => x.Type).IsRequired(true).HasConversion<short>();
         evt.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => x);
         evt.Property(x => x.Action).IsRequired(true).HasConversion<short>();
+        evt.Property(x => x.CertificationInfo).HasMaxLength(256).IsRequired(false);
         evt.Property(x => x.EventId).HasMaxLength(256).IsRequired(false);
         evt.Property(x => x.ReadPoint).HasMaxLength(256).IsRequired(false);
         evt.Property(x => x.BusinessLocation).HasMaxLength(256).IsRequired(false);

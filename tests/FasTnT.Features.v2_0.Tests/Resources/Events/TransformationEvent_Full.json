@@ -3,7 +3,7 @@
     "https://gs1.github.io/EPCIS/epcis-context.jsonld",
     { "ext1": "http://ns.example.com/ext1/" }
   ],
-  "isA": "TransformationEvent",
+  "type": "TransformationEvent",
   "eventTime": "2013-10-31T14:58:56Z",
   "eventTimeZoneOffset": "+02:00",
   "inputEPCList": [

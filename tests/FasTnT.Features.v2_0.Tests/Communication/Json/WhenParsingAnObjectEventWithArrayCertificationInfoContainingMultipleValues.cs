@@ -1,0 +1,41 @@
+﻿using FasTnT.Domain.Model.Events;
+using FasTnT.Features.v2_0.Communication.Json.Parsers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+
+namespace FasTnT.Features.v2_0.Tests.Communication.Json;
+
+[TestClass]
+public class WhenParsingAnObjectEventWithArrayCertificationInfoContainingMultipleValues : JsonParsingTestCase
+{
+    public static readonly string ResourceName = "FasTnT.Features.v2_0.Tests.Resources.Events.ObjectEvent_StringCertificationInfoArrayInvalid.json";
+
+    public Event Event { get; set; }
+    public Exception Catched { get; set; }
+
+    [TestInitialize]
+    public void When()
+    {
+        try
+        {
+            var parser = JsonEventParser.Create(ParseResource(ResourceName).RootElement, TestNamespaces.Default);
+            Event = parser.Parse();
+        }
+        catch(Exception ex)
+        {
+            Catched = ex is AggregateException aggEx ? aggEx.InnerException : ex;
+        }
+    }
+
+    [TestMethod]
+    public void ItShouldThrowAnException()
+    {
+        Assert.IsNotNull(Catched);
+    }
+
+    [TestMethod]
+    public void ItShouldNotReturnAnEvent()
+    {
+        Assert.IsNull(Event);
+    }
+}

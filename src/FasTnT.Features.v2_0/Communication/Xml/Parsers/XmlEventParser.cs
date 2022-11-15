@@ -11,7 +11,7 @@ public static class XmlEventParser
         return root.Elements().Select(ParseEvent);
     }
 
-    private static Event ParseEvent(XElement element)
+    public static Event ParseEvent(XElement element)
     {
         var evt = new Event
         {
@@ -26,8 +26,12 @@ public static class XmlEventParser
                 {
                     case "action":
                         evt.Action = Enum.Parse<EventAction>(field.Value, true); break;
+                    case "recordTime": // Discard - this will be overridden
+                        break;
                     case "eventTime":
                         evt.EventTime = DateTime.Parse(field.Value); break;
+                    case "certificationInfo":
+                        evt.CertificationInfo = field.Value; break;
                     case "eventTimeZoneOffset":
                         evt.EventTimeZoneOffset = field.Value; break;
                     case "bizStep":
@@ -59,7 +63,7 @@ public static class XmlEventParser
                     case "inputQuantityList":
                         evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.InputQuantity)); break;
                     case "outputQuantityList":
-                        evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.InputQuantity)); break;
+                        evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.OutputQuantity)); break;
                     case "bizTransactionList":
                         evt.Transactions.AddRange(ParseTransactionList(field)); break;
                     case "sourceList":

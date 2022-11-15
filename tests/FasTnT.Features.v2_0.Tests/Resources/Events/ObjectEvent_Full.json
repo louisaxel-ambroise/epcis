@@ -4,10 +4,10 @@
     { "example": "http://ns.example.com/epcis/" }
   ],
   "eventID": "ni:///sha-256;df7bb3c352fef055578554f09f5e2aa41782150ced7bd0b8af24dd3ccb30ba69?ver=CBV2.0",
-  "isA": "ObjectEvent",
+  "type": "ObjectEvent",
   "action": "OBSERVE",
-  "bizStep": "urn:epcglobal:cbv:bizstep:inspecting",
-  "disposition": "urn:epcglobal:cbv:disp:active",
+  "bizStep": "inspecting",
+  "disposition": "active",
   "epcList": [ "urn:epc:id:sscc:4001356.5900000817", "urn:epc:id:sscc:4001356.5900000822" ],
   "quantityList": [
     {
@@ -22,11 +22,11 @@
   "bizLocation": { "id": "urn:epc:id:sgln:409876.500001.0" },
   "bizTransactionList": [
     {
-      "type": "urn:epcglobal:cbv:btt:desadv",
+      "type": "desadv",
       "bizTransaction": "urn:epcglobal:cbv:bt:8779891013658:H9022413"
     },
     {
-      "type": "urn:epcglobal:cbv:btt:po",
+      "type": "po",
       "bizTransaction": "urn:epcglobal:cbv:bt:8811891013778:PO654321"
     }
   ]

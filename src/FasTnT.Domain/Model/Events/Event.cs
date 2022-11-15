@@ -13,6 +13,7 @@ public class Event
     public EventType Type { get; set; }
     public EventAction Action { get; set; }
     public string EventId { get; set; }
+    public string CertificationInfo { get; set; }
     public string ReadPoint { get; set; }
     public string BusinessLocation { get; set; }
     public string BusinessStep { get; set; }

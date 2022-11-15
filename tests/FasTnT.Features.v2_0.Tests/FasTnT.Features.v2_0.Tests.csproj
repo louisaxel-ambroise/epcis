@@ -5,9 +5,17 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\Events\ObjectEvent_Full.json" />
+    <None Remove="Resources\Events\ObjectEvent_StringCertificationInfo.json" />
+    <None Remove="Resources\Events\ObjectEvent_StringCertificationInfo.xml" />
+    <None Remove="Resources\Events\ObjectEvent_StringCertificationInfoArray.json" />
+    <None Remove="Resources\Events\ObjectEvent_StringCertificationInfoArrayInvalid.json" />
     <None Remove="Resources\Events\TransformationEvent_Full.json" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Events\ObjectEvent_StringCertificationInfo.xml" />
+    <EmbeddedResource Include="Resources\Events\ObjectEvent_StringCertificationInfoArrayInvalid.json" />
+    <EmbeddedResource Include="Resources\Events\ObjectEvent_StringCertificationInfoArray.json" />
+    <EmbeddedResource Include="Resources\Events\ObjectEvent_StringCertificationInfo.json" />
     <EmbeddedResource Include="Resources\Events\TransformationEvent_Full.json" />
     <EmbeddedResource Include="Resources\Events\ObjectEvent_Full.json" />
   </ItemGroup>
