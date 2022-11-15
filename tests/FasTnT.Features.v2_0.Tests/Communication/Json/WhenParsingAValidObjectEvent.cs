@@ -44,13 +44,13 @@ public class WhenParsingAValidObjectEvent : JsonParsingTestCase
     [TestMethod]
     public void BizStepShouldBeParsedCorrectly()
     {
-        Assert.AreEqual("urn:epcglobal:cbv:bizstep:inspecting", Event.BusinessStep);
+        Assert.AreEqual("inspecting", Event.BusinessStep);
     }
 
     [TestMethod]
     public void DispositionShouldBeParsedCorrectly()
     {
-        Assert.AreEqual("urn:epcglobal:cbv:disp:active", Event.Disposition);
+        Assert.AreEqual("active", Event.Disposition);
     }
 
     [TestMethod]
@@ -69,8 +69,8 @@ public class WhenParsingAValidObjectEvent : JsonParsingTestCase
     public void BizTransactionsShouldBeParsedCorrectly()
     {
         Assert.AreEqual(2, Event.Transactions.Count);
-        Assert.IsTrue(Event.Transactions.Any(x => x.Type == "urn:epcglobal:cbv:btt:desadv" && x.Id == "urn:epcglobal:cbv:bt:8779891013658:H9022413"));
-        Assert.IsTrue(Event.Transactions.Any(x => x.Type == "urn:epcglobal:cbv:btt:po" && x.Id == "urn:epcglobal:cbv:bt:8811891013778:PO654321"));
+        Assert.IsTrue(Event.Transactions.Any(x => x.Type == "desadv" && x.Id == "urn:epcglobal:cbv:bt:8779891013658:H9022413"));
+        Assert.IsTrue(Event.Transactions.Any(x => x.Type == "po" && x.Id == "urn:epcglobal:cbv:bt:8811891013778:PO654321"));
     }
 
     [TestMethod]

@@ -137,7 +137,7 @@ public static class JsonResponseFormatter
         {
             ["@context"] = context.Select(x => (object) new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
             ["id"] = $"fastnt:epcis:2.0:pollquery:{Guid.NewGuid()}",
-            ["isA"] = "EPCISQueryDocument",
+            ["type"] = "EPCISQueryDocument",
             ["schemaVersion"] = "2.0",
             ["creationDate"] = DateTime.UtcNow,
             ["epcisBody"] = new

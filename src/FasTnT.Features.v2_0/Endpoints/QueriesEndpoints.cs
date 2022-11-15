@@ -1,7 +1,7 @@
-﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.UseCases.Queries;
+﻿using FasTnT.Application.UseCases.Queries;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
+using FasTnT.Features.v2_0.Subscriptions;
 
 namespace FasTnT.Features.v2_0.Endpoints;
 

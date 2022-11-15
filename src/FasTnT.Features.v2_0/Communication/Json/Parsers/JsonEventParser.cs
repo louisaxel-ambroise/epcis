@@ -35,12 +35,14 @@ public class JsonEventParser
             {
                 case "eventID":
                     evt.EventId = property.Value.GetString(); break;
-                case "isA":
+                case "type":
                     evt.Type = Enum.Parse<EventType>(property.Value.GetString(), true); break;
                 case "action":
                     evt.Action = Enum.Parse<EventAction>(property.Value.GetString(), true); break;
                 case "parentID":
                     evt.Epcs.Add(new Epc { Type = EpcType.ParentId, Id = property.Value.GetString() }); break;
+                case "certificationInfo":
+                    evt.CertificationInfo = ParseCertificationInfo(property.Value); break;
                 case "epcList":
                     evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.List)); break;
                 case "childEPCs":
@@ -155,6 +157,16 @@ public class JsonEventParser
         });
 
         return value.EnumerateObject().SelectMany(parser);
+    }
+
+    private static string ParseCertificationInfo(JsonElement value)
+    {
+        return value.ValueKind switch
+        {
+            JsonValueKind.Array => value.EnumerateArray().Select(x => x.GetString()).Single(),
+            JsonValueKind.String => value.GetString(),
+            _ => throw new Exception("Invalid CertificationInfo value")
+        };
     }
 
     private IEnumerable<SensorElement> ParseSensorElements(JsonElement value)

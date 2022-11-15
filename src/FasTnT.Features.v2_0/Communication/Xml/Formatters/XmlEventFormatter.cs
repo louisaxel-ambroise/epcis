@@ -302,6 +302,7 @@ public static class XmlEventFormatter
         xmlEvent.Add(new XElement("eventTimeZoneOffset", evt.EventTimeZoneOffset.Representation));
         xmlEvent.AddIfNotNull(new XElement("eventID", evt.EventId));
         xmlEvent.AddIfNotNull(CreateErrorDeclaration(evt));
+        xmlEvent.AddIfNotNull(new XElement("certificationInfo", evt.CertificationInfo));
         xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.BaseExtension));
     }
 

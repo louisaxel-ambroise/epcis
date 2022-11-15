@@ -1,18 +1,17 @@
 ﻿using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Features.v2_0.Subscriptions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.WebSockets;
 
-namespace FasTnT.Application.Services.Subscriptions;
+namespace FasTnT.Features.v2_0.Subscriptions;
 
 public static class WebSocketSubscription
 {
     public async static Task SubscribeAsync(HttpContext httpContext, string queryName, IEnumerable<QueryParameter> parameters)
     {
         using var webSocket = await httpContext.WebSockets.AcceptWebSocketAsync();
-        
+
         var tokenSource = new CancellationTokenSource();
         var subscription = await RegisterSubscription(httpContext, webSocket, queryName, parameters);
 

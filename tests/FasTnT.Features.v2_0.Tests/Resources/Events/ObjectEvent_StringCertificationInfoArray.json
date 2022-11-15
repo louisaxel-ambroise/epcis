@@ -1,0 +1,15 @@
+﻿{
+  "@context": [
+    "https://gs1.github.io/EPCIS/epcis-context.jsonld",
+    { "example": "http://ns.example.com/epcis/" }
+  ],
+  "eventID": "ni:///sha-256;df7bb3c352fef055578554f09f5e2aa41782150ced7bd0b8af24dd3ccb30ba69?ver=CBV2.0",
+  "type": "ObjectEvent",
+  "action": "OBSERVE",
+  "bizStep": "inspecting",
+  "disposition": "active",
+  "epcList": [ "urn:epc:id:sscc:4001356.5900000817" ],
+  "eventTime": "2021-02-15T14:00:00Z",
+  "eventTimeZoneOffset": "-06:00",
+  "certificationInfo": [ "urn:fastnt:cert:115120.021" ]
+}

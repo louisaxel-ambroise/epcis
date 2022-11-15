@@ -15,7 +15,7 @@ internal static class JsonSensorElementParser
         {
             switch (property.Name)
             {
-                case "isA":
+                case "type":
                     break; // Can it be something different from epcis:SensorElement?
                 case "sensorMetadata":
                     ParseSensorMetadata(sensorElement, property.Value, namespaces); break;
