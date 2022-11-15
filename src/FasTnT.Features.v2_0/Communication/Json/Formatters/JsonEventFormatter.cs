@@ -10,7 +10,7 @@ public static class JsonEventFormatter
     {
         var element = new Dictionary<string, object>
         {
-            ["isA"] = evt.Type.ToString(),
+            ["type"] = evt.Type.ToString(),
             ["eventTime"] = evt.EventTime,
             ["recordTime"] = evt.CaptureTime,
             ["eventTimeZoneOffset"] = evt.EventTimeZoneOffset.Representation,
@@ -86,7 +86,7 @@ public static class JsonEventFormatter
     {
         var element = new Dictionary<string, object>
         {
-            ["isA"] = "epcis:SensorElement",
+            ["type"] = "epcis:SensorElement",
             ["sensorMetadata"] = MapSensorMetadata(sensor, context),
             ["sensorReport"] = sensor.Reports.Select(x => MapSensorReport(x, context))
         };
