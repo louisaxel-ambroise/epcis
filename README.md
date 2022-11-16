@@ -86,7 +86,7 @@ This is the list of planned and implemented 2.0 features in the repository:
 - Capture
   - [x] Capture list of Events
   - [x] Capture a single Event
-  - [ ] Capture CBV masterdata
+  - [x] Capture CBV masterdata
 - Queries:
   - [x] List events
   - [ ] Event pagination
