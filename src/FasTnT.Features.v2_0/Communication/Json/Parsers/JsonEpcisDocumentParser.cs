@@ -28,10 +28,9 @@ public static class JsonEpcisDocumentParser
                     request.Events = ParseEvents(property.Value, extensions); break;
                 case "epcisHeader":
                     request.Masterdata = ParseMasterdata(property.Value, extensions); break;
-                case "type": break; // Must be EPCISDocument
-                case "@context": break; // Context is already parsed
+                case "id" or "type" or "@context": break; // Ignore these fields - they are either already parsed or irrelevant
                 default:
-                    throw new EpcisException(ExceptionType.ImplementationException, $"Unknown property type: '{property.Name}'"); break;
+                    throw new EpcisException(ExceptionType.ImplementationException, $"Unknown property type: '{property.Name}'");
             }
         }
         
