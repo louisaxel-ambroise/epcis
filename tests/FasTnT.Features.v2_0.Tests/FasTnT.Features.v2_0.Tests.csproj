@@ -9,9 +9,13 @@
     <None Remove="Resources\Events\ObjectEvent_StringCertificationInfo.xml" />
     <None Remove="Resources\Events\ObjectEvent_StringCertificationInfoArray.json" />
     <None Remove="Resources\Events\ObjectEvent_StringCertificationInfoArrayInvalid.json" />
+    <None Remove="Resources\Events\Request_ObjectEvent_WithMasterdata.json" />
     <None Remove="Resources\Events\TransformationEvent_Full.json" />
+    <None Remove="Resources\Requests\Request_ObjectEvent_WithMasterdata.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Requests\Request_ObjectEvent_WithMasterdata.xml" />
+    <EmbeddedResource Include="Resources\Requests\Request_ObjectEvent_WithMasterdata.json" />
     <EmbeddedResource Include="Resources\Events\ObjectEvent_StringCertificationInfo.xml" />
     <EmbeddedResource Include="Resources\Events\ObjectEvent_StringCertificationInfoArrayInvalid.json" />
     <EmbeddedResource Include="Resources\Events\ObjectEvent_StringCertificationInfoArray.json" />

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<epcis:EPCISDocument xmlns:cbvmda="urn:epcglobal:cbv:mda" xmlns:epcis="urn:epcglobal:epcis:xsd:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:wg4="http://epcis.wg4.fr/ns" xmlns:sbdh="http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader" schemaVersion="2.0" creationDate="2016-09-20T17:45:20.0Z">
+  <EPCISHeader>
+    <extension>
+      <EPCISMasterData>
+        <VocabularyList>
+          <Vocabulary type="urn:epcglobal:epcis:vtype:ReadPoint">
+           <VocabularyElementList>
+            <VocabularyElement id="urn:epc:id:sgln:0037000.00729.8001">
+             <attribute id="urn:epcglobal:cbv:mda:site">0037000007296</attribute>
+            </VocabularyElement>
+           </VocabularyElementList>
+         </Vocabulary>
+        </VocabularyList>
+      </EPCISMasterData>
+    </extension>
+  </EPCISHeader>
+  <EPCISBody>
+    <EventList>
+      <ObjectEvent>
+        <eventTime>2012-04-05T11:35:00.000Z</eventTime>
+        <eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
+        <epcList>
+        </epcList>
+        <action>ADD</action>
+        <bizStep>urn:epcglobal:cbv:bizstep:commissioning</bizStep>
+        <disposition>urn:epcglobal:cbv:disp:active</disposition>
+        <bizLocation>
+          <id>urn:epc:id:sgln:409876.500001.0</id>
+        </bizLocation>
+      </ObjectEvent>
+    </EventList>
+  </EPCISBody>
+</epcis:EPCISDocument>
