@@ -6,7 +6,6 @@ namespace FasTnT.Features.v2_0.Communication.Json.Parsers;
 
 internal static class JsonSensorElementParser
 {
-
     public static SensorElement ParseSensorElement(JsonElement element, Namespaces namespaces)
     {
         var sensorElement = new SensorElement();
