@@ -44,7 +44,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
     private string RetrieveAuthorizationValue(HttpRequest request)
     {
-        if (Request.Headers.TryGetValue(Authorization, out var headerValue))
+        if (request.Headers.TryGetValue(Authorization, out var headerValue))
         {
             var authHeader = AuthenticationHeaderValue.Parse(headerValue);
 
@@ -55,7 +55,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
 
             return authHeader.Parameter;
         }
-        else if (Request.Query.TryGetValue("auth", out var queryValue))
+        else if (request.Query.TryGetValue("auth", out var queryValue))
         {
             return queryValue;
         }
