@@ -26,36 +26,46 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
     {
         return Task.Run(() =>
         {
-            if (!Request.Headers.ContainsKey(Authorization))
-            {
-                return AuthenticateResult.Fail("Missing Authorization Header");
-            }
-
-            var authHeader = AuthenticationHeaderValue.Parse(Request.Headers[Authorization]);
-
-            if (authHeader.Scheme != Basic)
-            {
-                return AuthenticateResult.Fail($"Invalid Authorization scheme: {authHeader.Scheme}");
-            }
-
             try
             {
-                var (username, password) = ParseAuthenticationHeader(authHeader);
+                var authValue = RetrieveAuthorizationValue(Request);
+                var (username, password) = ParseAuthenticationHeader(authValue);
 
                 return Authenticated(username, password, new[] { "fastnt.query", "fastnt.capture" });
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Invalid header format");
+                Logger.LogError(ex, "Invalid authorization information");
 
                 return AuthenticateResult.Fail(ex.Message);
             }
         });
     }
 
-    private static (string username, string password) ParseAuthenticationHeader(AuthenticationHeaderValue authHeader)
+    private string RetrieveAuthorizationValue(HttpRequest request)
     {
-        var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+        if (Request.Headers.TryGetValue(Authorization, out var headerValue))
+        {
+            var authHeader = AuthenticationHeaderValue.Parse(headerValue);
+
+            if (authHeader.Scheme != Basic)
+            {
+                throw new Exception($"Invalid Authorization scheme: {authHeader.Scheme}");
+            }
+
+            return authHeader.Parameter;
+        }
+        else if (Request.Query.TryGetValue("auth", out var queryValue))
+        {
+            return queryValue;
+        }
+
+        throw new Exception("Missing Authorization value");
+    }
+
+    private static (string username, string password) ParseAuthenticationHeader(string authHeader)
+    {
+        var credentialBytes = Convert.FromBase64String(authHeader);
         var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':');
 
         return credentials.Length == 2

@@ -40,7 +40,7 @@ public class SubscriptionBackgroundService : BackgroundService
 
             if (resultSender is not null)
             {
-                var subscriptionContext = new SubscriptionContext(subscription, null);
+                var subscriptionContext = new SubscriptionContext(subscription, resultSender);
                 _subscriptionService.RegisterAsync(subscriptionContext, stoppingToken).Wait(stoppingToken);
             }
             else
