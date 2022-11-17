@@ -1,0 +1,67 @@
+﻿{
+  "type": "EPCISDocument",
+  "schemaVersion": "2.0",
+  "creationDate": "2013-06-04T14:59:02.099+02:00",
+  "epcisHeader": {
+    "epcisMasterData": {
+      "vocabularyList": [
+        {
+          "type": "urn:epcglobal:epcis:vtype:ReadPoint",
+          "vocabularyElementList": [
+            {
+              "id": "urn:epc:id:sgln:0037000.00729.8000",
+              "attributes": [
+                {
+                  "id": "urn:epcglobal:cbv:mda:site",
+                  "attribute": "test"
+                }
+              ]
+            },
+            {
+              "id": "urn:epc:id:sgln:0037000.00729.8002",
+              "attributes": [
+                {
+                  "id": "urn:epcglobal:cbv:mda:site",
+                  "attribute": "5020039502"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "urn:epcglobal:epcis:vtype:BizLocation",
+          "vocabularyElementList": [
+            {
+              "id": "urn:epc:id:sgln:0054321.00729",
+              "attributes": [
+                {
+                  "id": "urn:epcglobal:cbv:mda:wh",
+                  "attribute": "WH01"
+                },
+                {
+                  "id": "internalid",
+                  "attribute": "WH01.52/0"
+                }
+              ],
+              "children": [ "urn:epc:id:sgln:0054321.00730", "urn:epc:id:sgln:0054321.00731" ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "epcisBody": {
+    "eventList": [
+      {
+        "type": "ObjectEvent",
+        "action": "OBSERVE",
+        "bizStep": "inspecting",
+        "disposition": "active",
+        "epcList": [ "urn:epc:id:sscc:4001356.5900000817" ],
+        "eventTime": "2021-02-15T14:00:00Z",
+        "eventTimeZoneOffset": "-06:00"
+      }
+    ]
+  },
+  "@context": [ "https://gs1.github.io/EPCIS/epcis-context.jsonld" ]
+}

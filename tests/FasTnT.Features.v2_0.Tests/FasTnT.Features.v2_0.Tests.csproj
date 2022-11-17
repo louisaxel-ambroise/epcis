@@ -12,8 +12,10 @@
     <None Remove="Resources\Events\Request_ObjectEvent_WithMasterdata.json" />
     <None Remove="Resources\Events\TransformationEvent_Full.json" />
     <None Remove="Resources\Requests\Request_ObjectEvent_WithMasterdata.xml" />
+    <None Remove="Resources\Requests\Request_ObjectEvent_WithMultipleMasterdata.json" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Requests\Request_ObjectEvent_WithMultipleMasterdata.json" />
     <EmbeddedResource Include="Resources\Requests\Request_ObjectEvent_WithMasterdata.xml" />
     <EmbeddedResource Include="Resources\Requests\Request_ObjectEvent_WithMasterdata.json" />
     <EmbeddedResource Include="Resources\Events\ObjectEvent_StringCertificationInfo.xml" />

@@ -44,7 +44,7 @@ public class JsonMasterdataParser
                 case "attributes":
                     masterdata.Attributes = property.Value.EnumerateArray().Select(ParseVocabularyAttribute).ToList(); break;
                 case "children":
-                    masterdata.Children = element.EnumerateArray().Select(x => new MasterDataChildren { ChildrenId = x.GetString() }).ToList(); break;
+                    masterdata.Children = property.Value.EnumerateArray().Select(x => new MasterDataChildren { ChildrenId = x.GetString() }).ToList(); break;
                 default: 
                     throw new NotImplementedException();
             }
