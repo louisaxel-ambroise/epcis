@@ -24,44 +24,44 @@ public static class TopLevelEndpoints
         return app;
     }
 
-    private static async Task<IResult> HandleListEventTypes(IListEventTypesHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListEventTypes(PaginationContext context, IListEventTypesHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListEventTypes(cancellationToken);
+        var response = await handler.ListEventTypes(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListEpcs(IListEpcsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListEpcs(PaginationContext context, IListEpcsHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListEpcs(cancellationToken);
+        var response = await handler.ListEpcs(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListBizSteps(IListBizStepsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListBizSteps(PaginationContext context, IListBizStepsHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListBizSteps(cancellationToken);
+        var response = await handler.ListBizSteps(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListBizLocations(IListBizLocationsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListBizLocations(PaginationContext context, IListBizLocationsHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListBizLocations(cancellationToken);
+        var response = await handler.ListBizLocations(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListReadPoints(IListReadPointsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListReadPoints(PaginationContext context, IListReadPointsHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListReadPoints(cancellationToken);
+        var response = await handler.ListReadPoints(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListDispositions(IListDispositionsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListDispositions(PaginationContext context, IListDispositionsHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListDispositions(cancellationToken);
+        var response = await handler.ListDispositions(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }

@@ -6,7 +6,7 @@ using FasTnT.Application.Tests.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 
-namespace FasTnT.Application.Tests;
+namespace FasTnT.Application.Tests.Queries;
 
 [TestClass]
 public class WhenHandlingSubscribeCommand

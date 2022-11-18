@@ -4,7 +4,7 @@ using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
-namespace FasTnT.Application.Tests.Queries;
+namespace FasTnT.Application.Tests.Queries.Parameters;
 
 [TestClass]
 public class WhenSimpleEventQueryReturnsLessThanMaxEventCountParameter

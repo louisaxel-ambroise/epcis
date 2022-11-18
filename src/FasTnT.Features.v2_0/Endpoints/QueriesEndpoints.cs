@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.UseCases.Queries;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 using FasTnT.Features.v2_0.Subscriptions;
@@ -18,9 +19,9 @@ public static class QueriesEndpoints
         return app;
     }
 
-    private static async Task<IResult> HandleListNamedQueries(IListQueriesHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListNamedQueries(Pagination pagination, IListQueriesHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListQueriesAsync(cancellationToken);
+        var response = await handler.ListQueriesAsync(pagination, cancellationToken);
 
         return EpcisResults.Ok(new ListCustomQueriesResult(response.Select(x => new CustomQueryDefinitionResult(x.Name, x.Parameters))));
     }
@@ -32,9 +33,9 @@ public static class QueriesEndpoints
         return EpcisResults.Ok(new CustomQueryDefinitionResult(response.Name, response.Parameters));
     }
 
-    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryContext parameters, IExecuteQueryHandler queryHandler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryContext context, IExecuteQueryHandler queryHandler, CancellationToken cancellationToken)
     {
-        var response = await queryHandler.ExecuteQueryAsync(queryName, parameters.Parameters, cancellationToken);
+        var response = await queryHandler.ExecuteQueryAsync(queryName, context.Parameters, cancellationToken);
 
         return EpcisResults.Ok(new QueryResult(response));
     }

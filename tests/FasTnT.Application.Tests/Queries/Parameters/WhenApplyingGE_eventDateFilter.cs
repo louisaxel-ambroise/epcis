@@ -1,14 +1,13 @@
 ﻿using FasTnT.Application.EfCore.Services.Queries;
 using FasTnT.Application.EfCore.Store;
 using FasTnT.Application.Services.Queries;
-using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
-namespace FasTnT.Application.Tests.Queries;
+namespace FasTnT.Application.Tests.Queries.Parameters;
 
 [TestClass]
-public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
+public class WhenApplyingGE_eventTimeFilter
 {
     public EpcisContext Context { get; set; }
     public IEpcisDataSource Query { get; set; }
@@ -25,10 +24,20 @@ public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
             Events = new[] {
                 new Event
                 {
+                    Type = Domain.Enumerations.EventType.ObjectEvent,
+                    EventTime = new (2021, 01, 12, 10, 24, 10, DateTimeKind.Utc),
                     Action = Domain.Enumerations.EventAction.Observe
                 },
                 new Event
                 {
+                    Type = Domain.Enumerations.EventType.TransactionEvent,
+                    EventTime = new (2021, 01, 12, 10, 30, 00, DateTimeKind.Utc),
+                    Action = Domain.Enumerations.EventAction.Observe
+                },
+                new Event
+                {
+                    Type = Domain.Enumerations.EventType.TransactionEvent,
+                    EventTime = new (2011, 08, 02, 21, 50, 00, DateTimeKind.Utc),
                     Action = Domain.Enumerations.EventAction.Observe
                 }
             }.ToList(),
@@ -38,26 +47,14 @@ public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
         });
         Context.SaveChanges();
 
-        Parameters = new[] { QueryParameter.Create("maxEventCount", new[] { "1" }) }.ToList();
+        Parameters = new[] { QueryParameter.Create("GE_eventTime", new[] { "2020-01-12T10:24:10.000Z" }) }.ToList();
     }
 
     [TestMethod]
-    public void ItShouldThrowAQueryTooLargeExceptionException()
+    public void ItShouldOnlyReturnTheEventsCaptureAfterOrOnTheDate()
     {
-        var catched = default(Exception);
-
-        try
-        {
-            Query.ExecuteAsync(Parameters, default).Wait();
-            Assert.IsFalse(true, "The query should fail");
-        }
-        catch(Exception ex)
-        {
-            catched = ex is AggregateException ? ex.InnerException : ex;
-        }
-
-        Assert.IsNotNull(catched);
-        Assert.IsInstanceOfType(catched, typeof(EpcisException));
-        Assert.AreEqual(((EpcisException)catched).ExceptionType, ExceptionType.QueryTooLargeException);
+        var result = Query.ExecuteAsync(Parameters, default).Result;
+        Assert.AreEqual(2, result.EventList.Count);
+        Assert.IsTrue(result.EventList.All(x => x.EventTime >= new DateTime(2021, 01, 12, 10, 24, 10, DateTimeKind.Utc)));
     }
 }

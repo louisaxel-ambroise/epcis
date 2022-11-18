@@ -1,6 +1,8 @@
-﻿namespace FasTnT.Application.UseCases.TopLevelResources;
+﻿using FasTnT.Domain.Model.Queries;
+
+namespace FasTnT.Application.UseCases.TopLevelResources;
 
 public interface IListEpcsHandler
 {
-    Task<IEnumerable<string>> ListEpcs(CancellationToken cancellationToken);
+    Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken);
 }

@@ -7,7 +7,7 @@ using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
 
-namespace FasTnT.Application.Tests;
+namespace FasTnT.Application.Tests.Queries;
 
 [TestClass]
 public class WhenHandlingPollQuery

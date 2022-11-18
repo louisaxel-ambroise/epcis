@@ -8,6 +8,11 @@ public record QueryContext(IEnumerable<QueryParameter> Parameters)
     {
         var parameters = context.Request.Query.Select(x => QueryParameter.Create(x.Key, x.Value.ToArray()));
 
+        if(!parameters.Any(x => x.Name == "perPage"))
+        {
+            parameters = parameters.Append(new QueryParameter { Name = "perPage", Values = new[] { "30" } });
+        }
+
         return ValueTask.FromResult(new QueryContext(parameters));
     }
 }

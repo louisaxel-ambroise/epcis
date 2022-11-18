@@ -10,6 +10,7 @@ using LinqKit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.EfCore.Services.Queries;
@@ -18,6 +19,7 @@ public class SimpleEventQuery : IEpcisDataSource
 {
     const string Comparison = "(GE|GT|LE|LT)";
     private int? _maxEventCount = default,
+                 _startFrom = 0,
                  _eventCountLimit = Constants.Instance.MaxEventsReturnedInQuery + 1;
     private OrderDirection _orderDirection = OrderDirection.Ascending;
     private Expression<Func<Event, object>> _orderExpression = e => e.CaptureTime;
@@ -49,10 +51,9 @@ public class SimpleEventQuery : IEpcisDataSource
 
         try
         {
-            var eventIds = await ApplyOrderByLimit(query)
+            var eventIds = await ApplyOrderByLimitOffset(query)
                 .Select(evt => evt.Id)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false);
+                .ToListAsync(cancellationToken);
 
             if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount || eventIds.Count > Constants.Instance.MaxEventsReturnedInQuery)
             {
@@ -96,7 +97,19 @@ public class SimpleEventQuery : IEpcisDataSource
         }
     }
 
-    private IQueryable<Event> ApplyOrderByLimit(IQueryable<Event> query)
+    private IQueryable<Event> ApplyOrderByLimitOffset(IQueryable<Event> query)
+    {
+        var offset = _startFrom ?? 0;
+        var limit = _maxEventCount.HasValue
+            ? _maxEventCount.Value + 1
+            : _eventCountLimit.Value;
+
+        return _orderDirection == OrderDirection.Ascending
+            ? query.OrderBy(_orderExpression).Skip(offset).Take(limit)
+            : query.OrderByDescending(_orderExpression).Skip(offset).Take(limit);
+    }
+
+        private IQueryable<Event> ApplyOrderByLimit(IQueryable<Event> query)
     {
         var limit = _maxEventCount.HasValue
             ? _maxEventCount.Value + 1
@@ -116,7 +129,8 @@ public class SimpleEventQuery : IEpcisDataSource
             "orderDirection" => ParseOrderDirection(param, query),
             // Simple filters
             "eventType" => query.Where(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)),
-            "eventCountLimit" => ParseLimitEventCount(param, query, ref _eventCountLimit),
+            "nextPageToken" => ParseNextPageToken(param, query),
+            "eventCountLimit" or "perPage" => ParseLimitEventCount(param, query, ref _eventCountLimit),
             "maxEventCount" => ParseLimitEventCount(param, query, ref _maxEventCount),
             "GE_eventTime" => query.Where(x => x.EventTime >= param.GetDate()),
             "LT_eventTime" => query.Where(x => x.EventTime < param.GetDate()),
@@ -208,6 +222,13 @@ public class SimpleEventQuery : IEpcisDataSource
             "recordTime" => (x) => x.CaptureTime,
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order field: {param.Value()}")
         };
+
+        return query;
+    }
+
+    private IQueryable<Event> ParseNextPageToken(QueryParameter param, IQueryable<Event> query)
+    {
+        _startFrom = param.GetIntValue();
 
         return query;
     }
