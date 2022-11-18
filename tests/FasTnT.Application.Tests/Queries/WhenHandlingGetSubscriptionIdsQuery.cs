@@ -2,7 +2,7 @@
 using FasTnT.Application.EfCore.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
 
-namespace FasTnT.Application.Tests;
+namespace FasTnT.Application.Tests.Queries;
 
 [TestClass]
 public class WhenHandlingGetSubscriptionIdsQuery
@@ -33,7 +33,7 @@ public class WhenHandlingGetSubscriptionIdsQuery
     {
         var handler = new SubscriptionsUseCasesHandler(Context, default, default);
         var result = handler.ListSubscriptionsAsync("TestQuery", CancellationToken.None).Result;
-            
+
         Assert.AreEqual(1, result.Count());
         Assert.AreEqual("SubscriptionTest", result.First().Name);
     }

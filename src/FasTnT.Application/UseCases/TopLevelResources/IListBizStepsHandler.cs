@@ -1,6 +1,8 @@
-﻿namespace FasTnT.Application.UseCases.TopLevelResources;
+﻿using FasTnT.Domain.Model.Queries;
+
+namespace FasTnT.Application.UseCases.TopLevelResources;
 
 public interface IListBizStepsHandler
 {
-    Task<IEnumerable<string>> ListBizSteps(CancellationToken cancellationToken);
+    Task<IEnumerable<string>> ListBizSteps(Pagination pagination, CancellationToken cancellationToken);
 }

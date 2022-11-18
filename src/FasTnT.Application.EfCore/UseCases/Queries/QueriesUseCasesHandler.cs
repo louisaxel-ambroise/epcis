@@ -27,11 +27,12 @@ public class QueriesUseCasesHandler :
         _queries = queries;
     }
 
-    public async Task<IEnumerable<StoredQuery>> ListQueriesAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<StoredQuery>> ListQueriesAsync(Pagination pagination, CancellationToken cancellationToken)
     {
         var queries = await _context.Queries
             .AsNoTracking()
             .Include(x => x.Parameters)
+            .Skip(pagination.StartFrom).Take(pagination.PerPage)
             .ToListAsync(cancellationToken);
 
         return queries;

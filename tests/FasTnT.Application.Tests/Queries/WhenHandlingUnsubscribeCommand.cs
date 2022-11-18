@@ -7,7 +7,7 @@ using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 using Moq;
 
-namespace FasTnT.Application.Tests;
+namespace FasTnT.Application.Tests.Queries;
 
 [TestClass]
 public class WhenHandlingUnsubscribeCommand
@@ -35,7 +35,7 @@ public class WhenHandlingUnsubscribeCommand
         var subscription = "TestSubscription";
         var handler = new SubscriptionsUseCasesHandler(Context, Queries, Listener.Object);
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
-            
+
         Assert.AreEqual(0, Context.Subscriptions.Count());
         Listener.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
     }

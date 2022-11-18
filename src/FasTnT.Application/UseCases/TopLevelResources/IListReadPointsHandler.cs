@@ -1,6 +1,8 @@
-﻿namespace FasTnT.Application.UseCases.TopLevelResources;
+﻿using FasTnT.Domain.Model.Queries;
+
+namespace FasTnT.Application.UseCases.TopLevelResources;
 
 public interface IListReadPointsHandler
 {
-    Task<IEnumerable<string>> ListReadPoints(CancellationToken cancellationToken);
+    Task<IEnumerable<string>> ListReadPoints(Pagination pagination, CancellationToken cancellationToken);
 }

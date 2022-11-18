@@ -1,5 +1,7 @@
 ﻿using FasTnT.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Features.v2_0.Communication.Xml.Formatters;
+using FasTnT.Features.v2_0.Extensions;
+using System.Web;
 
 namespace FasTnT.Features.v2_0.Endpoints.Interfaces.Utils;
 
@@ -8,6 +10,11 @@ public record RestResponse<T>(T Response) : IResult
     public async Task ExecuteAsync(HttpContext context)
     {
         var accept = context.Request.Headers.Accept.FirstOrDefault("application/json");
+
+        if (Response is IPaginableResult paginableResult)
+        {
+            SetNextPageToken(context, paginableResult);
+        }
 
         if (accept.Contains("xml", StringComparison.OrdinalIgnoreCase))
         {
@@ -22,6 +29,20 @@ public record RestResponse<T>(T Response) : IResult
 
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(formattedResponse, context.RequestAborted);
+        }
+    }
+
+    private static void SetNextPageToken(HttpContext context, IPaginableResult paginableResult)
+    {
+        var perPage = context.GetPerPageValue();
+
+        if (paginableResult.ElementsCount >= perPage)
+        {
+            var queryString = HttpUtility.ParseQueryString(context.Request.QueryString.ToString());
+            var originalToken = int.Parse(queryString.Get("nextPageToken") ?? "0");
+
+            queryString.Set("nextPageToken", (originalToken + perPage).ToString());
+            context.Response.Headers.Add("link", $"<{context.BuildNextLink(queryString)}>;rel=next");
         }
     }
 }

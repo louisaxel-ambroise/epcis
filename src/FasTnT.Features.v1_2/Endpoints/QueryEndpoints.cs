@@ -6,6 +6,7 @@ using FasTnT.Features.v1_2.Extensions;
 using FasTnT.Domain;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Application.UseCases.Queries;
+using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Features.v1_2.Endpoints;
 
@@ -39,7 +40,7 @@ public static class QueryEndpoints
 
     private static async Task<GetQueryNamesResult> HandleGetQueryNamesQuery(IListQueriesHandler handler, CancellationToken cancellationToken)
     {
-        var queries = await handler.ListQueriesAsync(cancellationToken);
+        var queries = await handler.ListQueriesAsync(Pagination.Max, cancellationToken);
         var queryNames = queries.Select(x => x.Name);
 
         return new(queryNames);

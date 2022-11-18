@@ -2,6 +2,7 @@
 using FasTnT.Application.UseCases.TopLevelResources;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -22,52 +23,55 @@ public class TopLevelResourceUseCasesHandler :
         _context = context;
     }
 
-    public async Task<IEnumerable<string>> ListEpcs(CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken)
     {
         var epcs = await _context.Set<Epc>()
             .AsNoTracking()
             .Select(x => x.Id)
             .Where(x => !string.IsNullOrEmpty(x))
             .Distinct()
+            .Skip(pagination.StartFrom)
+            .Take(pagination.PerPage)
             .ToListAsync(cancellationToken);
 
         return epcs;
     }
 
-    public Task<IEnumerable<string>> ListEventTypes(CancellationToken cancellationToken)
+    public Task<IEnumerable<string>> ListEventTypes(Pagination pagination, CancellationToken cancellationToken)
     {
         var eventTypes = Enum.GetValues<EventType>();
 
         return Task.FromResult(eventTypes.Select(x => x.ToString()));
     }
 
-    public Task<IEnumerable<string>> ListDispositions(CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>> ListDispositions(Pagination pagination, CancellationToken cancellationToken)
     {
-        return DistinctFromEvents(x => x.Disposition, cancellationToken);
+        return await DistinctFromEvents(x => x.Disposition, pagination).ToListAsync(cancellationToken);
     }
 
-    public Task<IEnumerable<string>> ListBizSteps(CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>> ListBizSteps(Pagination pagination, CancellationToken cancellationToken)
     {
-        return DistinctFromEvents(x => x.BusinessStep, cancellationToken);
+        return await DistinctFromEvents(x => x.BusinessStep, pagination).ToListAsync(cancellationToken);
     }
 
-    public Task<IEnumerable<string>> ListBizLocations(CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>> ListBizLocations(Pagination pagination, CancellationToken cancellationToken)
     {
-        return DistinctFromEvents(x => x.BusinessLocation, cancellationToken);
+        return await DistinctFromEvents(x => x.BusinessLocation, pagination).ToListAsync(cancellationToken);
     }
 
-    public Task<IEnumerable<string>> ListReadPoints(CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>> ListReadPoints(Pagination pagination, CancellationToken cancellationToken)
     {
-        return DistinctFromEvents(x => x.ReadPoint, cancellationToken);
+        return await DistinctFromEvents(x => x.ReadPoint, pagination).ToListAsync(cancellationToken);
     }
 
-    private async Task<IEnumerable<string>> DistinctFromEvents(Expression<Func<Event, string>> selector, CancellationToken cancellationToken)
+    private IQueryable<string> DistinctFromEvents(Expression<Func<Event, string>> selector, Pagination pagination)
     {
-        return await _context.Events
+        return _context.Events
                .AsNoTracking()
                .Select(selector)
                .Where(x => !string.IsNullOrEmpty(x))
                .Distinct()
-               .ToListAsync(cancellationToken);
+               .Skip(pagination.StartFrom)
+               .Take(pagination.PerPage);
     }
 }

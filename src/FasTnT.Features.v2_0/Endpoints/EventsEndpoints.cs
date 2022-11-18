@@ -33,9 +33,9 @@ public static class EventsEndpoints
         return ExecuteQuery(handler, new[] { parameter }, cancellationToken);
     }
 
-    private static Task<IResult> HandleEventTypeQuery(string eventType, QueryContext queryParams, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleEventTypeQuery(string eventType, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
     {
-        var parameters = queryParams.Parameters.Append(QueryParameter.Create("eventType", eventType));
+        var parameters = context.Parameters.Append(QueryParameter.Create("eventType", eventType));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
@@ -47,30 +47,30 @@ public static class EventsEndpoints
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleBizStepQuery(string bizStep, QueryContext queryParams, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleBizStepQuery(string bizStep, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
     {
-        var parameters = queryParams.Parameters.Append(QueryParameter.Create("EQ_bizStep", bizStep));
+        var parameters = context.Parameters.Append(QueryParameter.Create("EQ_bizStep", bizStep));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleBizLocationQuery(string bizLocation, QueryContext queryParams, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleBizLocationQuery(string bizLocation, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
     {
-        var parameters = queryParams.Parameters.Append(QueryParameter.Create("EQ_bizLocation", bizLocation));
+        var parameters = context.Parameters.Append(QueryParameter.Create("EQ_bizLocation", bizLocation));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleReadPointQuery(string readPoint, QueryContext queryParams, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleReadPointQuery(string readPoint, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
     {
-        var parameters = queryParams.Parameters.Append(QueryParameter.Create("EQ_readPoint", readPoint));
+        var parameters = context.Parameters.Append(QueryParameter.Create("EQ_readPoint", readPoint));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleDispositionQuery(string disposition, QueryContext queryParams, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleDispositionQuery(string disposition, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
     {
-        var parameters = queryParams.Parameters.Append(QueryParameter.Create("EQ_disposition", disposition));
+        var parameters = context.Parameters.Append(QueryParameter.Create("EQ_disposition", disposition));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
