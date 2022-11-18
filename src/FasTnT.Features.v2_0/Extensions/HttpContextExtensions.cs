@@ -4,7 +4,7 @@ namespace FasTnT.Features.v2_0.Extensions;
 
 public static class HttpContextExtensions
 {
-    public const string PerPage = "perPage";
+    public static string PerPage => "perPage";
 
     public static bool IsPaginated(this HttpContext context)
     {
