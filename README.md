@@ -89,7 +89,7 @@ This is the list of planned and implemented 2.0 features in the repository:
   - [x] Capture CBV masterdata
 - Queries:
   - [x] List events
-  - [ ] Event pagination
+  - [x] Event pagination
   - [x] Create a named query
   - [x] Execute a named query
 - Subscriptions:

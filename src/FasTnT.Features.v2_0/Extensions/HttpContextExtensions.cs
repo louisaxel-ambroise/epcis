@@ -1,10 +1,9 @@
-﻿using System.Collections.Specialized;
-
-namespace FasTnT.Features.v2_0.Extensions;
+﻿namespace FasTnT.Features.v2_0.Extensions;
 
 public static class HttpContextExtensions
 {
     public static string PerPage => "perPage";
+    public static string DefaultPageSize => "30";
 
     public static bool IsPaginated(this HttpContext context)
     {
@@ -13,10 +12,10 @@ public static class HttpContextExtensions
 
     public static int GetPerPageValue(this HttpContext context)
     {
-        return int.Parse(context.Request.Query.SingleOrDefault(x => x.Key.Equals(PerPage)).Value.SingleOrDefault("30"));
+        return int.Parse(context.Request.Query.TryGetValue(PerPage, out var value) ? value : DefaultPageSize);
     }
 
-    public static string BuildNextLink(this HttpContext context, NameValueCollection queryString)
+    public static string BuildNextLink(this HttpContext context, ICollection queryString)
     {
         return context.Request.Scheme + "://" + context.Request.Host + context.Request.Path + "?" + queryString;
     }
