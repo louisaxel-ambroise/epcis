@@ -29,9 +29,17 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             try
             {
                 var authValue = RetrieveAuthorizationValue(Request);
-                var (username, password) = ParseAuthenticationHeader(authValue);
 
-                return Authenticated(username, password, new[] { "fastnt.query", "fastnt.capture" });
+                if (string.IsNullOrEmpty(authValue))
+                {
+                    return AuthenticateResult.Fail("Missing Authorization Header");
+                }
+                else
+                {
+                    var (username, password) = ParseAuthenticationHeader(authValue);
+
+                    return Authenticated(username, password, new[] { "fastnt.query", "fastnt.capture" });
+                }
             }
             catch (Exception ex)
             {
@@ -42,7 +50,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
         });
     }
 
-    private string RetrieveAuthorizationValue(HttpRequest request)
+    private static string RetrieveAuthorizationValue(HttpRequest request)
     {
         if (request.Headers.TryGetValue(Authorization, out var headerValue))
         {
@@ -60,7 +68,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             return queryValue;
         }
 
-        throw new Exception("Missing Authorization value");
+        return null;
     }
 
     private static (string username, string password) ParseAuthenticationHeader(string authHeader)
