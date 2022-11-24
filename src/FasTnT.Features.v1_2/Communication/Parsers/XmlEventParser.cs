@@ -148,7 +148,6 @@ public static class XmlEventParser
         {
             Id = eventRoot.Element("epcClass").Value,
             Quantity = float.Parse(eventRoot.Element("quantity").Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB")),
-            IsQuantity = true,
             Type = EpcType.Quantity
         };
 
@@ -286,7 +285,6 @@ public static class XmlEventParser
         evt.Epcs.AddRange(element.Elements("quantityElement").Select(x => new Epc
         {
             Id = x.Element("epcClass").Value,
-            IsQuantity = true,
             Quantity = float.TryParse(x.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float quantity) ? quantity : default(float?),
             UnitOfMeasure = x.Element("uom")?.Value,
             Type = type

@@ -90,8 +90,8 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     {
         Assert.AreEqual(3, Event.Epcs.Count);
 
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sscc:4001356.5900000817" && !e.IsQuantity), "EPC urn:epc:id:sscc:4001356.5900000817 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sscc:4001356.5900000822" && !e.IsQuantity), "EPC urn:epc:id:sscc:4001356.5900000822 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:409876.0000001.L1" && e.IsQuantity && e.Quantity == 3500 && e.UnitOfMeasure == "KGM"), "Quantity EPC urn:epc:class:lgtin:409876.0000001.L1 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sscc:4001356.5900000817"), "EPC urn:epc:id:sscc:4001356.5900000817 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sscc:4001356.5900000822"), "EPC urn:epc:id:sscc:4001356.5900000822 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:409876.0000001.L1" && e.Quantity == 3500 && e.UnitOfMeasure == "KGM"), "Quantity EPC urn:epc:class:lgtin:409876.0000001.L1 is expected");
     }
 }

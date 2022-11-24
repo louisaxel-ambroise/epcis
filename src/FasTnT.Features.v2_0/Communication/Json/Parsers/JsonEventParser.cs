@@ -115,7 +115,6 @@ public class JsonEventParser
         {
             Type = type,
             Id = x.GetProperty("epcClass").GetString(),
-            IsQuantity = true,
             Quantity = x.TryGetProperty("quantity", out var quantity) ? quantity.GetSingle() : null,
             UnitOfMeasure = x.TryGetProperty("uom", out var uom) ? uom.GetString() : null,
         });
