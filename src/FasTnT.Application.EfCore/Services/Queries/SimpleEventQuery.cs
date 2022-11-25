@@ -9,6 +9,7 @@ using FasTnT.Domain.Model.Queries;
 using LinqKit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -191,7 +192,7 @@ public class SimpleEventQuery : IEpcisDataSource
             var s when s.StartsWith("EXISTS_ILMD_") => ApplyExistsFieldParameter(query, FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()),
             var s when s.StartsWith("EXISTS_INNER_") => ApplyExistsFieldParameter(query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
             var s when s.StartsWith("EQ_INNER_") => ApplyFieldParameter(param.Values, query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
-            var s when s.StartsWith("EQ_value_") => ApplyReportUomParameter(param.Values.Select(x => float.TryParse(x, out var result) ? result : default(float?)).ToArray(), query, param.ReportFieldUom()), // TODO: simplify
+            var s when s.StartsWith("EQ_value_") => ApplyReportUomParameter(param.Values.Select(float.Parse).Cast<float?>().ToArray(), query, param.ReportFieldUom()),
             var s when s.StartsWith("EQ_") => ApplyFieldParameter(param.Values, query, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()),
             // Regex filters (Date/Numeric value comparison)
             var r when Regex.IsMatch(r, $"^{Comparison}_INNER_ILMD_") => ApplyComparison(param, query, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true),
