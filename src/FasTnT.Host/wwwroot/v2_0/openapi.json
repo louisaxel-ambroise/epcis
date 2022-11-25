@@ -4528,27 +4528,6 @@
           }
         }
       }
-    },
-    "/nextPageToken/{token}": {
-      "parameters": [
-        {
-          "$ref": "#/components/parameters/Token"
-        }
-      ],
-      "delete": {
-        "tags": [
-          "Queries"
-        ],
-        "summary": "Optional endpoint that allows on-demand release of any resources associated with `nextPageToken`.",
-        "responses": {
-          "204": {
-            "$ref": "#/components/responses/204NextPageTokenInvalidated"
-          },
-          "501": {
-            "$ref": "#/components/responses/501NotImplemented"
-          }
-        }
-      }
     }
   },
   "components": {
@@ -6255,7 +6234,7 @@
       "NextPageToken": {
         "description": "Parameter that points to the next list of results when requesting a list of events that is larger than the value\nspecified with the `perPage` parameter. Some technologies refer to this as scrolling.\nA `nextPageToken` may be invalidated through timeout. It is up to the specific implementation to provide\nthe mechanisms for invalidating tokens.\n",
         "type": "string",
-        "example": "3A15506738749783AU6D7DENAKwM2gQRRwGrataeq"
+        "example": "10"
       },
       "Upgrade": {
         "type": "string",
