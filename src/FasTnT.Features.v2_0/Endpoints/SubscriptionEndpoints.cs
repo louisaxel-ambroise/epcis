@@ -7,7 +7,6 @@ namespace FasTnT.Features.v2_0.Endpoints;
 
 public static class SubscriptionEndpoints
 {
-    // TODO: add WebSocket endpoints.
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
         app.TryMapGet("/v2_0/queries/{query}/subscriptions", HandleSubscriptionQuery).RequireAuthorization("query");

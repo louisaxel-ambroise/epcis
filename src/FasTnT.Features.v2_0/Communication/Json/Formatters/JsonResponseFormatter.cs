@@ -125,7 +125,7 @@ public static class JsonResponseFormatter
             ["finishedAt"] = request.CaptureDate,
             ["running"] = false,
             ["success"] = true,
-            ["captureErrorBehaviour"] = "rollback", // TODO: handle greedy capture
+            ["captureErrorBehaviour"] = "rollback",
             ["errors"] = Array.Empty<string>()
         };
     }

@@ -140,7 +140,6 @@ internal static class EpcisModelConfiguration
         epc.Property<long>("EventId").HasColumnType("bigint");
         epc.Property(x => x.Type).IsRequired(true).HasConversion<short>();
         epc.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-        epc.Property(x => x.IsQuantity).IsRequired(true).HasDefaultValue(false);
         epc.Property(x => x.Quantity).IsRequired(false);
         epc.Property(x => x.UnitOfMeasure).IsRequired(false).HasMaxLength(10);
         epc.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("EventId").OnDelete(DeleteBehavior.Cascade);

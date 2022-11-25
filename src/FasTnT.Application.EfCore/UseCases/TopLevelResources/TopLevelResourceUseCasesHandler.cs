@@ -28,8 +28,9 @@ public class TopLevelResourceUseCasesHandler :
         var epcs = await _context.Set<Epc>()
             .AsNoTracking()
             .Select(x => x.Id)
-            .Where(x => !string.IsNullOrEmpty(x))
+            .Where(x => x != null)
             .Distinct()
+            .OrderBy(x => x)
             .Skip(pagination.StartFrom)
             .Take(pagination.PerPage)
             .ToListAsync(cancellationToken);
@@ -69,8 +70,9 @@ public class TopLevelResourceUseCasesHandler :
         return _context.Events
                .AsNoTracking()
                .Select(selector)
-               .Where(x => !string.IsNullOrEmpty(x))
+               .Where(x => x != null)
                .Distinct()
+               .OrderBy(x => x)
                .Skip(pagination.StartFrom)
                .Take(pagination.PerPage);
     }

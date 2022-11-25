@@ -113,7 +113,6 @@ public static class XmlEventParser
             Id = x.Element("epcClass").Value,
             Quantity = float.Parse(x.Element("quantity")?.Value),
             UnitOfMeasure = x.Element("uom")?.Value,
-            IsQuantity = true,
             Type = type,
         });
     }

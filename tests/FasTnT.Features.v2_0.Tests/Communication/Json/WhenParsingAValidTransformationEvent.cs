@@ -100,14 +100,14 @@ public class WhenParsingAValidTransformationEvent : JsonParsingTestCase
     {
         Assert.AreEqual(8, Event.Epcs.Count);
 
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sgtin:4012345.011122.25" && e.Type == EpcType.InputEpc && !e.IsQuantity), "EPC urn:epc:id:sscc:4001356.5900000817 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sgtin:4000001.065432.99886655" && e.Type == EpcType.InputEpc && !e.IsQuantity), "EPC urn:epc:id:sgtin:4000001.065432.99886655 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:4012345.011111.4444" && e.Type == EpcType.InputQuantity && e.IsQuantity && e.Quantity == 10 && e.UnitOfMeasure == "KGM"), "EPC urn:epc:class:lgtin:4012345.011111.4444 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:0614141.077777.987" && e.Type == EpcType.InputQuantity && e.IsQuantity && e.Quantity == 30), "EPC urn:epc:class:lgtin:0614141.077777.987 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sgtin:4012345.077889.25" && e.Type == EpcType.OutputEpc && !e.IsQuantity), "EPC urn:epc:id:sgtin:4012345.077889.25 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sgtin:4012345.077889.26" && e.Type == EpcType.OutputEpc && !e.IsQuantity), "EPC urn:epc:id:sgtin:4012345.077889.26 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:4012345.011111.4444" && e.Type == EpcType.OutputQuantity && e.IsQuantity && e.Quantity == 10 && e.UnitOfMeasure == "KGM"), "EPC urn:epc:class:lgtin:4012345.011111.4444 is expected");
-        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:0614141.077777.987" && e.Type == EpcType.OutputQuantity && e.IsQuantity && e.Quantity == 30), "EPC urn:epc:class:lgtin:0614141.077777.987 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sgtin:4012345.011122.25" && e.Type == EpcType.InputEpc), "EPC urn:epc:id:sscc:4001356.5900000817 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sgtin:4000001.065432.99886655" && e.Type == EpcType.InputEpc), "EPC urn:epc:id:sgtin:4000001.065432.99886655 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:4012345.011111.4444" && e.Type == EpcType.InputQuantity  && e.UnitOfMeasure == "KGM"), "EPC urn:epc:class:lgtin:4012345.011111.4444 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:0614141.077777.987" && e.Type == EpcType.InputQuantity && e.Quantity == 30), "EPC urn:epc:class:lgtin:0614141.077777.987 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sgtin:4012345.077889.25" && e.Type == EpcType.OutputEpc), "EPC urn:epc:id:sgtin:4012345.077889.25 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sgtin:4012345.077889.26" && e.Type == EpcType.OutputEpc), "EPC urn:epc:id:sgtin:4012345.077889.26 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:4012345.011111.4444" && e.Type == EpcType.OutputQuantity  && e.UnitOfMeasure == "KGM"), "EPC urn:epc:class:lgtin:4012345.011111.4444 is expected");
+        Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:0614141.077777.987" && e.Type == EpcType.OutputQuantity && e.Quantity == 30), "EPC urn:epc:class:lgtin:0614141.077777.987 is expected");
     }
 
     [TestMethod]

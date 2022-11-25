@@ -30,7 +30,7 @@ public class Namespaces
     {
         var parsed = new Dictionary<string, string>();
 
-        foreach (var header in headerContext.Select(x => x.Split('=', 2)))
+        foreach (var header in headerContext.Select(x => x.Split('=', 2)).Where(x => x.Length == 2))
         {
             parsed[header[0]] = header[1];
         }

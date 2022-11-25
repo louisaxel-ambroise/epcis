@@ -34,8 +34,7 @@ public static class XmlResponseFormatter
             new XElement("resultsBody", new XElement(resultName, resultList))
         );
 
-        // TODO: improve.
-        if (response is QueryResponse pollResponse)
+        if (response is QueryResponse pollResponse && pollResponse.EventList.Count > 0)
         {
             var customNamespaces = pollResponse.EventList.SelectMany(x => x.Fields.Select(x => x.Namespace)).Where(IsCustomNamespace).Distinct().ToArray();
 
