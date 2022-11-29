@@ -10,6 +10,8 @@ public class SubscriptionSchedule
     public string Month { get; set; } = string.Empty;
     public string DayOfWeek { get; set; } = string.Empty;
 
+    public bool IsEmpty() => new [] {Second, Minute, Hour, DayOfWeek, Month, DayOfMonth }.All(string.IsNullOrEmpty);
+
     public static DateTime GetNextOccurence(SubscriptionSchedule schedule, DateTime startDate)
     {
         // Parse from the next second

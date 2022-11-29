@@ -3,6 +3,7 @@ using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.WebSockets;
+using System.Web;
 
 namespace FasTnT.Features.v2_0.Subscriptions;
 
@@ -30,11 +31,28 @@ public static class WebSocketSubscription
             Parameters = parameters.Select(x => new SubscriptionParameter { Name = x.Name, Values = x.Values }).ToList(),
             QueryName = queryName,
             ReportIfEmpty = false,
-            Trigger = "stream",
+            Schedule = ParseSchedule(httpContext.Request.QueryString),
+            Trigger = httpContext.Request.Query.Any(x => x.Key == "stream") ? "stream" : null,
             FormatterName = resultSender.Name
         };
 
         return await registerHandler.RegisterSubscriptionAsync(subscription, resultSender, httpContext.RequestAborted);
+    }
+
+    private static SubscriptionSchedule ParseSchedule(QueryString query)
+    {
+        var queryString = HttpUtility.ParseQueryString(query.ToString());
+        var schedule = new SubscriptionSchedule
+        {
+            Second = queryString.Get("second") ?? string.Empty,
+            Minute = queryString.Get("minute") ?? string.Empty,
+            Hour = queryString.Get("hour") ?? string.Empty,
+            Month = queryString.Get("month") ?? string.Empty,
+            DayOfWeek = queryString.Get("dayOfWeek") ?? string.Empty,
+            DayOfMonth = queryString.Get("dayOfMonth") ?? string.Empty
+        };
+
+        return schedule.IsEmpty() ? default : schedule;
     }
 
     private static Task RemoveSubscription(HttpContext httpContext, Subscription subscription)
