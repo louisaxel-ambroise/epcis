@@ -9,14 +9,14 @@ public static class EventsEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapGet("v2_0/events", HandleEventQuery).RequireAuthorization("query");
-        app.TryMapGet("v2_0/events/{*eventId}", HandleSingleEventQuery).RequireAuthorization("query");
-        app.TryMapGet("v2_0/eventTypes/{eventType}/events", HandleEventTypeQuery).RequireAuthorization("query");
-        app.TryMapGet("v2_0/epcs/{epc}/events", HandleEpcQuery).RequireAuthorization("query");
-        app.TryMapGet("v2_0/bizSteps/{bizStep}/events", HandleBizStepQuery).RequireAuthorization("query");
-        app.TryMapGet("v2_0/bizLocations/{bizLocation}/events", HandleBizLocationQuery).RequireAuthorization("query");
-        app.TryMapGet("v2_0/readPoints/{readPoint}/events", HandleReadPointQuery).RequireAuthorization("query");
-        app.TryMapGet("v2_0/dispositions/{disposition}/events", HandleDispositionQuery).RequireAuthorization("query");
+        app.Get("v2_0/events", HandleEventQuery).RequireAuthorization("query");
+        app.Get("v2_0/events/{*eventId}", HandleSingleEventQuery).RequireAuthorization("query");
+        app.Get("v2_0/eventTypes/{eventType}/events", HandleEventTypeQuery).RequireAuthorization("query");
+        app.Get("v2_0/epcs/{epc}/events", HandleEpcQuery).RequireAuthorization("query");
+        app.Get("v2_0/bizSteps/{bizStep}/events", HandleBizStepQuery).RequireAuthorization("query");
+        app.Get("v2_0/bizLocations/{bizLocation}/events", HandleBizLocationQuery).RequireAuthorization("query");
+        app.Get("v2_0/readPoints/{readPoint}/events", HandleReadPointQuery).RequireAuthorization("query");
+        app.Get("v2_0/dispositions/{disposition}/events", HandleDispositionQuery).RequireAuthorization("query");
 
         return app;
     }

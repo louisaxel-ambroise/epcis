@@ -10,18 +10,18 @@ public static class QueriesEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapGet("v2_0/queries", HandleListNamedQueries).RequireAuthorization("query");
-        app.TryMapGet("v2_0/queries/{queryName}", HandleGetQueryDefinition).RequireAuthorization("query");
-        app.TryMapGet("v2_0/queries/{queryName}/events", ctx => ctx.WebSockets.IsWebSocketRequest ? WebSocketSubscription.SubscribeAsync : HandleGetQueryEvents).RequireAuthorization("query");
-        app.TryMapPost("v2_0/queries", HandleCreateNamedQuery).RequireAuthorization("query");
+        app.Get("v2_0/queries", HandleListNamedQueries).RequireAuthorization("query");
+        app.Get("v2_0/queries/{queryName}", HandleGetQueryDefinition).RequireAuthorization("query");
+        app.Get("v2_0/queries/{queryName}/events", ctx => ctx.WebSockets.IsWebSocketRequest ? WebSocketSubscription.SubscribeAsync : HandleGetQueryEvents).RequireAuthorization("query");
+        app.Post("v2_0/queries", HandleCreateNamedQuery).RequireAuthorization("query");
         app.MapDelete("v2_0/queries/{queryName}", HandleDeleteNamedQuery).RequireAuthorization("query");
 
         return app;
     }
 
-    private static async Task<IResult> HandleListNamedQueries(Pagination pagination, IListQueriesHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListNamedQueries(PaginationContext pagination, IListQueriesHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListQueriesAsync(pagination, cancellationToken);
+        var response = await handler.ListQueriesAsync(pagination.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new ListCustomQueriesResult(response.Select(x => new CustomQueryDefinitionResult(x.Name, x.Parameters))));
     }
