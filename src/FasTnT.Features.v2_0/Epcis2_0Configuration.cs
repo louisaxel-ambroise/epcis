@@ -16,15 +16,15 @@ public static class Epcis2_0Configuration
         return endpoints;
     }
 
-    internal static RouteHandlerBuilder Get(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
-    {
-        return Get(endpoints, pattern, _ => handler);
-    }
-
     internal static RouteHandlerBuilder Get(this IEndpointRouteBuilder endpoints, string pattern, Func<HttpContext, Delegate> handlerProvider)
     {
         return MapMethod(endpoints, HttpMethods.Get, pattern, DelegateFactory.Create(handlerProvider));
     }
+
+    internal static RouteHandlerBuilder Get(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
+    {
+        return MapMethod(endpoints, HttpMethods.Get, pattern, DelegateFactory.Create(_ => handler));
+    } 
 
     internal static RouteHandlerBuilder Post(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
     {
