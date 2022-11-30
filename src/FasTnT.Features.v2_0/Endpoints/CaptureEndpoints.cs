@@ -8,10 +8,10 @@ public static class CaptureEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapGet("v2_0/capture", HandleListCapturesQuery).RequireAuthorization();
-        app.TryMapGet("v2_0/capture/{captureId}", HandleCaptureDetailQuery).RequireAuthorization();
-        app.TryMapPost("v2_0/capture", HandleCaptureRequest).RequireAuthorization("capture");
-        app.TryMapPost("v2_0/events", HandleCaptureSingleEventRequest).RequireAuthorization("capture");
+        app.Get("v2_0/capture", HandleListCapturesQuery).RequireAuthorization();
+        app.Get("v2_0/capture/{captureId}", HandleCaptureDetailQuery).RequireAuthorization();
+        app.Post("v2_0/capture", HandleCaptureRequest).RequireAuthorization("capture");
+        app.Post("v2_0/events", HandleCaptureSingleEventRequest).RequireAuthorization("capture");
 
         return app;
     }

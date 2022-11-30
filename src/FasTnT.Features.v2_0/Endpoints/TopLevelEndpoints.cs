@@ -8,18 +8,18 @@ public static class TopLevelEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapGet("v2_0/eventTypes", HandleListEventTypes).RequireAuthorization("query");
-        app.TryMapGet("v2_0/epcs", HandleListEpcs).RequireAuthorization("query");
-        app.TryMapGet("v2_0/bizSteps", HandleListBizSteps).RequireAuthorization("query");
-        app.TryMapGet("v2_0/bizLocations", HandleListBizLocations).RequireAuthorization("query");
-        app.TryMapGet("v2_0/readPoints", HandleListReadPoints).RequireAuthorization("query");
-        app.TryMapGet("v2_0/dispositions", HandleListDispositions).RequireAuthorization("query");
-        app.TryMapGet("v2_0/eventTypes/{eventType}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.TryMapGet("v2_0/epcs/{epc}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.TryMapGet("v2_0/bizSteps/{bizStep}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.TryMapGet("v2_0/bizLocations/{bizLocation}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.TryMapGet("v2_0/readPoints/{readPoint}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.TryMapGet("v2_0/dispositions/{disposition}", HandleSubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/eventTypes", HandleListEventTypes).RequireAuthorization("query");
+        app.Get("v2_0/epcs", HandleListEpcs).RequireAuthorization("query");
+        app.Get("v2_0/bizSteps", HandleListBizSteps).RequireAuthorization("query");
+        app.Get("v2_0/bizLocations", HandleListBizLocations).RequireAuthorization("query");
+        app.Get("v2_0/readPoints", HandleListReadPoints).RequireAuthorization("query");
+        app.Get("v2_0/dispositions", HandleListDispositions).RequireAuthorization("query");
+        app.Get("v2_0/eventTypes/{eventType}", HandleSubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/epcs/{epc}", HandleSubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/bizSteps/{bizStep}", HandleSubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/bizLocations/{bizLocation}", HandleSubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/readPoints/{readPoint}", HandleSubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/dispositions/{disposition}", HandleSubResourceRequest).RequireAuthorization("query");
 
         return app;
     }
