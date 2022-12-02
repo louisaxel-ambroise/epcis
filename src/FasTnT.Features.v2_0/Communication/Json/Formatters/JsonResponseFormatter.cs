@@ -120,7 +120,7 @@ public static class JsonResponseFormatter
     {
         return new Dictionary<string, object>
         {
-            ["captureID"] = request.Id.ToString(),
+            ["captureID"] = request.CaptureId,
             ["createdAt"] = request.DocumentTime,
             ["finishedAt"] = request.CaptureDate,
             ["running"] = false,

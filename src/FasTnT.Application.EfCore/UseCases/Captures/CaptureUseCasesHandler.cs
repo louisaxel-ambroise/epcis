@@ -29,17 +29,17 @@ public class CaptureUseCasesHandler :
     {
         var captures = await _context.Requests
             .AsNoTracking()
-            .OrderBy(x => x.Id)
+            .OrderBy(x => EF.Property<int>(x, "Id"))
             .ToListAsync(cancellationToken);
 
         return captures;
     }
 
-    public async Task<Request> GetCaptureDetailsAsync(int captureId, CancellationToken cancellationToken)
+    public async Task<Request> GetCaptureDetailsAsync(string captureId, CancellationToken cancellationToken)
     {
         var capture = await _context.Requests
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == captureId, cancellationToken);
+            .SingleOrDefaultAsync(x => x.CaptureId == captureId, cancellationToken);
 
         if (capture is null)
         {

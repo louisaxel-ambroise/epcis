@@ -23,7 +23,7 @@ public static class CaptureEndpoints
         return EpcisResults.Ok(new ListCapturesResult(response));
     }
 
-    private static async Task<IResult> HandleCaptureDetailQuery(int captureId, ICaptureRequestDetailsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleCaptureDetailQuery(string captureId, ICaptureRequestDetailsHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.GetCaptureDetailsAsync(captureId, cancellationToken);
 
@@ -34,7 +34,7 @@ public static class CaptureEndpoints
     {
         var response = await handler.StoreAsync(request.Request, cancellationToken);
 
-        return Results.Created($"v2_0/capture/{response.Id}", null);
+        return Results.Created($"v2_0/capture/ {response.CaptureId}", null);
     }
 
     private static async Task<IResult> HandleCaptureSingleEventRequest(CaptureEventRequest request, ICaptureRequestHandler handler, CancellationToken cancellationToken)

@@ -9,15 +9,12 @@ using FasTnT.Domain.Model.Queries;
 using LinqKit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.EfCore.Services.Queries;
 
 public class SimpleEventQuery : IEpcisDataSource
 {
-    const string Comparison = "(GE|GT|LE|LT)";
     private int? _maxEventCount = default,
                  _startFrom = 0,
                  _eventCountLimit = Constants.Instance.MaxEventsReturnedInQuery + 1;
@@ -52,7 +49,7 @@ public class SimpleEventQuery : IEpcisDataSource
         try
         {
             var eventIds = await ApplyOrderByLimitOffset(query)
-                .Select(evt => evt.Id)
+                .Select(evt => EF.Property<long>(evt, "Id"))
                 .ToListAsync(cancellationToken);
 
             if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount || eventIds.Count > Constants.Instance.MaxEventsReturnedInQuery)
@@ -75,7 +72,7 @@ public class SimpleEventQuery : IEpcisDataSource
                 .Include(x => x.Transactions)
                 .Include(x => x.PersistentDispositions)
                 .Include(x => x.SensorElements).ThenInclude(x => x.Reports)
-                .Where(evt => eventIds.Contains(evt.Id));
+                .Where(evt => eventIds.Contains(EF.Property<long>(evt, "Id")));
 
             var result = await query
                 .ToListAsync(cancellationToken)
@@ -147,9 +144,9 @@ public class SimpleEventQuery : IEpcisDataSource
             "EXISTS_errorDeclaration" => query.Where(x => x.CorrectiveDeclarationTime.HasValue),
             "EQ_errorReason" => query.Where(x => param.Values.Contains(x.CorrectiveReason)),
             "EQ_correctiveEventID" => query.Where(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))),
-            "WD_readPoint" => throw new EpcisException(ExceptionType.ImplementationException, "WD_readPoint parameter is not implemented"),
-            "WD_bizLocation" => throw new EpcisException(ExceptionType.ImplementationException, "WD_bizLocation parameter is not implemented"),
-            "EQ_requestId" => query.Where(x => param.Values.Select(int.Parse).Contains(x.Request.Id)),
+            "WD_readPoint" => query.Where(x => _context.MasterdataHierarchy(x.ReadPoint, "urn:epcglobal:epcis:vtype:ReadPoint").Any(h => param.Values.Contains(h.Id))),
+            "WD_bizLocation" => query.Where(x => _context.MasterdataHierarchy(x.BusinessLocation, "urn:epcglobal:epcis:vtype:BusinessLocation").Any(h => param.Values.Contains(h.Id))),
+            "EQ_requestId" => query.Where(x => param.Values.Select(int.Parse).Contains(EF.Property<int>(x.Request, "Id"))),
             "EQ_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity == param.GetNumeric())),
             "GT_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity > param.GetNumeric())),
             "GE_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity >= param.GetNumeric())),
@@ -190,27 +187,46 @@ public class SimpleEventQuery : IEpcisDataSource
             var s when s.StartsWith("EXISTS_INNER_ILMD_") => ApplyExistsFieldParameter(query, FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()),
             var s when s.StartsWith("EXISTS_ILMD_") => ApplyExistsFieldParameter(query, FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()),
             var s when s.StartsWith("EXISTS_INNER_") => ApplyExistsFieldParameter(query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
+            var s when s.StartsWith("EXISTS_") => ApplyExistsFieldParameter(query, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()),
             var s when s.StartsWith("EQ_INNER_") => ApplyFieldParameter(param.Values, query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
             var s when s.StartsWith("EQ_value_") => ApplyReportUomParameter(param.Values.Select(float.Parse).Cast<float?>().ToArray(), query, param.ReportFieldUom()),
             var s when s.StartsWith("EQ_") => ApplyFieldParameter(param.Values, query, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()),
+            var s when s.StartsWith("EQATTR_") => ApplyEqAttributeParameter(param.Values, query, param.MasterdataType(), param.AttributeName()),
+            var s when s.StartsWith("HASATTR_") => ApplyHasAttributeParameter(query, param.MasterdataType(), param.AttributeName()),
             // Regex filters (Date/Numeric value comparison)
-            var r when Regex.IsMatch(r, $"^{Comparison}_INNER_ILMD_") => ApplyComparison(param, query, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true),
-            var r when Regex.IsMatch(r, $"^{Comparison}_ILMD_") => ApplyComparison(param, query, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false),
-            var r when Regex.IsMatch(r, $"^{Comparison}_INNER_SENSORELEMENT_") => ApplyComparison(param, query, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regex.IsMatch(r, $"^{Comparison}_SENSORELEMENT_") => ApplyComparison(param, query, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), false),
-            var r when Regex.IsMatch(r, $"^{Comparison}_INNER_SENSORELEMENT_") => ApplyComparison(param, query, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regex.IsMatch(r, $"^{Comparison}_SENSORMETADATA_") => ApplyComparison(param, query, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), false),
-            var r when Regex.IsMatch(r, $"^{Comparison}_INNER_SENSORMETADATA_") => ApplyComparison(param, query, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regex.IsMatch(r, $"^{Comparison}_SENSOREPORT_") => ApplyComparison(param, query, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), false),
-            var r when Regex.IsMatch(r, $"^{Comparison}_INNER_SENSOREPORT_") => ApplyComparison(param, query, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regex.IsMatch(r, $"^{Comparison}_INNER_") => ApplyComparison(param, query, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regex.IsMatch(r, $"^{Comparison}_[sDev|((min|max|mean|perc)Value)]_") => ApplyUomComparison(param, query),
-            var r when Regex.IsMatch(r, $"^{Comparison}_") => ApplyComparison(param, query, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false),
-            // Regex HasAttr/EqAttr filters
-            var r when Regex.IsMatch(r, $"^EQATTR_") => throw new EpcisException(ExceptionType.ImplementationException, "EQATTR_ parameter family is not implemented"),
-            var r when Regex.IsMatch(r, $"^HASATTR_") => throw new EpcisException(ExceptionType.ImplementationException, "HASATTR_ parameter family is not implemented"),
+            var r when Regexs.IsInnerIlmd(r) => ApplyComparison(param, query, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true),
+            var r when Regexs.IsIlmd(r) => ApplyComparison(param, query, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false),
+            var r when Regexs.IsSensorElement(r) => ApplyComparison(param, query, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), false),
+            var r when Regexs.IsInnerSensorElement(r) => ApplyComparison(param, query, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), true),
+            var r when Regexs.IsSensorMetadata(r) => ApplyComparison(param, query, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), false),
+            var r when Regexs.IsInnerSensorMetadata(r) => ApplyComparison(param, query, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), true),
+            var r when Regexs.IsSensorReport(r) => ApplyComparison(param, query, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), false),
+            var r when Regexs.IsInnerSensorReport(r) => ApplyComparison(param, query, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), true),
+            var r when Regexs.IsInnerField(r) => ApplyComparison(param, query, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true),
+            var r when Regexs.IsUoMField(r) => ApplyUomComparison(param, query),
+            var r when Regexs.IsField(r) => ApplyComparison(param, query, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false),
             // Any other case is an unknown parameter and should raise a QueryParameter Exception
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is not implemented: {param.Name}")
+        };
+    }
+
+    private IQueryable<Event> ApplyHasAttributeParameter(IQueryable<Event> query, string field, string attributeName)
+    {
+        return field switch
+        {
+            "bizLocation" => query.Where(e => _context.MasterdataProperty(e.BusinessLocation, "urn:epcglobal:epcis:vtype:BusinessLocation", attributeName) != null),
+            "readPoint" => query.Where(e => _context.MasterdataProperty(e.ReadPoint, "urn:epcglobal:epcis:vtype:ReadPoint", attributeName) != null),
+            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}"),
+        };
+    }
+
+    private IQueryable<Event> ApplyEqAttributeParameter(string[] values, IQueryable<Event> query, string field, string attributeName)
+    {
+        return field switch
+        {
+            "bizLocation" => query.Where(e => values.Contains(_context.MasterdataProperty(e.BusinessLocation, "urn:epcglobal:epcis:vtype:BusinessLocation", attributeName))),
+            "readPoint" => query.Where(e => values.Contains(_context.MasterdataProperty(e.ReadPoint, "urn:epcglobal:epcis:vtype:ReadPoint", attributeName))),
+            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}"),
         };
     }
 
@@ -269,7 +285,7 @@ public class SimpleEventQuery : IEpcisDataSource
 
     private static IQueryable<Event> ApplyComparison(QueryParameter param, IQueryable<Event> query, FieldType type, string ns, string name, bool inner)
     {
-        var customFieldPredicate = PredicateBuilder.New<Field>(f => f.Type == type && f.Name == name && f.Namespace == ns && f.HasParent == inner);
+        var customFieldPredicate = PredicateBuilder.New<Field>(f => f.Type == type && f.Name == name && f.Namespace == ns && (f.Parent != null) == inner);
         var fieldValuePredicate = param.Name[..2] switch
         {
             "GE" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue >= param.GetDate() : f => f.NumericValue >= param.GetNumeric()),

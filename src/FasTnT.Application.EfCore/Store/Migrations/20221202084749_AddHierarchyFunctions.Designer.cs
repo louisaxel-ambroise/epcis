@@ -4,6 +4,7 @@ using FasTnT.Application.EfCore.Store;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FasTnT.Application.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    partial class EpcisContextModelSnapshot : ModelSnapshot
+    [Migration("20221202084749_AddHierarchyFunctions")]
+    partial class AddHierarchyFunctions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,6 +271,11 @@ namespace FasTnT.Application.Migrations
 
                     b.Property<DateTime?>("DateValue")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("HasParent")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bit")
+                        .HasComputedColumnSql("(CASE WHEN [ParentId] IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END)", true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -597,9 +605,6 @@ namespace FasTnT.Application.Migrations
 
                     b.Property<DateTime>("CaptureDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CaptureId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DocumentTime")
                         .HasColumnType("datetime2");

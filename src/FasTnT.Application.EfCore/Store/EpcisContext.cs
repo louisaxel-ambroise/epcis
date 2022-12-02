@@ -18,5 +18,8 @@ public class EpcisContext : DbContext
 
     public EpcisContext(DbContextOptions<EpcisContext> options) : base(options) { }
 
+    public IQueryable<MasterData> MasterdataHierarchy(string id, string type) => throw new NotSupportedException($"{nameof(MasterdataHierarchy)} cannot be called client side");
+    public string MasterdataProperty(string id, string type, string attribute) => throw new NotSupportedException($"{nameof(MasterdataProperty)} cannot be called client side");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) => EpcisModelConfiguration.Apply(modelBuilder, Database);
 }

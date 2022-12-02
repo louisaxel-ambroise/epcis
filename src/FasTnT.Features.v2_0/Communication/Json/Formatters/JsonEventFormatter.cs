@@ -215,7 +215,7 @@ public static class JsonEventFormatter
     {
         var extension = new Dictionary<string, object>();
 
-        foreach (var group in fields.Where(x => !x.HasParent).GroupBy(x => (x.Name, x.Namespace)))
+        foreach (var group in fields.Where(x => x.Parent == null).GroupBy(x => (x.Name, x.Namespace)))
         {
             if (group.Count() > 1)
             {
@@ -226,13 +226,9 @@ public static class JsonEventFormatter
                 var field = group.Single();
                 var children = field.Children.Where(x => x.Type != FieldType.Attribute);
 
-                if (children.Count() > 1)
+                if (children.Count() >= 1)
                 {
                     extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(children, context));
-                }
-                else if (children.Count() == 1)
-                {
-                    extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(children, context).First().Value);
                 }
                 else
                 {

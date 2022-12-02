@@ -1,6 +1,6 @@
 ﻿namespace FasTnT.Application.EfCore.Store.Configuration;
 
-enum EpcisSchema
+enum Schemas
 {
     Sbdh,
     Epcis,

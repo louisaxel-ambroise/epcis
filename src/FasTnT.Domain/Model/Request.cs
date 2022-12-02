@@ -5,7 +5,7 @@ namespace FasTnT.Domain.Model;
 
 public class Request
 {
-    public int Id { get; set; }
+    public string CaptureId { get; set; } = Guid.NewGuid().ToString();
     public string UserId { get; set; }
     public StandardBusinessHeader StandardBusinessHeader { get; set; }
     public DateTime CaptureDate { get; set; } = DateTime.UtcNow;
