@@ -211,7 +211,7 @@ internal static class EpcisModelConfiguration
         var sensorReport = modelBuilder.Entity<SensorReport>();
         sensorReport.ToTable(nameof(SensorReport), nameof(Schemas.Epcis));
         sensorReport.Property<long>("EventId");
-        sensorReport.Property<int>("SensorId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
+        sensorReport.Property<int>("SensorId").IsRequired(true);
         sensorReport.Property<int>("ReportId").IsRequired(true).HasValueGenerator<IncrementGenerator>();
         sensorReport.HasKey("EventId", "SensorId", "ReportId");
         sensorReport.HasOne(x => x.SensorElement).WithMany(x => x.Reports).HasForeignKey("EventId", "SensorId").OnDelete(DeleteBehavior.Cascade);
