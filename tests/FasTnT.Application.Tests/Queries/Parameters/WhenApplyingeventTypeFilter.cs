@@ -1,8 +1,8 @@
 ﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.Store;
 using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Queries.Parameters;
 
@@ -33,8 +33,8 @@ public class WhenApplyingeventTypeFilter
                     Action = Domain.Enumerations.EventAction.Observe
                 }
             }.ToList(),
-            CaptureDate = DateTime.Now,
-            DocumentTime = DateTime.Now,
+            CaptureDate = DateTimeOffset.Now,
+            DocumentTime = DateTimeOffset.Now,
             SchemaVersion = "1.2"
         });
         Context.SaveChanges();

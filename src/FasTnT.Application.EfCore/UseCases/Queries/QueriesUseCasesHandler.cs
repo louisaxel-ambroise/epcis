@@ -1,10 +1,10 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.UseCases.Queries;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.EfCore.Store;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.EfCore.UseCases.Queries;

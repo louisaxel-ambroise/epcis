@@ -16,7 +16,7 @@ internal static class XmlStandardBusinessHeaderParser
             Version = sbdh.Element(XName.Get("HeaderVersion", Namespace))?.Value,
             Standard = documentIdentification?.Element(XName.Get("Standard", Namespace))?.Value,
             TypeVersion = documentIdentification?.Element(XName.Get("TypeVersion", Namespace))?.Value,
-            CreationDateTime = DateTime.TryParse(documentIdentification?.Element(XName.Get("CreationDateAndTime", Namespace))?.Value, out DateTime result) ? result : default,
+            CreationDateTime = DateTimeOffset.TryParse(documentIdentification?.Element(XName.Get("CreationDateAndTime", Namespace))?.Value, out DateTimeOffset result) ? result : default,
             InstanceIdentifier = documentIdentification?.Element(XName.Get("InstanceIdentifier", Namespace))?.Value,
             Type = documentIdentification?.Element(XName.Get("Type", Namespace))?.Value,
             ContactInformations = ParseContactInformations(sbdh)

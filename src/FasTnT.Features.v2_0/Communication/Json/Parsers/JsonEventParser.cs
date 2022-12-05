@@ -66,7 +66,7 @@ public class JsonEventParser
                 case "disposition":
                     evt.Disposition = property.Value.GetString(); break;
                 case "eventTime":
-                    evt.EventTime = property.Value.GetDateTime(); break;
+                    evt.EventTime = property.Value.GetDateTimeOffset().ToUniversalTime(); break;
                 case "eventTimeZoneOffset":
                     evt.EventTimeZoneOffset = property.Value.GetString(); break;
                 case "readPoint":
@@ -208,7 +208,7 @@ public class JsonEventParser
         {
             field.TextValue = element.GetString();
             field.NumericValue = float.TryParse(field.TextValue, out float numericValue) ? numericValue : default(float?);
-            field.DateValue = DateTime.TryParse(field.TextValue, out DateTime dateValue) ? dateValue : default(DateTime?);
+            field.DateValue = DateTimeOffset.TryParse(field.TextValue, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?);
         }
 
         return new[] { field };

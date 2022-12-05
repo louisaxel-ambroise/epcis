@@ -5,11 +5,16 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="7.1.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FasTnT.Migrations.Postgres\FasTnT.Migrations.Postgres.csproj" />
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
     <ProjectReference Include="..\FasTnT.Domain\FasTnT.Domain.csproj" />
+    <ProjectReference Include="..\FasTnT.Migrations.Sqlite\FasTnT.Migrations.Sqlite.csproj" />
+    <ProjectReference Include="..\FasTnT.Migrations.SqlServer\FasTnT.Migrations.SqlServer.csproj" />
   </ItemGroup>
 </Project>

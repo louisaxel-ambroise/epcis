@@ -1,9 +1,9 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.EfCore.Store;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.EfCore.UseCases.Subscriptions;

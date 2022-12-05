@@ -27,7 +27,7 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     [TestMethod]
     public void EventTimeShouldBeParsedCorrectly()
     {
-        var expectedDate = new DateTime(2021, 02, 15, 14, 00, 00, DateTimeKind.Utc);
+        var expectedDate = new DateTimeOffset(2021, 02, 15, 14, 00, 00, TimeSpan.Zero);
         Assert.AreEqual(expectedDate, Event.EventTime);
     }
 

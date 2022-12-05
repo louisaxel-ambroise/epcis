@@ -28,7 +28,7 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         {
             try
             {
-                var executionDate = DateTime.UtcNow;
+                var executionDate = DateTimeOffset.UtcNow;
                 var triggeredSubscriptions = GetScheduledSubscriptions(executionDate).Union(GetTriggeredSubscriptions());
 
                 Execute(triggeredSubscriptions.ToArray(), cancellationToken);
@@ -52,7 +52,7 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         return subscriptions;
     }
 
-    private IEnumerable<SubscriptionContext> GetScheduledSubscriptions(DateTime executionDate)
+    private IEnumerable<SubscriptionContext> GetScheduledSubscriptions(DateTimeOffset executionDate)
     {
         var plannedExecutions = _scheduledExecutions.Where(x => x.Value <= executionDate).ToArray();
 
@@ -164,6 +164,6 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         }
     }
 
-    private static TimeSpan GetNextExecutionWaitTime(DateTime executionTime)
-        => executionTime < DateTime.UtcNow ? TimeSpan.Zero : executionTime - DateTime.UtcNow;
+    private static TimeSpan GetNextExecutionWaitTime(DateTimeOffset executionTime)
+        => executionTime < DateTimeOffset.UtcNow ? TimeSpan.Zero : executionTime - DateTimeOffset.UtcNow;
 }

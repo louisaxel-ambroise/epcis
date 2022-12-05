@@ -27,7 +27,7 @@ public class WhenParsingAValidAggregationEvent : XmlParsingTestCase
     [TestMethod]
     public void EventTimeShouldBeParsedCorrectly()
     {
-        var expectedDate = new DateTime(2013, 06, 08, 14, 58, 56, 591, DateTimeKind.Utc);
+        var expectedDate = new DateTimeOffset(2013, 06, 08, 14, 58, 56, 591, TimeSpan.Zero);
         Assert.AreEqual(expectedDate, Event.EventTime);
     }
 

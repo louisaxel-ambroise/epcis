@@ -25,6 +25,7 @@ builder.Services.AddHostedService<SubscriptionBackgroundService>();
 builder.Services.AddEpcisServices(opt =>
 {
     opt.ConnectionString = builder.Configuration.GetConnectionString("FasTnT.Database");
+    opt.Provider = builder.Configuration.GetValue("FasTnT.Database.Provider", "SqlServer");
     opt.CommandTimeout = builder.Configuration.GetValue("FasTnT.Database.ConnectionTimeout", 60);
     opt.CurrentUser = svc => new HttpContextCurrentUser(svc.GetRequiredService<IHttpContextAccessor>());
 });

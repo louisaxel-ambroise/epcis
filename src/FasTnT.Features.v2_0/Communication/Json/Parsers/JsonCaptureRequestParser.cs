@@ -20,8 +20,8 @@ public static class JsonCaptureRequestParser
         var document = await JsonDocumentParser.Instance.ParseAsync(input, cancellationToken);
         var request = new Request
         {
-            CaptureDate = DateTime.UtcNow,
-            DocumentTime = DateTime.UtcNow,
+            CaptureDate = DateTimeOffset.UtcNow,
+            DocumentTime = DateTimeOffset.UtcNow,
             SchemaVersion = "2.0",
             Events = new List<Event> { JsonEventParser.Create(document.RootElement, extensions).Parse() }
         };

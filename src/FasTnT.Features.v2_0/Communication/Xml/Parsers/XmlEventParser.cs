@@ -29,7 +29,7 @@ public static class XmlEventParser
                     case "recordTime": // Discard - this will be overridden
                         break;
                     case "eventTime":
-                        evt.EventTime = DateTime.Parse(field.Value); break;
+                        evt.EventTime = DateTimeOffset.Parse(field.Value, null, System.Globalization.DateTimeStyles.AdjustToUniversal); break;
                     case "certificationInfo":
                         evt.CertificationInfo = field.Value; break;
                     case "eventTimeZoneOffset":

@@ -12,7 +12,7 @@ public class Field
     public string Namespace { get; set; }
     public string TextValue { get; set; }
     public double? NumericValue { get; set; }
-    public DateTime? DateValue { get; set; }
+    public DateTimeOffset? DateValue { get; set; }
     public Field Parent { get; set; }
     public List<Field> Children { get; set; } = new();
 }

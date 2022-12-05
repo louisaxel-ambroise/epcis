@@ -4,6 +4,7 @@ namespace FasTnT.Application.EfCore;
 
 public class EpcisOptions
 {
+    public string Provider { get; set; } = SqlProvider.SqlServer;
     public string ConnectionString { get; set; } = string.Empty;
     public int CommandTimeout { get; set; } = 60;
     public Func<IServiceProvider, ICurrentUser> CurrentUser { get; set; } = _ => null;

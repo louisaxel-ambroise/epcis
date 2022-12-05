@@ -16,12 +16,12 @@ public class Destination
 public class SensorElement
 {
     public Event Event { get; set; }
-    public DateTime? Time { get; set; }
+    public DateTimeOffset? Time { get; set; }
     public string DeviceId { get; set; }
     public string DeviceMetadata { get; set; }
     public string RawData { get; set; }
-    public DateTime? StartTime { get; set; }
-    public DateTime? EndTime { get; set; }
+    public DateTimeOffset? StartTime { get; set; }
+    public DateTimeOffset? EndTime { get; set; }
     public string DataProcessingMethod { get; set; }
     public string BizRules { get; set; }
     public List<SensorReport> Reports { get; set; } = new();
@@ -35,7 +35,7 @@ public class SensorReport
     public string DeviceId { get; set; }
     public string RawData { get; set; }
     public string DataProcessingMethod { get; set; }
-    public DateTime? Time { get; set; }
+    public DateTimeOffset? Time { get; set; }
     public string Microorganism { get; set; }
     public string ChemicalSubstance { get; set; }
     public float? Value { get; set; }

@@ -50,7 +50,7 @@ internal static class JsonSensorElementParser
                 case "dataProcessingMethod":
                     report.DataProcessingMethod = property.Value.GetString(); break;
                 case "time":
-                    report.Time = property.Value.GetDateTime(); break;
+                    report.Time = property.Value.GetDateTimeOffset(); break;
                 case "microorganism":
                     report.Microorganism = property.Value.GetString(); break;
                 case "chemicalSubstance":
@@ -98,7 +98,7 @@ internal static class JsonSensorElementParser
             switch (property.Name)
             {
                 case "time":
-                    sensorElement.Time = property.Value.GetDateTime(); break;
+                    sensorElement.Time = property.Value.GetDateTimeOffset(); break;
                 case "deviceID":
                     sensorElement.DeviceId = property.Value.GetString(); break;
                 case "deviceMetadata":
@@ -106,9 +106,9 @@ internal static class JsonSensorElementParser
                 case "rawData":
                     sensorElement.RawData = property.Value.GetString(); break;
                 case "startTime":
-                    sensorElement.StartTime = property.Value.GetDateTime(); break;
+                    sensorElement.StartTime = property.Value.GetDateTimeOffset(); break;
                 case "endTime":
-                    sensorElement.EndTime = property.Value.GetDateTime(); break;
+                    sensorElement.EndTime = property.Value.GetDateTimeOffset(); break;
                 case "dataProcessingMethod":
                     sensorElement.DataProcessingMethod = property.Value.GetString(); break;
                 case "bizRules":
@@ -145,7 +145,7 @@ internal static class JsonSensorElementParser
         {
             field.TextValue = element.GetString();
             field.NumericValue = float.TryParse(field.TextValue, out float numericValue) ? numericValue : default(float?);
-            field.DateValue = DateTime.TryParse(field.TextValue, out DateTime dateValue) ? dateValue : default(DateTime?);
+            field.DateValue = DateTimeOffset.TryParse(field.TextValue, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?);
         }
 
         return new[] { field };

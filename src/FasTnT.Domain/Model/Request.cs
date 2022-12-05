@@ -8,8 +8,8 @@ public class Request
     public string CaptureId { get; set; } = Guid.NewGuid().ToString();
     public string UserId { get; set; }
     public StandardBusinessHeader StandardBusinessHeader { get; set; }
-    public DateTime CaptureDate { get; set; } = DateTime.UtcNow;
-    public DateTime DocumentTime { get; set; }
+    public DateTimeOffset CaptureDate { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset DocumentTime { get; set; }
     public string SchemaVersion { get; set; }
     public SubscriptionCallback SubscriptionCallback { get; set; }
     public List<Event> Events { get; set; } = new();

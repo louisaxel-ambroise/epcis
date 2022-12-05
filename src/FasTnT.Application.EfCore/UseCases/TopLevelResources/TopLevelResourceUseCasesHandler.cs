@@ -1,8 +1,8 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.UseCases.TopLevelResources;
+﻿using FasTnT.Application.UseCases.TopLevelResources;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.EfCore.Store;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

@@ -139,7 +139,7 @@ public static class JsonResponseFormatter
             ["id"] = $"fastnt:epcis:2.0:pollquery:{Guid.NewGuid()}",
             ["type"] = "EPCISQueryDocument",
             ["schemaVersion"] = "2.0",
-            ["creationDate"] = DateTime.UtcNow,
+            ["creationDate"] = DateTimeOffset.UtcNow,
             ["epcisBody"] = new
             {
                 queryResults = new

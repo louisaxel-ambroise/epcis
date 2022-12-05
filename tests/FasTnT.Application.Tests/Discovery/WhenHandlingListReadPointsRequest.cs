@@ -1,8 +1,8 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.EfCore.UseCases.TopLevelResources;
+﻿using FasTnT.Application.EfCore.UseCases.TopLevelResources;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Discovery;
 
@@ -16,8 +16,8 @@ public class WhenHandlingListReadPointsRequest
     {
         Context.Requests.Add(new Domain.Model.Request
         {
-            CaptureDate = DateTime.Now,
-            DocumentTime = DateTime.Now,
+            CaptureDate = DateTimeOffset.Now,
+            DocumentTime = DateTimeOffset.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
             Events = new List<Event>

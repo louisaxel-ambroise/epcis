@@ -206,7 +206,7 @@ public static class XmlEventParser
         var Event = new Event
         {
             Type = eventType,
-            EventTime = DateTime.Parse(eventRoot.Element("eventTime").Value, null, DateTimeStyles.AdjustToUniversal),
+            EventTime = DateTimeOffset.Parse(eventRoot.Element("eventTime").Value, null, DateTimeStyles.AdjustToUniversal),
             EventTimeZoneOffset = eventRoot.Element("eventTimeZoneOffset").Value,
             BusinessStep = eventRoot.Element("bizStep")?.Value,
             Disposition = eventRoot.Element("disposition")?.Value,
@@ -333,7 +333,7 @@ public static class XmlEventParser
             return;
         }
 
-        evt.CorrectiveDeclarationTime = DateTime.Parse(element.Element("declarationTime").Value);
+        evt.CorrectiveDeclarationTime = DateTimeOffset.Parse(element.Element("declarationTime").Value);
         evt.CorrectiveReason = element.Element("reason")?.Value;
         evt.CorrectiveEventIds.AddRange(element.Element("correctiveEventIDs")?.Elements("correctiveEventID")?.Select(x => new CorrectiveEventId { CorrectiveId = x.Value }));
         ParseExtension(element.Element("extension"), evt, FieldType.ErrorDeclarationExtension);

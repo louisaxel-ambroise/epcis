@@ -6,8 +6,8 @@ namespace FasTnT.Domain.Model.Events;
 public class Event
 {
     public Request Request { get; set; }
-    public DateTime CaptureTime { get; set; } = DateTime.UtcNow;
-    public DateTime EventTime { get; set; }
+    public DateTimeOffset CaptureTime { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset EventTime { get; set; }
     public TimeZoneOffset EventTimeZoneOffset { get; set; } = TimeZoneOffset.Default;
     public EventType Type { get; set; }
     public EventAction Action { get; set; }
@@ -18,7 +18,7 @@ public class Event
     public string BusinessStep { get; set; }
     public string Disposition { get; set; }
     public string TransformationId { get; set; }
-    public DateTime? CorrectiveDeclarationTime { get; set; }
+    public DateTimeOffset? CorrectiveDeclarationTime { get; set; }
     public string CorrectiveReason { get; set; }
     public List<CorrectiveEventId> CorrectiveEventIds { get; set; } = new();
     public List<Epc> Epcs { get; set; } = new List<Epc>();

@@ -1,10 +1,10 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.Services.Subscriptions;
+﻿using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.UseCases.Captures;
 using FasTnT.Domain;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
+using FasTnT.EfCore.Store;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.EfCore.UseCases.Captures;

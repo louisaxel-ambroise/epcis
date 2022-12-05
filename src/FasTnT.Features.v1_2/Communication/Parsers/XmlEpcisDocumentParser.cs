@@ -2,6 +2,7 @@
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Subscriptions;
+using System.Globalization;
 using System.Xml.XPath;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;
@@ -12,8 +13,8 @@ public static class XmlEpcisDocumentParser
     {
         var request = new Request
         {
-            CaptureDate = DateTime.UtcNow,
-            DocumentTime = DateTime.Parse(root.Attribute("creationDate").Value),
+            CaptureDate = DateTimeOffset.UtcNow,
+            DocumentTime = DateTimeOffset.Parse(root.Attribute("creationDate").Value),
             SchemaVersion = root.Attribute("schemaVersion").Value
         };
 

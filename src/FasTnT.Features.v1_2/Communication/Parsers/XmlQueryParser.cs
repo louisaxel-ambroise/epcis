@@ -45,7 +45,7 @@ public static class XmlQueryParser
             FormatterName = XmlResultSender.Instance.Name,
             Trigger = element.Element("controls")?.Element("trigger")?.Value,
             ReportIfEmpty = bool.Parse(element.Element("controls").Element("reportIfEmpty").Value),
-            InitialRecordTime = DateTime.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, out DateTime date) ? date : default(DateTime?),
+            InitialRecordTime = DateTimeOffset.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, out DateTimeOffset date) ? date : default(DateTimeOffset?),
             Parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToList(),
             Schedule = ParseQuerySchedule(element.Element("controls")?.Element("schedule"))
         };

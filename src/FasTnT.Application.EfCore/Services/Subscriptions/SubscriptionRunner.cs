@@ -1,9 +1,9 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.EfCore.Store;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +26,7 @@ public class SubscriptionRunner : ISubscriptionRunner
     {
         _logger.LogInformation("Running Subscription {Name} ({Id})", context.Subscription.Name, context.Subscription.Id);
 
-        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = DateTime.UtcNow, ResultsSent = true, Successful = true, SubscriptionId = context.Subscription.Id };
+        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = DateTimeOffset.UtcNow, ResultsSent = true, Successful = true, SubscriptionId = context.Subscription.Id };
         var dataSource = _dataSources.Single(x => x.Name == context.Subscription.Query.DataSource);
         var pendingRequests = await _context.PendingRequests.Where(x => x.SubscriptionId == context.Subscription.Id).ToListAsync(cancellationToken);
         var resultsSent = false;

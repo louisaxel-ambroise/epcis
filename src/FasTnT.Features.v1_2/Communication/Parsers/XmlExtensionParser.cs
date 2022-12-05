@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Events;
+using System.Globalization;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;
 
@@ -89,7 +90,7 @@ public static class XmlExtensionParser
                     case "rawData":
                         report.RawData = field.Value; break;
                     case "time":
-                        report.Time = DateTime.Parse(field.Value); break;
+                        report.Time = DateTimeOffset.Parse(field.Value); break;
                     case "meanValue":
                         report.MeanValue = float.Parse(field.Value); break;
                     case "percRank":
@@ -120,7 +121,7 @@ public static class XmlExtensionParser
                 switch (field.Name.LocalName)
                 {
                     case "time":
-                        sensorElement.Time = DateTime.Parse(field.Value); break;
+                        sensorElement.Time = DateTimeOffset.Parse(field.Value); break;
                     case "bizRules":
                         sensorElement.BizRules = field.Value; break;
                     case "deviceID":
@@ -130,9 +131,9 @@ public static class XmlExtensionParser
                     case "rawData":
                         sensorElement.RawData = field.Value; break;
                     case "startTime":
-                        sensorElement.StartTime = DateTime.Parse(field.Value); break;
+                        sensorElement.StartTime = DateTimeOffset.Parse(field.Value); break;
                     case "endTime":
-                        sensorElement.EndTime = DateTime.Parse(field.Value); break;
+                        sensorElement.EndTime = DateTimeOffset.Parse(field.Value); break;
                     case "dataProcessingMethod":
                         sensorElement.DataProcessingMethod = field.Value; break;
                     default:

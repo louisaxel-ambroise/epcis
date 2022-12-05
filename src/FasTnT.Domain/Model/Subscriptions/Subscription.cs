@@ -16,7 +16,7 @@ public class Subscription
     public StoredQuery Query { get; set; }
     public List<SubscriptionParameter> Parameters { get; set; } = new();
     public List<SubscriptionExecutionRecord> ExecutionRecords { get; set; } = new();
-    public DateTime? InitialRecordTime { get; set; }
+    public DateTimeOffset? InitialRecordTime { get; set; }
 }
 
 public class PendingRequest

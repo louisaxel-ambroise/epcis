@@ -1,10 +1,10 @@
 ﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.Store;
 using FasTnT.Application.EfCore.UseCases.Subscriptions;
 using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Tests.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Queries;
 

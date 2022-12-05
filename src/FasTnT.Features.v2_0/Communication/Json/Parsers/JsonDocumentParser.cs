@@ -21,7 +21,7 @@ public class JsonDocumentParser
     {
         var document = await LoadDocument(input, cancellationToken).ConfigureAwait(false);
 
-        if (!_schema.Validate(document).IsValid)
+        if (!_schema.Evaluate(document).IsValid)
         {
             throw new EpcisException(ExceptionType.ValidationException, "JSON is invalid according to EPCIS 2.0 schema");
         }

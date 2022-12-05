@@ -1,7 +1,5 @@
 ﻿using FasTnT.Application.EfCore.Services.Queries;
 using FasTnT.Application.EfCore.Services.Subscriptions;
-using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.EfCore.Store.Configuration;
 using FasTnT.Application.EfCore.UseCases.Captures;
 using FasTnT.Application.EfCore.UseCases.Queries;
 using FasTnT.Application.EfCore.UseCases.Subscriptions;
@@ -12,6 +10,8 @@ using FasTnT.Application.UseCases.Captures;
 using FasTnT.Application.UseCases.Queries;
 using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Application.UseCases.TopLevelResources;
+using FasTnT.EfCore.Store;
+using FasTnT.EfCore.Store.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +26,22 @@ public static class EpcisConfiguration
         {
             configure(options);
         }
+
+        services.AddDbContext<EpcisContext>(o =>
+        {
+            if (SqlProvider.SqlServer == options.Provider)
+            {
+                o.UseSqlServer(options.ConnectionString, x => x.MigrationsAssembly(SqlProvider.SqlServer.Assembly));
+            }
+            if (SqlProvider.Postgres == options.Provider)
+            {
+                o.UseNpgsql(options.ConnectionString, x => x.MigrationsAssembly(SqlProvider.Postgres.Assembly));
+            }
+            if (SqlProvider.Sqlite == options.Provider)
+            {
+                o.UseSqlite(options.ConnectionString, x => x.MigrationsAssembly(SqlProvider.Sqlite.Assembly));
+            }
+        });
 
         services.AddSqlServer<EpcisContext>(options.ConnectionString, opt =>
         {

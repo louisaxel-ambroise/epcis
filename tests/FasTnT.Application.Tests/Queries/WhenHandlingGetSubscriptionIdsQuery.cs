@@ -1,6 +1,6 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.EfCore.UseCases.Subscriptions;
+﻿using FasTnT.Application.EfCore.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Queries;
 

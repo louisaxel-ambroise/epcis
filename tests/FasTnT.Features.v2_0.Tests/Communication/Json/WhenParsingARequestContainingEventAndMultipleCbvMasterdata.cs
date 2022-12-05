@@ -38,7 +38,7 @@ public class WhenParsingARequestContainingEventAndMultipleCbvMasterdata : JsonPa
     [TestMethod]
     public void RequestDateShouldBePopulated()
     {
-        var expectedDate = new DateTime(2013, 06, 04, 12, 59, 02, 099);
+        var expectedDate = new DateTimeOffset(2013, 06, 04, 12, 59, 02, 99, TimeSpan.Zero);
         Assert.AreEqual(expectedDate, Request.DocumentTime);
     }
 }

@@ -1,11 +1,11 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Queries.Utils;
 using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.EfCore.Store;
 using LinqKit;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

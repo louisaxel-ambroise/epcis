@@ -1,8 +1,8 @@
 ﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.Store;
 using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Queries.Parameters;
 
@@ -25,24 +25,24 @@ public class WhenApplyingGE_eventTimeFilter
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.ObjectEvent,
-                    EventTime = new (2021, 01, 12, 10, 24, 10, DateTimeKind.Utc),
+                    EventTime = new (2021, 01, 12, 10, 24, 10, TimeSpan.Zero),
                     Action = Domain.Enumerations.EventAction.Observe
                 },
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.TransactionEvent,
-                    EventTime = new (2021, 01, 12, 10, 30, 00, DateTimeKind.Utc),
+                    EventTime = new (2021, 01, 12, 10, 30, 00, TimeSpan.Zero),
                     Action = Domain.Enumerations.EventAction.Observe
                 },
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.TransactionEvent,
-                    EventTime = new (2011, 08, 02, 21, 50, 00, DateTimeKind.Utc),
+                    EventTime = new (2011, 08, 02, 21, 50, 00, TimeSpan.Zero),
                     Action = Domain.Enumerations.EventAction.Observe
                 }
             }.ToList(),
-            CaptureDate = DateTime.Now,
-            DocumentTime = DateTime.Now,
+            CaptureDate = DateTimeOffset.Now,
+            DocumentTime = DateTimeOffset.Now,
             SchemaVersion = "1.2"
         });
         Context.SaveChanges();
@@ -55,6 +55,6 @@ public class WhenApplyingGE_eventTimeFilter
     {
         var result = Query.ExecuteAsync(Parameters, default).Result;
         Assert.AreEqual(2, result.EventList.Count);
-        Assert.IsTrue(result.EventList.All(x => x.EventTime >= new DateTime(2021, 01, 12, 10, 24, 10, DateTimeKind.Utc)));
+        Assert.IsTrue(result.EventList.All(x => x.EventTime >= new DateTimeOffset(2021, 01, 12, 10, 24, 10, TimeSpan.Zero)));
     }
 }

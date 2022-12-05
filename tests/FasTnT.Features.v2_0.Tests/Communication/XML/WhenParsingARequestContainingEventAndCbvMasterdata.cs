@@ -47,7 +47,7 @@ public class WhenParsingARequestContainingEventAndCbvMasterdata : XmlParsingTest
     [TestMethod]
     public void RequestDateShouldBePopulated()
     {
-        var expectedDate = new DateTime(2016, 09, 20, 17, 45, 20, 0);
+        var expectedDate = new DateTimeOffset(2016, 09, 20, 17, 45, 20, TimeSpan.Zero);
         Assert.AreEqual(expectedDate, Request.DocumentTime);
     }
 }

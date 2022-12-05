@@ -10,8 +10,8 @@ public static class XmlEpcisDocumentParser
     {
         var request = new Request
         {
-            CaptureDate = DateTime.UtcNow,
-            DocumentTime = DateTime.Parse(root.Attribute("creationDate").Value).ToUniversalTime(),
+            CaptureDate = DateTimeOffset.UtcNow,
+            DocumentTime = DateTimeOffset.Parse(root.Attribute("creationDate").Value),
             SchemaVersion = root.Attribute("schemaVersion").Value
         };
 

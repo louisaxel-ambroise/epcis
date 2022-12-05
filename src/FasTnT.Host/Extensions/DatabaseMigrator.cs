@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.EfCore.Store;
+﻿using FasTnT.EfCore.Store;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host.Extensions;

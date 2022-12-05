@@ -89,7 +89,7 @@ public class XmlResultSender : IResultSender
         var rootName = XName.Get("EPCISQueryDocument", "urn:epcglobal:epcis-query:xsd:1");
         var attributes = new[]
         {
-            new XAttribute("creationDate", DateTime.UtcNow),
+            new XAttribute("creationDate", DateTimeOffset.UtcNow),
             new XAttribute("schemaVersion", "1")
         };
 
