@@ -1,4 +1,5 @@
 ﻿using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Domain.Model;

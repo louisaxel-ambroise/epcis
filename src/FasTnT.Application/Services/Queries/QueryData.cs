@@ -1,4 +1,5 @@
 ﻿using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Masterdata;
 
 namespace FasTnT.Application.Services.Queries;
 

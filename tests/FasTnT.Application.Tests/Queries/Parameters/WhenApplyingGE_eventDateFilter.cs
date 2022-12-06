@@ -1,8 +1,8 @@
-﻿using FasTnT.Application.EfCore.Services.Queries;
+﻿using FasTnT.Application.Relational;
+using FasTnT.Application.Relational.Services.Queries;
 using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
-using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Queries.Parameters;
 
@@ -19,7 +19,7 @@ public class WhenApplyingGE_eventTimeFilter
         Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
         Query = new SimpleEventQuery(Context);
 
-        Context.Requests.Add(new Domain.Model.Request
+        Context.Add(new Domain.Model.Request
         {
             Events = new[] {
                 new Event

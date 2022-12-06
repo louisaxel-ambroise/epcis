@@ -2,7 +2,6 @@
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Subscriptions;
-using System.Globalization;
 using System.Xml.XPath;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;

@@ -1,4 +1,5 @@
-﻿using FasTnT.EfCore.Store;
+﻿using FasTnT.Application.Relational;
+using FasTnT.Application.Relational.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Tests.Context;
@@ -14,7 +15,7 @@ public static class EpcisTestContext
 
     public static EpcisContext GetContext(string databaseName, bool reset = true)
     {
-        var context = new EpcisContext(GetOptions(databaseName));
+        var context = new EpcisContext(GetOptions(databaseName), new TestModelConfiguration());
 
         if (reset)
         {
@@ -24,4 +25,6 @@ public static class EpcisTestContext
 
         return context;
     }
+
+    public class TestModelConfiguration : BaseRelationalModelConfiguration { }
 }

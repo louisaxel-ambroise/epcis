@@ -1,5 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
+using System.Globalization;
 using System.Text.Json;
 
 namespace FasTnT.Features.v2_0.Communication.Json.Parsers;
@@ -145,7 +146,7 @@ internal static class JsonSensorElementParser
         {
             field.TextValue = element.GetString();
             field.NumericValue = float.TryParse(field.TextValue, out float numericValue) ? numericValue : default(float?);
-            field.DateValue = DateTimeOffset.TryParse(field.TextValue, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?);
+            field.DateValue = DateTimeOffset.TryParse(field.TextValue, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?);
         }
 
         return new[] { field };

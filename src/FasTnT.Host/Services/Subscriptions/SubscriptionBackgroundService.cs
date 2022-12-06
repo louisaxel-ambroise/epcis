@@ -1,5 +1,6 @@
-﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.EfCore.Store;
+﻿using FasTnT.Application.Relational;
+using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host.Services.Subscriptions;
@@ -28,7 +29,7 @@ public class SubscriptionBackgroundService : BackgroundService
         using var context = scope.ServiceProvider.GetService<EpcisContext>();
 
         var resultSenders = scope.ServiceProvider.GetServices<IResultSender>();
-        var subscriptions = context.Subscriptions
+        var subscriptions = context.Set<Subscription>()
             .Include(x => x.Query).ThenInclude(x => x.Parameters)
             .Include(x => x.Parameters)
             .Include(x => x.Schedule)

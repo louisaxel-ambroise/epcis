@@ -1,11 +1,11 @@
-﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.UseCases.Queries;
+﻿using FasTnT.Application.Relational;
+using FasTnT.Application.Relational.Services.Queries;
+using FasTnT.Application.Relational.UseCases.Queries;
 using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Queries;
-using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Queries;
 

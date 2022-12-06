@@ -18,6 +18,7 @@ public static class DelegateFactory
                 SetResponseHeaders(context.Response);
 
                 var handler = handlerProvider(context);
+
                 await RequestDelegateFactory.Create(handler, new() { ServiceProvider = context.RequestServices }).RequestDelegate.Invoke(context);
             }
             catch (Exception ex)

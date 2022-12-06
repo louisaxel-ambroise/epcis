@@ -2,6 +2,7 @@
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Features.v1_2.Subscriptions;
+using System.Globalization;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;
 
@@ -45,7 +46,7 @@ public static class XmlQueryParser
             FormatterName = XmlResultSender.Instance.Name,
             Trigger = element.Element("controls")?.Element("trigger")?.Value,
             ReportIfEmpty = bool.Parse(element.Element("controls").Element("reportIfEmpty").Value),
-            InitialRecordTime = DateTimeOffset.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, out DateTimeOffset date) ? date : default(DateTimeOffset?),
+            InitialRecordTime = DateTimeOffset.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset date) ? date : default(DateTimeOffset?),
             Parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToList(),
             Schedule = ParseQuerySchedule(element.Element("controls")?.Element("schedule"))
         };

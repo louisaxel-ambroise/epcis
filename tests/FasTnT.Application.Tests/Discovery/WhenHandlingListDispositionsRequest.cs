@@ -1,8 +1,8 @@
-﻿using FasTnT.Application.EfCore.UseCases.TopLevelResources;
+﻿using FasTnT.Application.Relational;
+using FasTnT.Application.Relational.UseCases.TopLevelResources;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
-using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Discovery;
 
@@ -14,7 +14,7 @@ public class WhenHandlingListDispositionsRequest
     [TestInitialize]
     public void Initialize()
     {
-        Context.Requests.Add(new Domain.Model.Request
+        Context.Add(new Domain.Model.Request
         {
             CaptureDate = DateTimeOffset.Now,
             DocumentTime = DateTimeOffset.Now,

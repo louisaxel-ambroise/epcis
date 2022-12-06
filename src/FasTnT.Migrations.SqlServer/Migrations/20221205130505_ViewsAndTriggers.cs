@@ -18,33 +18,23 @@ SELECT MAX([MasterDataRequestId]) AS [MasterDataRequestId], [MasterDataType], [M
 AS
 SELECT MAX([RequestId]) AS [RequestId], [Type], [Id] FROM [Cbv].[MasterData] GROUP BY [Type], [Id];");
 
-            migrationBuilder.Sql(@"CREATE FUNCTION [Cbv].[MasterdataHierarchy](@parentid nvarchar(max), @type nvarchar(max))
-RETURNS TABLE
-AS
-RETURN WITH hierarchy([root], [type], [id])
+            migrationBuilder.Sql(@"CREATE VIEW [Cbv].[MasterdataHierarchy] AS
+WITH hierarchy([root], [type], [id])
 AS (
 	SELECT [id], [type], [id]
-	FROM [CurrentMasterdata]
+	FROM [Cbv].[CurrentMasterdata]
 	UNION ALL
 	SELECT [hierarchy].[Id], [MasterDataType], [ChildrenId]
-	FROM [CurrentHierarchy]
+	FROM [Cbv].[CurrentHierarchy]
 	JOIN [hierarchy] ON [MasterDataType] = [hierarchy].[type] and [MasterDataId] = [hierarchy].[id]
 )
-SELECT [type], [id] 
-FROM [hierarchy]
-WHERE [root] = @parentid and [type] = @type;");
+SELECT [root], [type], [id] 
+FROM [hierarchy];");
 
-            migrationBuilder.Sql(@"CREATE FUNCTION [Cbv].[MasterdataProperty](@id nvarchar(max), @type nvarchar(max), @field nvarchar(max))
-RETURNS nvarchar(max)
+            migrationBuilder.Sql(@"CREATE VIEW [Cbv].[MasterDataProperty]
 AS
-BEGIN
-DECLARE @value nvarchar(max);
-SELECT TOP(1) @value = att.[Value] 
-FROM [Cbv].[MasterDataAttribute] att
-JOIN [Cbv].[CurrentMasterdata] md ON att.RequestId = md.RequestId AND md.Type = att.MasterdataType AND md.Id = att.MasterdataId
-WHERE md.[id] = @id AND md.[type] = @type AND att.Id = @field;
-RETURN @value;
-END;");
+SELECT md.[Id], md.[Type], att.[Id] as [Attribute], att.[Value] from [Cbv].[CurrentMasterdata] md
+JOIN [Cbv].[MasterDataAttribute] att on att.[MasterdataId] = md.[Id] and att.[MasterdataType] = md.[Type] AND att.[RequestId] = md.[RequestId];");
 
             migrationBuilder.Sql(@"CREATE TRIGGER [Epcis].[InsertPendingRequests] 
 ON [Epcis].[Request] 

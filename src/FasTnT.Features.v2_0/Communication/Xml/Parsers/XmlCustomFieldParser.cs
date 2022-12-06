@@ -15,7 +15,7 @@ public static class XmlCustomFieldParser
             Namespace = string.IsNullOrWhiteSpace(element.Name.NamespaceName) ? default : element.Name.NamespaceName,
             TextValue = element.HasElements ? default : element.Value,
             NumericValue = element.HasElements ? default : float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
-            DateValue = element.HasElements ? default : DateTimeOffset.TryParse(element.Value, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
+            DateValue = element.HasElements ? default : DateTimeOffset.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
         };
 
         field.Children.AddRange(element.Elements().Select(x => ParseCustomFields(x, fieldType)));
@@ -33,7 +33,7 @@ public static class XmlCustomFieldParser
             Namespace = string.IsNullOrWhiteSpace(element.Name.NamespaceName) ? default : element.Name.NamespaceName,
             TextValue = element.Value,
             NumericValue = float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
-            DateValue = DateTimeOffset.TryParse(element.Value, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
+            DateValue = DateTimeOffset.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
         };
     }
 
@@ -46,7 +46,7 @@ public static class XmlCustomFieldParser
             Namespace = element.Name.NamespaceName,
             TextValue = element.Value,
             NumericValue = float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
-            DateValue = DateTimeOffset.TryParse(element.Value, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
+            DateValue = DateTimeOffset.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
         };
     }
 }

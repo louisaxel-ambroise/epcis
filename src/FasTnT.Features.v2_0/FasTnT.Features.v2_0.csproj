@@ -31,7 +31,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FasTnT.Application.EfCore\FasTnT.Application.EfCore.csproj" />
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
   </ItemGroup>
   <ItemGroup>

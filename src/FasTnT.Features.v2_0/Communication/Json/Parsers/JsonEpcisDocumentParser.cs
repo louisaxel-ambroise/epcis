@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Masterdata;
 using System.Text.Json;
 
 namespace FasTnT.Features.v2_0.Communication.Json.Parsers;

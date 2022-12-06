@@ -1,10 +1,10 @@
-﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.UseCases.Subscriptions;
+﻿using FasTnT.Application.Relational;
+using FasTnT.Application.Relational.Services.Queries;
+using FasTnT.Application.Relational.UseCases.Subscriptions;
 using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Tests.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.EfCore.Store;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -17,7 +17,7 @@ public class WhenHandlingSubscribeCommand
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new Subscription
+        Context.Add(new Subscription
         {
             Name = "TestSubscription",
             QueryName = Queries.First().Name,

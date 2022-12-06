@@ -3,11 +3,16 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FasTnT.EfCore.Store\FasTnT.EfCore.Store.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FasTnT.Application.Relational\FasTnT.Application.Relational.csproj" />
+    <ProjectReference Include="..\FasTnT.Domain\FasTnT.Domain.csproj" />
   </ItemGroup>
 
 </Project>

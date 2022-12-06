@@ -1,10 +1,10 @@
-﻿using FasTnT.Application.EfCore.UseCases.Captures;
+﻿using FasTnT.Application.Relational;
+using FasTnT.Application.Relational.UseCases.Captures;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model;
-using FasTnT.EfCore.Store;
 using Moq;
 
 namespace FasTnT.Application.Tests.Capture;

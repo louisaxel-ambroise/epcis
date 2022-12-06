@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Domain.Model.Masterdata;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;
 

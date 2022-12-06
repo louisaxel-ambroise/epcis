@@ -1,4 +1,5 @@
 ﻿using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Features.v1_2.Endpoints.Interfaces;
