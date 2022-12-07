@@ -80,7 +80,7 @@ public static class XmlSensorParser
                     case "rawData":
                         report.RawData = field.Value; break;
                     case "time":
-                        report.Time = DateTimeOffset.Parse(field.Value); break;
+                        report.Time = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
                     case "meanValue":
                         report.MeanValue = float.Parse(field.Value); break;
                     case "percRank":
@@ -111,7 +111,7 @@ public static class XmlSensorParser
                 switch (field.Name.LocalName)
                 {
                     case "time":
-                        sensorElement.Time = DateTimeOffset.Parse(field.Value); break;
+                        sensorElement.Time = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
                     case "bizRules":
                         sensorElement.BizRules = field.Value; break;
                     case "deviceID":
@@ -121,9 +121,9 @@ public static class XmlSensorParser
                     case "rawData":
                         sensorElement.RawData = field.Value; break;
                     case "startTime":
-                        sensorElement.StartTime = DateTimeOffset.Parse(field.Value); break;
+                        sensorElement.StartTime = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
                     case "endTime":
-                        sensorElement.EndTime = DateTimeOffset.Parse(field.Value); break;
+                        sensorElement.EndTime = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
                     case "dataProcessingMethod":
                         sensorElement.DataProcessingMethod = field.Value; break;
                     default:

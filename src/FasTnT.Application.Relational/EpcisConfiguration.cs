@@ -47,6 +47,10 @@ public static class EpcisConfiguration
         {
             services.AddSingleton<ISubscriptionListener, NoOpSubscriptionListener>();
         }
+        if (!services.Any(x => typeof(IModelConfiguration).IsAssignableFrom(x.ServiceType)))
+        {
+            services.AddSingleton<IModelConfiguration, RelationalModelConfiguration>();
+        }
 
         return services;
     }

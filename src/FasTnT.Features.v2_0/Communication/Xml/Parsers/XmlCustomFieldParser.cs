@@ -1,6 +1,5 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
-using System.Globalization;
 
 namespace FasTnT.Features.v2_0.Communication.Xml.Parsers;
 

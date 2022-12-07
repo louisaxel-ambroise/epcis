@@ -1,18 +1,16 @@
 ﻿using FasTnT.Application.Relational.Configuration;
-using FasTnT.Domain.Model.Events;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FasTnT.Migrations.Sqlite;
 
-internal class SqliteModelConfiguration : BaseRelationalModelConfiguration
+internal class SqliteModelConfiguration : RelationalModelConfiguration
 {
     public override void Apply(ModelBuilder modelBuilder)
     {
         base.Apply(modelBuilder);
 
-        modelBuilder.Entity<Event>().Property<long>("Id").ValueGeneratedOnAdd();
-
+        // Based on: https://github.com/aspnet/EntityFrameworkCore/issues/10784#issuecomment-415769754
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             var properties = entityType.ClrType.GetProperties().Where(p => p.PropertyType == typeof(DateTimeOffset) || p.PropertyType == typeof(DateTimeOffset?));

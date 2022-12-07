@@ -14,6 +14,9 @@ namespace FasTnT.Application.Relational.Services.Queries;
 
 public class SimpleEventQuery : IEpcisDataSource
 {
+    const string ReadPoint = "urn:epcglobal:epcis:vtype:ReadPoint";
+    const string Location = "urn:epcglobal:epcis:vtype:BusinessLocation";
+
     private int? _maxEventCount = default,
                  _startFrom = 0,
                  _eventCountLimit = Constants.Instance.MaxEventsReturnedInQuery + 1;
@@ -143,8 +146,8 @@ public class SimpleEventQuery : IEpcisDataSource
             "EXISTS_errorDeclaration" => query.Where(x => x.CorrectiveDeclarationTime.HasValue),
             "EQ_errorReason" => query.Where(x => param.Values.Contains(x.CorrectiveReason)),
             "EQ_correctiveEventID" => query.Where(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))),
-            "WD_readPoint" => query.Where(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == "urn:epcglobal:epcis:vtype:ReadPoint" && h.Root == x.ReadPoint).Any(h => param.Values.Contains(h.Id))),
-            "WD_bizLocation" => query.Where(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == "urn:epcglobal:epcis:vtype:BusinessLocation" && h.Root == x.BusinessLocation).Any(h => param.Values.Contains(h.Id))),
+            "WD_readPoint" => query.Where(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == ReadPoint && h.Root == x.ReadPoint).Any(h => param.Values.Contains(h.Id))),
+            "WD_bizLocation" => query.Where(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == Location && h.Root == x.BusinessLocation).Any(h => param.Values.Contains(h.Id))),
             "EQ_requestId" => query.Where(x => param.Values.Select(int.Parse).Contains(EF.Property<int>(x.Request, "Id"))),
             "EQ_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity == param.GetNumeric())),
             "GT_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity > param.GetNumeric())),
@@ -213,8 +216,8 @@ public class SimpleEventQuery : IEpcisDataSource
     {
         return field switch
         {
-            "bizLocation" => query.Where(e => _context.Set<MasterDataProperty>().Any(p => p.Id == e.BusinessLocation && p.Type == "urn:epcglobal:epcis:vtype:BusinessLocation" && p.Attribute == attributeName)),
-            "readPoint" => query.Where(e => _context.Set<MasterDataProperty>().Any(p => p.Id == e.ReadPoint && p.Type == "urn:epcglobal:epcis:vtype:ReadPoint" && p.Attribute == attributeName)),
+            "bizLocation" => query.Where(e => _context.Set<MasterDataProperty>().Any(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attribute == attributeName)),
+            "readPoint" => query.Where(e => _context.Set<MasterDataProperty>().Any(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attribute == attributeName)),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}"),
         };
     }
@@ -223,8 +226,8 @@ public class SimpleEventQuery : IEpcisDataSource
     {
         return field switch
         {
-            "bizLocation" => query.Where(e => values.Contains(_context.Set<MasterDataProperty>().First(p => p.Id == e.BusinessLocation && p.Type == "urn:epcglobal:epcis:vtype:BusinessLocation" && p.Attribute == attributeName).Value)),
-            "readPoint" => query.Where(e => values.Contains(_context.Set<MasterDataProperty>().First(p => p.Id == e.ReadPoint && p.Type == "urn:epcglobal:epcis:vtype:ReadPoint" && p.Attribute == attributeName).Value)),
+            "bizLocation" => query.Where(e => values.Contains(_context.Set<MasterDataProperty>().First(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attribute == attributeName).Value)),
+            "readPoint" => query.Where(e => values.Contains(_context.Set<MasterDataProperty>().First(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attribute == attributeName).Value)),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}"),
         };
     }

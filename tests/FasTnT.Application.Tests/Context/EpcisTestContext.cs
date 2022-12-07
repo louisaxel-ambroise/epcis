@@ -26,5 +26,5 @@ public static class EpcisTestContext
         return context;
     }
 
-    public class TestModelConfiguration : BaseRelationalModelConfiguration { }
+    public class TestModelConfiguration : RelationalModelConfiguration { }
 }

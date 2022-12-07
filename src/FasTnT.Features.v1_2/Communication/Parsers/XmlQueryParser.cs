@@ -2,7 +2,6 @@
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Features.v1_2.Subscriptions;
-using System.Globalization;
 
 namespace FasTnT.Features.v1_2.Communication.Parsers;
 

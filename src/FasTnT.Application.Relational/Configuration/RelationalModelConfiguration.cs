@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Relational.Configuration;
 
-public abstract class BaseRelationalModelConfiguration : IModelConfiguration
+public class RelationalModelConfiguration : IModelConfiguration
 {
     public virtual void Apply(ModelBuilder modelBuilder)
     {
@@ -116,7 +116,7 @@ public abstract class BaseRelationalModelConfiguration : IModelConfiguration
 
         var evt = modelBuilder.Entity<Event>();
         evt.ToTable(nameof(Event), nameof(Schemas.Epcis));
-        evt.Property<long>("Id").IsRequired(true);
+        evt.Property<long>("Id").IsRequired(true).ValueGeneratedOnAdd();
         evt.HasKey("Id");
         evt.Property(x => x.EventTime).IsRequired(true);
         evt.Property(x => x.Type).IsRequired(true).HasConversion<short>();

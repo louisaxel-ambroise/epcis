@@ -1,7 +1,5 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
-using System.Globalization;
-
 namespace FasTnT.Features.v1_2.Communication.Parsers;
 
 public static class XmlEventParser
@@ -333,7 +331,7 @@ public static class XmlEventParser
             return;
         }
 
-        evt.CorrectiveDeclarationTime = DateTimeOffset.Parse(element.Element("declarationTime").Value);
+        evt.CorrectiveDeclarationTime = DateTimeOffset.Parse(element.Element("declarationTime").Value, null, DateTimeStyles.AdjustToUniversal);
         evt.CorrectiveReason = element.Element("reason")?.Value;
         evt.CorrectiveEventIds.AddRange(element.Element("correctiveEventIDs")?.Elements("correctiveEventID")?.Select(x => new CorrectiveEventId { CorrectiveId = x.Value }));
         ParseExtension(element.Element("extension"), evt, FieldType.ErrorDeclarationExtension);

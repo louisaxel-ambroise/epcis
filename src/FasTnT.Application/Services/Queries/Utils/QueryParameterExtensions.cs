@@ -11,7 +11,7 @@ public static class QueryParameterExtensions
     public static int GetIntValue(this QueryParameter parameter) => int.Parse(parameter.Value());
     public static bool GetBoolValue(this QueryParameter parameter) => bool.Parse(parameter.Value());
     public static double GetNumeric(this QueryParameter parameter) => double.Parse(parameter.Value(), CultureInfo.InvariantCulture);
-    public static DateTimeOffset GetDate(this QueryParameter parameter) => DateTimeOffset.Parse(parameter.Value());
+    public static DateTimeOffset GetDate(this QueryParameter parameter) => DateTimeOffset.Parse(parameter.Value(), null, DateTimeStyles.AdjustToUniversal);
     public static bool IsDateTime(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), "^([0-9]{4})-([0-9]{2})-([0-9]{2})");
     public static bool IsNumeric(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), @"^-?\d+(?:\.\d+)?$");
 
