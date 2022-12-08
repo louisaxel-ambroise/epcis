@@ -1,8 +1,7 @@
-﻿using FasTnT.Application.Relational;
-using FasTnT.Application.Relational.Services.Queries;
-using FasTnT.Application.Relational.UseCases.Subscriptions;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Queries.Implementations;
 using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 using Moq;
@@ -27,6 +26,7 @@ public class WhenHandlingUnsubscribeCommand
         });
 
         Context.SaveChanges();
+        Context.ChangeTracker.Clear();
     }
 
     [TestMethod]

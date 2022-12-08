@@ -1,7 +1,7 @@
-﻿using FasTnT.Application.Relational;
-using FasTnT.Migrations.Postgres;
-using FasTnT.Migrations.Sqlite;
-using FasTnT.Migrations.SqlServer;
+﻿using FasTnT.Postgres;
+using FasTnT.Sqlite;
+using FasTnT.SqlServer;
+using FasTnT.CosmosDb;
 
 namespace FasTnT.Host.Services.Database;
 
@@ -11,11 +11,10 @@ public static class EpcisStorageConfiguration
     {
         var connectionString = configuration.GetConnectionString("FasTnT.Database");
         var commandTimeout = configuration.GetValue("FasTnT.Database.CommandTimeout", 30);
-        var provider = configuration.GetValue("FasTnT.Database.Provider", nameof(Migrations.SqlServer));
+        var provider = configuration.GetValue("FasTnT.Database.Provider", nameof(SqlServer));
         var configureAction = GetConfigurationAction(provider);
 
         configureAction(services, connectionString, commandTimeout);
-        services.AddHealthChecks().AddDbContextCheck<EpcisContext>();
 
         return services;
     }
@@ -24,9 +23,10 @@ public static class EpcisStorageConfiguration
     {
         return provider switch
         {
-            nameof(Migrations.SqlServer) => SqlServerConfiguration.Configure,
-            nameof(Migrations.Postgres) => PostgresConfiguration.Configure,
-            nameof(Migrations.Sqlite) => SqliteConfiguration.Configure,
+            nameof(SqlServer) => SqlServerProvider.Configure,
+            nameof(Postgres) => PostgresProvider.Configure,
+            nameof(Sqlite) => SqliteProvider.Configure,
+            nameof(CosmosDb) => CosmosDbProvider.Configure,
             _ => throw new Exception($"Unsupported provider: {provider}")
         };
     }

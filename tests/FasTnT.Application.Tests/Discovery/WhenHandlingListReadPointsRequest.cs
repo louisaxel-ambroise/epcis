@@ -1,6 +1,5 @@
-﻿using FasTnT.Application.Relational;
-using FasTnT.Application.Relational.UseCases.TopLevelResources;
-using FasTnT.Application.Tests.Context;
+﻿using FasTnT.Application.Tests.Context;
+using FasTnT.Application.UseCases.TopLevelResources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 

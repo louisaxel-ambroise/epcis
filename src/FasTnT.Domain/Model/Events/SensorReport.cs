@@ -3,6 +3,7 @@
 public class SensorReport
 {
     public SensorElement SensorElement { get; set; }
+    public int Index { get; set; }
     public string Type { get; set; }
     public string DeviceId { get; set; }
     public string RawData { get; set; }
@@ -24,5 +25,4 @@ public class SensorReport
     public string UnitOfMeasure { get; set; }
     public float? SDev { get; set; }
     public string DeviceMetadata { get; set; }
-    public List<Field> Fields { get; set; } = new();
 }

@@ -15,7 +15,7 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Event = XmlEventParser.ParseObjectEvent(ParseResource(ResourceName).Root);
+        Event = new XmlEventParser().ParseObjectEvent(ParseResource(ResourceName).Root);
     }
 
     [TestMethod]
@@ -76,7 +76,7 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     {
         Assert.AreEqual(1, Event.Fields.Where(x => x.Type == FieldType.Extension).Count());
 
-        Assert.AreEqual(1, Event.Fields.Single(x => x.Name == "testField").Children.Count, "testField should have one children");
+        Assert.AreEqual(3, Event.Fields.Count(x => x.ParentIndex.HasValue), "children fields should be parsed");
     }
 
     [TestMethod]

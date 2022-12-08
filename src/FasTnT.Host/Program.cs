@@ -1,4 +1,4 @@
-using FasTnT.Application.Relational;
+using FasTnT.Application;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Features.v1_2;

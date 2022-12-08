@@ -1,11 +1,13 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
+using LinqKit;
 using System.Text.Json;
 
 namespace FasTnT.Features.v2_0.Communication.Json.Parsers;
 
 public class JsonEventParser
 {
+    private int _index;
     private readonly JsonElement _element;
     private readonly Namespaces _extensions;
 
@@ -170,7 +172,7 @@ public class JsonEventParser
 
     private IEnumerable<SensorElement> ParseSensorElements(JsonElement value)
     {
-        return value.EnumerateArray().Select(x => JsonSensorElementParser.ParseSensorElement(x, _extensions));
+        return value.EnumerateArray().Select(ParseSensorElement);
     }
 
     private IEnumerable<Field> ParseIlmd(JsonProperty jsonProperty)
@@ -188,21 +190,154 @@ public class JsonEventParser
         return ParseCustomField(jsonProperty.Value, FieldType.CustomField, name, ns);
     }
 
-    private IEnumerable<Field> ParseCustomField(JsonElement element, FieldType type, string propName, string propNs)
+    public SensorElement ParseSensorElement(JsonElement element)
     {
-        var field = new Field { Type = type, Name = propName, Namespace = propNs };
+        var sensorElement = new SensorElement { Index = ++_index };
+
+        foreach (var property in element.EnumerateObject())
+        {
+            switch (property.Name)
+            {
+                case "type":
+                    break; // Can it be something different from epcis:SensorElement?
+                case "sensorMetadata":
+                    ParseSensorMetadata(sensorElement, property.Value); break;
+                case "sensorReport":
+                    sensorElement.Reports.AddRange(ParseSensorReports(property.Value)); break;
+                default:
+                    ParseCustomField(property, FieldType.Sensor, null, sensorElement.Index); break;
+            }
+        }
+
+        return sensorElement;
+    }
+
+    private IEnumerable<SensorReport> ParseSensorReports(JsonElement element)
+    {
+        return element.EnumerateArray().Select(ParseSensorReport);
+    }
+
+    private SensorReport ParseSensorReport(JsonElement element)
+    {
+        var report = new SensorReport { Index = ++_index };
+
+        foreach (var property in element.EnumerateObject())
+        {
+            switch (property.Name)
+            {
+                case "type":
+                    report.Type = property.Value.GetString(); break;
+                case "deviceID":
+                    report.DeviceId = property.Value.GetString(); break;
+                case "rawData":
+                    report.RawData = property.Value.GetString(); break;
+                case "dataProcessingMethod":
+                    report.DataProcessingMethod = property.Value.GetString(); break;
+                case "time":
+                    report.Time = property.Value.GetDateTimeOffset(); break;
+                case "microorganism":
+                    report.Microorganism = property.Value.GetString(); break;
+                case "chemicalSubstance":
+                    report.ChemicalSubstance = property.Value.GetString(); break;
+                case "value":
+                    report.Value = property.Value.GetSingle(); break;
+                case "component":
+                    report.Component = property.Value.GetString(); break;
+                case "stringValue":
+                    report.StringValue = property.Value.GetString(); break;
+                case "booleanValue":
+                    report.BooleanValue = property.Value.GetBoolean(); break;
+                case "hexBinaryValue":
+                    report.HexBinaryValue = property.Value.GetString(); break;
+                case "uriValue":
+                    report.UriValue = property.Value.GetString(); break;
+                case "minValue":
+                    report.MaxValue = property.Value.GetSingle(); break;
+                case "maxValue":
+                    report.MinValue = property.Value.GetSingle(); break;
+                case "meanValue":
+                    report.MeanValue = property.Value.GetSingle(); break;
+                case "percRank":
+                    report.PercRank = property.Value.GetSingle(); break;
+                case "percValue":
+                    report.PercValue = property.Value.GetSingle(); break;
+                case "uom":
+                    report.UnitOfMeasure = property.Value.GetString(); break;
+                case "sDev":
+                    report.SDev = property.Value.GetSingle(); break;
+                case "deviceMetadata":
+                    report.DeviceMetadata = property.Value.GetString(); break;
+                default:
+                    report.SensorElement.Event.Fields.AddRange(ParseCustomField(property, FieldType.SensorReport, null, report.Index)); break;
+            }
+        }
+
+        return report;
+    }
+
+    private void ParseSensorMetadata(SensorElement sensorElement, JsonElement element)
+    {
+        foreach (var property in element.EnumerateObject())
+        {
+            switch (property.Name)
+            {
+                case "time":
+                    sensorElement.Time = property.Value.GetDateTimeOffset(); break;
+                case "deviceID":
+                    sensorElement.DeviceId = property.Value.GetString(); break;
+                case "deviceMetadata":
+                    sensorElement.DeviceMetadata = property.Value.GetString(); break;
+                case "rawData":
+                    sensorElement.RawData = property.Value.GetString(); break;
+                case "startTime":
+                    sensorElement.StartTime = property.Value.GetDateTimeOffset(); break;
+                case "endTime":
+                    sensorElement.EndTime = property.Value.GetDateTimeOffset(); break;
+                case "dataProcessingMethod":
+                    sensorElement.DataProcessingMethod = property.Value.GetString(); break;
+                case "bizRules":
+                    sensorElement.BizRules = property.Value.GetString(); break;
+                default:
+                    sensorElement.Event.Fields.AddRange(ParseCustomField(property, FieldType.SensorMetadata, null, sensorElement.Index)); break;
+            }
+        }
+    }
+
+    private IEnumerable<Field> ParseCustomField(JsonProperty jsonProperty, FieldType type, int? parentIndex = null, int? entityIndex = null)
+    {
+        var (ns, name) = ParseName(jsonProperty.Name);
+        return ParseCustomField(jsonProperty.Value, type, name, ns, parentIndex, entityIndex);
+    }
+
+    private IEnumerable<Field> ParseCustomField(JsonElement element, FieldType type, string propName, string propNs, int? parentIndex = null, int? entityIndex = null)
+    {
+        var customFields = new List<Field>();
+        var field = new Field
+        {
+            Type = type,
+            Name = propName,
+            Namespace = propNs,
+            Index = ++_index,
+            ParentIndex = parentIndex,
+            EntityIndex = entityIndex
+        };
+
+        customFields.Add(field);
 
         if (element.ValueKind == JsonValueKind.Object)
         {
-            field.Children.AddRange(element.EnumerateObject().SelectMany(e =>
+            customFields.AddRange(element.EnumerateObject().SelectMany(e =>
             {
                 var (ns, name) = ParseName(e.Name);
-                return ParseCustomField(e.Value, type, name, ns);
+                var fields = ParseCustomField(e.Value, type, name, ns, field.Index, entityIndex);
+                fields.ForEach(x => x.ParentIndex = field.Index);
+
+                return fields;
             }));
         }
         else if (element.ValueKind == JsonValueKind.Array)
         {
-            return element.EnumerateArray().SelectMany(e => ParseCustomField(e, type, propName, propNs));
+            return element.EnumerateArray().SelectMany(e => ParseCustomField(e, type, propName, propNs, field.Index, entityIndex));
         }
         else
         {
@@ -211,7 +346,7 @@ public class JsonEventParser
             field.DateValue = DateTimeOffset.TryParse(field.TextValue, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?);
         }
 
-        return new[] { field };
+        return customFields;
     }
 
     private (string Namespace, string Name) ParseName(string name)

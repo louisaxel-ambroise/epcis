@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Relational;
-using FasTnT.Application.Relational.UseCases.Subscriptions;
+﻿using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application.Tests.Queries;

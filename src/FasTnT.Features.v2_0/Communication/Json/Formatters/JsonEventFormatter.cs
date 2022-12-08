@@ -4,66 +4,82 @@ using FasTnT.Features.v2_0.Communication.Json.Utils;
 
 namespace FasTnT.Features.v2_0.Communication.Json.Formatters;
 
-public static class JsonEventFormatter
+public class JsonEventFormatter
 {
+    private readonly Event _evt;
+    private readonly IDictionary<string, string> _context;
+
+    private JsonEventFormatter(Event evt, IDictionary<string, string> context)
+    {
+        _evt = evt;
+        _context = context;
+    }
+
     public static IDictionary<string, object> FormatEvent(Event evt, IDictionary<string, string> context)
     {
+        var formatter = new JsonEventFormatter(evt, context);
+
+        return formatter.FormatEvent();
+    }
+
+    internal IDictionary<string, object> FormatEvent() 
+    { 
         var element = new Dictionary<string, object>
         {
-            ["type"] = evt.Type.ToString(),
-            ["eventTime"] = evt.EventTime,
-            ["recordTime"] = evt.CaptureTime,
-            ["eventTimeZoneOffset"] = evt.EventTimeZoneOffset.Representation,
-            ["eventID"] = evt.EventId
+            ["type"] = _evt.Type.ToString(),
+            ["eventTime"] = _evt.EventTime,
+            ["recordTime"] = _evt.CaptureTime,
+            ["eventTimeZoneOffset"] = _evt.EventTimeZoneOffset.Representation,
+            ["eventID"] = _evt.EventId
         };
 
-        if (evt.Action != EventAction.None)
+        if (_evt.Action != EventAction.None)
         {
-            element["action"] = evt.Action.ToString();
+            element["action"] = _evt.Action.ToString();
         }
-        if (evt.Epcs.Count > 0)
+        if (_evt.Epcs.Count > 0)
         {
-            AddEpcs(element, evt.Epcs);
-        }
-
-        element.AddIfNotNull(evt.TransformationId, "transformationID");
-        element.AddIfNotNull(evt.BusinessStep, "bizStep");
-        element.AddIfNotNull(evt.Disposition, "disposition");
-
-        if (evt.ReadPoint is not null)
-        {
-            element["readPoint"] = new { id = evt.ReadPoint };
-        }
-        if (evt.BusinessLocation is not null)
-        {
-            element["bizLocation"] = new { id = evt.BusinessLocation };
-        }
-        if (evt.Sources.Count > 0)
-        {
-            element["sourceList"] = evt.Sources.Select(x => new { type = x.Type, source = x.Id });
-        }
-        if (evt.Destinations.Count > 0)
-        {
-            element["destList"] = evt.Destinations.Select(x => new { type = x.Type, destination = x.Id });
-        }
-        if (evt.Transactions.Count > 0)
-        {
-            element["bizTransactionList"] = evt.Transactions.Select(x => new { type = x.Type, bizTransaction = x.Id });
-        }
-        if (evt.PersistentDispositions.Count > 0)
-        {
-            SetDisposition(element, evt.PersistentDispositions);
+            AddEpcs(element, _evt.Epcs);
         }
 
-        AddSensorElements(element, evt.SensorElements, context);
+        element.AddIfNotNull(_evt.TransformationId, "transformationID");
+        element.AddIfNotNull(_evt.BusinessStep, "bizStep");
+        element.AddIfNotNull(_evt.Disposition, "disposition");
 
-        var ilmd = BuildExtensionFields(evt.Fields.OfType<Field>().Where(x => x.Type == FieldType.Ilmd), context);
+        if (_evt.ReadPoint is not null)
+        {
+            element["readPoint"] = new { id = _evt.ReadPoint };
+        }
+        if (_evt.BusinessLocation is not null)
+        {
+            element["bizLocation"] = new { id = _evt.BusinessLocation };
+        }
+        if (_evt.Sources.Count > 0)
+        {
+            element["sourceList"] = _evt.Sources.Select(x => new { type = x.Type, source = x.Id });
+        }
+        if (_evt.Destinations.Count > 0)
+        {
+            element["destList"] = _evt.Destinations.Select(x => new { type = x.Type, destination = x.Id });
+        }
+        if (_evt.Transactions.Count > 0)
+        {
+            element["bizTransactionList"] = _evt.Transactions.Select(x => new { type = x.Type, bizTransaction = x.Id });
+        }
+        if (_evt.PersistentDispositions.Count > 0)
+        {
+            SetDisposition(element, _evt.PersistentDispositions);
+        }
+
+        AddSensorElements(element, _evt.SensorElements);
+
+        var ilmd = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.Ilmd));
         if (ilmd.Count > 0)
         {
             element["ilmd"] = ilmd;
         }
 
-        var customFields = BuildExtensionFields(evt.Fields.OfType<Field>().Where(x => x.Type == FieldType.CustomField), context);
+        var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.CustomField));
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -72,26 +88,26 @@ public static class JsonEventFormatter
         return element;
     }
 
-    private static void AddSensorElements(Dictionary<string, object> element, List<SensorElement> sensorElements, IDictionary<string, string> context)
+    private void AddSensorElements(Dictionary<string, object> element, List<SensorElement> sensorElements)
     {
         if (sensorElements.Count == 0)
         {
             return;
         }
 
-        element["sensorElements"] = sensorElements.Select(x => MapSensorElement(x, context));
+        element["sensorElements"] = sensorElements.Select(MapSensorElement);
     }
 
-    private static object MapSensorElement(SensorElement sensor, IDictionary<string, string> context)
+    private object MapSensorElement(SensorElement sensor)
     {
         var element = new Dictionary<string, object>
         {
             ["type"] = "epcis:SensorElement",
-            ["sensorMetadata"] = MapSensorMetadata(sensor, context),
-            ["sensorReport"] = sensor.Reports.Select(x => MapSensorReport(x, context))
+            ["sensorMetadata"] = MapSensorMetadata(sensor),
+            ["sensorReport"] = sensor.Reports.Select(MapSensorReport)
         };
 
-        var customFields = BuildExtensionFields(sensor.Fields.Where(x => x.Type == FieldType.CustomField), context);
+        var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.Sensor && x.ParentIndex == sensor.Index));
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -100,7 +116,7 @@ public static class JsonEventFormatter
         return element;
     }
 
-    private static object MapSensorMetadata(SensorElement sensor, IDictionary<string, string> context)
+    private object MapSensorMetadata(SensorElement sensor)
     {
         var element = new Dictionary<string, object>
         {
@@ -114,7 +130,7 @@ public static class JsonEventFormatter
             ["bizRules"] = sensor.Time
         };
 
-        var customFields = BuildExtensionFields(sensor.Fields.Where(x => x.Type == FieldType.SensorMetadata), context);
+        var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.SensorMetadata && x.EntityIndex == sensor.Index));
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -123,7 +139,7 @@ public static class JsonEventFormatter
         return element;
     }
 
-    private static object MapSensorReport(SensorReport report, IDictionary<string, string> context)
+    private object MapSensorReport(SensorReport report)
     {
         var element = new Dictionary<string, object>
         {
@@ -150,7 +166,7 @@ public static class JsonEventFormatter
             ["deviceMetadata"] = report.DeviceMetadata
         };
 
-        var customFields = BuildExtensionFields(report.Fields, context);
+        var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.SensorReport && x.ParentIndex == report.Index));
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;
@@ -211,28 +227,28 @@ public static class JsonEventFormatter
         element["persistentDisposition"] = dispositions;
     }
 
-    private static IDictionary<string, object> BuildExtensionFields(IEnumerable<Field> fields, IDictionary<string, string> context)
+    private IDictionary<string, object> BuildExtensionFields(IEnumerable<Field> fields)
     {
         var extension = new Dictionary<string, object>();
 
-        foreach (var group in fields.Where(x => x.Parent == null).GroupBy(x => (x.Name, x.Namespace)))
+        foreach (var group in fields.Where(x => x.ParentIndex == null).GroupBy(x => (x.Name, x.Namespace)))
         {
             if (group.Count() > 1)
             {
-                extension.Add(context[group.Key.Namespace] + ":" + group.Key.Name, BuildArrayElement(group, context));
+                extension.Add(_context[group.Key.Namespace] + ":" + group.Key.Name, BuildArrayElement(group));
             }
             else
             {
                 var field = group.Single();
-                var children = field.Children.Where(x => x.Type != FieldType.Attribute);
+                var children = fields.Where(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index);
 
                 if (children.Count() >= 1)
                 {
-                    extension.Add(context[field.Namespace] + ":" + field.Name, BuildElement(children, context));
+                    extension.Add(_context[field.Namespace] + ":" + field.Name, BuildElement(children));
                 }
                 else
                 {
-                    extension.Add(context[field.Namespace] + ":" + field.Name, field.TextValue);
+                    extension.Add(_context[field.Namespace] + ":" + field.Name, field.TextValue);
                 }
             }
         }
@@ -240,7 +256,7 @@ public static class JsonEventFormatter
         return extension;
     }
 
-    private static Dictionary<string, object> BuildElement(IEnumerable<Field> fields, IDictionary<string, string> context)
+    private Dictionary<string, object> BuildElement(IEnumerable<Field> fields)
     {
         var element = new Dictionary<string, object>();
 
@@ -248,20 +264,20 @@ public static class JsonEventFormatter
         {
             if (group.Count() > 1)
             {
-                element.Add(context[group.Key.Namespace] + ":" + group.Key.Name, BuildArrayElement(group, context));
+                element.Add(_context[group.Key.Namespace] + ":" + group.Key.Name, BuildArrayElement(group));
             }
             else
             {
                 var field = group.Single();
-                var children = field.Children.Where(x => x.Type != FieldType.Attribute);
+                var children = fields.Where(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index);
 
                 if (children.Any())
                 {
-                    element.Add(context[field.Namespace] + ":" + field.Name, BuildElement(children, context));
+                    element.Add(_context[field.Namespace] + ":" + field.Name, BuildElement(children));
                 }
                 else
                 {
-                    element.Add(context[field.Namespace] + ":" + field.Name, field.TextValue);
+                    element.Add(_context[field.Namespace] + ":" + field.Name, field.TextValue);
                 }
             }
         }
@@ -269,21 +285,21 @@ public static class JsonEventFormatter
         return element;
     }
 
-    private static List<object> BuildArrayElement(IEnumerable<Field> fields, IDictionary<string, string> context)
+    private List<object> BuildArrayElement(IEnumerable<Field> fields)
     {
         var array = new List<object>();
 
         foreach (var field in fields)
         {
-            var children = field.Children.Where(x => x.Type != FieldType.Attribute);
+            var children = fields.Where(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index);
 
-            if (children.Count() > 1 && field.Children.All(x => x.Name == field.Name && x.Namespace == field.Namespace))
+            if (children.Count() > 1 && children.All(x => x.Name == field.Name && x.Namespace == field.Namespace))
             {
-                array.Add(BuildArrayElement(children, context));
+                array.Add(BuildArrayElement(children));
             }
             else if (children.Any())
             {
-                array.Add(BuildElement(children, context));
+                array.Add(BuildElement(children));
             }
             else
             {

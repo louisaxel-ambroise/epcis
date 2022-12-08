@@ -1,7 +1,7 @@
-﻿using FasTnT.Application.Relational;
+﻿using FasTnT.Application;
 using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Subscriptions;
-using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host.Services.Subscriptions;
 
@@ -29,14 +29,12 @@ public class SubscriptionBackgroundService : BackgroundService
         using var context = scope.ServiceProvider.GetService<EpcisContext>();
 
         var resultSenders = scope.ServiceProvider.GetServices<IResultSender>();
-        var subscriptions = context.Set<Subscription>()
-            .Include(x => x.Query).ThenInclude(x => x.Parameters)
-            .Include(x => x.Parameters)
-            .Include(x => x.Schedule)
-            .ToList();
+        var subscriptions = context.Set<Subscription>().ToList();
+        var queries = context.Set<StoredQuery>().ToList();
 
         foreach (var subscription in subscriptions)
         {
+            subscription.Query = queries.Single(x => x.Name == subscription.QueryName);
             var resultSender = resultSenders.SingleOrDefault(x => x.Name == subscription.FormatterName);
 
             if (resultSender is not null)

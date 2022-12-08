@@ -1,6 +1,5 @@
-﻿using FasTnT.Application.Relational;
-using FasTnT.Application.Relational.Services.Queries;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Queries.Implementations;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 

@@ -4,8 +4,11 @@ using FasTnT.Domain.Model.Events;
 
 namespace FasTnT.Features.v2_0.Communication.Xml.Parsers;
 
-public static class XmlEventParser
+public class XmlEventParser
 {
+    private int _index;
+    private Event _evt;
+
     public static IEnumerable<Event> ParseEvents(XElement root)
     {
         return root.Elements().Select(ParseEvent);
@@ -13,7 +16,14 @@ public static class XmlEventParser
 
     public static Event ParseEvent(XElement element)
     {
-        var evt = new Event
+        var parser = new XmlEventParser();
+
+        return parser.Parse(element);
+    }
+
+    internal Event Parse(XElement element)
+    {
+        _evt = new Event
         {
             Type = Enum.Parse<EventType>(element.Name.LocalName)
         };
@@ -25,75 +35,75 @@ public static class XmlEventParser
                 switch (field.Name.LocalName)
                 {
                     case "action":
-                        evt.Action = Enum.Parse<EventAction>(field.Value, true); break;
+                        _evt.Action = Enum.Parse<EventAction>(field.Value, true); break;
                     case "recordTime": // Discard - this will be overridden
                         break;
                     case "eventTime":
-                        evt.EventTime = DateTimeOffset.Parse(field.Value, null, System.Globalization.DateTimeStyles.AdjustToUniversal); break;
+                        _evt.EventTime = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
                     case "certificationInfo":
-                        evt.CertificationInfo = field.Value; break;
+                        _evt.CertificationInfo = field.Value; break;
                     case "eventTimeZoneOffset":
-                        evt.EventTimeZoneOffset = field.Value; break;
+                        _evt.EventTimeZoneOffset = field.Value; break;
                     case "bizStep":
-                        evt.BusinessStep = field.Value; break;
+                        _evt.BusinessStep = field.Value; break;
                     case "disposition":
-                        evt.Disposition = field.Value; break;
+                        _evt.Disposition = field.Value; break;
                     case "transformationID":
-                        evt.TransformationId = field.Value; break;
+                        _evt.TransformationId = field.Value; break;
                     case "readPoint":
-                        evt.ReadPoint = field.Element("id").Value; break;
+                        _evt.ReadPoint = field.Element("id").Value; break;
                     case "bizLocation":
-                        evt.BusinessLocation = field.Element("id").Value; break;
+                        _evt.BusinessLocation = field.Element("id").Value; break;
                     case "eventID":
-                        evt.EventId = field.Value; break;
+                        _evt.EventId = field.Value; break;
                     case "parentID":
-                        evt.Epcs.Add(new Epc { Type = EpcType.ParentId, Id = field.Value }); break;
+                        _evt.Epcs.Add(new Epc { Type = EpcType.ParentId, Id = field.Value }); break;
                     case "epcList":
-                        evt.Epcs.AddRange(ParseEpcList(field, EpcType.List)); break;
+                        _evt.Epcs.AddRange(ParseEpcList(field, EpcType.List)); break;
                     case "childEPCs":
-                        evt.Epcs.AddRange(ParseEpcList(field, EpcType.ChildEpc)); break;
+                        _evt.Epcs.AddRange(ParseEpcList(field, EpcType.ChildEpc)); break;
                     case "inputEPCList":
-                        evt.Epcs.AddRange(ParseEpcList(field, EpcType.InputEpc)); break;
+                        _evt.Epcs.AddRange(ParseEpcList(field, EpcType.InputEpc)); break;
                     case "outputEPCList":
-                        evt.Epcs.AddRange(ParseEpcList(field, EpcType.OutputEpc)); break;
+                        _evt.Epcs.AddRange(ParseEpcList(field, EpcType.OutputEpc)); break;
                     case "quantityList":
-                        evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.Quantity)); break;
+                        _evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.Quantity)); break;
                     case "childQuantityList":
-                        evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.ChildQuantity)); break;
+                        _evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.ChildQuantity)); break;
                     case "inputQuantityList":
-                        evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.InputQuantity)); break;
+                        _evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.InputQuantity)); break;
                     case "outputQuantityList":
-                        evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.OutputQuantity)); break;
+                        _evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.OutputQuantity)); break;
                     case "bizTransactionList":
-                        evt.Transactions.AddRange(ParseTransactionList(field)); break;
+                        _evt.Transactions.AddRange(ParseTransactionList(field)); break;
                     case "sourceList":
-                        evt.Sources.AddRange(ParseSourceList(field)); break;
+                        _evt.Sources.AddRange(ParseSourceList(field)); break;
                     case "destinationList":
-                        evt.Destinations.AddRange(ParseDestinationList(field)); break;
+                        _evt.Destinations.AddRange(ParseDestinationList(field)); break;
                     case "persistentDisposition":
-                        evt.PersistentDispositions.AddRange(ParsePersustentDisposition(field)); break;
+                        _evt.PersistentDispositions.AddRange(ParsePersistentDisposition(field)); break;
                     case "sensorElementList":
-                        evt.SensorElements.AddRange(XmlSensorParser.ParseSensorElements(field)); break;
+                        _evt.SensorElements.AddRange(ParseSensorElements(field)); break;
                     case "ilmd":
-                        ParseIlmd(evt, field); break;
+                        ParseIlmd(field); break;
                     default:
                         throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }
             }
             else
             {
-                evt.Fields.Add(XmlCustomFieldParser.ParseCustomFields(field, FieldType.CustomField));
+                ParseCustomFields(field, FieldType.CustomField);
             }
         }
 
-        return evt;
+        return _evt;
     }
 
-    private static void ParseIlmd(Event evt, XElement element)
+    private void ParseIlmd(XElement element)
     {
         foreach (var field in element.Elements())
         {
-            evt.Fields.Add(XmlCustomFieldParser.ParseCustomFields(field, FieldType.Ilmd));
+            ParseCustomFields(field, FieldType.Ilmd);
         }
     }
 
@@ -144,12 +154,202 @@ public static class XmlEventParser
         });
     }
 
-    private static IEnumerable<PersistentDisposition> ParsePersustentDisposition(XElement field)
+    private static IEnumerable<PersistentDisposition> ParsePersistentDisposition(XElement field)
     {
         return field.Elements().Select(x => new PersistentDisposition
         {
             Id = x.Value,
             Type = Enum.Parse<PersistentDispositionType>(x.Name.LocalName, true)
+        });
+    }
+
+    public IEnumerable<SensorElement> ParseSensorElements(XElement field)
+    {
+        return field.Elements().Select(ParseSensorElement);
+    }
+
+    private SensorElement ParseSensorElement(XElement element)
+    {
+        var sensorElement = new SensorElement { Index = ++_index };
+
+        foreach (var field in element.Elements())
+        {
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                if (field.Name.LocalName == "sensorMetadata")
+                {
+                    ParseSensorMetadata(sensorElement, field);
+                }
+                else if (field.Name.LocalName == "sensorReport")
+                {
+                    ParseSensorReport(sensorElement, field); break;
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.Sensor, null, sensorElement.Index);
+            }
+        }
+
+        return sensorElement;
+    }
+
+    private void ParseSensorReport(SensorElement sensorElement, XElement element)
+    {
+        var report = new SensorReport { Index = ++_index };
+
+        foreach (var field in element.Attributes())
+        {
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                switch (field.Name.LocalName)
+                {
+                    case "value":
+                        report.Value = float.Parse(field.Value); break;
+                    case "type":
+                        report.Type = field.Value; break;
+                    case "component":
+                        report.Component = field.Value; break;
+                    case "stringValue":
+                        report.StringValue = field.Value; break;
+                    case "booleanValue":
+                        report.BooleanValue = bool.Parse(field.Value); break;
+                    case "hexBinaryValue":
+                        report.HexBinaryValue = field.Value; break;
+                    case "uriValue":
+                        report.UriValue = field.Value; break;
+                    case "uom":
+                        report.UnitOfMeasure = field.Value; break;
+                    case "minValue":
+                        report.MinValue = float.Parse(field.Value); break;
+                    case "maxValue":
+                        report.MaxValue = float.Parse(field.Value); break;
+                    case "sDev":
+                        report.SDev = float.Parse(field.Value); break;
+                    case "chemicalSubstance":
+                        report.ChemicalSubstance = field.Value; break;
+                    case "microorganism":
+                        report.Microorganism = field.Value; break;
+                    case "deviceID":
+                        report.DeviceId = field.Value; break;
+                    case "deviceMetadata":
+                        report.DeviceMetadata = field.Value; break;
+                    case "rawData":
+                        report.RawData = field.Value; break;
+                    case "time":
+                        report.Time = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "meanValue":
+                        report.MeanValue = float.Parse(field.Value); break;
+                    case "percRank":
+                        report.PercRank = float.Parse(field.Value); break;
+                    case "percValue":
+                        report.PercValue = float.Parse(field.Value); break;
+                    case "dataProcessingMethod":
+                        report.DataProcessingMethod = field.Value; break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.SensorReport, null, report.Index);
+            }
+        }
+
+        sensorElement.Reports.Add(report);
+    }
+
+    private void ParseSensorMetadata(SensorElement sensorElement, XElement metadata)
+    {
+        foreach (var field in metadata.Attributes())
+        {
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                switch (field.Name.LocalName)
+                {
+                    case "time":
+                        sensorElement.Time = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "bizRules":
+                        sensorElement.BizRules = field.Value; break;
+                    case "deviceID":
+                        sensorElement.DeviceId = field.Value; break;
+                    case "deviceMetadata":
+                        sensorElement.DeviceMetadata = field.Value; break;
+                    case "rawData":
+                        sensorElement.RawData = field.Value; break;
+                    case "startTime":
+                        sensorElement.StartTime = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "endTime":
+                        sensorElement.EndTime = DateTimeOffset.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "dataProcessingMethod":
+                        sensorElement.DataProcessingMethod = field.Value; break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.SensorMetadata, null, sensorElement.Index);
+            }
+        }
+    }
+
+    public void ParseCustomFields(XElement element, FieldType fieldType, int? parentIndex = null, int? entityIndex = null)
+    {
+        var field = new Field
+        {
+            Index = ++_index,
+            ParentIndex = parentIndex,
+            EntityIndex = entityIndex,
+            Type = fieldType,
+            Name = element.Name.LocalName,
+            Namespace = string.IsNullOrWhiteSpace(element.Name.NamespaceName) ? default : element.Name.NamespaceName,
+            TextValue = element.HasElements ? default : element.Value,
+            NumericValue = element.HasElements ? default : float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
+            DateValue = element.HasElements ? default : DateTimeOffset.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
+        };
+
+        foreach (var children in element.Elements()) 
+        {
+            ParseCustomFields(children, fieldType, field.Index, entityIndex);
+        }
+        foreach (var attribute in element.Attributes().Where(x => !x.IsNamespaceDeclaration)) 
+        {
+            ParseAttribute(attribute, field.Index, entityIndex);
+        }
+
+        _evt.Fields.Add(field);
+    }
+
+    public void ParseCustomFields(XAttribute element, FieldType fieldType, int? parentIndex = null, int? entityIndex = null)
+    {
+        _evt.Fields.Add(new()
+        {
+            Index = ++_index,
+            ParentIndex = parentIndex,
+            EntityIndex = entityIndex,
+            Type = fieldType,
+            Name = element.Name.LocalName,
+            Namespace = string.IsNullOrWhiteSpace(element.Name.NamespaceName) ? default : element.Name.NamespaceName,
+            TextValue = element.Value,
+            NumericValue = float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
+            DateValue = DateTimeOffset.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
+        });
+    }
+
+    public void ParseAttribute(XAttribute element, int? parentIndex = null, int? entityIndex = null)
+    {
+        _evt.Fields.Add(new()
+        {
+            Index = ++_index,
+            ParentIndex = parentIndex,
+            EntityIndex = entityIndex,
+            Type = FieldType.Attribute,
+            Name = element.Name.LocalName,
+            Namespace = element.Name.NamespaceName,
+            TextValue = element.Value,
+            NumericValue = float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
+            DateValue = DateTimeOffset.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTimeOffset dateValue) ? dateValue : default(DateTimeOffset?)
         });
     }
 }

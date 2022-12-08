@@ -2,6 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <LangVersion>10</LangVersion>
-	<ImplicitUsings>disable</ImplicitUsings>
+	  <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 </Project>

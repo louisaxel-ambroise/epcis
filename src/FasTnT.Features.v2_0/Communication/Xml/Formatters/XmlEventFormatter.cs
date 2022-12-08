@@ -185,14 +185,14 @@ public static class XmlEventFormatter
         metadata.AddIfNotNull(CreateAttribute("bizRules", element.BizRules));
         metadata.AddIfNotNull(CreateAttribute("dataProcessingMethod", element.DataProcessingMethod));
     
-        foreach(var field in element.Fields.Where(x => x.Type == FieldType.SensorMetadata))
+        foreach(var field in element.Event.Fields.Where(x => x.Type == FieldType.SensorMetadata))
         {
             metadata.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
         }
 
         xmlElement.Add(metadata);
         xmlElement.AddIfNotNull(element.Reports.Select(CreateSensorReport));
-        xmlElement.AddIfNotNull(element.Fields.Where(x => x.Type == FieldType.Sensor).Select(FormatField));
+        xmlElement.AddIfNotNull(FormatFields(element.Event.Fields.Where(x => x.Type == FieldType.Sensor)));
 
         return xmlElement;
     }
@@ -222,7 +222,7 @@ public static class XmlEventFormatter
         xmlElement.AddIfNotNull(CreateAttribute("percValue", report.PercValue));
         xmlElement.AddIfNotNull(CreateAttribute("dataProcessingMethod", report.DataProcessingMethod));
 
-        foreach (var field in report.Fields)
+        foreach (var field in report.SensorElement.Event.Fields)
         {
             xmlElement.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
         }
@@ -319,16 +319,25 @@ public static class XmlEventFormatter
 
     private static IEnumerable<XElement> CreateCustomFields(Event evt, FieldType type)
     {
-        return evt.Fields.Where(x => x.Type == type && x.Parent is null).Select(FormatField);
+        return FormatFields(evt.Fields.Where(x => x.Type == type));
     }
 
-    private static XElement FormatField(Field field)
+    private static IEnumerable<XElement> FormatFields(IEnumerable<Field> fields, int? parentIndex = null)
     {
-        var attributes = field.Children.Where(x => x.Type == FieldType.Attribute).Select(x => new XAttribute(XName.Get(x.Name, x.Namespace), x.TextValue));
-        var element = new XElement(XName.Get(field.Name, field.Namespace ?? string.Empty), field.TextValue, attributes);
+        return fields.Where(x => x.ParentIndex == parentIndex).Select(x =>
+        {
+            var element = new XElement(XName.Get(x.Name, x.Namespace ?? string.Empty), x.TextValue);
 
-        element.AddIfNotNull(field.Children.Where(x => x.Type != FieldType.Attribute).Select(FormatField));
+            foreach(var attribute in fields.Where(x => x.Type == FieldType.Attribute && x.ParentIndex == x.Index))
+            {
+                element.Add(new XAttribute(XName.Get(attribute.Name, attribute.Namespace), attribute.TextValue));
+            }
+            foreach (var attribute in fields.Where(x => x.Type != FieldType.Attribute && x.ParentIndex == x.Index))
+            {
+                element.AddIfNotNull(FormatFields(fields, x.Index));
+            }
 
-        return element;
+            return element;
+        });
     }
 }

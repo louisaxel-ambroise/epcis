@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.Relational;
+﻿using FasTnT.Application;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host.Extensions;
@@ -10,11 +10,13 @@ public static class DatabaseMigrator
         using var scope = application.ApplicationServices.CreateScope();
         using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
 
-        context.Database.EnsureCreated();
-
         if (context.Database.IsRelational())
         {
             context.Database.Migrate();
+        }
+        else
+        {
+            context.Database.EnsureCreated();
         }
 
         return application;

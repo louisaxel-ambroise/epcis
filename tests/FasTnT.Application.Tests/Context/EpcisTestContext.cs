@@ -1,10 +1,8 @@
-﻿using FasTnT.Application.Relational;
-using FasTnT.Application.Relational.Configuration;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Tests.Context;
 
-public static class EpcisTestContext
+public static partial class EpcisTestContext
 {
     public static DbContextOptions<EpcisContext> GetOptions(string databaseName)
     {
@@ -25,6 +23,4 @@ public static class EpcisTestContext
 
         return context;
     }
-
-    public class TestModelConfiguration : RelationalModelConfiguration { }
 }

@@ -6,8 +6,11 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /epcis
 COPY ["src/FasTnT.Host/FasTnT.Host.csproj", "FasTnT.Host/"]
 COPY ["src/FasTnT.Application/FasTnT.Application.csproj", "FasTnT.Application/"]
-COPY ["src/FasTnT.Application.Relational/FasTnT.Application.Relational.csproj", "FasTnT.Application.Relational/"]
 COPY ["src/FasTnT.Domain/FasTnT.Domain.csproj", "FasTnT.Domain/"]
+COPY ["src/Providers/FasTnT.Sqlite/FasTnT.Sqlite.csproj", "Providers/FasTnT.Sqlite/"]
+COPY ["src/Providers/FasTnT.Postgres/FasTnT.Postgres.csproj", "Providers/FasTnT.Postgres/"]
+COPY ["src/Providers/FasTnT.CosmosDb/FasTnT.CosmosDb.csproj", "Providers/FasTnT.CosmosDb/"]
+COPY ["src/Providers/FasTnT.SqlServer/FasTnT.SqlServer.csproj", "Providers/FasTnT.SqlServer/"]
 COPY ["src/FasTnT.Features.v1_2/FasTnT.Features.v1_2.csproj", "FasTnT.Features.v1_2/"]
 COPY ["src/FasTnT.Features.v2_0/FasTnT.Features.v2_0.csproj", "FasTnT.Features.v2_0/"]
 RUN dotnet restore "FasTnT.Host/FasTnT.Host.csproj"

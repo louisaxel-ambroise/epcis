@@ -1,8 +1,7 @@
-﻿using FasTnT.Application.Relational;
-using FasTnT.Application.Relational.Services.Queries;
-using FasTnT.Application.Relational.UseCases.Subscriptions;
-using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Queries.Implementations;
 using FasTnT.Application.Tests.Subscriptions;
+using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 
