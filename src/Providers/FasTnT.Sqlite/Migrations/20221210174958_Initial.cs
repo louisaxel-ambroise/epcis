@@ -17,8 +17,8 @@ namespace FasTnT.Sqlite.Migrations
                 name: "PendingRequest",
                 columns: table => new
                 {
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false)
+                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    RequestId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -33,7 +33,7 @@ namespace FasTnT.Sqlite.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     CaptureId = table.Column<string>(type: "TEXT", nullable: true),
                     UserId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
-                    CaptureDate = table.Column<long>(type: "INTEGER", nullable: false),
+                    CaptureTime = table.Column<long>(type: "INTEGER", nullable: false),
                     DocumentTime = table.Column<long>(type: "INTEGER", nullable: false),
                     SchemaVersion = table.Column<string>(type: "TEXT", nullable: false)
                 },
@@ -58,18 +58,55 @@ namespace FasTnT.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Subscription",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    QueryName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Datasource = table.Column<string>(type: "TEXT", nullable: true),
+                    SignatureToken = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    FormatterName = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false),
+                    Trigger = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    ReportIfEmpty = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Destination = table.Column<string>(type: "TEXT", nullable: true),
+                    InitialRecordTime = table.Column<DateTimeOffset>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subscription", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubscriptionExecutionRecord",
+                columns: table => new
+                {
+                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ExecutionTime = table.Column<long>(type: "INTEGER", nullable: false),
+                    Successful = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ResultsSent = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Reason = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionExecutionRecord", x => new { x.SubscriptionId, x.ExecutionTime });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Event",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     RequestId = table.Column<int>(type: "INTEGER", nullable: true),
-                    CaptureTime = table.Column<long>(type: "INTEGER", nullable: false),
                     EventTime = table.Column<long>(type: "INTEGER", nullable: false),
+                    CaptureTime = table.Column<long>(type: "INTEGER", nullable: false),
                     EventTimeZoneOffset = table.Column<short>(type: "INTEGER", nullable: false),
                     Type = table.Column<short>(type: "INTEGER", nullable: false),
                     Action = table.Column<short>(type: "INTEGER", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", maxLength: 36, nullable: true),
+                    CaptureId = table.Column<string>(type: "TEXT", nullable: true),
                     EventId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     CertificationInfo = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     ReadPoint = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -77,7 +114,7 @@ namespace FasTnT.Sqlite.Migrations
                     BusinessStep = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Disposition = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     TransformationId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    CorrectiveDeclarationTime = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
+                    CorrectiveDeclarationTime = table.Column<long>(type: "INTEGER", nullable: true),
                     CorrectiveReason = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
@@ -158,12 +195,13 @@ namespace FasTnT.Sqlite.Migrations
                 columns: table => new
                 {
                     Name = table.Column<string>(type: "TEXT", nullable: false),
+                    QueryName = table.Column<string>(type: "TEXT", nullable: false),
                     QueryId = table.Column<int>(type: "INTEGER", nullable: false),
                     Values = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StoredQueryParameter", x => new { x.QueryId, x.Name });
+                    table.PrimaryKey("PK_StoredQueryParameter", x => new { x.QueryName, x.Name });
                     table.ForeignKey(
                         name: "FK_StoredQueryParameter_StoredQuery_QueryId",
                         column: x => x.QueryId,
@@ -173,28 +211,44 @@ namespace FasTnT.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subscription",
+                name: "SubscriptionParameter",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    QueryName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    SignatureToken = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    FormatterName = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false),
-                    Trigger = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ReportIfEmpty = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Destination = table.Column<string>(type: "TEXT", nullable: true),
-                    QueryId = table.Column<int>(type: "INTEGER", nullable: true),
-                    InitialRecordTime = table.Column<DateTimeOffset>(type: "TEXT", nullable: true)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SubscriptionName = table.Column<int>(type: "INTEGER", nullable: false),
+                    Values = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subscription", x => x.Id);
+                    table.PrimaryKey("PK_SubscriptionParameter", x => new { x.SubscriptionId, x.Name });
                     table.ForeignKey(
-                        name: "FK_Subscription_StoredQuery_QueryId",
-                        column: x => x.QueryId,
-                        principalTable: "StoredQuery",
+                        name: "FK_SubscriptionParameter_Subscription_SubscriptionName",
+                        column: x => x.SubscriptionName,
+                        principalTable: "Subscription",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubscriptionSchedule",
+                columns: table => new
+                {
+                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Second = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Minute = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Hour = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    DayOfMonth = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Month = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    DayOfWeek = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubscriptionSchedule", x => x.SubscriptionId);
+                    table.ForeignKey(
+                        name: "FK_SubscriptionSchedule_Subscription_SubscriptionId",
+                        column: x => x.SubscriptionId,
+                        principalTable: "Subscription",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -432,71 +486,6 @@ namespace FasTnT.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubscriptionExecutionRecord",
-                columns: table => new
-                {
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ExecutionTime = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    Successful = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ResultsSent = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Reason = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubscriptionExecutionRecord", x => new { x.SubscriptionId, x.ExecutionTime });
-                    table.ForeignKey(
-                        name: "FK_SubscriptionExecutionRecord_Subscription_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscription",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SubscriptionParameter",
-                columns: table => new
-                {
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Values = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubscriptionParameter", x => new { x.SubscriptionId, x.Name });
-                    table.ForeignKey(
-                        name: "FK_SubscriptionParameter_Subscription_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscription",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SubscriptionSchedule",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Second = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Minute = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Hour = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    DayOfMonth = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Month = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    DayOfWeek = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubscriptionSchedule", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SubscriptionSchedule_Subscription_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscription",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SensorReport",
                 columns: table => new
                 {
@@ -582,15 +571,20 @@ namespace FasTnT.Sqlite.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subscription_QueryId",
-                table: "Subscription",
+                name: "IX_StoredQueryParameter_QueryId",
+                table: "StoredQueryParameter",
                 column: "QueryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SubscriptionSchedule_SubscriptionId",
-                table: "SubscriptionSchedule",
-                column: "SubscriptionId",
+                name: "IX_Subscription_Name",
+                table: "Subscription",
+                column: "Name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubscriptionParameter_SubscriptionName",
+                table: "SubscriptionParameter",
+                column: "SubscriptionName");
         }
 
         /// <inheritdoc />
@@ -657,6 +651,9 @@ namespace FasTnT.Sqlite.Migrations
                 name: "SensorElement");
 
             migrationBuilder.DropTable(
+                name: "StoredQuery");
+
+            migrationBuilder.DropTable(
                 name: "Subscription");
 
             migrationBuilder.DropTable(
@@ -664,9 +661,6 @@ namespace FasTnT.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "Event");
-
-            migrationBuilder.DropTable(
-                name: "StoredQuery");
 
             migrationBuilder.DropTable(
                 name: "Request");

@@ -60,14 +60,9 @@ public class CaptureUseCasesHandler :
         }
 
         var captureTime = DateTimeOffset.UtcNow;
-
-        request.Events.ForEach(x =>
-        {
-            x.UserId = _currentUser.UserId;
-            x.CaptureTime = captureTime;
-        });
-
-        request.CaptureDate = captureTime;
+        
+        request.Events.ForEach(x => x.CaptureTime = captureTime);
+        request.CaptureTime = captureTime;
         request.UserId = _currentUser.UserId;
 
         _context.Add(request);

@@ -4,7 +4,7 @@ using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Services.Queries.Implementations;
+namespace FasTnT.Application.Services.Queries.DataSources;
 
 public class SimpleMasterDataQuery : IEpcisDataSource
 {

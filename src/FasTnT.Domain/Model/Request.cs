@@ -6,10 +6,11 @@ namespace FasTnT.Domain.Model;
 
 public class Request
 {
+    public int Id { get; set; }
     public string CaptureId { get; set; } = Guid.NewGuid().ToString();
     public string UserId { get; set; }
     public StandardBusinessHeader StandardBusinessHeader { get; set; }
-    public DateTimeOffset CaptureDate { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset CaptureTime { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset DocumentTime { get; set; }
     public string SchemaVersion { get; set; }
     public SubscriptionCallback SubscriptionCallback { get; set; }

@@ -24,11 +24,12 @@ namespace FasTnT.Postgres.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DataSource")
                         .IsRequired()
@@ -47,7 +48,7 @@ namespace FasTnT.Postgres.Migrations
                         .HasColumnType("character varying(80)")
                         .HasColumnName("user_id");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -57,13 +58,13 @@ namespace FasTnT.Postgres.Migrations
                     b.HasData(
                         new
                         {
-                            id = -2,
+                            Id = -2,
                             DataSource = "SimpleEventQuery",
                             Name = "SimpleEventQuery"
                         },
                         new
                         {
-                            id = -1,
+                            Id = -1,
                             DataSource = "SimpleMasterDataQuery",
                             Name = "SimpleMasterDataQuery"
                         });
@@ -71,11 +72,12 @@ namespace FasTnT.Postgres.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<short>("Action")
                         .HasColumnType("smallint")
@@ -91,8 +93,12 @@ namespace FasTnT.Postgres.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("business_step");
 
+                    b.Property<string>("CaptureId")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("CaptureTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("capture_time");
 
                     b.Property<string>("CertificationInfo")
                         .HasMaxLength(256)
@@ -141,14 +147,12 @@ namespace FasTnT.Postgres.Migrations
                         .HasColumnName("type");
 
                     b.Property<string>("UserId")
-                        .HasMaxLength(36)
-                        .HasColumnType("character varying(36)")
-                        .HasColumnName("user_id");
+                        .HasColumnType("text");
 
                     b.Property<int?>("request_id")
                         .HasColumnType("integer");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("request_id");
 
@@ -198,45 +202,22 @@ namespace FasTnT.Postgres.Migrations
                     b.ToView("masterdata_hierarchy", "cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataProperty", b =>
-                {
-                    b.Property<string>("Attribute")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("attribute");
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("type");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("text");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("masterdata_property", "cbv");
-                });
-
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
-
-                    b.Property<DateTimeOffset>("CaptureDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("capture_date");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CaptureId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("capture_id");
+
+                    b.Property<DateTimeOffset>("CaptureTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("capture_time");
 
                     b.Property<DateTimeOffset>("DocumentTime")
                         .HasColumnType("timestamp with time zone")
@@ -248,11 +229,12 @@ namespace FasTnT.Postgres.Migrations
                         .HasColumnName("schema_version");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("user_id");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("request", "epcis", t =>
                         {
@@ -266,8 +248,8 @@ namespace FasTnT.Postgres.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("subscription_id");
 
-                    b.Property<int>("RequestId")
-                        .HasColumnType("integer")
+                    b.Property<string>("RequestId")
+                        .HasColumnType("text")
                         .HasColumnName("request_id");
 
                     b.HasKey("SubscriptionId", "RequestId");
@@ -279,12 +261,19 @@ namespace FasTnT.Postgres.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Datasource")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("datasource");
+
                     b.Property<string>("Destination")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("destination");
 
                     b.Property<string>("FormatterName")
                         .IsRequired()
@@ -293,7 +282,8 @@ namespace FasTnT.Postgres.Migrations
                         .HasColumnName("formatter_name");
 
                     b.Property<DateTimeOffset?>("InitialRecordTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("initial_record_time");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -303,8 +293,7 @@ namespace FasTnT.Postgres.Migrations
 
                     b.Property<string>("QueryName")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)")
+                        .HasColumnType("text")
                         .HasColumnName("query_name");
 
                     b.Property<bool>("ReportIfEmpty")
@@ -321,17 +310,42 @@ namespace FasTnT.Postgres.Migrations
                         .HasColumnType("character varying(256)")
                         .HasColumnName("trigger");
 
-                    b.Property<int?>("query_id")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("query_id");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("subscription", "subscriptions", t =>
                         {
                             t.HasTrigger("subscription_initial_requests");
                         });
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", b =>
+                {
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("subscription_id");
+
+                    b.Property<DateTimeOffset>("ExecutionTime")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("execution_time");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("text")
+                        .HasColumnName("reason");
+
+                    b.Property<bool>("ResultsSent")
+                        .HasColumnType("boolean")
+                        .HasColumnName("results_sent");
+
+                    b.Property<bool>("Successful")
+                        .HasColumnType("boolean")
+                        .HasColumnName("successful");
+
+                    b.HasKey("SubscriptionId", "ExecutionTime");
+
+                    b.ToTable("subscription_execution_record", "subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
@@ -345,7 +359,7 @@ namespace FasTnT.Postgres.Migrations
                                 .HasColumnType("text")
                                 .HasColumnName("name");
 
-                            b1.Property<int>("Queryid")
+                            b1.Property<int>("QueryId")
                                 .HasColumnType("integer");
 
                             b1.Property<string>("Values")
@@ -354,12 +368,12 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.HasKey("query_id", "Name");
 
-                            b1.HasIndex("Queryid");
+                            b1.HasIndex("QueryId");
 
                             b1.ToTable("stored_query_parameter", "subscriptions");
 
                             b1.WithOwner("Query")
-                                .HasForeignKey("Queryid");
+                                .HasForeignKey("QueryId");
 
                             b1.Navigation("Query");
                         });
@@ -489,7 +503,8 @@ namespace FasTnT.Postgres.Migrations
                                 .HasColumnName("date_value");
 
                             b1.Property<int?>("EntityIndex")
-                                .HasColumnType("integer");
+                                .HasColumnType("integer")
+                                .HasColumnName("entity_index");
 
                             b1.Property<string>("Name")
                                 .IsRequired()
@@ -507,7 +522,8 @@ namespace FasTnT.Postgres.Migrations
                                 .HasColumnName("numeric_value");
 
                             b1.Property<int?>("ParentIndex")
-                                .HasColumnType("integer");
+                                .HasColumnType("integer")
+                                .HasColumnName("parent_index");
 
                             b1.Property<string>("TextValue")
                                 .HasColumnType("text")
@@ -815,7 +831,7 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.HasKey("request_id", "masterdata_type", "masterdata_id", "Id");
 
-                            b1.ToTable("MasterDataAttribute", "cbv");
+                            b1.ToTable("masterdata_attribute", "cbv");
 
                             b1.WithOwner("MasterData")
                                 .HasForeignKey("request_id", "masterdata_type", "masterdata_id");
@@ -1021,11 +1037,6 @@ namespace FasTnT.Postgres.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.CustomQueries.StoredQuery", "Query")
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("query_id")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", "Parameters", b1 =>
                         {
                             b1.Property<int>("subscription_id")
@@ -1055,47 +1066,10 @@ namespace FasTnT.Postgres.Migrations
                             b1.Navigation("Subscription");
                         });
 
-                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", "ExecutionRecords", b1 =>
+                    b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule", b1 =>
                         {
                             b1.Property<int>("subscription_id")
                                 .HasColumnType("integer");
-
-                            b1.Property<DateTimeOffset>("ExecutionTime")
-                                .HasColumnType("timestamp with time zone")
-                                .HasColumnName("execution_time");
-
-                            b1.Property<string>("Reason")
-                                .HasColumnType("text")
-                                .HasColumnName("reason");
-
-                            b1.Property<bool>("ResultsSent")
-                                .HasColumnType("boolean")
-                                .HasColumnName("results_sent");
-
-                            b1.Property<int>("SubscriptionId")
-                                .HasColumnType("integer");
-
-                            b1.Property<bool>("Successful")
-                                .HasColumnType("boolean")
-                                .HasColumnName("successful");
-
-                            b1.HasKey("subscription_id", "ExecutionTime");
-
-                            b1.ToTable("subscription_execution_record", "subscriptions");
-
-                            b1.WithOwner("Subscription")
-                                .HasForeignKey("subscription_id");
-
-                            b1.Navigation("Subscription");
-                        });
-
-                    b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule", b1 =>
-                        {
-                            b1.Property<int>("id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("integer");
-
-                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("id"));
 
                             b1.Property<string>("DayOfMonth")
                                 .HasMaxLength(256)
@@ -1127,34 +1101,17 @@ namespace FasTnT.Postgres.Migrations
                                 .HasColumnType("character varying(256)")
                                 .HasColumnName("second");
 
-                            b1.Property<int>("subscription_id")
-                                .HasColumnType("integer");
-
-                            b1.HasKey("id");
-
-                            b1.HasIndex("subscription_id")
-                                .IsUnique();
+                            b1.HasKey("subscription_id");
 
                             b1.ToTable("subscription_schedule", "subscriptions");
 
-                            b1.WithOwner("Subscription")
+                            b1.WithOwner()
                                 .HasForeignKey("subscription_id");
-
-                            b1.Navigation("Subscription");
                         });
-
-                    b.Navigation("ExecutionRecords");
 
                     b.Navigation("Parameters");
 
-                    b.Navigation("Query");
-
                     b.Navigation("Schedule");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
-                {
-                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>

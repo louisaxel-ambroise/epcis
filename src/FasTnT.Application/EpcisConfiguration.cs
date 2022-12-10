@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.Implementations;
+using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.UseCases.Captures;
 using FasTnT.Application.UseCases.Queries;

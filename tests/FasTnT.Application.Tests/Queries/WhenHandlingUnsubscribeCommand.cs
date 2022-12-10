@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.Implementations;
+using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
@@ -37,7 +37,7 @@ public class WhenHandlingUnsubscribeCommand
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
 
         Assert.AreEqual(0, Context.Set<Subscription>().Count());
-        Listener.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+        Listener.Verify(x => x.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [TestMethod]

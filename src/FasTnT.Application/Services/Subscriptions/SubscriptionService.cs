@@ -67,15 +67,16 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
 
     private void Execute(SubscriptionContext[] subscriptions, CancellationToken cancellationToken)
     {
-        using var scope = _serviceProvider.CreateScope();
-
+        var executionTime = DateTimeOffset.UtcNow;
         var subscriptionTasks = new Task[subscriptions.Length];
+
+        using var scope = _serviceProvider.CreateScope();
 
         for (var i = 0; i < subscriptions.Length; i++)
         {
             var subscriptionRunner = scope.ServiceProvider.GetService<ISubscriptionRunner>();
 
-            subscriptionTasks[i] = subscriptionRunner.RunAsync(subscriptions[i], cancellationToken);
+            subscriptionTasks[i] = subscriptionRunner.RunAsync(subscriptions[i], executionTime, cancellationToken);
         }
 
         try
@@ -111,19 +112,19 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         return Task.CompletedTask;
     }
 
-    public Task RemoveAsync(int subscriptionId, CancellationToken cancellationToken)
+    public Task RemoveAsync(string subscriptionName, CancellationToken cancellationToken)
     {
         Pulse(() =>
         {
-            if (_scheduledExecutions.Any(x => x.Key.Subscription.Id == subscriptionId))
+            if (_scheduledExecutions.Any(x => x.Key.Subscription.Name == subscriptionName))
             {
-                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Subscription.Id == subscriptionId).Key, out DateTime value);
+                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Subscription.Name == subscriptionName).Key, out DateTime value);
             }
             else
             {
                 foreach (var triggered in _triggeredSubscriptions)
                 {
-                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Subscription.Id == subscriptionId));
+                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Subscription.Name == subscriptionName));
                 }
             }
         });

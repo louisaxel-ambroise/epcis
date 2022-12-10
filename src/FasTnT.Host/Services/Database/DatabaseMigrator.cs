@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Host.Extensions;
+namespace FasTnT.Host.Services.Database;
 
 public static class DatabaseMigrator
 {

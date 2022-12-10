@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FasTnT.Sqlite.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20221208184921_ViewsAndTriggers")]
-    partial class ViewsAndTriggers
+    [Migration("20221210174958_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,6 +79,9 @@ namespace FasTnT.Sqlite.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("CaptureId")
+                        .HasColumnType("TEXT");
+
                     b.Property<long>("CaptureTime")
                         .HasColumnType("INTEGER");
 
@@ -86,8 +89,8 @@ namespace FasTnT.Sqlite.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("CorrectiveDeclarationTime")
-                        .HasColumnType("TEXT");
+                    b.Property<long?>("CorrectiveDeclarationTime")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("CorrectiveReason")
                         .HasMaxLength(256)
@@ -170,39 +173,17 @@ namespace FasTnT.Sqlite.Migrations
                     b.ToView("MasterDataHierarchy", (string)null);
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataProperty", b =>
-                {
-                    b.Property<string>("Attribute")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("TEXT");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("MasterDataProperty", (string)null);
-                });
-
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("CaptureDate")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("CaptureId")
                         .HasColumnType("TEXT");
+
+                    b.Property<long>("CaptureTime")
+                        .HasColumnType("INTEGER");
 
                     b.Property<long>("DocumentTime")
                         .HasColumnType("INTEGER");
@@ -228,8 +209,8 @@ namespace FasTnT.Sqlite.Migrations
                     b.Property<int>("SubscriptionId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("RequestId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("RequestId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("SubscriptionId", "RequestId");
 
@@ -241,6 +222,9 @@ namespace FasTnT.Sqlite.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Datasource")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Destination")
                         .HasColumnType("TEXT");
@@ -257,9 +241,6 @@ namespace FasTnT.Sqlite.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
-
-                    b.Property<int?>("QueryId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("QueryName")
                         .IsRequired()
@@ -279,7 +260,8 @@ namespace FasTnT.Sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QueryId");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Subscription", null, t =>
                         {
@@ -287,20 +269,47 @@ namespace FasTnT.Sqlite.Migrations
                         });
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", b =>
+                {
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ExecutionTime")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("ResultsSent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Successful")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("SubscriptionId", "ExecutionTime");
+
+                    b.ToTable("SubscriptionExecutionRecord", (string)null);
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
                 {
                     b.OwnsMany("FasTnT.Domain.Model.CustomQueries.StoredQueryParameter", "Parameters", b1 =>
                         {
-                            b1.Property<int>("QueryId")
-                                .HasColumnType("INTEGER");
+                            b1.Property<string>("QueryName")
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Name")
                                 .HasColumnType("TEXT");
 
+                            b1.Property<int>("QueryId")
+                                .HasColumnType("INTEGER");
+
                             b1.Property<string>("Values")
                                 .HasColumnType("TEXT");
 
-                            b1.HasKey("QueryId", "Name");
+                            b1.HasKey("QueryName", "Name");
+
+                            b1.HasIndex("QueryId");
 
                             b1.ToTable("StoredQueryParameter", (string)null);
 
@@ -890,63 +899,9 @@ namespace FasTnT.Sqlite.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.CustomQueries.StoredQuery", "Query")
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("QueryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", "ExecutionRecords", b1 =>
-                        {
-                            b1.Property<int>("SubscriptionId")
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<DateTimeOffset>("ExecutionTime")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Reason")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<bool>("ResultsSent")
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<bool>("Successful")
-                                .HasColumnType("INTEGER");
-
-                            b1.HasKey("SubscriptionId", "ExecutionTime");
-
-                            b1.ToTable("SubscriptionExecutionRecord", (string)null);
-
-                            b1.WithOwner("Subscription")
-                                .HasForeignKey("SubscriptionId");
-
-                            b1.Navigation("Subscription");
-                        });
-
-                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", "Parameters", b1 =>
-                        {
-                            b1.Property<int>("SubscriptionId")
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<string>("Name")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("Values")
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("SubscriptionId", "Name");
-
-                            b1.ToTable("SubscriptionParameter", (string)null);
-
-                            b1.WithOwner("Subscription")
-                                .HasForeignKey("SubscriptionId");
-
-                            b1.Navigation("Subscription");
-                        });
-
                     b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule", b1 =>
                         {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
+                            b1.Property<int>("SubscriptionId")
                                 .HasColumnType("INTEGER");
 
                             b1.Property<string>("DayOfMonth")
@@ -973,34 +928,43 @@ namespace FasTnT.Sqlite.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("TEXT");
 
-                            b1.Property<int>("SubscriptionId")
-                                .HasColumnType("INTEGER");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("SubscriptionId")
-                                .IsUnique();
+                            b1.HasKey("SubscriptionId");
 
                             b1.ToTable("SubscriptionSchedule", (string)null);
 
-                            b1.WithOwner("Subscription")
+                            b1.WithOwner()
                                 .HasForeignKey("SubscriptionId");
+                        });
+
+                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", "Parameters", b1 =>
+                        {
+                            b1.Property<int>("SubscriptionId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Name")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<int>("SubscriptionName")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Values")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("SubscriptionId", "Name");
+
+                            b1.HasIndex("SubscriptionName");
+
+                            b1.ToTable("SubscriptionParameter", (string)null);
+
+                            b1.WithOwner("Subscription")
+                                .HasForeignKey("SubscriptionName");
 
                             b1.Navigation("Subscription");
                         });
 
-                    b.Navigation("ExecutionRecords");
-
                     b.Navigation("Parameters");
 
-                    b.Navigation("Query");
-
                     b.Navigation("Schedule");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
-                {
-                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>

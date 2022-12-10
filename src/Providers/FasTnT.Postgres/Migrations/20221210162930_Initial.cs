@@ -34,8 +34,8 @@ namespace FasTnT.Postgres.Migrations
                 schema: "subscriptions",
                 columns: table => new
                 {
-                    requestid = table.Column<int>(name: "request_id", type: "integer", nullable: false),
-                    subscriptionid = table.Column<int>(name: "subscription_id", type: "integer", nullable: false)
+                    subscriptionid = table.Column<int>(name: "subscription_id", type: "integer", nullable: false),
+                    requestid = table.Column<string>(name: "request_id", type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -49,9 +49,9 @@ namespace FasTnT.Postgres.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CaptureId = table.Column<string>(type: "text", nullable: true),
-                    userid = table.Column<string>(name: "user_id", type: "character varying(50)", maxLength: 50, nullable: true),
-                    capturedate = table.Column<DateTimeOffset>(name: "capture_date", type: "timestamp with time zone", nullable: false),
+                    captureid = table.Column<string>(name: "capture_id", type: "text", nullable: true),
+                    userid = table.Column<string>(name: "user_id", type: "character varying(50)", maxLength: 50, nullable: false),
+                    capturetime = table.Column<DateTimeOffset>(name: "capture_time", type: "timestamp with time zone", nullable: false),
                     documenttime = table.Column<DateTimeOffset>(name: "document_time", type: "timestamp with time zone", nullable: false),
                     schemaversion = table.Column<string>(name: "schema_version", type: "text", nullable: false)
                 },
@@ -77,6 +77,44 @@ namespace FasTnT.Postgres.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "subscription",
+                schema: "subscriptions",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    queryname = table.Column<string>(name: "query_name", type: "text", nullable: false),
+                    datasource = table.Column<string>(type: "text", nullable: false),
+                    signaturetoken = table.Column<string>(name: "signature_token", type: "character varying(256)", maxLength: 256, nullable: true),
+                    formattername = table.Column<string>(name: "formatter_name", type: "character varying(30)", maxLength: 30, nullable: false),
+                    trigger = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    reportifempty = table.Column<bool>(name: "report_if_empty", type: "boolean", nullable: false),
+                    destination = table.Column<string>(type: "text", nullable: true),
+                    initialrecordtime = table.Column<DateTimeOffset>(name: "initial_record_time", type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_subscription", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "subscription_execution_record",
+                schema: "subscriptions",
+                columns: table => new
+                {
+                    subscriptionid = table.Column<int>(name: "subscription_id", type: "integer", nullable: false),
+                    executiontime = table.Column<DateTimeOffset>(name: "execution_time", type: "timestamp with time zone", nullable: false),
+                    successful = table.Column<bool>(type: "boolean", nullable: false),
+                    resultssent = table.Column<bool>(name: "results_sent", type: "boolean", nullable: false),
+                    reason = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_subscription_execution_record", x => new { x.subscriptionid, x.executiontime });
+                });
+
+            migrationBuilder.CreateTable(
                 name: "event",
                 schema: "epcis",
                 columns: table => new
@@ -84,12 +122,13 @@ namespace FasTnT.Postgres.Migrations
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     requestid = table.Column<int>(name: "request_id", type: "integer", nullable: true),
-                    CaptureTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     eventtime = table.Column<DateTimeOffset>(name: "event_time", type: "timestamp with time zone", nullable: false),
+                    capturetime = table.Column<DateTimeOffset>(name: "capture_time", type: "timestamp with time zone", nullable: false),
                     eventtimezoneoffset = table.Column<short>(name: "event_timezone_offset", type: "smallint", nullable: false),
                     type = table.Column<short>(type: "smallint", nullable: false),
                     action = table.Column<short>(type: "smallint", nullable: false),
-                    userid = table.Column<string>(name: "user_id", type: "character varying(36)", maxLength: 36, nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    CaptureId = table.Column<string>(type: "text", nullable: true),
                     eventid = table.Column<string>(name: "event_id", type: "character varying(256)", maxLength: 256, nullable: true),
                     certificationinfo = table.Column<string>(name: "certification_info", type: "character varying(256)", maxLength: 256, nullable: true),
                     readpoint = table.Column<string>(name: "read_point", type: "character varying(256)", maxLength: 256, nullable: true),
@@ -187,15 +226,15 @@ namespace FasTnT.Postgres.Migrations
                 {
                     name = table.Column<string>(type: "text", nullable: false),
                     queryid = table.Column<int>(name: "query_id", type: "integer", nullable: false),
-                    Queryid = table.Column<int>(type: "integer", nullable: false),
+                    QueryId = table.Column<int>(type: "integer", nullable: false),
                     values = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_stored_query_parameter", x => new { x.queryid, x.name });
                     table.ForeignKey(
-                        name: "FK_stored_query_parameter_stored_query_Queryid",
-                        column: x => x.Queryid,
+                        name: "FK_stored_query_parameter_stored_query_QueryId",
+                        column: x => x.QueryId,
                         principalSchema: "queries",
                         principalTable: "stored_query",
                         principalColumn: "id",
@@ -203,30 +242,48 @@ namespace FasTnT.Postgres.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "subscription",
+                name: "subscription_parameter",
                 schema: "subscriptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    queryname = table.Column<string>(name: "query_name", type: "character varying(256)", maxLength: 256, nullable: false),
-                    signaturetoken = table.Column<string>(name: "signature_token", type: "character varying(256)", maxLength: 256, nullable: true),
-                    formattername = table.Column<string>(name: "formatter_name", type: "character varying(30)", maxLength: 30, nullable: false),
-                    trigger = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    reportifempty = table.Column<bool>(name: "report_if_empty", type: "boolean", nullable: false),
-                    Destination = table.Column<string>(type: "text", nullable: true),
-                    queryid = table.Column<int>(name: "query_id", type: "integer", nullable: true),
-                    InitialRecordTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    subscriptionid = table.Column<int>(name: "subscription_id", type: "integer", nullable: false),
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    values = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_subscription", x => x.Id);
+                    table.PrimaryKey("PK_subscription_parameter", x => new { x.subscriptionid, x.name });
                     table.ForeignKey(
-                        name: "FK_subscription_stored_query_query_id",
-                        column: x => x.queryid,
-                        principalSchema: "queries",
-                        principalTable: "stored_query",
+                        name: "FK_subscription_parameter_subscription_SubscriptionId",
+                        column: x => x.SubscriptionId,
+                        principalSchema: "subscriptions",
+                        principalTable: "subscription",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "subscription_schedule",
+                schema: "subscriptions",
+                columns: table => new
+                {
+                    subscriptionid = table.Column<int>(name: "subscription_id", type: "integer", nullable: false),
+                    second = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    minute = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    hour = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    dayofmonth = table.Column<string>(name: "day_of_month", type: "character varying(256)", maxLength: 256, nullable: true),
+                    month = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    dayofweek = table.Column<string>(name: "day_of_week", type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_subscription_schedule", x => x.subscriptionid);
+                    table.ForeignKey(
+                        name: "FK_subscription_schedule_subscription_subscription_id",
+                        column: x => x.subscriptionid,
+                        principalSchema: "subscriptions",
+                        principalTable: "subscription",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -329,8 +386,8 @@ namespace FasTnT.Postgres.Migrations
                     textvalue = table.Column<string>(name: "text_value", type: "text", nullable: true),
                     numericvalue = table.Column<double>(name: "numeric_value", type: "double precision", nullable: true),
                     datevalue = table.Column<DateTimeOffset>(name: "date_value", type: "timestamp with time zone", nullable: true),
-                    EntityIndex = table.Column<int>(type: "integer", nullable: true),
-                    ParentIndex = table.Column<int>(type: "integer", nullable: true)
+                    entityindex = table.Column<int>(name: "entity_index", type: "integer", nullable: true),
+                    parentindex = table.Column<int>(name: "parent_index", type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -415,6 +472,29 @@ namespace FasTnT.Postgres.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "masterdata_attribute",
+                schema: "cbv",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    requestid = table.Column<int>(name: "request_id", type: "integer", nullable: false),
+                    masterdatatype = table.Column<string>(name: "masterdata_type", type: "character varying(256)", maxLength: 256, nullable: false),
+                    masterdataid = table.Column<string>(name: "masterdata_id", type: "character varying(256)", maxLength: 256, nullable: false),
+                    value = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_masterdata_attribute", x => new { x.requestid, x.masterdatatype, x.masterdataid, x.id });
+                    table.ForeignKey(
+                        name: "FK_masterdata_attribute_masterdata_request_id_masterdata_type_~",
+                        columns: x => new { x.requestid, x.masterdatatype, x.masterdataid },
+                        principalSchema: "cbv",
+                        principalTable: "masterdata",
+                        principalColumns: new[] { "request_id", "type", "id" },
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "masterdata_children",
                 schema: "cbv",
                 columns: table => new
@@ -430,29 +510,6 @@ namespace FasTnT.Postgres.Migrations
                     table.ForeignKey(
                         name: "FK_masterdata_children_masterdata_masterdata_request_id_master~",
                         columns: x => new { x.masterdatarequestid, x.masterdatatype, x.masterdataid },
-                        principalSchema: "cbv",
-                        principalTable: "masterdata",
-                        principalColumns: new[] { "request_id", "type", "id" },
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "MasterDataAttribute",
-                schema: "cbv",
-                columns: table => new
-                {
-                    id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    requestid = table.Column<int>(name: "request_id", type: "integer", nullable: false),
-                    masterdatatype = table.Column<string>(name: "masterdata_type", type: "character varying(256)", maxLength: 256, nullable: false),
-                    masterdataid = table.Column<string>(name: "masterdata_id", type: "character varying(256)", maxLength: 256, nullable: false),
-                    value = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MasterDataAttribute", x => new { x.requestid, x.masterdatatype, x.masterdataid, x.id });
-                    table.ForeignKey(
-                        name: "FK_MasterDataAttribute_masterdata_request_id_masterdata_type_m~",
-                        columns: x => new { x.requestid, x.masterdatatype, x.masterdataid },
                         principalSchema: "cbv",
                         principalTable: "masterdata",
                         principalColumns: new[] { "request_id", "type", "id" },
@@ -482,79 +539,6 @@ namespace FasTnT.Postgres.Migrations
                         principalSchema: "sbdh",
                         principalTable: "standard_business_header",
                         principalColumn: "request_id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "subscription_execution_record",
-                schema: "subscriptions",
-                columns: table => new
-                {
-                    executiontime = table.Column<DateTimeOffset>(name: "execution_time", type: "timestamp with time zone", nullable: false),
-                    subscriptionid = table.Column<int>(name: "subscription_id", type: "integer", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
-                    successful = table.Column<bool>(type: "boolean", nullable: false),
-                    resultssent = table.Column<bool>(name: "results_sent", type: "boolean", nullable: false),
-                    reason = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_subscription_execution_record", x => new { x.subscriptionid, x.executiontime });
-                    table.ForeignKey(
-                        name: "FK_subscription_execution_record_subscription_subscription_id",
-                        column: x => x.subscriptionid,
-                        principalSchema: "subscriptions",
-                        principalTable: "subscription",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "subscription_parameter",
-                schema: "subscriptions",
-                columns: table => new
-                {
-                    name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    subscriptionid = table.Column<int>(name: "subscription_id", type: "integer", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
-                    values = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_subscription_parameter", x => new { x.subscriptionid, x.name });
-                    table.ForeignKey(
-                        name: "FK_subscription_parameter_subscription_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalSchema: "subscriptions",
-                        principalTable: "subscription",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "subscription_schedule",
-                schema: "subscriptions",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    subscriptionid = table.Column<int>(name: "subscription_id", type: "integer", nullable: false),
-                    second = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    minute = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    hour = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    dayofmonth = table.Column<string>(name: "day_of_month", type: "character varying(256)", maxLength: 256, nullable: true),
-                    month = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    dayofweek = table.Column<string>(name: "day_of_week", type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_subscription_schedule", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_subscription_schedule_subscription_subscription_id",
-                        column: x => x.subscriptionid,
-                        principalSchema: "subscriptions",
-                        principalTable: "subscription",
-                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -619,10 +603,10 @@ namespace FasTnT.Postgres.Migrations
                 {
                     table.PrimaryKey("PK_masterdata_field", x => new { x.requestid, x.masterdatatype, x.masterdataid, x.attributeid, x.@namespace, x.name });
                     table.ForeignKey(
-                        name: "FK_masterdata_field_MasterDataAttribute_request_id_masterdata_~",
+                        name: "FK_masterdata_field_masterdata_attribute_request_id_masterdata~",
                         columns: x => new { x.requestid, x.masterdatatype, x.masterdataid, x.attributeid },
                         principalSchema: "cbv",
-                        principalTable: "MasterDataAttribute",
+                        principalTable: "masterdata_attribute",
                         principalColumns: new[] { "request_id", "masterdata_type", "masterdata_id", "id" },
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -651,29 +635,23 @@ namespace FasTnT.Postgres.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_stored_query_parameter_Queryid",
+                name: "IX_stored_query_parameter_QueryId",
                 schema: "subscriptions",
                 table: "stored_query_parameter",
-                column: "Queryid");
+                column: "QueryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_subscription_query_id",
+                name: "IX_subscription_name",
                 schema: "subscriptions",
                 table: "subscription",
-                column: "query_id");
+                column: "name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_subscription_parameter_SubscriptionId",
                 schema: "subscriptions",
                 table: "subscription_parameter",
                 column: "SubscriptionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_subscription_schedule_subscription_id",
-                schema: "subscriptions",
-                table: "subscription_schedule",
-                column: "subscription_id",
-                unique: true);
         }
 
         /// <inheritdoc />
@@ -752,12 +730,16 @@ namespace FasTnT.Postgres.Migrations
                 schema: "sbdh");
 
             migrationBuilder.DropTable(
-                name: "MasterDataAttribute",
+                name: "masterdata_attribute",
                 schema: "cbv");
 
             migrationBuilder.DropTable(
                 name: "sensor_element",
                 schema: "epcis");
+
+            migrationBuilder.DropTable(
+                name: "stored_query",
+                schema: "queries");
 
             migrationBuilder.DropTable(
                 name: "subscription",
@@ -770,10 +752,6 @@ namespace FasTnT.Postgres.Migrations
             migrationBuilder.DropTable(
                 name: "event",
                 schema: "epcis");
-
-            migrationBuilder.DropTable(
-                name: "stored_query",
-                schema: "queries");
 
             migrationBuilder.DropTable(
                 name: "request",

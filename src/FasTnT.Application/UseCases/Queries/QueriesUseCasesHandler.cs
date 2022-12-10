@@ -3,6 +3,7 @@ using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.Queries;
@@ -77,7 +78,7 @@ public class QueriesUseCasesHandler :
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' was stored by another user.");
         }
-        if (query.Subscriptions.Any())
+        if (await _context.Set<Subscription>().AnyAsync(x => x.QueryName == query.Name, cancellationToken))
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' has active subscriptions.");
         }

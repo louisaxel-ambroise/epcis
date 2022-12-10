@@ -15,7 +15,7 @@ public static partial class EpcisTestContext
         public void Apply(ModelBuilder modelBuilder)
         {
             var request = modelBuilder.Entity<Request>();
-            request.Property<int>("Id");
+            request.HasKey(x => x.Id);
             request.HasMany(x => x.Events);
             request.HasMany(x => x.Masterdata);
             request.OwnsOne(x => x.SubscriptionCallback);
@@ -32,8 +32,7 @@ public static partial class EpcisTestContext
             });
 
             var events = modelBuilder.Entity<Event>();
-            events.Property<int>("Id");
-            events.HasKey("Id");
+            events.HasKey(x => x.Id);
             events.Property(x => x.EventTimeZoneOffset).HasConversion(x => x.Value, x => x);
             events.OwnsMany(x => x.Epcs);
             events.OwnsMany(x => x.Sources);
@@ -48,23 +47,22 @@ public static partial class EpcisTestContext
             });
 
             var subscription = modelBuilder.Entity<Subscription>();
-            subscription.Property<int>("Id");
-            subscription.HasKey("Id");
+            subscription.HasKey(x => x.Id);
             subscription.OwnsOne(x => x.Schedule);
-            subscription.OwnsMany(x => x.ExecutionRecords);
             subscription.OwnsMany(x => x.Parameters, c =>
             {
                 c.Property(x => x.Values).HasConversion<ArrayConverter, ArrayComparer>();
             });
 
+            var executionRecords = modelBuilder.Entity<SubscriptionExecutionRecord>();
+            executionRecords.HasKey("SubscriptionId", "ExecutionTime");
+
             var query = modelBuilder.Entity<StoredQuery>();
-            query.Property<int>("Id");
-            query.HasKey("Id");
+            query.HasKey(x => x.Id);
             query.OwnsMany(x => x.Parameters, c =>
             {
                 c.Property(x => x.Values).HasConversion<ArrayConverter, ArrayComparer>();
             });
-            query.Ignore(x => x.Subscriptions);
             query.HasData
             (
                 new { Id = -2, Name = "SimpleEventQuery", DataSource = "SimpleEventQuery" },

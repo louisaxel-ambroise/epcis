@@ -16,13 +16,13 @@ public class SubscriptionsUseCasesHandler :
     IRegisterSubscriptionHandler
 {
     private readonly EpcisContext _context;
-    private readonly IEnumerable<IEpcisDataSource> _queries;
+    private readonly IEnumerable<IEpcisDataSource> _dataSources;
     private readonly ISubscriptionListener _listener;
 
-    public SubscriptionsUseCasesHandler(EpcisContext context, IEnumerable<IEpcisDataSource> queries, ISubscriptionListener listener)
+    public SubscriptionsUseCasesHandler(EpcisContext context, IEnumerable<IEpcisDataSource> dataSources, ISubscriptionListener listener)
     {
         _context = context;
-        _queries = queries;
+        _dataSources = dataSources;
         _listener = listener;
     }
 
@@ -37,7 +37,7 @@ public class SubscriptionsUseCasesHandler :
 
         _context.Remove(subscription);
         await _context.SaveChangesAsync(cancellationToken);
-        await _listener.RemoveAsync(subscription.Id, cancellationToken);
+        await _listener.RemoveAsync(subscription.Name, cancellationToken);
 
         return subscription;
     }
@@ -75,25 +75,25 @@ public class SubscriptionsUseCasesHandler :
 
     public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, IResultSender resultSender, CancellationToken cancellationToken)
     {
-        var query = await _context.Set<StoredQuery>()
-            .Include(x => x.Parameters)
-            .SingleOrDefaultAsync(x => x.Name == subscription.QueryName, cancellationToken);
-
         if (!SubscriptionValidator.IsValid(subscription))
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Subscription request is not valid");
         }
+        if (await _context.Set<Subscription>().AnyAsync(x => x.Name == subscription.Name, cancellationToken))
+        {
+            throw new EpcisException(ExceptionType.DuplicateSubscriptionException, $"Subscription '{subscription.Name}' already exists");
+        }
+        
+        var query = await _context.Set<StoredQuery>()
+            .SingleOrDefaultAsync(x => x.Name == subscription.QueryName, cancellationToken);
+
         if (query is null)
         {
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query with name '{subscription.QueryName}' not found");
         }
 
-        var dataSource = _queries.SingleOrDefault(x => x.Name == query.DataSource);
+        var dataSource = _dataSources.SingleOrDefault(x => x.Name == query.DataSource);
 
-        if (resultSender is null)
-        {
-            throw new EpcisException(ExceptionType.ImplementationException, $"Subscription result formatter '{subscription.FormatterName}' not found");
-        }
         if (dataSource is null)
         {
             throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query '{subscription.QueryName}' has an invalid dataSource");
@@ -102,12 +102,8 @@ public class SubscriptionsUseCasesHandler :
         {
             throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query '{subscription.QueryName}' does not allow subscription");
         }
-        if (await _context.Set<Subscription>().CountAsync(x => x.Name == subscription.Name, cancellationToken) > 0)
-        {
-            throw new EpcisException(ExceptionType.DuplicateSubscriptionException, $"Subscription '{subscription.Name}' already exists");
-        }
 
-        subscription.Query = query;
+        subscription.Datasource = query.DataSource;
         subscription.Parameters.AddRange(query.Parameters.Select(x => new SubscriptionParameter
         {
             Name = x.Name,

@@ -15,11 +15,11 @@ internal class SqliteModelConfiguration : IModelConfiguration
     {
         var request = modelBuilder.Entity<Request>();
         request.ToTable(nameof(Request), builder => builder.HasTrigger("SubscriptionPendingRequests"));
-        request.Property<int>("Id");
-        request.HasKey("Id");
+        request.HasKey(x => x.Id);
+        request.Property(x => x.Id).ValueGeneratedOnAdd();
         request.Property(x => x.UserId).HasMaxLength(50);
         request.Property(x => x.DocumentTime).HasConversion(new DateTimeOffsetToBinaryConverter());
-        request.Property(x => x.CaptureDate).HasConversion(new DateTimeOffsetToBinaryConverter());
+        request.Property(x => x.CaptureTime).HasConversion(new DateTimeOffsetToBinaryConverter());
         request.Property(x => x.SchemaVersion).IsRequired(true);
         request.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("RequestId");
         request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId");
@@ -64,8 +64,8 @@ internal class SqliteModelConfiguration : IModelConfiguration
         var masterData = modelBuilder.Entity<MasterData>();
         masterData.ToView("CurrentMasterdata");
         masterData.ToTable(nameof(MasterData));
-        masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
         masterData.Property<int>("RequestId");
+        masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
         masterData.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
         masterData.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
         masterData.OwnsMany(x => x.Attributes, c =>
@@ -109,17 +109,10 @@ internal class SqliteModelConfiguration : IModelConfiguration
         mdHierarchy.Property(x => x.Type).IsRequired();
         mdHierarchy.HasNoKey();
 
-        var mdProperty = modelBuilder.Entity<MasterDataProperty>();
-        mdProperty.ToView(nameof(MasterDataProperty));
-        mdProperty.HasNoKey();
-        mdProperty.Property(x => x.Id).IsRequired();
-        mdProperty.Property(x => x.Type).IsRequired();
-        mdProperty.Property(x => x.Attribute).IsRequired();
-
         var evt = modelBuilder.Entity<Event>();
         evt.ToTable(nameof(Event));
-        evt.Property<int>("Id").ValueGeneratedOnAdd();
-        evt.HasKey("Id");
+        evt.HasKey(x => x.Id);
+        evt.Property(x => x.Id).ValueGeneratedOnAdd();
         evt.Property(x => x.UserId).HasMaxLength(36);
         evt.Property(x => x.CaptureTime).IsRequired(true).HasConversion(new DateTimeOffsetToBinaryConverter());
         evt.Property(x => x.EventTime).IsRequired(true).HasConversion(new DateTimeOffsetToBinaryConverter());
@@ -133,7 +126,7 @@ internal class SqliteModelConfiguration : IModelConfiguration
         evt.Property(x => x.BusinessStep).HasMaxLength(256).IsRequired(false);
         evt.Property(x => x.Disposition).HasMaxLength(256).IsRequired(false);
         evt.Property(x => x.TransformationId).HasMaxLength(256).IsRequired(false);
-        evt.Property(x => x.CorrectiveDeclarationTime).IsRequired(false);
+        evt.Property(x => x.CorrectiveDeclarationTime).IsRequired(false).HasConversion(new DateTimeOffsetToBinaryConverter()); ;
         evt.Property(x => x.CorrectiveReason).HasMaxLength(256).IsRequired(false);
         evt.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
         evt.OwnsMany(x => x.Epcs, c =>
@@ -222,64 +215,62 @@ internal class SqliteModelConfiguration : IModelConfiguration
 
         var subscription = modelBuilder.Entity<Subscription>();
         subscription.ToTable(nameof(Subscription), builder => builder.HasTrigger("SubscriptionInitialRequests"));
+        subscription.HasKey(x => x.Id);
+        subscription.Property(x => x.Id).ValueGeneratedOnAdd();
         subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.ReportIfEmpty).IsRequired(true);
         subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.SignatureToken).IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.FormatterName).IsRequired(true).HasMaxLength(30);
-        subscription.HasOne(x => x.Query).WithMany().HasForeignKey("QueryId").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
         subscription.OwnsOne(x => x.Schedule, c =>
         {
             c.ToTable(nameof(SubscriptionSchedule));
-            c.Property<int>("Id").IsRequired(true);
-            c.HasKey("Id");
             c.Property(x => x.Second).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.Minute).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.Hour).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.DayOfWeek).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.DayOfMonth).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.Month).HasMaxLength(256).IsRequired(false);
-            c.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<SubscriptionSchedule>("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
         });
         subscription.OwnsMany(x => x.Parameters, c =>
         {
             c.ToTable(nameof(SubscriptionParameter));
             c.Property<int>("SubscriptionId");
             c.HasKey("SubscriptionId", nameof(SubscriptionParameter.Name));
-            c.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionName").OnDelete(DeleteBehavior.Cascade);
             c.Property(x => x.Values).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
         });
-        subscription.OwnsMany(x => x.ExecutionRecords, c =>
-        {
-            c.ToTable(nameof(SubscriptionExecutionRecord));
-            c.Property<int>("SubscriptionId");
-            c.HasKey("SubscriptionId", "ExecutionTime");
-            c.Property(x => x.ExecutionTime).IsRequired(true);
-            c.Property(x => x.ResultsSent).IsRequired(true);
-            c.Property(x => x.Successful).IsRequired(true);
-            c.Property(x => x.Reason).IsRequired(false);
-            c.HasOne(x => x.Subscription).WithMany(x => x.ExecutionRecords).HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
-        });
+        subscription.HasIndex(x => x.Name).IsUnique();
+
+        var executionRecord = modelBuilder.Entity<SubscriptionExecutionRecord>();
+        executionRecord.ToTable(nameof(SubscriptionExecutionRecord));
+        executionRecord.HasKey("SubscriptionId", "ExecutionTime");
+        executionRecord.Property(x => x.SubscriptionId).IsRequired(true);
+        executionRecord.Property(x => x.ExecutionTime).IsRequired(true).HasConversion(new DateTimeOffsetToBinaryConverter()); ;
+        executionRecord.Property(x => x.ResultsSent).IsRequired(true);
+        executionRecord.Property(x => x.Successful).IsRequired(true);
+        executionRecord.Property(x => x.Reason).IsRequired(false);
 
         var pendingRequests = modelBuilder.Entity<PendingRequest>();
         pendingRequests.ToTable(nameof(PendingRequest));
+        pendingRequests.Property(x => x.SubscriptionId);
+        pendingRequests.Property(x => x.RequestId);
         pendingRequests.HasKey(nameof(PendingRequest.SubscriptionId), nameof(PendingRequest.RequestId));
 
         var storedQuery = modelBuilder.Entity<StoredQuery>();
         storedQuery.ToTable(nameof(StoredQuery));
-        storedQuery.Property<int>("Id").ValueGeneratedOnAdd();
-        storedQuery.HasKey("Id");
+        storedQuery.HasKey(x => x.Id);
+        storedQuery.Property(x => x.Id).ValueGeneratedOnAdd();
         storedQuery.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         storedQuery.HasIndex(x => x.Name).IsUnique();
         storedQuery.Property(x => x.DataSource).IsRequired(true).HasMaxLength(30);
         storedQuery.Property(x => x.UserId).IsRequired(false).HasMaxLength(80);
-        storedQuery.HasMany(x => x.Subscriptions).WithOne(x => x.Query);
         storedQuery.OwnsMany(x => x.Parameters, c =>
         {
             c.ToTable(nameof(StoredQueryParameter));
-            c.Property<int>("QueryId");
-            c.HasKey("QueryId", nameof(StoredQueryParameter.Name));
+            c.Property<string>("QueryName");
+            c.HasKey("QueryName", nameof(StoredQueryParameter.Name));
             c.Property(x => x.Values).IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
         });
         storedQuery.HasData
@@ -287,5 +278,6 @@ internal class SqliteModelConfiguration : IModelConfiguration
             new { Id = -2, Name = "SimpleEventQuery", DataSource = "SimpleEventQuery" },
             new { Id = -1, Name = "SimpleMasterDataQuery", DataSource = "SimpleMasterDataQuery" }
         );
+        storedQuery.HasIndex(x => x.Name).IsUnique();
     }
 }

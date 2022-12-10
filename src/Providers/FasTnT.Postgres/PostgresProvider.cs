@@ -14,7 +14,7 @@ public static class PostgresProvider
         {
             x.MigrationsAssembly(typeof(PostgresProvider).Assembly.FullName);
             x.CommandTimeout(commandTimeout);
-            x.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
+            x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
         }));
     }
 }

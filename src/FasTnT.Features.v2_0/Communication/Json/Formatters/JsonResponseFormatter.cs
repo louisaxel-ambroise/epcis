@@ -122,7 +122,7 @@ public static class JsonResponseFormatter
         {
             ["captureID"] = request.CaptureId,
             ["createdAt"] = request.DocumentTime,
-            ["finishedAt"] = request.CaptureDate,
+            ["finishedAt"] = request.CaptureTime,
             ["running"] = false,
             ["success"] = true,
             ["captureErrorBehaviour"] = "rollback",

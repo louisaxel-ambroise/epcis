@@ -20,12 +20,12 @@ public class SubscriptionRunner : ISubscriptionRunner
         _logger = logger;
     }
 
-    public async Task RunAsync(SubscriptionContext context, CancellationToken cancellationToken)
+    public async Task RunAsync(SubscriptionContext context, DateTimeOffset executionTime, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Running Subscription {Name} ({Id})", context.Subscription.Name, context.Subscription.Id);
+        _logger.LogInformation("Running Subscription {Name}", context.Subscription.Name);
 
-        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = DateTimeOffset.UtcNow, ResultsSent = true, Successful = true, SubscriptionId = context.Subscription.Id };
-        var dataSource = _dataSources.Single(x => x.Name == context.Subscription.Query.DataSource);
+        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = executionTime, ResultsSent = true, Successful = true, SubscriptionId = context.Subscription.Id };
+        var dataSource = _dataSources.Single(x => x.Name == context.Subscription.Datasource);
         var pendingRequests = await _context.Set<PendingRequest>().Where(x => x.SubscriptionId == context.Subscription.Id).ToListAsync(cancellationToken);
         var resultsSent = false;
 
@@ -36,7 +36,7 @@ public class SubscriptionRunner : ISubscriptionRunner
             if (pendingRequests.Any())
             {
                 var parameters = context.Subscription.Parameters
-                    .Append(QueryParameter.Create("EQ_requestId", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()))
+                    .Append(QueryParameter.Create("EQ_requestID", pendingRequests.Select(x => x.RequestId).ToArray()))
                     .ToArray();
                 var epcisData = await dataSource.ExecuteAsync(parameters, cancellationToken);
 

@@ -20,13 +20,14 @@ public class PostgresModelConfiguration : IModelConfiguration
     {
         var request = modelBuilder.Entity<Request>();
         request.ToTable("request", Epcis, builder => builder.HasTrigger("subscription_pending_requests"));
-        request.Property<int>("id");
-        request.HasKey("id");
-        request.Property(x => x.UserId).HasColumnName("user_id").HasMaxLength(50);
+        request.HasKey(x => x.Id);
+        request.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
+        request.Property(x => x.UserId).HasColumnName("user_id").HasMaxLength(50).IsRequired();
         request.Property(x => x.DocumentTime).HasColumnName("document_time");
-        request.Property(x => x.CaptureDate).HasColumnName("capture_date");
+        request.Property(x => x.CaptureId).HasColumnName("capture_id");
+        request.Property(x => x.CaptureTime).HasColumnName("capture_time");
         request.Property(x => x.SchemaVersion).HasColumnName("schema_version").IsRequired(true);
-        request.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("request_id");
+        request.HasMany(x => x.Events).WithOne().HasForeignKey("request_id");
         request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("request_id");
         request.OwnsOne(x => x.StandardBusinessHeader, c =>
         {
@@ -39,7 +40,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.Property(x => x.InstanceIdentifier).HasColumnName("instance_identifier").HasMaxLength(256).IsRequired(true);
             c.Property(x => x.Type).HasColumnName("type").HasMaxLength(256).IsRequired(true);
             c.Property(x => x.CreationDateTime).HasColumnName("creation_date_time").IsRequired(false);
-            c.HasOne(x => x.Request).WithOne(x => x.StandardBusinessHeader).HasForeignKey<StandardBusinessHeader>("request_id").IsRequired(true).OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Request).WithOne(x => x.StandardBusinessHeader).HasForeignKey<StandardBusinessHeader>("request_id");
             c.OwnsMany(x => x.ContactInformations, c =>
             {
                 c.ToTable("contact_information", Sbdh);
@@ -52,7 +53,7 @@ public class PostgresModelConfiguration : IModelConfiguration
                 c.Property(x => x.FaxNumber).HasColumnName("fax_number").HasMaxLength(256).IsRequired(false);
                 c.Property(x => x.TelephoneNumber).HasColumnName("telephone_number").IsRequired(false);
                 c.Property(x => x.ContactTypeIdentifier).HasColumnName("contact_type_identifier").IsRequired(false);
-                c.HasOne(x => x.Header).WithMany(x => x.ContactInformations).HasForeignKey("request_id").OnDelete(DeleteBehavior.Cascade);
+                c.HasOne(x => x.Header).WithMany(x => x.ContactInformations).HasForeignKey("request_id");
             });
         });
         request.OwnsOne(x => x.SubscriptionCallback, c =>
@@ -60,7 +61,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.ToTable("subscription_callback", Epcis);
             c.Property<int>("request_id");
             c.HasKey("request_id");
-            c.HasOne(x => x.Request).WithOne(x => x.SubscriptionCallback).HasForeignKey<SubscriptionCallback>("request_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Request).WithOne(x => x.SubscriptionCallback).HasForeignKey<SubscriptionCallback>("request_id");
             c.Property(x => x.CallbackType).HasColumnName("callback_type").IsRequired(true).HasConversion<short>();
             c.Property(x => x.Reason).HasColumnName("reason").IsRequired(false);
             c.Property(x => x.SubscriptionId).HasColumnName("subscription_id").IsRequired(true).HasMaxLength(256);
@@ -75,14 +76,14 @@ public class PostgresModelConfiguration : IModelConfiguration
         masterData.Property(x => x.Id).HasColumnName("id").HasMaxLength(256).IsRequired(true);
         masterData.OwnsMany(x => x.Attributes, c =>
         {
-            c.ToTable(nameof(MasterDataAttribute), Cbv);
+            c.ToTable("masterdata_attribute", Cbv);
             c.Property<int>("request_id");
             c.Property<string>("masterdata_type").HasMaxLength(256);
             c.Property<string>("masterdata_id").HasMaxLength(256);
             c.HasKey("request_id", "masterdata_type", "masterdata_id", "Id");
             c.Property(x => x.Id).HasColumnName("id").HasMaxLength(256).IsRequired(true);
             c.Property(x => x.Value).HasColumnName("value").HasMaxLength(256).IsRequired(true);
-            c.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("request_id", "masterdata_type", "masterdata_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("request_id", "masterdata_type", "masterdata_id");
             c.OwnsMany(x => x.Fields, c =>
             {
                 c.ToTable("masterdata_field", Cbv);
@@ -96,7 +97,7 @@ public class PostgresModelConfiguration : IModelConfiguration
                 c.Property(x => x.Namespace).HasColumnName("namespace").HasMaxLength(256).IsRequired(true);
                 c.Property(x => x.Name).HasColumnName("name").HasMaxLength(256).IsRequired(true);
                 c.Property(x => x.Value).HasColumnName("value").HasMaxLength(256).IsRequired(false);
-                c.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("request_id", "masterdata_type", "masterdata_id", "attribute_id").OnDelete(DeleteBehavior.Cascade);
+                c.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("request_id", "masterdata_type", "masterdata_id", "attribute_id");
             });
         });
         masterData.OwnsMany(x => x.Children, c =>
@@ -106,7 +107,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.Property<string>("masterdata_type").HasMaxLength(256);
             c.Property<string>("masterdata_id").HasMaxLength(256);
             c.HasKey("masterdata_request_id", "masterdata_type", "masterdata_id", "ChildrenId");
-            c.HasOne(x => x.MasterData).WithMany(x => x.Children).HasForeignKey("masterdata_request_id", "masterdata_type", "masterdata_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.MasterData).WithMany(x => x.Children).HasForeignKey("masterdata_request_id", "masterdata_type", "masterdata_id");
             c.Property(x => x.ChildrenId).HasColumnName("children_id").HasMaxLength(256);
         });
 
@@ -117,18 +118,11 @@ public class PostgresModelConfiguration : IModelConfiguration
         mdHierarchy.Property(x => x.Type).HasColumnName("type").IsRequired();
         mdHierarchy.HasNoKey();
 
-        var mdProperty = modelBuilder.Entity<MasterDataProperty>();
-        mdProperty.ToView("masterdata_property", Cbv);
-        mdProperty.HasNoKey();
-        mdProperty.Property(x => x.Id).HasColumnName("id").IsRequired();
-        mdProperty.Property(x => x.Type).HasColumnName("type").IsRequired();
-        mdProperty.Property(x => x.Attribute).HasColumnName("attribute").IsRequired();
-
         var evt = modelBuilder.Entity<Event>();
         evt.ToTable("event", Epcis);
-        evt.Property<int>("id").ValueGeneratedOnAdd();
-        evt.HasKey("id");
-        evt.Property(x => x.UserId).HasColumnName("user_id").HasMaxLength(36);
+        evt.HasKey(x => x.Id);
+        evt.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
+        evt.Property(x => x.CaptureTime).HasColumnName("capture_time").IsRequired(true);
         evt.Property(x => x.EventTime).HasColumnName("event_time").IsRequired(true);
         evt.Property(x => x.Type).HasColumnName("type").IsRequired(true).HasConversion<short>();
         evt.Property(x => x.EventTimeZoneOffset).HasColumnName("event_timezone_offset").IsRequired(true).HasConversion(x => x.Value, x => x);
@@ -152,7 +146,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.Property(x => x.Id).HasColumnName("id").HasMaxLength(256).IsRequired(true);
             c.Property(x => x.Quantity).HasColumnName("quantity").IsRequired(false);
             c.Property(x => x.UnitOfMeasure).HasColumnName("unit_of_measure").IsRequired(false).HasMaxLength(10);
-            c.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("event_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("event_id");
         });
         evt.OwnsMany(x => x.Sources, c =>
         {
@@ -161,7 +155,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.HasKey("event_id", "Type", "Id");
             c.Property(x => x.Type).HasColumnName("type").IsRequired(true);
             c.Property(x => x.Id).HasColumnName("id").HasMaxLength(256).IsRequired(true);
-            c.HasOne(x => x.Event).WithMany(x => x.Sources).HasForeignKey("event_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Event).WithMany(x => x.Sources).HasForeignKey("event_id");
         });
         evt.OwnsMany(x => x.Destinations, c =>
         {
@@ -170,7 +164,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.HasKey("event_id", "Type", "Id");
             c.Property(x => x.Type).HasColumnName("type").IsRequired(true);
             c.Property(x => x.Id).HasColumnName("id").HasMaxLength(256).IsRequired(true);
-            c.HasOne(x => x.Event).WithMany(x => x.Destinations).HasForeignKey("event_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Event).WithMany(x => x.Destinations).HasForeignKey("event_id");
         });
         evt.OwnsMany(x => x.Transactions, c =>
         {
@@ -179,7 +173,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.HasKey("event_id", "Type", "Id");
             c.Property(x => x.Type).HasColumnName("type").IsRequired(true);
             c.Property(x => x.Id).HasColumnName("id").HasMaxLength(256).IsRequired(true);
-            c.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("event_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("event_id");
         });
         evt.OwnsMany(x => x.PersistentDispositions, c =>
         {
@@ -188,7 +182,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.HasKey("event_id", "Type", "Id");
             c.Property(x => x.Type).HasColumnName("type").IsRequired(true);
             c.Property(x => x.Id).HasColumnName("id").HasMaxLength(256).IsRequired(true);
-            c.HasOne(x => x.Event).WithMany(x => x.PersistentDispositions).HasForeignKey("event_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Event).WithMany(x => x.PersistentDispositions).HasForeignKey("event_id");
         });
         evt.OwnsMany(x => x.SensorElements, c =>
         {
@@ -204,7 +198,7 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.Property(x => x.EndTime).HasColumnName("end_time");
             c.Property(x => x.DataProcessingMethod).HasColumnName("data_processing_method");
             c.Property(x => x.BizRules).HasColumnName("biz_rules");
-            c.HasOne(x => x.Event).WithMany(x => x.SensorElements).HasForeignKey("event_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Event).WithMany(x => x.SensorElements).HasForeignKey("event_id");
             c.OwnsMany(x => x.Reports, c =>
             {
                 c.ToTable("sensor_report", Epcis);
@@ -233,7 +227,7 @@ public class PostgresModelConfiguration : IModelConfiguration
                 c.Property(x => x.UnitOfMeasure).HasColumnName("unit_of_measure");
                 c.Property(x => x.SDev).HasColumnName("sdev");
                 c.Property(x => x.DeviceMetadata).HasColumnName("device_metadata");
-                c.HasOne(x => x.SensorElement).WithMany(x => x.Reports).HasForeignKey("event_id", "sensor_index").OnDelete(DeleteBehavior.Cascade);
+                c.HasOne(x => x.SensorElement).WithMany(x => x.Reports).HasForeignKey("event_id", "sensor_index");
             });
         });
         evt.OwnsMany(x => x.Fields, c =>
@@ -242,13 +236,15 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.Property<int>("event_id");
             c.HasKey("event_id", "Index");
             c.Property(x => x.Index).HasColumnName("index").IsRequired(true).ValueGeneratedNever();
+            c.Property(x => x.ParentIndex).HasColumnName("parent_index").ValueGeneratedNever();
+            c.Property(x => x.EntityIndex).HasColumnName("entity_index").ValueGeneratedNever();
             c.Property(x => x.Type).HasColumnName("type").IsRequired(true).HasConversion<short>();
             c.Property(x => x.Name).HasColumnName("name").HasMaxLength(256).IsRequired(true);
             c.Property(x => x.Namespace).HasColumnName("namespace").HasMaxLength(256).IsRequired(false);
             c.Property(x => x.TextValue).HasColumnName("text_value").IsRequired(false);
             c.Property(x => x.NumericValue).HasColumnName("numeric_value").IsRequired(false);
             c.Property(x => x.DateValue).HasColumnName("date_value").IsRequired(false);
-            c.HasOne(x => x.Event).WithMany(x => x.Fields).HasForeignKey("event_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Event).WithMany(x => x.Fields).HasForeignKey("event_id");
         });
         evt.OwnsMany(x => x.CorrectiveEventIds, c =>
         {
@@ -256,67 +252,66 @@ public class PostgresModelConfiguration : IModelConfiguration
             c.Property<int>("event_id");
             c.HasKey("event_id", "CorrectiveId");
             c.Property(x => x.CorrectiveId).HasColumnName("corrective_id").IsRequired(true).HasMaxLength(256);
-            c.HasOne(x => x.Event).WithMany(x => x.CorrectiveEventIds).HasForeignKey("event_id").OnDelete(DeleteBehavior.Cascade);
+            c.HasOne(x => x.Event).WithMany(x => x.CorrectiveEventIds).HasForeignKey("event_id");
         });
 
         var subscription = modelBuilder.Entity<Subscription>();
         subscription.ToTable("subscription", Subscriptions, builder => builder.HasTrigger("subscription_initial_requests"));
+        subscription.HasKey(x => x.Id);
+        subscription.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
         subscription.Property(x => x.Name).HasColumnName("name").IsRequired(true).HasMaxLength(256);
-        subscription.Property(x => x.QueryName).HasColumnName("query_name").IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.ReportIfEmpty).HasColumnName("report_if_empty").IsRequired(true);
         subscription.Property(x => x.Trigger).HasColumnName("trigger").IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.SignatureToken).HasColumnName("signature_token").IsRequired(false).HasMaxLength(256);
+        subscription.Property(x => x.InitialRecordTime).HasColumnName("initial_record_time");
+        subscription.Property(x => x.Destination).HasColumnName("destination");
         subscription.Property(x => x.FormatterName).HasColumnName("formatter_name").IsRequired(true).HasMaxLength(30);
-        subscription.HasOne(x => x.Query).WithMany().HasForeignKey("query_id").IsRequired(false).OnDelete(DeleteBehavior.Cascade);
+        subscription.Property(x => x.QueryName).HasColumnName("query_name").IsRequired(true);
+        subscription.Property(x => x.Datasource).HasColumnName("datasource").IsRequired(true);
         subscription.OwnsOne(x => x.Schedule, c =>
         {
             c.ToTable("subscription_schedule", Subscriptions);
-            c.Property<int>("id").IsRequired(true);
-            c.HasKey("id");
+            c.Property<int>("subscription_id");
+            c.HasKey("subscription_id");
             c.Property(x => x.Second).HasColumnName("second").HasMaxLength(256).IsRequired(false);
             c.Property(x => x.Minute).HasColumnName("minute").HasMaxLength(256).IsRequired(false);
             c.Property(x => x.Hour).HasColumnName("hour").HasMaxLength(256).IsRequired(false);
             c.Property(x => x.DayOfWeek).HasColumnName("day_of_week").HasMaxLength(256).IsRequired(false);
             c.Property(x => x.DayOfMonth).HasColumnName("day_of_month").HasMaxLength(256).IsRequired(false);
             c.Property(x => x.Month).HasColumnName("month").HasMaxLength(256).IsRequired(false);
-            c.HasOne(x => x.Subscription).WithOne(x => x.Schedule).HasForeignKey<SubscriptionSchedule>("subscription_id").OnDelete(DeleteBehavior.Cascade);
         });
         subscription.OwnsMany(x => x.Parameters, c =>
         {
             c.ToTable("subscription_parameter", Subscriptions);
             c.Property<int>("subscription_id");
             c.HasKey("subscription_id", "Name");
-            c.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
             c.Property(x => x.Values).HasColumnName("values").IsRequired(false).HasConversion<ArrayConverter, ArrayComparer>();
             c.Property(x => x.Name).HasColumnName("name").IsRequired(true).HasMaxLength(256);
         });
-        subscription.OwnsMany(x => x.ExecutionRecords, c =>
-        {
-            c.ToTable("subscription_execution_record", Subscriptions);
-            c.Property<int>("subscription_id");
-            c.HasKey("subscription_id", "ExecutionTime");
-            c.Property(x => x.ExecutionTime).HasColumnName("execution_time").IsRequired(true);
-            c.Property(x => x.ResultsSent).HasColumnName("results_sent").IsRequired(true);
-            c.Property(x => x.Successful).HasColumnName("successful").IsRequired(true);
-            c.Property(x => x.Reason).HasColumnName("reason").IsRequired(false);
-            c.HasOne(x => x.Subscription).WithMany(x => x.ExecutionRecords).HasForeignKey("subscription_id").OnDelete(DeleteBehavior.Cascade);
-        });
+        subscription.HasIndex(x => x.Name).IsUnique();
+
+        var executionRecord = modelBuilder.Entity<SubscriptionExecutionRecord>();
+        executionRecord.ToTable("subscription_execution_record", Subscriptions);
+        executionRecord.HasKey("SubscriptionId", "ExecutionTime");
+        executionRecord.Property(x => x.SubscriptionId).HasColumnName("subscription_id").IsRequired(true);
+        executionRecord.Property(x => x.ExecutionTime).HasColumnName("execution_time").IsRequired(true);
+        executionRecord.Property(x => x.ResultsSent).HasColumnName("results_sent").IsRequired(true);
+        executionRecord.Property(x => x.Successful).HasColumnName("successful").IsRequired(true);
+        executionRecord.Property(x => x.Reason).HasColumnName("reason").IsRequired(false);
 
         var pendingRequests = modelBuilder.Entity<PendingRequest>();
         pendingRequests.ToTable("pending_request", Subscriptions);
-        pendingRequests.HasKey("SubscriptionId", "RequestId");
-        pendingRequests.Property(x => x.SubscriptionId).HasColumnName("subscription_id").IsRequired(true);
-        pendingRequests.Property(x => x.RequestId).HasColumnName("request_id").IsRequired(true);
+        pendingRequests.Property(x => x.SubscriptionId).HasColumnName("subscription_id");
+        pendingRequests.Property(x => x.RequestId).HasColumnName("request_id");
+        pendingRequests.HasKey(nameof(PendingRequest.SubscriptionId), nameof(PendingRequest.RequestId));
 
         var storedQuery = modelBuilder.Entity<StoredQuery>();
         storedQuery.ToTable("stored_query", Queries);
-        storedQuery.Property<int>("id").ValueGeneratedOnAdd();
-        storedQuery.HasKey("id");
+        storedQuery.HasKey(x => x.Id);
+        storedQuery.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
         storedQuery.Property(x => x.Name).HasColumnName("name").IsRequired(true).HasMaxLength(256);
-        storedQuery.HasIndex(x => x.Name).IsUnique();
         storedQuery.Property(x => x.DataSource).HasColumnName("data_source").IsRequired(true).HasMaxLength(30);
         storedQuery.Property(x => x.UserId).HasColumnName("user_id").IsRequired(false).HasMaxLength(80);
-        storedQuery.HasMany(x => x.Subscriptions).WithOne(x => x.Query);
         storedQuery.OwnsMany(x => x.Parameters, c =>
         {
             c.ToTable("stored_query_parameter", Subscriptions);
@@ -327,8 +322,9 @@ public class PostgresModelConfiguration : IModelConfiguration
         });
         storedQuery.HasData
         (
-            new { id = -2, Name = "SimpleEventQuery", DataSource = "SimpleEventQuery" },
-            new { id = -1, Name = "SimpleMasterDataQuery", DataSource = "SimpleMasterDataQuery" }
+            new { Id = -2, Name = "SimpleEventQuery", DataSource = "SimpleEventQuery" },
+            new { Id = -1, Name = "SimpleMasterDataQuery", DataSource = "SimpleMasterDataQuery" }
         );
+        storedQuery.HasIndex(x => x.Name).IsUnique();
     }
 }

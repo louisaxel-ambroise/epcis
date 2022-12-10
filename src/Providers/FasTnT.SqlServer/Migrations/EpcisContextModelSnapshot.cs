@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FasTnT.Migrations.SqlServer.Migrations
+namespace FasTnT.SqlServer.Migrations
 {
     [DbContext(typeof(EpcisContext))]
     partial class EpcisContextModelSnapshot : ModelSnapshot
@@ -85,6 +85,9 @@ namespace FasTnT.Migrations.SqlServer.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<string>("CaptureId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTimeOffset>("CaptureTime")
                         .HasColumnType("datetimeoffset");
 
@@ -128,8 +131,7 @@ namespace FasTnT.Migrations.SqlServer.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("UserId")
-                        .HasMaxLength(36)
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -176,28 +178,6 @@ namespace FasTnT.Migrations.SqlServer.Migrations
                     b.ToView("MasterDataHierarchy", "Cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataProperty", b =>
-                {
-                    b.Property<string>("Attribute")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable((string)null);
-
-                    b.ToView("MasterDataProperty", "Cbv");
-                });
-
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
                 {
                     b.Property<int>("Id")
@@ -206,11 +186,11 @@ namespace FasTnT.Migrations.SqlServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTimeOffset>("CaptureDate")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<string>("CaptureId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CaptureTime")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateTimeOffset>("DocumentTime")
                         .HasColumnType("datetimeoffset");
@@ -236,12 +216,12 @@ namespace FasTnT.Migrations.SqlServer.Migrations
                     b.Property<int>("SubscriptionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("RequestId")
-                        .HasColumnType("int");
+                    b.Property<string>("RequestId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("SubscriptionId", "RequestId");
 
-                    b.ToTable("PendingRequest", "Subscription");
+                    b.ToTable("PendingRequest", "Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
@@ -251,6 +231,9 @@ namespace FasTnT.Migrations.SqlServer.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Datasource")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Destination")
                         .HasColumnType("nvarchar(max)");
@@ -267,9 +250,6 @@ namespace FasTnT.Migrations.SqlServer.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<int?>("QueryId")
-                        .HasColumnType("int");
 
                     b.Property<string>("QueryName")
                         .IsRequired()
@@ -289,12 +269,35 @@ namespace FasTnT.Migrations.SqlServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QueryId");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
-                    b.ToTable("Subscription", "Subscription", t =>
+                    b.ToTable("Subscription", "Subscriptions", t =>
                         {
                             t.HasTrigger("SubscriptionInitialRequests");
                         });
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", b =>
+                {
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("ExecutionTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ResultsSent")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Successful")
+                        .HasColumnType("bit");
+
+                    b.HasKey("SubscriptionId", "ExecutionTime");
+
+                    b.ToTable("SubscriptionExecutionRecord", "Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
@@ -312,7 +315,7 @@ namespace FasTnT.Migrations.SqlServer.Migrations
 
                             b1.HasKey("QueryId", "Name");
 
-                            b1.ToTable("StoredQueryParameter", "Subscription");
+                            b1.ToTable("StoredQueryParameter", "Subscriptions");
 
                             b1.WithOwner("Query")
                                 .HasForeignKey("QueryId");
@@ -327,8 +330,7 @@ namespace FasTnT.Migrations.SqlServer.Migrations
                 {
                     b.HasOne("FasTnT.Domain.Model.Request", "Request")
                         .WithMany("Events")
-                        .HasForeignKey("RequestId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("RequestId");
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.BusinessTransaction", "Transactions", b1 =>
                         {
@@ -900,66 +902,10 @@ namespace FasTnT.Migrations.SqlServer.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
                 {
-                    b.HasOne("FasTnT.Domain.Model.CustomQueries.StoredQuery", "Query")
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("QueryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", "ExecutionRecords", b1 =>
-                        {
-                            b1.Property<int>("SubscriptionId")
-                                .HasColumnType("int");
-
-                            b1.Property<DateTimeOffset>("ExecutionTime")
-                                .HasColumnType("datetimeoffset");
-
-                            b1.Property<string>("Reason")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.Property<bool>("ResultsSent")
-                                .HasColumnType("bit");
-
-                            b1.Property<bool>("Successful")
-                                .HasColumnType("bit");
-
-                            b1.HasKey("SubscriptionId", "ExecutionTime");
-
-                            b1.ToTable("SubscriptionExecutionRecord", "Subscription");
-
-                            b1.WithOwner("Subscription")
-                                .HasForeignKey("SubscriptionId");
-
-                            b1.Navigation("Subscription");
-                        });
-
-                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", "Parameters", b1 =>
-                        {
-                            b1.Property<int>("SubscriptionId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Name")
-                                .HasColumnType("nvarchar(450)");
-
-                            b1.Property<string>("Values")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("SubscriptionId", "Name");
-
-                            b1.ToTable("SubscriptionParameter", "Subscription");
-
-                            b1.WithOwner("Subscription")
-                                .HasForeignKey("SubscriptionId");
-
-                            b1.Navigation("Subscription");
-                        });
-
                     b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule", b1 =>
                         {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
+                            b1.Property<int>("SubscriptionId")
                                 .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
 
                             b1.Property<string>("DayOfMonth")
                                 .HasMaxLength(256)
@@ -985,34 +931,43 @@ namespace FasTnT.Migrations.SqlServer.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("nvarchar(256)");
 
+                            b1.HasKey("SubscriptionId");
+
+                            b1.ToTable("SubscriptionSchedule", "Subscriptions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SubscriptionId");
+                        });
+
+                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", "Parameters", b1 =>
+                        {
                             b1.Property<int>("SubscriptionId")
                                 .HasColumnType("int");
 
-                            b1.HasKey("Id");
+                            b1.Property<string>("Name")
+                                .HasColumnType("nvarchar(450)");
 
-                            b1.HasIndex("SubscriptionId")
-                                .IsUnique();
+                            b1.Property<int>("SubscriptionName")
+                                .HasColumnType("int");
 
-                            b1.ToTable("SubscriptionSchedule", "Subscription");
+                            b1.Property<string>("Values")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("SubscriptionId", "Name");
+
+                            b1.HasIndex("SubscriptionName");
+
+                            b1.ToTable("SubscriptionParameter", "Subscriptions");
 
                             b1.WithOwner("Subscription")
-                                .HasForeignKey("SubscriptionId");
+                                .HasForeignKey("SubscriptionName");
 
                             b1.Navigation("Subscription");
                         });
 
-                    b.Navigation("ExecutionRecords");
-
                     b.Navigation("Parameters");
 
-                    b.Navigation("Query");
-
                     b.Navigation("Schedule");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
-                {
-                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>

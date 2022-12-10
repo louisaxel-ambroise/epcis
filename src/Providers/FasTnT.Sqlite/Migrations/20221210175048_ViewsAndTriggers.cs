@@ -10,10 +10,6 @@ namespace FasTnT.Sqlite.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"CREATE VIEW [CurrentHierarchy]
-AS
-SELECT MAX([MasterDataRequestId]) AS [MasterDataRequestId], [MasterDataType], [MasterDataId], [ChildrenId] FROM [MasterDataChildren] GROUP BY [MasterDataType], [MasterDataId], [ChildrenId];");
-
             migrationBuilder.Sql(@"CREATE VIEW [CurrentMasterdata]
 AS
 SELECT MAX([RequestId]) AS [RequestId], [Type], [Id] FROM [MasterData] GROUP BY [Type], [Id];");
@@ -24,23 +20,18 @@ AS (
 	SELECT [id], [type], [id]
 	FROM [CurrentMasterdata]
 	UNION ALL
-	SELECT [hierarchy].[Id], [MasterDataType], [ChildrenId]
-	FROM [CurrentHierarchy]
-	JOIN [hierarchy] ON [MasterDataType] = [hierarchy].[type] and [MasterDataId] = [hierarchy].[id]
+	SELECT cur.[RequestId], [hierarchy].[Id], [MasterDataType], [ChildrenId]
+	FROM [MasterdataChildren] children
+	JOIN [CurrentMasterdata] cur ON cur.[Type] = children.[MasterDataType] AND cur.[Id] = [ChildrenId] 
+	JOIN hierarchy ON [MasterDataType] = hierarchy.[type] AND [MasterDataId] = hierarchy.[id] AND [MasterdataRequestId] = hierarchy.[RequestId]
 )
 SELECT [root], [type], [id] 
 FROM [hierarchy];");
 
-            migrationBuilder.Sql(@"CREATE VIEW [MasterDataProperty]
-AS
-SELECT md.[Id], md.[Type], att.[Id] as [Attribute], att.[Value] from [CurrentMasterdata] md
-JOIN [MasterDataAttribute] att on att.[MasterdataId] = md.[Id] and att.[MasterdataType] = md.[Type] AND att.[RequestId] = md.[RequestId];");
-
             migrationBuilder.Sql(@"CREATE TRIGGER [InsertPendingRequests] 
 AFTER INSERT ON [Request] 
 BEGIN 
-	INSERT INTO [PendingRequest]([RequestId], [SubscriptionId]) 
-	SELECT NEW.[Id], s.[Id] 
+	INSERT INTO [PendingRequest]([RequestId], [SubscriptionId]) SELECT NEW.[Id], s.[Id] 
 	FROM [Subscription] s;
 END; ");
 
@@ -50,14 +41,17 @@ BEGIN
 	INSERT INTO [PendingRequest]([RequestId], [SubscriptionId]) 
 	SELECT r.[Id], NEW.[Id] 
 	FROM [Request] r
-    WHERE NEW.[InitialRecordTime] IS NOT NULL AND r.[CaptureDate] >= NEW.[InitialRecordTime];
+    WHERE NEW.[InitialRecordTime] IS NOT NULL AND r.[CaptureTime] >= NEW.[InitialRecordTime];
 END;");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
+            migrationBuilder.Sql(@"DROP TRIGGER [SubscriptionInitialRequests];");
+            migrationBuilder.Sql(@"DROP TRIGGER [InsertPendingRequests];");
+            migrationBuilder.Sql(@"DROP VIEW [MasterdataHierarchy];");
+            migrationBuilder.Sql(@"DROP VIEW [CurrentMasterdata];");
         }
     }
 }

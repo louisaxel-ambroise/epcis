@@ -2,7 +2,6 @@
 
 public class SubscriptionSchedule
 {
-    public Subscription Subscription { get; set; }
     public string Second { get; set; } = string.Empty;
     public string Minute { get; set; } = string.Empty;
     public string Hour { get; set; } = string.Empty;

@@ -15,7 +15,7 @@ public class ScheduleEntry
         _minValue = min;
         _maxValue = max;
 
-        ParseExpression(expression);
+        ParseExpression(expression ?? string.Empty);
     }
 
     private void ParseExpression(string expression)

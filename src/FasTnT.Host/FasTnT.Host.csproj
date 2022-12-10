@@ -16,7 +16,6 @@
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
     <ProjectReference Include="..\FasTnT.Features.v1_2\FasTnT.Features.v1_2.csproj" />
     <ProjectReference Include="..\FasTnT.Features.v2_0\FasTnT.Features.v2_0.csproj" />
-    <ProjectReference Include="..\Providers\FasTnT.CosmosDb\FasTnT.CosmosDb.csproj" />
     <ProjectReference Include="..\Providers\FasTnT.Postgres\FasTnT.Postgres.csproj" />
     <ProjectReference Include="..\Providers\FasTnT.Sqlite\FasTnT.Sqlite.csproj" />
     <ProjectReference Include="..\Providers\FasTnT.SqlServer\FasTnT.SqlServer.csproj" />

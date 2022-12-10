@@ -10,7 +10,7 @@ using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace FasTnT.Application.Services.Queries.Implementations;
+namespace FasTnT.Application.Services.Queries.DataSources;
 
 public class SimpleEventQuery : IEpcisDataSource
 {
@@ -51,7 +51,7 @@ public class SimpleEventQuery : IEpcisDataSource
         try
         {
             var eventIds = await ApplyOrderByLimitOffset(query)
-                .Select(evt => EF.Property<object>(evt, "Id"))
+                .Select(evt => evt.Id)
                 .ToListAsync(cancellationToken);
 
             if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount || eventIds.Count > Constants.Instance.MaxEventsReturnedInQuery)
@@ -67,7 +67,7 @@ public class SimpleEventQuery : IEpcisDataSource
             }
 
             var result = await _context.Set<Event>().AsNoTracking()
-                .Where(evt => eventIds.Contains(EF.Property<object>(evt, "Id")))
+                .Where(evt => eventIds.Contains(evt.Id))
                 .ToListAsync(cancellationToken);
 
             return ApplyOrderByLimit(result.AsQueryable()).ToList();
@@ -132,13 +132,14 @@ public class SimpleEventQuery : IEpcisDataSource
             "EQ_eventID" => query.Where(x => param.Values.Contains(x.EventId)),
             "EQ_transformationID" => query.Where(x => param.Values.Contains(x.TransformationId)),
             "EQ_readPoint" => query.Where(x => param.Values.Contains(x.ReadPoint)),
-            "EQ_userID" => query.Where(x => param.Values.Contains(x.UserId)),
+            "EQ_userID" => query.Where(x => param.Values.Contains(x.Request.UserId)),
             "EXISTS_errorDeclaration" => query.Where(x => x.CorrectiveDeclarationTime.HasValue),
             "EQ_errorReason" => query.Where(x => param.Values.Contains(x.CorrectiveReason)),
             "EQ_correctiveEventID" => query.Where(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))),
             "WD_readPoint" => query.Where(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == ReadPoint && h.Root == x.ReadPoint).Any(h => param.Values.Contains(h.Id))),
             "WD_bizLocation" => query.Where(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == Location && h.Root == x.BusinessLocation).Any(h => param.Values.Contains(h.Id))),
-            "EQ_requestId" => query.Where(x => param.Values.Select(int.Parse).Contains(EF.Property<int>(x, "RequestId"))),
+            "EQ_requestID" => query.Where(x => param.Values.Select(int.Parse).Contains(x.Request.Id)),
+            "EQ_captureID" => query.Where(x => param.Values.Contains(x.Request.CaptureId)),
             "EQ_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity == param.GetNumeric())),
             "GT_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity > param.GetNumeric())),
             "GE_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity >= param.GetNumeric())),
@@ -206,8 +207,8 @@ public class SimpleEventQuery : IEpcisDataSource
     {
         return field switch
         {
-            "bizLocation" => query.Where(e => _context.Set<MasterDataProperty>().Any(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attribute == attributeName)),
-            "readPoint" => query.Where(e => _context.Set<MasterDataProperty>().Any(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attribute == attributeName)),
+            "bizLocation" => query.Where(e => _context.Set<MasterData>().Any(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attributes.Any(a => a.Id == attributeName))),
+            "readPoint" => query.Where(e => _context.Set<MasterData>().Any(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attributes.Any(a => a.Id == attributeName))),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}"),
         };
     }
@@ -216,8 +217,8 @@ public class SimpleEventQuery : IEpcisDataSource
     {
         return field switch
         {
-            "bizLocation" => query.Where(e => values.Contains(_context.Set<MasterDataProperty>().First(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attribute == attributeName).Value)),
-            "readPoint" => query.Where(e => values.Contains(_context.Set<MasterDataProperty>().First(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attribute == attributeName).Value)),
+            "bizLocation" => query.Where(e => _context.Set<MasterData>().Any(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))),
+            "readPoint" => query.Where(e => _context.Set<MasterData>().Any(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}"),
         };
     }

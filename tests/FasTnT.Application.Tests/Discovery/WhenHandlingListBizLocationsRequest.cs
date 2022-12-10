@@ -15,7 +15,7 @@ public class WhenHandlingListBizLocationsRequest
     {
         Context.Add(new Domain.Model.Request
         {
-            CaptureDate = DateTimeOffset.Now,
+            CaptureTime = DateTimeOffset.Now,
             DocumentTime = DateTimeOffset.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
