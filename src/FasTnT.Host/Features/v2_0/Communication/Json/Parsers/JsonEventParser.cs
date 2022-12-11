@@ -255,7 +255,7 @@ public class JsonEventParser
                 case "dataProcessingMethod":
                     report.DataProcessingMethod = property.Value.GetString(); break;
                 case "time":
-                    report.Time = property.Value.GetDateTime(); break;
+                    report.Time = property.Value.GetDateTime().ToUniversalTime(); break;
                 case "microorganism":
                     report.Microorganism = property.Value.GetString(); break;
                 case "chemicalSubstance":
@@ -303,7 +303,7 @@ public class JsonEventParser
             switch (property.Name)
             {
                 case "time":
-                    sensorElement.Time = property.Value.GetDateTime(); break;
+                    sensorElement.Time = property.Value.GetDateTime().ToUniversalTime(); break;
                 case "deviceID":
                     sensorElement.DeviceId = property.Value.GetString(); break;
                 case "deviceMetadata":
@@ -311,9 +311,9 @@ public class JsonEventParser
                 case "rawData":
                     sensorElement.RawData = property.Value.GetString(); break;
                 case "startTime":
-                    sensorElement.StartTime = property.Value.GetDateTime(); break;
+                    sensorElement.StartTime = property.Value.GetDateTime().ToUniversalTime(); break;
                 case "endTime":
-                    sensorElement.EndTime = property.Value.GetDateTime(); break;
+                    sensorElement.EndTime = property.Value.GetDateTime().ToUniversalTime(); break;
                 case "dataProcessingMethod":
                     sensorElement.DataProcessingMethod = property.Value.GetString(); break;
                 case "bizRules":
