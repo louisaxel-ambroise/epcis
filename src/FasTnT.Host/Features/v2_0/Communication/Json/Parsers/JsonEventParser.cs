@@ -329,10 +329,8 @@ public class JsonEventParser
             customFields.AddRange(element.EnumerateObject().SelectMany(e =>
             {
                 var (ns, name) = ParseName(e.Name);
-                var fields = ParseCustomField(e.Value, type, name, ns, field.Index, entityIndex);
-                fields.ForEach(x => x.ParentIndex = field.Index);
-
-                return fields;
+                
+                return ParseCustomField(e.Value, type, name, ns, field.Index, entityIndex);
             }));
         }
         else if (element.ValueKind == JsonValueKind.Array)

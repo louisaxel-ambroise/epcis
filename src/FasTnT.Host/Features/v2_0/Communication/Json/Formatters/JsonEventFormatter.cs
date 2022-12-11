@@ -240,11 +240,10 @@ public class JsonEventFormatter
             else
             {
                 var field = group.Single();
-                var children = fields.Where(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index);
 
-                if (children.Count() >= 1)
+                if (fields.Any(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index))
                 {
-                    extension.Add(_context[field.Namespace] + ":" + field.Name, BuildElement(children));
+                    extension.Add(_context[field.Namespace] + ":" + field.Name, BuildElement(fields, field.Index));
                 }
                 else
                 {
@@ -256,11 +255,11 @@ public class JsonEventFormatter
         return extension;
     }
 
-    private Dictionary<string, object> BuildElement(IEnumerable<Field> fields)
+    private Dictionary<string, object> BuildElement(IEnumerable<Field> fields, int? parentIndex = null)
     {
         var element = new Dictionary<string, object>();
 
-        foreach (var group in fields.GroupBy(x => (x.Name, x.Namespace)))
+        foreach (var group in fields.Where(x => x.ParentIndex == parentIndex && x.Type != FieldType.Attribute).GroupBy(x => (x.Name, x.Namespace)))
         {
             if (group.Count() > 1)
             {
@@ -269,11 +268,10 @@ public class JsonEventFormatter
             else
             {
                 var field = group.Single();
-                var children = fields.Where(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index);
-
-                if (children.Any())
+                
+                if (fields.Any(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index))
                 {
-                    element.Add(_context[field.Namespace] + ":" + field.Name, BuildElement(children));
+                    element.Add(_context[field.Namespace] + ":" + field.Name, BuildElement(fields, field.Index));
                 }
                 else
                 {

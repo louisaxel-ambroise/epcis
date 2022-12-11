@@ -328,11 +328,12 @@ public static class XmlEventFormatter
         {
             var element = new XElement(XName.Get(x.Name, x.Namespace ?? string.Empty), x.TextValue);
 
-            foreach (var attribute in fields.Where(x => x.Type == FieldType.Attribute && x.ParentIndex == x.Index))
+            foreach (var attribute in fields.Where(i => i.Type == FieldType.Attribute && i.ParentIndex == x.Index))
             {
                 element.Add(new XAttribute(XName.Get(attribute.Name, attribute.Namespace), attribute.TextValue));
             }
-            foreach (var attribute in fields.Where(x => x.Type != FieldType.Attribute && x.ParentIndex == x.Index))
+
+            if(fields.Any(i => i.Type != FieldType.Attribute && i.ParentIndex == x.Index))
             {
                 element.AddIfNotNull(FormatFields(fields, x.Index));
             }
