@@ -30,9 +30,19 @@ public class JsonEventFormatter
             ["eventTime"] = _evt.EventTime,
             ["recordTime"] = _evt.CaptureTime,
             ["eventTimeZoneOffset"] = _evt.EventTimeZoneOffset.Representation,
-            ["eventID"] = _evt.EventId
+            ["eventID"] = _evt.EventId,
+            ["certificationInfo"] = _evt.CertificationInfo
         };
 
+        if (_evt.CorrectiveDeclarationTime.HasValue)
+        {
+            element["errorDeclaration"] = new Dictionary<string, object>
+            {
+                ["declarationTime"] = _evt.CorrectiveDeclarationTime.Value,
+                ["reason"] = _evt.CorrectiveReason,
+                ["correctiveEventIDs"] = _evt.CorrectiveEventIds.Select(x => x.CorrectiveId)
+            };
+        }
         if (_evt.Action != EventAction.None)
         {
             element["action"] = _evt.Action.ToString();
@@ -166,7 +176,7 @@ public class JsonEventFormatter
             ["deviceMetadata"] = report.DeviceMetadata
         };
 
-        var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.SensorReport && x.ParentIndex == report.Index));
+        var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.SensorReport && x.EntityIndex == report.Index));
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;

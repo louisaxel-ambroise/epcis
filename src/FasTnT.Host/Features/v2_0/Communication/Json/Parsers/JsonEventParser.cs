@@ -1,4 +1,5 @@
 ﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Events;
 using LinqKit;
 using System.Text.Json;
@@ -8,6 +9,7 @@ namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
 public class JsonEventParser
 {
     private int _index;
+    private readonly Event _evt = new();
     private readonly JsonElement _element;
     private readonly Namespaces _extensions;
 
@@ -29,75 +31,94 @@ public class JsonEventParser
 
     public Event Parse()
     {
-        var evt = new Event();
 
         foreach (var property in _element.EnumerateObject())
         {
             switch (property.Name)
             {
                 case "eventID":
-                    evt.EventId = property.Value.GetString(); break;
+                    _evt.EventId = property.Value.GetString(); break;
                 case "type":
-                    evt.Type = Enum.Parse<EventType>(property.Value.GetString(), true); break;
+                    _evt.Type = Enum.Parse<EventType>(property.Value.GetString(), true); break;
                 case "action":
-                    evt.Action = Enum.Parse<EventAction>(property.Value.GetString(), true); break;
+                    _evt.Action = Enum.Parse<EventAction>(property.Value.GetString(), true); break;
                 case "parentID":
-                    evt.Epcs.Add(new Epc { Type = EpcType.ParentId, Id = property.Value.GetString() }); break;
+                    _evt.Epcs.Add(new Epc { Type = EpcType.ParentId, Id = property.Value.GetString() }); break;
                 case "certificationInfo":
-                    evt.CertificationInfo = ParseCertificationInfo(property.Value); break;
+                    _evt.CertificationInfo = ParseCertificationInfo(property.Value); break;
+                case "errorDeclaration":
+                    ParseErrorDeclaration(property); break;
                 case "epcList":
-                    evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.List)); break;
+                    _evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.List)); break;
                 case "childEPCs":
-                    evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.ChildEpc)); break;
+                    _evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.ChildEpc)); break;
                 case "inputEPCList":
-                    evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.InputEpc)); break;
+                    _evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.InputEpc)); break;
                 case "outputEPCList":
-                    evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.OutputEpc)); break;
+                    _evt.Epcs.AddRange(ParseEpcList(property.Value, EpcType.OutputEpc)); break;
                 case "quantityList":
-                    evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.Quantity)); break;
+                    _evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.Quantity)); break;
                 case "inputQuantityList":
-                    evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.InputQuantity)); break;
+                    _evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.InputQuantity)); break;
                 case "outputQuantityList":
-                    evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.OutputQuantity)); break;
+                    _evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.OutputQuantity)); break;
                 case "childQuantityList":
-                    evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.ChildQuantity)); break;
+                    _evt.Epcs.AddRange(ParseQuantityList(property.Value, EpcType.ChildQuantity)); break;
                 case "bizStep":
-                    evt.BusinessStep = property.Value.GetString(); break;
+                    _evt.BusinessStep = property.Value.GetString(); break;
                 case "transformationID":
-                    evt.TransformationId = property.Value.GetString(); break;
+                    _evt.TransformationId = property.Value.GetString(); break;
                 case "disposition":
-                    evt.Disposition = property.Value.GetString(); break;
+                    _evt.Disposition = property.Value.GetString(); break;
                 case "eventTime":
-                    evt.EventTime = property.Value.GetDateTime().ToUniversalTime(); break;
+                    _evt.EventTime = property.Value.GetDateTime().ToUniversalTime(); break;
                 case "eventTimeZoneOffset":
-                    evt.EventTimeZoneOffset = property.Value.GetString(); break;
+                    _evt.EventTimeZoneOffset = property.Value.GetString(); break;
                 case "readPoint":
-                    evt.ReadPoint = ParseIdElement(property.Value); break;
+                    _evt.ReadPoint = ParseIdElement(property.Value); break;
                 case "bizLocation":
-                    evt.BusinessLocation = ParseIdElement(property.Value); break;
+                    _evt.BusinessLocation = ParseIdElement(property.Value); break;
                 case "sourceList":
-                    evt.Sources.AddRange(ParseSourceList(property.Value)); break;
+                    _evt.Sources.AddRange(ParseSourceList(property.Value)); break;
                 case "destinationList":
-                    evt.Destinations.AddRange(ParseDestinationList(property.Value)); break;
+                    _evt.Destinations.AddRange(ParseDestinationList(property.Value)); break;
                 case "bizTransactionList":
-                    evt.Transactions.AddRange(ParseBusinessTransactions(property.Value)); break;
+                    _evt.Transactions.AddRange(ParseBusinessTransactions(property.Value)); break;
                 case "sensorElementList":
-                    evt.SensorElements.AddRange(ParseSensorElements(property.Value)); break;
+                    _evt.SensorElements.AddRange(ParseSensorElements(property.Value)); break;
                 case "persistentDisposition":
-                    evt.PersistentDispositions.AddRange(ParsePersistentDispositions(property.Value)); break;
+                    _evt.PersistentDispositions.AddRange(ParsePersistentDispositions(property.Value)); break;
                 case "ilmd":
-                    evt.Fields.AddRange(ParseIlmd(property)); break;
+                    _evt.Fields.AddRange(ParseIlmd(property)); break;
                 case "recordTime":
                 /* Don't do anything - record time is set to the time the event was inserted. */
                 case "@context":
                     /* Don't do anything - context was already parsed. */
                     break;
                 default:
-                    evt.Fields.AddRange(ParseCustomField(property)); break;
+                    _evt.Fields.AddRange(ParseCustomField(property)); break;
             }
         }
 
-        return evt;
+        return _evt;
+    }
+
+    private void ParseErrorDeclaration(JsonProperty errorDeclaration)
+    {
+        foreach(var property in errorDeclaration.Value.EnumerateObject())
+        {
+            switch (property.Name)
+            {
+                case "declarationTime":
+                    _evt.CorrectiveDeclarationTime = property.Value.GetDateTime().ToUniversalTime(); break;
+                case "reason":
+                    _evt.CorrectiveReason = property.Value.GetString();break;
+                case "correctiveEventIDs":
+                    _evt.CorrectiveEventIds.AddRange(property.Value.EnumerateArray().Select(elt => new CorrectiveEventId { CorrectiveId = elt.GetString() })); break;
+                default:
+                    throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected field: {property.Name}");
+            }
+        }
     }
 
     private static string ParseIdElement(JsonElement element) => element.GetProperty("id").GetString();
@@ -268,7 +289,7 @@ public class JsonEventParser
                 case "deviceMetadata":
                     report.DeviceMetadata = property.Value.GetString(); break;
                 default:
-                    report.SensorElement.Event.Fields.AddRange(ParseCustomField(property, FieldType.SensorReport, null, report.Index)); break;
+                    _evt.Fields.AddRange(ParseCustomField(property, FieldType.SensorReport, null, report.Index)); break;
             }
         }
 
@@ -298,7 +319,7 @@ public class JsonEventParser
                 case "bizRules":
                     sensorElement.BizRules = property.Value.GetString(); break;
                 default:
-                    sensorElement.Event.Fields.AddRange(ParseCustomField(property, FieldType.SensorMetadata, null, sensorElement.Index)); break;
+                    _evt.Fields.AddRange(ParseCustomField(property, FieldType.SensorMetadata, null, sensorElement.Index)); break;
             }
         }
     }
@@ -311,6 +332,13 @@ public class JsonEventParser
 
     private IEnumerable<Field> ParseCustomField(JsonElement element, FieldType type, string propName, string propNs, int? parentIndex = null, int? entityIndex = null)
     {
+        if (element.ValueKind == JsonValueKind.Array)
+        {
+            return element
+                .EnumerateArray()
+                .SelectMany(e => ParseCustomField(e, type, propName, propNs, parentIndex, entityIndex));
+        }
+
         var customFields = new List<Field>();
         var field = new Field
         {
@@ -332,10 +360,6 @@ public class JsonEventParser
                 
                 return ParseCustomField(e.Value, type, name, ns, field.Index, entityIndex);
             }));
-        }
-        else if (element.ValueKind == JsonValueKind.Array)
-        {
-            return element.EnumerateArray().SelectMany(e => ParseCustomField(e, type, propName, propNs, field.Index, entityIndex));
         }
         else
         {

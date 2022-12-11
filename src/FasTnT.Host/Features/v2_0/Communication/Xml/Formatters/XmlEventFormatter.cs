@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Events;
+using System.Xml.Linq;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
 
@@ -61,6 +62,7 @@ public static class XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));
         xmlEvent.AddIfNotNull(CreateDestinationList(evt));
+        xmlEvent.AddIfNotNull(CreateSensorElementList(evt));
         xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Ilmd, "ilmd"));
         xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));
 
@@ -88,6 +90,7 @@ public static class XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateQuantityList(evt, EpcType.Quantity, "childQuantityList"));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));
         xmlEvent.AddIfNotNull(CreateDestinationList(evt));
+        xmlEvent.AddIfNotNull(CreateSensorElementList(evt));
         xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Extension, "extension"));
         xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));
 
@@ -107,6 +110,7 @@ public static class XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateQuantityList(evt, EpcType.Quantity, "quantityList"));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));
         xmlEvent.AddIfNotNull(CreateDestinationList(evt));
+        xmlEvent.AddIfNotNull(CreateSensorElementList(evt));
         xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Extension, "extension"));
         xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));
 
@@ -127,6 +131,7 @@ public static class XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));
         xmlEvent.AddIfNotNull(CreateDestinationList(evt));
+        xmlEvent.AddIfNotNull(CreateSensorElementList(evt));
         xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Ilmd, "ilmd"));
         xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Extension, "extension"));
         xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));
@@ -185,14 +190,14 @@ public static class XmlEventFormatter
         metadata.AddIfNotNull(CreateAttribute("bizRules", element.BizRules));
         metadata.AddIfNotNull(CreateAttribute("dataProcessingMethod", element.DataProcessingMethod));
 
-        foreach (var field in element.Event.Fields.Where(x => x.Type == FieldType.SensorMetadata))
+        foreach (var field in element.Event.Fields.Where(x => x.Type == FieldType.SensorMetadata && x.EntityIndex == element.Index))
         {
             metadata.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
         }
 
         xmlElement.Add(metadata);
         xmlElement.AddIfNotNull(element.Reports.Select(CreateSensorReport));
-        xmlElement.AddIfNotNull(FormatFields(element.Event.Fields.Where(x => x.Type == FieldType.Sensor)));
+        xmlElement.AddIfNotNull(FormatFields(element.Event.Fields.Where(x => x.Type == FieldType.Sensor && x.EntityIndex == element.Index)));
 
         return xmlElement;
     }
@@ -222,7 +227,7 @@ public static class XmlEventFormatter
         xmlElement.AddIfNotNull(CreateAttribute("percValue", report.PercValue));
         xmlElement.AddIfNotNull(CreateAttribute("dataProcessingMethod", report.DataProcessingMethod));
 
-        foreach (var field in report.SensorElement.Event.Fields)
+        foreach (var field in report.SensorElement.Event.Fields.Where(x => x.Type == FieldType.SensorReport && x.EntityIndex == report.Index))
         {
             xmlElement.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
         }

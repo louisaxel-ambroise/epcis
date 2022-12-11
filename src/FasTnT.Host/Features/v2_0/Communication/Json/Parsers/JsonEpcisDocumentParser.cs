@@ -17,6 +17,7 @@ public static class JsonEpcisDocumentParser
 
         var request = new Request();
 
+        // TODO: parse sender/receiver that is in root element in JSON format.
         foreach (var property in document.RootElement.EnumerateObject())
         {
             switch (property.Name)
