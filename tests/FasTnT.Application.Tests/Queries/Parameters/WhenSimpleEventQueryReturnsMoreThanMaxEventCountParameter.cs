@@ -1,6 +1,6 @@
-﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.Store;
+﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
@@ -20,7 +20,7 @@ public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
         Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
         Query = new SimpleEventQuery(Context);
 
-        Context.Requests.Add(new Domain.Model.Request
+        Context.Add(new Domain.Model.Request
         {
             Events = new[] {
                 new Event
@@ -32,7 +32,7 @@ public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
                     Action = Domain.Enumerations.EventAction.Observe
                 }
             }.ToList(),
-            CaptureDate = DateTime.Now,
+            CaptureTime = DateTime.Now,
             DocumentTime = DateTime.Now,
             SchemaVersion = "1.2"
         });
@@ -58,6 +58,6 @@ public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
 
         Assert.IsNotNull(catched);
         Assert.IsInstanceOfType(catched, typeof(EpcisException));
-        Assert.AreEqual(((EpcisException)catched).ExceptionType, ExceptionType.QueryTooLargeException);
+        Assert.AreEqual(ExceptionType.QueryTooLargeException, ((EpcisException)catched).ExceptionType);
     }
 }

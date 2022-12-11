@@ -5,13 +5,15 @@ namespace FasTnT.Domain.Model.Events;
 
 public class Event
 {
+    public int Id { get; set; }
     public Request Request { get; set; }
-    public long Id { get; set; }
-    public DateTime CaptureTime { get; set; } = DateTime.UtcNow;
     public DateTime EventTime { get; set; }
+    public DateTime CaptureTime { get; set; }
     public TimeZoneOffset EventTimeZoneOffset { get; set; } = TimeZoneOffset.Default;
     public EventType Type { get; set; }
     public EventAction Action { get; set; }
+    public string UserId { get; set; }
+    public string CaptureId { get; set; }
     public string EventId { get; set; }
     public string CertificationInfo { get; set; }
     public string ReadPoint { get; set; }

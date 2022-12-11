@@ -45,7 +45,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        file: src/FasTnT.Host/Dockerfile
+        file: Dockerfile
         push: true
         tags: |
           ghcr.io/${{ env.REPO }}:develop
@@ -55,7 +55,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: .
-        file: src/FasTnT.Host/Dockerfile
+        file: Dockerfile
         push: true
         tags: |
           ghcr.io/${{ env.REPO }}:${{ github.event.release.tag_name }}

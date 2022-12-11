@@ -1,6 +1,6 @@
-﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.Store;
+﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -19,29 +19,29 @@ public class WhenApplyingGE_eventTimeFilter
         Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
         Query = new SimpleEventQuery(Context);
 
-        Context.Requests.Add(new Domain.Model.Request
+        Context.Add(new Domain.Model.Request
         {
             Events = new[] {
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.ObjectEvent,
-                    EventTime = new (2021, 01, 12, 10, 24, 10, DateTimeKind.Utc),
+                    EventTime = new (2021, 01, 12, 10, 24, 10),
                     Action = Domain.Enumerations.EventAction.Observe
                 },
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.TransactionEvent,
-                    EventTime = new (2021, 01, 12, 10, 30, 00, DateTimeKind.Utc),
+                    EventTime = new (2021, 01, 12, 10, 30, 00),
                     Action = Domain.Enumerations.EventAction.Observe
                 },
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.TransactionEvent,
-                    EventTime = new (2011, 08, 02, 21, 50, 00, DateTimeKind.Utc),
+                    EventTime = new (2011, 08, 02, 21, 50, 00),
                     Action = Domain.Enumerations.EventAction.Observe
                 }
             }.ToList(),
-            CaptureDate = DateTime.Now,
+            CaptureTime = DateTime.Now,
             DocumentTime = DateTime.Now,
             SchemaVersion = "1.2"
         });
@@ -55,6 +55,6 @@ public class WhenApplyingGE_eventTimeFilter
     {
         var result = Query.ExecuteAsync(Parameters, default).Result;
         Assert.AreEqual(2, result.EventList.Count);
-        Assert.IsTrue(result.EventList.All(x => x.EventTime >= new DateTime(2021, 01, 12, 10, 24, 10, DateTimeKind.Utc)));
+        Assert.IsTrue(result.EventList.All(x => x.EventTime >= new DateTime(2021, 01, 12, 10, 24, 10)));
     }
 }

@@ -1,8 +1,8 @@
-﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.EfCore.UseCases.Subscriptions;
+﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 using Moq;
@@ -19,7 +19,7 @@ public class WhenHandlingUnsubscribeCommand
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new Subscription
+        Context.Add(new Subscription
         {
             Name = "TestSubscription",
             QueryName = Queries.First().Name,
@@ -27,6 +27,7 @@ public class WhenHandlingUnsubscribeCommand
         });
 
         Context.SaveChanges();
+        Context.ChangeTracker.Clear();
     }
 
     [TestMethod]
@@ -36,8 +37,8 @@ public class WhenHandlingUnsubscribeCommand
         var handler = new SubscriptionsUseCasesHandler(Context, Queries, Listener.Object);
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
 
-        Assert.AreEqual(0, Context.Subscriptions.Count());
-        Listener.Verify(x => x.RemoveAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+        Assert.AreEqual(0, Context.Set<Subscription>().Count());
+        Listener.Verify(x => x.RemoveAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [TestMethod]

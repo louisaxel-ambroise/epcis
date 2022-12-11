@@ -1,14 +1,14 @@
-using FasTnT.Application.EfCore;
+using FasTnT.Application;
+using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
-using FasTnT.Features.v1_2;
-using FasTnT.Features.v1_2.Subscriptions;
-using FasTnT.Features.v2_0;
-using FasTnT.Features.v2_0.Subscriptions;
-using FasTnT.Host.Extensions;
+using FasTnT.Host.Features.v1_2;
+using FasTnT.Host.Features.v1_2.Subscriptions;
+using FasTnT.Host.Features.v2_0;
+using FasTnT.Host.Features.v2_0.Subscriptions;
+using FasTnT.Host.Services.Database;
 using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 Constants.Instance = builder.Configuration.GetSection(nameof(Constants)).Get<Constants>();
@@ -22,12 +22,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResultSender.Instance);
 builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
-builder.Services.AddEpcisServices(opt =>
-{
-    opt.ConnectionString = builder.Configuration.GetConnectionString("FasTnT.Database");
-    opt.CommandTimeout = builder.Configuration.GetValue("FasTnT.Database.ConnectionTimeout", 60);
-    opt.CurrentUser = svc => new HttpContextCurrentUser(svc.GetRequiredService<IHttpContextAccessor>());
-});
+builder.Services.AddScoped<ICurrentUser>(svc => new HttpContextCurrentUser(svc.GetRequiredService<IHttpContextAccessor>()));
+builder.Services.AddEpcisRelationalStorage(builder.Configuration);
+builder.Services.AddEpcisServices();
 
 var app = builder.Build();
 

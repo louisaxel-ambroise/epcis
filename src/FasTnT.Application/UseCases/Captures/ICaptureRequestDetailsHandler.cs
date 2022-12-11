@@ -4,5 +4,5 @@ namespace FasTnT.Application.UseCases.Captures;
 
 public interface ICaptureRequestDetailsHandler
 {
-    Task<Request> GetCaptureDetailsAsync(int captureId, CancellationToken cancellationToken);
+    Task<Request> GetCaptureDetailsAsync(string captureId, CancellationToken cancellationToken);
 }

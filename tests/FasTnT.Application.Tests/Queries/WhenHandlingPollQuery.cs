@@ -1,9 +1,9 @@
-﻿using FasTnT.Application.EfCore.Services.Queries;
-using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.EfCore.UseCases.Queries;
+﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
+using FasTnT.Application.UseCases.Queries;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
 

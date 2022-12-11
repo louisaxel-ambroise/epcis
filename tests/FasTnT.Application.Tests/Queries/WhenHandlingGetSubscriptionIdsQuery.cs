@@ -1,5 +1,5 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.EfCore.UseCases.Subscriptions;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application.Tests.Queries;
@@ -12,13 +12,13 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Subscriptions.Add(new Subscription
+        Context.Set<Subscription>().Add(new Subscription
         {
             Name = "SubscriptionTest",
             QueryName = "TestQuery",
             FormatterName = "TestFormatter"
         });
-        Context.Subscriptions.Add(new Subscription
+        Context.Set<Subscription>().Add(new Subscription
         {
             Name = "OtherSubscription",
             QueryName = "OtherQuery",

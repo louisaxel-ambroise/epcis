@@ -21,7 +21,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\FasTnT.Application.EfCore\FasTnT.Application.EfCore.csproj" />
     <ProjectReference Include="..\..\src\FasTnT.Application\FasTnT.Application.csproj" />
     <ProjectReference Include="..\..\src\FasTnT.Domain\FasTnT.Domain.csproj" />
   </ItemGroup>

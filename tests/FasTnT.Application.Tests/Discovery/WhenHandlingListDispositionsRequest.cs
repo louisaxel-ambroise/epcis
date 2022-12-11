@@ -1,6 +1,6 @@
-﻿using FasTnT.Application.EfCore.Store;
-using FasTnT.Application.EfCore.UseCases.TopLevelResources;
+﻿using FasTnT.Application.Database;
 using FasTnT.Application.Tests.Context;
+using FasTnT.Application.UseCases.TopLevelResources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -14,9 +14,9 @@ public class WhenHandlingListDispositionsRequest
     [TestInitialize]
     public void Initialize()
     {
-        Context.Requests.Add(new Domain.Model.Request
+        Context.Add(new Domain.Model.Request
         {
-            CaptureDate = DateTime.Now,
+            CaptureTime = DateTime.Now,
             DocumentTime = DateTime.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
