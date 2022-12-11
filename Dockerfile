@@ -9,11 +9,9 @@ COPY ["src/FasTnT.Application/FasTnT.Application.csproj", "FasTnT.Application/"]
 COPY ["src/FasTnT.Domain/FasTnT.Domain.csproj", "FasTnT.Domain/"]
 COPY ["src/Providers/FasTnT.Sqlite/FasTnT.Sqlite.csproj", "Providers/FasTnT.Sqlite/"]
 COPY ["src/Providers/FasTnT.Postgres/FasTnT.Postgres.csproj", "Providers/FasTnT.Postgres/"]
-COPY ["src/Providers/FasTnT.CosmosDb/FasTnT.CosmosDb.csproj", "Providers/FasTnT.CosmosDb/"]
 COPY ["src/Providers/FasTnT.SqlServer/FasTnT.SqlServer.csproj", "Providers/FasTnT.SqlServer/"]
 RUN dotnet restore "FasTnT.Host/FasTnT.Host.csproj"
 
-COPY ./src .
 WORKDIR "/epcis/FasTnT.Host"
 RUN dotnet build "FasTnT.Host.csproj" -c Release -o /epcis/build
 
