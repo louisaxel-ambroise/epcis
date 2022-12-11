@@ -4,12 +4,12 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /epcis
-COPY ["src/FasTnT.Host/FasTnT.Host.csproj", "FasTnT.Host/"]
-COPY ["src/FasTnT.Application/FasTnT.Application.csproj", "FasTnT.Application/"]
-COPY ["src/FasTnT.Domain/FasTnT.Domain.csproj", "FasTnT.Domain/"]
-COPY ["src/Providers/FasTnT.Sqlite/FasTnT.Sqlite.csproj", "Providers/FasTnT.Sqlite/"]
-COPY ["src/Providers/FasTnT.Postgres/FasTnT.Postgres.csproj", "Providers/FasTnT.Postgres/"]
-COPY ["src/Providers/FasTnT.SqlServer/FasTnT.SqlServer.csproj", "Providers/FasTnT.SqlServer/"]
+COPY ["src/FasTnT.Host/", "FasTnT.Host/"]
+COPY ["src/FasTnT.Application/", "FasTnT.Application/"]
+COPY ["src/FasTnT.Domain/", "FasTnT.Domain/"]
+COPY ["src/Providers/FasTnT.Sqlite/", "Providers/FasTnT.Sqlite/"]
+COPY ["src/Providers/FasTnT.Postgres/", "Providers/FasTnT.Postgres/"]
+COPY ["src/Providers/FasTnT.SqlServer/", "Providers/FasTnT.SqlServer/"]
 RUN dotnet restore "FasTnT.Host/FasTnT.Host.csproj"
 
 WORKDIR "/epcis/FasTnT.Host"
