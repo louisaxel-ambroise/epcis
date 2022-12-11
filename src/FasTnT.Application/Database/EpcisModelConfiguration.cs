@@ -211,7 +211,7 @@ public static class EpcisModelConfiguration
             c.Property(x => x.Namespace).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.TextValue).IsRequired(false);
             c.Property(x => x.NumericValue).IsRequired(false);
-            c.Property(x => x.DateValue).IsRequired(false); ;
+            c.Property(x => x.DateValue).IsRequired(false);
             c.HasOne(x => x.Event).WithMany(x => x.Fields).HasForeignKey("EventId");
         });
         evt.OwnsMany(x => x.CorrectiveEventIds, c =>
@@ -228,7 +228,7 @@ public static class EpcisModelConfiguration
         subscription.ToTable(nameof(Subscription), Subscriptions, builder => builder.HasTrigger("SubscriptionInitialRequests"));
         subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
-        subscription.Property(x => x.InitialRecordTime); ;
+        subscription.Property(x => x.InitialRecordTime);
         subscription.Property(x => x.ReportIfEmpty).IsRequired(true);
         subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.SignatureToken).IsRequired(false).HasMaxLength(256);
@@ -259,7 +259,7 @@ public static class EpcisModelConfiguration
         executionRecord.ToTable(nameof(SubscriptionExecutionRecord), Subscriptions);
         executionRecord.HasKey("SubscriptionId", "ExecutionTime");
         executionRecord.Property(x => x.SubscriptionId).IsRequired(true);
-        executionRecord.Property(x => x.ExecutionTime).IsRequired(true); ;
+        executionRecord.Property(x => x.ExecutionTime).IsRequired(true);
         executionRecord.Property(x => x.ResultsSent).IsRequired(true);
         executionRecord.Property(x => x.Successful).IsRequired(true);
         executionRecord.Property(x => x.Reason).IsRequired(false);

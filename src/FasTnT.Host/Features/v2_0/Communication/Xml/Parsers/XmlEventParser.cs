@@ -321,7 +321,7 @@ public class XmlEventParser
         _evt.Fields.Add(field);
     }
 
-    public void ParseCustomFields(XAttribute element, FieldType fieldType, int? parentIndex = null, int? entityIndex = null)
+    public void ParseCustomFields(XAttribute element, FieldType fieldType, int? parentIndex, int? entityIndex)
     {
         _evt.Fields.Add(new()
         {
@@ -337,7 +337,7 @@ public class XmlEventParser
         });
     }
 
-    public void ParseAttribute(XAttribute element, int? parentIndex = null, int? entityIndex = null)
+    public void ParseAttribute(XAttribute element, int? parentIndex, int? entityIndex)
     {
         _evt.Fields.Add(new()
         {
