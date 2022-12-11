@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Subscriptions;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain;
@@ -59,7 +60,7 @@ public class CaptureUseCasesHandler :
             throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }
 
-        var captureTime = DateTimeOffset.UtcNow;
+        var captureTime = DateTime.UtcNow;
         
         request.Events.ForEach(x => x.CaptureTime = captureTime);
         request.CaptureTime = captureTime;

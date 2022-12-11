@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Subscriptions;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Application.UseCases.Captures;

@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
@@ -20,7 +21,7 @@ public class SubscriptionRunner : ISubscriptionRunner
         _logger = logger;
     }
 
-    public async Task RunAsync(SubscriptionContext context, DateTimeOffset executionTime, CancellationToken cancellationToken)
+    public async Task RunAsync(SubscriptionContext context, DateTime executionTime, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Running Subscription {Name}", context.Subscription.Name);
 

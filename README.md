@@ -6,19 +6,21 @@
 
 FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and 2.0 repository written in C# using .NET 7 and backed using EntityFramework Core.
 
+The repository fully supports the following database:
+ - SqlServer *(provider: SqlServer)*
+ - PostGreSQL *(provider: Postgres)*
+ - Sqlite *(provider: Sqlite)*
+
 There is a [sandbox](https://fastnt.github.io/sandbox.html) available if you want to quickly test this repository capabilities.
 
 ## Setup
 
-Prerequisites:
-- SQL Server 2016 or +
-- .NET 7 SDK
-
-Steps:
-1. Download the source code, and create a new user/database in SQL Server for FasTnT ;
-2. Start the repository with the command `$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}"` ;
+1. Download the source code, and setup a database for FasTnT ;
+2. Start the repository with the command `$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}" --FasTnT.Database.Provider "{yourProvider}"` ;
 
 That's it! You have a properly working EPCIS repository.
+
+The default for the databse provider is *SqlServer*.
 
 You can also setup FasTnT EPCIS using the Docker image or in Azure quite easily. Check the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki/Installation) for more details.
 

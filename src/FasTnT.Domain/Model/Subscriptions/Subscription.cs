@@ -13,5 +13,5 @@ public class Subscription
     public bool ReportIfEmpty { get; set; }
     public string Destination { get; set; }
     public List<SubscriptionParameter> Parameters { get; set; } = new();
-    public DateTimeOffset? InitialRecordTime { get; set; }
+    public DateTime? InitialRecordTime { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
@@ -24,24 +25,24 @@ public class WhenApplyingGE_eventTimeFilter
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.ObjectEvent,
-                    EventTime = new (2021, 01, 12, 10, 24, 10, TimeSpan.Zero),
+                    EventTime = new (2021, 01, 12, 10, 24, 10),
                     Action = Domain.Enumerations.EventAction.Observe
                 },
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.TransactionEvent,
-                    EventTime = new (2021, 01, 12, 10, 30, 00, TimeSpan.Zero),
+                    EventTime = new (2021, 01, 12, 10, 30, 00),
                     Action = Domain.Enumerations.EventAction.Observe
                 },
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.TransactionEvent,
-                    EventTime = new (2011, 08, 02, 21, 50, 00, TimeSpan.Zero),
+                    EventTime = new (2011, 08, 02, 21, 50, 00),
                     Action = Domain.Enumerations.EventAction.Observe
                 }
             }.ToList(),
-            CaptureTime = DateTimeOffset.Now,
-            DocumentTime = DateTimeOffset.Now,
+            CaptureTime = DateTime.Now,
+            DocumentTime = DateTime.Now,
             SchemaVersion = "1.2"
         });
         Context.SaveChanges();
@@ -54,6 +55,6 @@ public class WhenApplyingGE_eventTimeFilter
     {
         var result = Query.ExecuteAsync(Parameters, default).Result;
         Assert.AreEqual(2, result.EventList.Count);
-        Assert.IsTrue(result.EventList.All(x => x.EventTime >= new DateTimeOffset(2021, 01, 12, 10, 24, 10, TimeSpan.Zero)));
+        Assert.IsTrue(result.EventList.All(x => x.EventTime >= new DateTime(2021, 01, 12, 10, 24, 10)));
     }
 }

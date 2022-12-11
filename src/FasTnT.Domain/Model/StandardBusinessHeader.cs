@@ -11,5 +11,5 @@ public class StandardBusinessHeader
     public string TypeVersion { get; set; }
     public string InstanceIdentifier { get; set; }
     public string Type { get; set; }
-    public DateTimeOffset? CreationDateTime { get; set; }
+    public DateTime? CreationDateTime { get; set; }
 }

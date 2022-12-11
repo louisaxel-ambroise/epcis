@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Infrastructure.Exceptions;
 using FasTnT.Domain.Model.CustomQueries;

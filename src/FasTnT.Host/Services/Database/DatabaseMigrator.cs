@@ -1,4 +1,4 @@
-﻿using FasTnT.Application;
+﻿using FasTnT.Application.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host.Services.Database;

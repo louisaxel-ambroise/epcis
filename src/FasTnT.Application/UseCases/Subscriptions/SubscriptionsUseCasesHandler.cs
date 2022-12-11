@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Validators;
 using FasTnT.Domain.Infrastructure.Exceptions;

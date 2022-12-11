@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Tests.Context;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Tests.Context;
 using FasTnT.Application.UseCases.TopLevelResources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
@@ -15,8 +16,8 @@ public class WhenHandlingListReadPointsRequest
     {
         Context.Add(new Domain.Model.Request
         {
-            CaptureTime = DateTimeOffset.Now,
-            DocumentTime = DateTimeOffset.Now,
+            CaptureTime = DateTime.Now,
+            DocumentTime = DateTime.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
             Events = new List<Event>

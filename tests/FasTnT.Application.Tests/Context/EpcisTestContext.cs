@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FasTnT.Application.Database;
+using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Tests.Context;
 
@@ -13,7 +14,7 @@ public static partial class EpcisTestContext
 
     public static EpcisContext GetContext(string databaseName, bool reset = true)
     {
-        var context = new EpcisContext(GetOptions(databaseName), new TestModelConfiguration());
+        var context = new EpcisContext(GetOptions(databaseName));
 
         if (reset)
         {

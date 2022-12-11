@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Enumerations;
+﻿using FasTnT.Application.Database;
+using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;

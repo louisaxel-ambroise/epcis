@@ -29,9 +29,9 @@ jobs:
       run: dotnet test --no-build --verbosity normal -c Debug --collect:"XPlat Code Coverage"
 
     - name: Move Coverage files
-      run: mv tests/FasTnT.Features.v1_2.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Features.v1_2.Tests/; mv tests/FasTnT.Features.v2_0.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Features.v2_0.Tests/; mv tests/FasTnT.Application.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Application.Tests/
+      run: mv tests/FasTnT.Host.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Host.Tests/; mv tests/FasTnT.Application.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Application.Tests/
       
     - name: Upload Coverage
-      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r tests/FasTnT.Features.v1_2.Tests/coverage.cobertura.xml  -r tests/FasTnT.Features.v2_0.Tests/coverage.cobertura.xml -r tests/FasTnT.Application.Tests/coverage.cobertura.xml
+      run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r tests/FasTnT.Host.Tests/coverage.cobertura.xml -r tests/FasTnT.Application.Tests/coverage.cobertura.xml
       env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}

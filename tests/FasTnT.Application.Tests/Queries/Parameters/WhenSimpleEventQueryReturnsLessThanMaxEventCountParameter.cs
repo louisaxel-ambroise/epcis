@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.Queries;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Queries;
 using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
@@ -26,8 +27,8 @@ public class WhenSimpleEventQueryReturnsLessThanMaxEventCountParameter
                     Action = Domain.Enumerations.EventAction.Observe
                 }
             }.ToList(),
-            CaptureTime = DateTimeOffset.Now,
-            DocumentTime = DateTimeOffset.Now,
+            CaptureTime = DateTime.Now,
+            DocumentTime = DateTime.Now,
             SchemaVersion = "1.2"
         });
         Context.SaveChanges();

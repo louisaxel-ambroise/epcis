@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Relational.Services.Queries;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Relational.Services.Queries;
 using FasTnT.Application.Services.Queries.Utils;
 using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
