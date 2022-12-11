@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Postgres", "src\Prov
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Sqlite", "src\Providers\FasTnT.Sqlite\FasTnT.Sqlite.csproj", "{633B2FD9-D8E0-421B-B783-47CBC46A61D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FasTnT.Host.Tests", "tests\FasTnT.Host.Tests\FasTnT.Host.Tests.csproj", "{247AE2F0-76CA-40BE-B7F1-696AD8FA9024}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Host.Tests", "tests\FasTnT.Host.Tests\FasTnT.Host.Tests.csproj", "{247AE2F0-76CA-40BE-B7F1-696AD8FA9024}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,8 @@
-﻿using FasTnT.Postgres;
+﻿using FasTnT.Application.Database;
+using FasTnT.Postgres;
 using FasTnT.Sqlite;
 using FasTnT.SqlServer;
+using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host.Services.Database;
 
@@ -27,5 +29,15 @@ public static class DatabaseConfiguration
             nameof(Sqlite) => SqliteProvider.Configure,
             _ => throw new Exception($"Unsupported provider: {provider}")
         };
+    }
+
+    public static IApplicationBuilder ApplyMigrations(this IApplicationBuilder application)
+    {
+        using var scope = application.ApplicationServices.CreateScope();
+        using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
+
+        context.Database.Migrate();
+
+        return application;
     }
 }

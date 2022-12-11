@@ -1,6 +1,5 @@
 ﻿using FasTnT.Domain.Model.Events;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.XML;
 

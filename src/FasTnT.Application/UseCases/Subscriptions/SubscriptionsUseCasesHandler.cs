@@ -29,7 +29,7 @@ public class SubscriptionsUseCasesHandler :
 
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
     {
-        var subscription = await _context.Set<Subscription>().SingleOrDefaultAsync(x => x.Name == name, cancellationToken);
+        var subscription = await _context.Set<Subscription>().FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
         if (subscription is null)
         {
@@ -59,7 +59,7 @@ public class SubscriptionsUseCasesHandler :
             .AsNoTracking()
             .Where(x => x.Name == name)
             .Include(x => x.Parameters)
-            .SingleOrDefaultAsync(x => x.Name == name, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
         if (subscription is null)
         {
@@ -86,7 +86,7 @@ public class SubscriptionsUseCasesHandler :
         }
         
         var query = await _context.Set<StoredQuery>()
-            .SingleOrDefaultAsync(x => x.Name == subscription.QueryName, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Name == subscription.QueryName, cancellationToken);
 
         if (query is null)
         {

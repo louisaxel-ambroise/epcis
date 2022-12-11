@@ -39,7 +39,7 @@ public class CaptureUseCasesHandler :
     {
         var capture = await _context.Set<Request>()
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.CaptureId == captureId, cancellationToken);
+            .FirstOrDefaultAsync(x => x.CaptureId == captureId, cancellationToken);
 
         if (capture is null)
         {

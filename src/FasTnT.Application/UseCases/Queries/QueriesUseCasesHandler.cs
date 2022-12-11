@@ -18,13 +18,13 @@ public class QueriesUseCasesHandler :
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
-    private readonly IEnumerable<IEpcisDataSource> _queries;
+    private readonly IEnumerable<IEpcisDataSource> _dataSources;
 
-    public QueriesUseCasesHandler(EpcisContext context, ICurrentUser currentUser, IEnumerable<IEpcisDataSource> queries)
+    public QueriesUseCasesHandler(EpcisContext context, ICurrentUser currentUser, IEnumerable<IEpcisDataSource> dataSources)
     {
         _context = context;
         _currentUser = currentUser;
-        _queries = queries;
+        _dataSources = dataSources;
     }
 
     public async Task<IEnumerable<StoredQuery>> ListQueriesAsync(Pagination pagination, CancellationToken cancellationToken)
@@ -41,7 +41,7 @@ public class QueriesUseCasesHandler :
     {
         var query = await _context.Set<StoredQuery>()
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Name == name, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
         if (query is null)
         {
@@ -69,7 +69,7 @@ public class QueriesUseCasesHandler :
     public async Task<StoredQuery> DeleteQueryAsync(string queryName, CancellationToken cancellationToken)
     {
         var query = await _context.Set<StoredQuery>()
-               .SingleOrDefaultAsync(x => x.Name == queryName, cancellationToken);
+               .FirstOrDefaultAsync(x => x.Name == queryName, cancellationToken);
 
         if (query is null)
         {
@@ -94,14 +94,14 @@ public class QueriesUseCasesHandler :
     {
         var query = await _context.Set<StoredQuery>()
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Name == queryName, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Name == queryName, cancellationToken);
 
         if (query is null)
         {
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
         }
 
-        var performer = _queries.Single(x => x.Name == query.DataSource);
+        var performer = _dataSources.Single(x => x.Name == query.DataSource);
         var context = new EpcisQueryContext(performer, query.Parameters)
             .MergeParameters(parameters)
             .MergeParameters(_currentUser.DefaultQueryParameters);

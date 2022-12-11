@@ -22,7 +22,7 @@ public class HttpContextCurrentUser : ICurrentUser
 
         UserName = user.Claims.Single(x => x.Type == nameof(UserName)).Value;
         UserId = user.Claims.Single(x => x.Type == nameof(UserId)).Value;
-        DefaultQueryParameters = parameters != null 
+        DefaultQueryParameters = parameters is not null 
             ? JsonSerializer.Deserialize<IEnumerable<QueryParameter>>(parameters.Value) 
             : Enumerable.Empty<QueryParameter>();
     }

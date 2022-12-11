@@ -1,7 +1,5 @@
 ﻿using FasTnT.Domain.Model.Events;
 using FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.Json;
 
