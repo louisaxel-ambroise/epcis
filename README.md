@@ -6,7 +6,7 @@
 
 FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and 2.0 repository written in C# using .NET 7 and backed using EntityFramework Core.
 
-The repository fully supports the following database:
+The repository fully supports the following databases:
  - SqlServer *(provider: SqlServer)*
  - PostGreSQL *(provider: Postgres)*
  - Sqlite *(provider: Sqlite)*
@@ -20,14 +20,14 @@ There is a [sandbox](https://fastnt.github.io/sandbox.html) available if you wan
 
 That's it! You have a properly working EPCIS repository.
 
-The default for the databse provider is *SqlServer*.
+The default value for the database provider is *SqlServer*.
 
 You can also setup FasTnT EPCIS using the Docker image or in Azure quite easily. Check the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki/Installation) for more details.
 
 ## HTTP Endpoints
 
-The API is secured using HTTP Basic authentication by default. 
-There is no default user, but when in Development environment the unknown users will be created autmatically. A user is limited to see only the events and masterdata he captured by default.
+The API is secured using HTTP Basic auth by default. 
+The users are not stored in the database, but a hash of the authorization value is stored alongside the request. By default the events and masterdata returned in a query are restricted to the ones captured with the same authorization header.
 
 ### EPCIS 1.2 endpoints:
 
@@ -79,7 +79,9 @@ A subset of EPCIS 2.0 specification is currently implemented in FasT&T repositor
 
 **Queries** endpoint supports HTTP requests and supports both `accept: application/json` and `accept: application/xml` headers.
 
-See the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki) for more details.
+The subscriptions will always receive the results in JSON format.
+
+The OpenApi definition of the v2.0 endpoints is available at the URL `/v2_0/openapi.json`. See the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki) for more details.
 
 #### Implemented Features
 
@@ -107,7 +109,7 @@ This is the list of planned and implemented 2.0 features in the repository:
 
 # Authors
 
-External contributions on FasTnT EPCIS repository are welcome from anyone.
+External contributions on this EPCIS repository are welcome from anyone.
 This project was created an is primarily maintained by [Louis-Axel Ambroise](https://github.com/louisaxel-ambroise).
 
 # License
