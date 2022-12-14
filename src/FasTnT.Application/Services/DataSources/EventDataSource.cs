@@ -17,8 +17,8 @@ public class EventDataSource : IEpcisDataSource
     const string ReadPoint = "urn:epcglobal:epcis:vtype:ReadPoint";
     const string Location = "urn:epcglobal:epcis:vtype:BusinessLocation";
 
-    private bool _isMaxCount = false;
-    private int _startFrom = 0;
+    private bool _isMaxCount;
+    private int _startFrom;
     private int _eventCountLimit = Constants.Instance.MaxEventsReturnedInQuery;
     private OrderDirection _orderDirection = OrderDirection.Ascending;
     private Expression<Func<Event, object>> _orderExpression = e => e.CaptureTime;
