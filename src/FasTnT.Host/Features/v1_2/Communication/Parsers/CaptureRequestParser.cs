@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Infrastructure.Exceptions;
+﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 
 namespace FasTnT.Host.Features.v1_2.Communication.Parsers;

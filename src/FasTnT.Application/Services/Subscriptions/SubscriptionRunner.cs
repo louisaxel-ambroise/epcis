@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Application.Services.DataSources.Utils;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +10,11 @@ namespace FasTnT.Application.Services.Subscriptions;
 
 public class SubscriptionRunner : ISubscriptionRunner
 {
-    private readonly IEnumerable<IEpcisDataSource> _dataSources;
     private readonly EpcisContext _context;
     private readonly ILogger<SubscriptionRunner> _logger;
 
-    public SubscriptionRunner(IEnumerable<IEpcisDataSource> dataSources, EpcisContext context, ILogger<SubscriptionRunner> logger)
+    public SubscriptionRunner(EpcisContext context, ILogger<SubscriptionRunner> logger)
     {
-        _dataSources = dataSources;
         _context = context;
         _logger = logger;
     }
@@ -26,22 +24,21 @@ public class SubscriptionRunner : ISubscriptionRunner
         _logger.LogInformation("Running Subscription {Name}", context.Subscription.Name);
 
         var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = executionTime, ResultsSent = true, Successful = true, SubscriptionId = context.Subscription.Id };
-        var dataSource = _dataSources.Single(x => x.Name == context.Subscription.Datasource);
         var pendingRequests = await _context.Set<PendingRequest>().Where(x => x.SubscriptionId == context.Subscription.Id).ToListAsync(cancellationToken);
         var resultsSent = false;
 
         try
         {
-            var response = new QueryResponse(dataSource.Name, context.Subscription.Name, new(), null);
+            var response = new QueryResponse(context.Subscription.QueryName, context.Subscription.Name, QueryData.Empty);
 
             if (pendingRequests.Any())
             {
-                var parameters = context.Subscription.Parameters
-                    .Append(QueryParameter.Create("EQ_requestID", pendingRequests.Select(x => x.RequestId).ToArray()))
-                    .ToArray();
-                var epcisData = await dataSource.ExecuteAsync(parameters, cancellationToken);
+                var queryData = await _context.QueryEvents()
+                    .WithParameters(context.Subscription.Parameters)
+                    .WithParameters(new[] { QueryParameter.Create("EQ_requestID", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()) } )
+                    .ExecuteAsync(cancellationToken);
 
-                response = new QueryResponse(context.Subscription.QueryName, context.Subscription.Name, epcisData.EventList, epcisData.VocabularyList);
+                response = new QueryResponse(context.Subscription.QueryName, context.Subscription.Name, queryData);
             }
 
             resultsSent = await context.SendQueryResults(response, cancellationToken);

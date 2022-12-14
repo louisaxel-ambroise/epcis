@@ -8,7 +8,7 @@ namespace FasTnT.Host.Services.Database;
 
 public static class DatabaseConfiguration
 {
-    public static IServiceCollection AddEpcisRelationalStorage(this IServiceCollection services, ConfigurationManager configuration)
+    public static IServiceCollection AddEpcisStorage(this IServiceCollection services, ConfigurationManager configuration)
     {
         var connectionString = configuration.GetConnectionString("FasTnT.Database");
         var commandTimeout = configuration.GetValue("FasTnT.Database.CommandTimeout", 30);

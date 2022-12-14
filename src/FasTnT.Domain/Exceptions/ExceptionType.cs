@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Domain.Infrastructure.Exceptions;
+﻿namespace FasTnT.Domain.Exceptions;
 
 public enum ExceptionType
 {
@@ -12,6 +12,6 @@ public enum ExceptionType
     NoSuchSubscriptionException,
     DuplicateSubscriptionException,
     QueryTooComplexException,
-    InvalidURIException, 
+    InvalidURIException,
     CaptureLimitExceededException
 }

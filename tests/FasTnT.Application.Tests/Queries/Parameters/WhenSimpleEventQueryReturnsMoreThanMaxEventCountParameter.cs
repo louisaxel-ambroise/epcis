@@ -1,7 +1,6 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.DataSources;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Application.Services.DataSources;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -18,7 +17,7 @@ public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
     public void Initialize()
     {
         Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
-        Query = new SimpleEventQuery(Context);
+        Query = new EventDataSource(Context);
 
         Context.Add(new Domain.Model.Request
         {
@@ -48,7 +47,8 @@ public class WhenSimpleEventQueryReturnsMoreThanMaxEventCountParameter
 
         try
         {
-            Query.ExecuteAsync(Parameters, default).Wait();
+            Query.ApplyParameters(Parameters);
+            var result = Query.ExecuteAsync(default).Result;
             Assert.IsFalse(true, "The query should fail");
         }
         catch (Exception ex)

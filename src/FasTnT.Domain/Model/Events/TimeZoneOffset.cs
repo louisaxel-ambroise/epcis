@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Domain.Infrastructure.Utils;
+﻿namespace FasTnT.Domain.Model.Events;
 
 public class TimeZoneOffset
 {

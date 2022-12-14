@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Infrastructure.Exceptions;
+﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using System.Xml.XPath;
 

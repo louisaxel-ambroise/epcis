@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Infrastructure.Exceptions;
+﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;

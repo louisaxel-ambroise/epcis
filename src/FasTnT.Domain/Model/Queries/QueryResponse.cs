@@ -10,15 +10,15 @@ public class QueryResponse
     public List<Event> EventList { get; init; }
     public List<MasterData> VocabularyList { get; init; }
 
-    public QueryResponse(string queryName, List<Event> events, List<MasterData> vocabulary) : this(queryName, null, events, vocabulary)
+    public QueryResponse(string queryName, QueryData queryData) : this(queryName, null, queryData)
     {
     }
 
-    public QueryResponse(string queryName, string subscriptionId, List<Event> events, List<MasterData> vocabulary)
+    public QueryResponse(string queryName, string subscriptionId, QueryData queryData)
     {
         QueryName = queryName;
         SubscriptionId = subscriptionId;
-        EventList = events;
-        VocabularyList = vocabulary;
+        EventList = queryData.EventList;
+        VocabularyList = queryData.VocabularyList;
     }
 }

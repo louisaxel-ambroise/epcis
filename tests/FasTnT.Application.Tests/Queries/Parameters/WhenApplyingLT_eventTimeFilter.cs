@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.DataSources;
+using FasTnT.Application.Services.DataSources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -17,7 +16,7 @@ public class WhenApplyingLT_eventTimeFilter
     public void Initialize()
     {
         Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
-        Query = new SimpleEventQuery(Context);
+        Query = new EventDataSource(Context);
 
         Context.Add(new Domain.Model.Request
         {
@@ -53,7 +52,8 @@ public class WhenApplyingLT_eventTimeFilter
     [TestMethod]
     public void ItShouldOnlyReturnTheEventsCaptureBeforeTheDate()
     {
-        var result = Query.ExecuteAsync(Parameters, default).Result;
+        Query.ApplyParameters(Parameters);
+        var result = Query.ExecuteAsync(default).Result;
         Assert.AreEqual(1, result.EventList.Count);
         Assert.IsTrue(result.EventList.All(x => x.EventTime < new DateTime(2021, 01, 12, 10, 24, 10)));
     }

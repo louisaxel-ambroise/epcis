@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace FasTnT.Application.Relational.Services.Queries;
+namespace FasTnT.Application.Services.DataSources.Utils;
 
 public static partial class Regexs
 {

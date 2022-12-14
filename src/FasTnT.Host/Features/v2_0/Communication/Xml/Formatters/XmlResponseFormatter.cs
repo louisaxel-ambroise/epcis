@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Infrastructure.Exceptions;
+﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Utils;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
