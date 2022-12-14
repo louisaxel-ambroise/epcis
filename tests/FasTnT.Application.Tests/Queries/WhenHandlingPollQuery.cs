@@ -1,10 +1,8 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Application.UseCases.Queries;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.Queries;
@@ -18,8 +16,7 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldReturnAPollResponse()
     {
-        var queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-        var handler = new QueriesUseCasesHandler(Context, UserContext, queries);
+        var handler = new QueriesUseCasesHandler(Context, UserContext);
         var result = handler.ExecuteQueryAsync("SimpleEventQuery", new List<QueryParameter>(), CancellationToken.None).Result;
 
         Assert.IsNotNull(result);
@@ -28,8 +25,7 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
-        var queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-        var handler = new QueriesUseCasesHandler(Context, UserContext, queries);
+        var handler = new QueriesUseCasesHandler(Context, UserContext);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.ExecuteQueryAsync("UnknownQuery", new List<QueryParameter>(), CancellationToken.None));
     }

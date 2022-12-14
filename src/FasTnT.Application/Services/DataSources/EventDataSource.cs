@@ -1,9 +1,8 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Relational.Services.Queries;
-using FasTnT.Application.Services.Queries.Utils;
+using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
@@ -11,67 +10,62 @@ using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace FasTnT.Application.Services.Queries.DataSources;
+namespace FasTnT.Application.Services.DataSources;
 
-public class SimpleEventQuery : IEpcisDataSource
+public class EventDataSource : IEpcisDataSource
 {
     const string ReadPoint = "urn:epcglobal:epcis:vtype:ReadPoint";
     const string Location = "urn:epcglobal:epcis:vtype:BusinessLocation";
 
-    private int? _maxEventCount = default,
-                 _startFrom = 0,
-                 _eventCountLimit = Constants.Instance.MaxEventsReturnedInQuery + 1;
+    private bool _isMaxCount = false;
+    private int _startFrom = 0;
+    private int _eventCountLimit = Constants.Instance.MaxEventsReturnedInQuery;
     private OrderDirection _orderDirection = OrderDirection.Ascending;
     private Expression<Func<Event, object>> _orderExpression = e => e.CaptureTime;
     private readonly EpcisContext _context;
 
-    public string Name => nameof(SimpleEventQuery);
-    public bool AllowSubscription => true;
+    public IQueryable<Event> Query { get; private set; }
 
-    public SimpleEventQuery(EpcisContext context)
+    public EventDataSource(EpcisContext context)
     {
         _context = context;
+        Query = _context.Set<Event>().AsNoTracking();
     }
 
-    public async Task<QueryData> ExecuteAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+    public void ApplyParameters(IEnumerable<QueryParameter> parameters)
     {
-        var query = _context.Set<Event>().AsNoTracking();
-
         foreach (var parameter in parameters)
         {
             try
             {
-                query = ApplyParameter(parameter, query);
+                Query = ApplyParameter(parameter, Query);
             }
             catch
             {
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid Query Parameter or Value: {parameter.Name}");
             }
         }
+    }
 
+    public async Task<QueryData> ExecuteAsync(CancellationToken cancellationToken)
+    {
         try
         {
-            var eventIds = await ApplyOrderByLimitOffset(query)
+            var eventIds = await ApplyOrderBy(Query)
+                .Skip(_startFrom).Take(_eventCountLimit)
                 .Select(evt => evt.Id)
                 .ToListAsync(cancellationToken);
 
-            if (_maxEventCount.HasValue && eventIds.Count > _maxEventCount || eventIds.Count > Constants.Instance.MaxEventsReturnedInQuery)
+            if (_isMaxCount && eventIds.Count == _eventCountLimit)
             {
-                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
-                {
-                    QueryName = Name
-                };
-            }
-            if (!eventIds.Any())
-            {
-                return QueryData.Empty;
+                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.");
             }
 
             var result = await _context.Set<Event>().AsNoTracking()
                 .Where(evt => eventIds.Contains(evt.Id))
                 .ToListAsync(cancellationToken);
 
-            return ApplyOrderByLimit(result.AsQueryable()).ToList();
+            return ApplyOrderBy(result.AsQueryable()).ToList();
         }
         catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
         {
@@ -79,35 +73,15 @@ public class SimpleEventQuery : IEpcisDataSource
         }
         catch (Exception ex) when (ex is not EpcisException)
         {
-            throw new EpcisException(ExceptionType.QueryTooComplexException, "Query too complex to be executed on this server.")
-            {
-                Severity = ExceptionSeverity.Severe,
-                QueryName = Name
-            };
+            throw new EpcisException(ExceptionType.QueryTooComplexException, "Query too complex to be executed on this server.");
         }
     }
 
-    private IQueryable<Event> ApplyOrderByLimitOffset(IQueryable<Event> query)
+    private IQueryable<Event> ApplyOrderBy(IQueryable<Event> query)
     {
-        var offset = _startFrom ?? 0;
-        var limit = _maxEventCount.HasValue
-            ? _maxEventCount.Value + 1
-            : _eventCountLimit.Value;
-
         return _orderDirection == OrderDirection.Ascending
-            ? query.OrderBy(_orderExpression).Skip(offset).Take(limit)
-            : query.OrderByDescending(_orderExpression).Skip(offset).Take(limit);
-    }
-
-    private IQueryable<Event> ApplyOrderByLimit(IQueryable<Event> query)
-    {
-        var limit = _maxEventCount.HasValue
-            ? _maxEventCount.Value + 1
-            : _eventCountLimit.Value;
-
-        return _orderDirection == OrderDirection.Ascending
-            ? query.OrderBy(_orderExpression).Take(limit)
-            : query.OrderByDescending(_orderExpression).Take(limit);
+            ? query.OrderBy(_orderExpression)
+            : query.OrderByDescending(_orderExpression);
     }
 
     private IQueryable<Event> ApplyParameter(QueryParameter param, IQueryable<Event> query)
@@ -120,8 +94,7 @@ public class SimpleEventQuery : IEpcisDataSource
             // Simple filters
             "eventType" => query.Where(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)),
             "nextPageToken" => ParseNextPageToken(param, query),
-            "eventCountLimit" or "perPage" => ParseLimitEventCount(param, query, ref _eventCountLimit),
-            "maxEventCount" => ParseLimitEventCount(param, query, ref _maxEventCount),
+            "eventCountLimit" or "perPage" or "maxEventCount" => ParseLimitEventCount(param, query),
             "GE_eventTime" => query.Where(x => x.EventTime >= param.GetDate()),
             "LT_eventTime" => query.Where(x => x.EventTime < param.GetDate()),
             "GE_recordTime" => query.Where(x => x.CaptureTime >= param.GetDate()),
@@ -270,9 +243,10 @@ public class SimpleEventQuery : IEpcisDataSource
         return query.Where(x => x.SensorElements.Any(e => e.Reports.Any(r => r.UnitOfMeasure == uom && values.Contains(r.Value))));
     }
 
-    private static IQueryable<Event> ParseLimitEventCount(QueryParameter param, IQueryable<Event> query, ref int? destination)
+    private IQueryable<Event> ParseLimitEventCount(QueryParameter param, IQueryable<Event> query)
     {
-        destination = param.GetIntValue();
+        _eventCountLimit = param.GetIntValue();
+        _isMaxCount = param.Name == "maxEventCount";
 
         return query;
     }

@@ -17,7 +17,7 @@ namespace FasTnT.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -41,8 +41,8 @@ namespace FasTnT.SqlServer.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("UserId")
-                        .HasMaxLength(80)
-                        .HasColumnType("nvarchar(80)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -55,13 +55,13 @@ namespace FasTnT.SqlServer.Migrations
                         new
                         {
                             Id = -2,
-                            DataSource = "SimpleEventQuery",
+                            DataSource = "EventDataSource",
                             Name = "SimpleEventQuery"
                         },
                         new
                         {
                             Id = -1,
-                            DataSource = "SimpleMasterDataQuery",
+                            DataSource = "VocabularyDataSource",
                             Name = "SimpleMasterDataQuery"
                         });
                 });
@@ -84,9 +84,6 @@ namespace FasTnT.SqlServer.Migrations
                     b.Property<string>("BusinessStep")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("CaptureId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CaptureTime")
                         .HasColumnType("datetime2");
@@ -129,9 +126,6 @@ namespace FasTnT.SqlServer.Migrations
 
                     b.Property<short>("Type")
                         .HasColumnType("smallint");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -187,7 +181,9 @@ namespace FasTnT.SqlServer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CaptureId")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<DateTime>("CaptureTime")
                         .HasColumnType("datetime2");
@@ -197,7 +193,8 @@ namespace FasTnT.SqlServer.Migrations
 
                     b.Property<string>("SchemaVersion")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("UserId")
                         .HasMaxLength(50)
@@ -216,8 +213,8 @@ namespace FasTnT.SqlServer.Migrations
                     b.Property<int>("SubscriptionId")
                         .HasColumnType("int");
 
-                    b.Property<string>("RequestId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("RequestId")
+                        .HasColumnType("int");
 
                     b.HasKey("SubscriptionId", "RequestId");
 
@@ -232,11 +229,10 @@ namespace FasTnT.SqlServer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Datasource")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Destination")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.Property<string>("FormatterName")
                         .IsRequired()
@@ -308,7 +304,8 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<string>("Name")
-                                .HasColumnType("nvarchar(450)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("Values")
                                 .HasColumnType("nvarchar(max)");
@@ -338,7 +335,8 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<string>("Type")
-                                .HasColumnType("nvarchar(450)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
@@ -379,7 +377,8 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<string>("Type")
-                                .HasColumnType("nvarchar(450)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
@@ -454,7 +453,8 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<string>("TextValue")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<short>("Type")
                                 .HasColumnType("smallint");
@@ -474,8 +474,8 @@ namespace FasTnT.SqlServer.Migrations
                             b1.Property<int>("EventId")
                                 .HasColumnType("int");
 
-                            b1.Property<int>("Type")
-                                .HasColumnType("int");
+                            b1.Property<short>("Type")
+                                .HasColumnType("smallint");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
@@ -500,22 +500,27 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<string>("BizRules")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("DataProcessingMethod")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("DeviceId")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("DeviceMetadata")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<DateTime?>("EndTime")
                                 .HasColumnType("datetime2");
 
                             b1.Property<string>("RawData")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(2048)
+                                .HasColumnType("nvarchar(2048)");
 
                             b1.Property<DateTime?>("StartTime")
                                 .HasColumnType("datetime2");
@@ -545,22 +550,28 @@ namespace FasTnT.SqlServer.Migrations
                                         .HasColumnType("bit");
 
                                     b2.Property<string>("ChemicalSubstance")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("Component")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("DataProcessingMethod")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("DeviceId")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("DeviceMetadata")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("HexBinaryValue")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<float?>("MaxValue")
                                         .HasColumnType("real");
@@ -569,7 +580,8 @@ namespace FasTnT.SqlServer.Migrations
                                         .HasColumnType("real");
 
                                     b2.Property<string>("Microorganism")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<float?>("MinValue")
                                         .HasColumnType("real");
@@ -581,25 +593,30 @@ namespace FasTnT.SqlServer.Migrations
                                         .HasColumnType("real");
 
                                     b2.Property<string>("RawData")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(2048)
+                                        .HasColumnType("nvarchar(2048)");
 
                                     b2.Property<float?>("SDev")
                                         .HasColumnType("real");
 
                                     b2.Property<string>("StringValue")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(2048)
+                                        .HasColumnType("nvarchar(2048)");
 
                                     b2.Property<DateTime?>("Time")
                                         .HasColumnType("datetime2");
 
                                     b2.Property<string>("Type")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("UnitOfMeasure")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("UriValue")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(2048)
+                                        .HasColumnType("nvarchar(2048)");
 
                                     b2.Property<float?>("Value")
                                         .HasColumnType("real");
@@ -625,7 +642,8 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<string>("Type")
-                                .HasColumnType("nvarchar(450)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
@@ -841,7 +859,8 @@ namespace FasTnT.SqlServer.Migrations
                                         .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("ContactTypeIdentifier")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("EmailAddress")
                                         .HasMaxLength(256)
@@ -852,7 +871,8 @@ namespace FasTnT.SqlServer.Migrations
                                         .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("TelephoneNumber")
-                                        .HasColumnType("nvarchar(max)");
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
                                     b2.HasKey("RequestId", "Type", "Identifier");
 
@@ -878,7 +898,8 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasColumnType("smallint");
 
                             b1.Property<string>("Reason")
-                                .HasColumnType("nvarchar(max)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<string>("SubscriptionId")
                                 .IsRequired()
@@ -945,7 +966,8 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<string>("Name")
-                                .HasColumnType("nvarchar(450)");
+                                .HasMaxLength(256)
+                                .HasColumnType("nvarchar(256)");
 
                             b1.Property<int>("SubscriptionName")
                                 .HasColumnType("int");

@@ -23,7 +23,7 @@ builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResu
 builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
 builder.Services.AddScoped<ICurrentUser>(svc => new HttpContextCurrentUser(svc.GetRequiredService<IHttpContextAccessor>()));
-builder.Services.AddEpcisRelationalStorage(builder.Configuration);
+builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
 
 var app = builder.Build();

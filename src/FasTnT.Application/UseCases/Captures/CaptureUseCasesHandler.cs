@@ -1,9 +1,10 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,9 +28,8 @@ public class CaptureUseCasesHandler :
 
     public async Task<IEnumerable<Request>> ListCapturesAsync(CancellationToken cancellationToken)
     {
-        var captures = await _context.Set<Request>()
-            .AsNoTracking()
-            .OrderBy(x => EF.Property<int>(x, "Id"))
+        var captures = await FilteredQuery()
+            .OrderBy(x => x.Id)
             .ToListAsync(cancellationToken);
 
         return captures;
@@ -37,8 +37,7 @@ public class CaptureUseCasesHandler :
 
     public async Task<Request> GetCaptureDetailsAsync(string captureId, CancellationToken cancellationToken)
     {
-        var capture = await _context.Set<Request>()
-            .AsNoTracking()
+        var capture = await FilteredQuery()
             .FirstOrDefaultAsync(x => x.CaptureId == captureId, cancellationToken);
 
         if (capture is null)
@@ -72,5 +71,13 @@ public class CaptureUseCasesHandler :
         await _subscriptionListener.TriggerAsync(new[] { "stream" }, cancellationToken);
 
         return request;
+    }
+
+    private IQueryable<Request> FilteredQuery()
+    {
+        return _context.QueryEvents()
+            .WithParameters(_currentUser.DefaultQueryParameters)
+            .Query
+            .Select(x => x.Request);
     }
 }

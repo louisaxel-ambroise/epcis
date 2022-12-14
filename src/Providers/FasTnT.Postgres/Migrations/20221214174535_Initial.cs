@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace FasTnT.Sqlite.Migrations
+namespace FasTnT.Postgres.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -32,8 +34,8 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    RequestId = table.Column<string>(type: "TEXT", nullable: false)
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,13 +47,13 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    CaptureId = table.Column<string>(type: "TEXT", nullable: true),
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
-                    CaptureTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DocumentTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    SchemaVersion = table.Column<string>(type: "TEXT", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CaptureId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    CaptureTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    DocumentTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SchemaVersion = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -63,11 +65,11 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Queries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 80, nullable: true),
-                    DataSource = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    DataSource = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -79,17 +81,16 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    QueryName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Datasource = table.Column<string>(type: "TEXT", nullable: true),
-                    SignatureToken = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    FormatterName = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false),
-                    Trigger = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ReportIfEmpty = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Destination = table.Column<string>(type: "TEXT", nullable: true),
-                    InitialRecordTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    QueryName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    SignatureToken = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    FormatterName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Trigger = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ReportIfEmpty = table.Column<bool>(type: "boolean", nullable: false),
+                    Destination = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: false),
+                    InitialRecordTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -101,11 +102,11 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ExecutionTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Successful = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ResultsSent = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Reason = table.Column<string>(type: "TEXT", nullable: true)
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    ExecutionTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Successful = table.Column<bool>(type: "boolean", nullable: false),
+                    ResultsSent = table.Column<bool>(type: "boolean", nullable: false),
+                    Reason = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -117,25 +118,23 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: true),
-                    EventTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CaptureTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EventTimeZoneOffset = table.Column<short>(type: "INTEGER", nullable: false),
-                    Type = table.Column<short>(type: "INTEGER", nullable: false),
-                    Action = table.Column<short>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", nullable: true),
-                    CaptureId = table.Column<string>(type: "TEXT", nullable: true),
-                    EventId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    CertificationInfo = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ReadPoint = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    BusinessLocation = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    BusinessStep = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Disposition = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    TransformationId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    CorrectiveDeclarationTime = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    CorrectiveReason = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RequestId = table.Column<int>(type: "integer", nullable: true),
+                    EventTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CaptureTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EventTimeZoneOffset = table.Column<short>(type: "smallint", nullable: false),
+                    Type = table.Column<short>(type: "smallint", nullable: false),
+                    Action = table.Column<short>(type: "smallint", nullable: false),
+                    EventId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    CertificationInfo = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ReadPoint = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    BusinessLocation = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    BusinessStep = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Disposition = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    TransformationId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    CorrectiveDeclarationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CorrectiveReason = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -153,9 +152,9 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Cbv",
                 columns: table => new
                 {
-                    Type = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,13 +173,13 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Sbdh",
                 columns: table => new
                 {
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Version = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Standard = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    TypeVersion = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    InstanceIdentifier = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Type = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    CreationDateTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    Version = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Standard = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    TypeVersion = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    InstanceIdentifier = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    CreationDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -199,10 +198,10 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SubscriptionId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    CallbackType = table.Column<short>(type: "INTEGER", nullable: false),
-                    Reason = table.Column<string>(type: "TEXT", nullable: true)
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    SubscriptionId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    CallbackType = table.Column<short>(type: "smallint", nullable: false),
+                    Reason = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -221,9 +220,9 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    QueryId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Values = table.Column<string>(type: "TEXT", nullable: true)
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    QueryId = table.Column<int>(type: "integer", nullable: false),
+                    Values = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -242,10 +241,10 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SubscriptionName = table.Column<int>(type: "INTEGER", nullable: false),
-                    Values = table.Column<string>(type: "TEXT", nullable: true)
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    SubscriptionName = table.Column<int>(type: "integer", nullable: false),
+                    Values = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -264,13 +263,13 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Second = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Minute = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Hour = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    DayOfMonth = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Month = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    DayOfWeek = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    Second = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Minute = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Hour = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DayOfMonth = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Month = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DayOfWeek = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -289,9 +288,9 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<string>(type: "TEXT", nullable: false),
-                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -310,8 +309,8 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    CorrectiveId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false)
+                    CorrectiveId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -330,9 +329,9 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<string>(type: "TEXT", nullable: false),
-                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -351,11 +350,11 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<short>(type: "INTEGER", nullable: false),
-                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Quantity = table.Column<float>(type: "REAL", nullable: true),
-                    UnitOfMeasure = table.Column<string>(type: "TEXT", maxLength: 10, nullable: true)
+                    Type = table.Column<short>(type: "smallint", nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    Quantity = table.Column<float>(type: "real", nullable: true),
+                    UnitOfMeasure = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -374,16 +373,16 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Index = table.Column<int>(type: "INTEGER", nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Type = table.Column<short>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Namespace = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    TextValue = table.Column<string>(type: "TEXT", nullable: true),
-                    NumericValue = table.Column<double>(type: "REAL", nullable: true),
-                    DateValue = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    EntityIndex = table.Column<int>(type: "INTEGER", nullable: true),
-                    ParentIndex = table.Column<int>(type: "INTEGER", nullable: true)
+                    Index = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<short>(type: "smallint", nullable: false),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Namespace = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    TextValue = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NumericValue = table.Column<double>(type: "double precision", nullable: true),
+                    DateValue = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EntityIndex = table.Column<int>(type: "integer", nullable: true),
+                    ParentIndex = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -402,9 +401,9 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<int>(type: "INTEGER", nullable: false),
-                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Type = table.Column<short>(type: "smallint", nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -423,16 +422,16 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Index = table.Column<int>(type: "INTEGER", nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Time = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    DeviceId = table.Column<string>(type: "TEXT", nullable: true),
-                    DeviceMetadata = table.Column<string>(type: "TEXT", nullable: true),
-                    RawData = table.Column<string>(type: "TEXT", nullable: true),
-                    StartTime = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    EndTime = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    DataProcessingMethod = table.Column<string>(type: "TEXT", nullable: true),
-                    BizRules = table.Column<string>(type: "TEXT", nullable: true)
+                    Index = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    Time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeviceId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DeviceMetadata = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    RawData = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DataProcessingMethod = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    BizRules = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -451,9 +450,9 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<string>(type: "TEXT", nullable: false),
-                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -472,17 +471,17 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Cbv",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MasterdataType = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    MasterdataId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Value = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false)
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    MasterdataType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    MasterdataId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Value = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MasterDataAttribute", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.Id });
                     table.ForeignKey(
-                        name: "FK_MasterDataAttribute_MasterData_RequestId_MasterdataType_MasterdataId",
+                        name: "FK_MasterDataAttribute_MasterData_RequestId_MasterdataType_Mas~",
                         columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId },
                         principalSchema: "Cbv",
                         principalTable: "MasterData",
@@ -495,16 +494,16 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Cbv",
                 columns: table => new
                 {
-                    ChildrenId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    MasterDataRequestId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MasterDataType = table.Column<string>(type: "TEXT", nullable: false),
-                    MasterDataId = table.Column<string>(type: "TEXT", nullable: false)
+                    ChildrenId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    MasterDataRequestId = table.Column<int>(type: "integer", nullable: false),
+                    MasterDataType = table.Column<string>(type: "character varying(256)", nullable: false),
+                    MasterDataId = table.Column<string>(type: "character varying(256)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MasterDataChildren", x => new { x.MasterDataRequestId, x.MasterDataType, x.MasterDataId, x.ChildrenId });
                     table.ForeignKey(
-                        name: "FK_MasterDataChildren_MasterData_MasterDataRequestId_MasterDataType_MasterDataId",
+                        name: "FK_MasterDataChildren_MasterData_MasterDataRequestId_MasterDat~",
                         columns: x => new { x.MasterDataRequestId, x.MasterDataType, x.MasterDataId },
                         principalSchema: "Cbv",
                         principalTable: "MasterData",
@@ -517,14 +516,14 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Sbdh",
                 columns: table => new
                 {
-                    Type = table.Column<short>(type: "INTEGER", maxLength: 256, nullable: false),
-                    Identifier = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Contact = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    EmailAddress = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    FaxNumber = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    TelephoneNumber = table.Column<string>(type: "TEXT", nullable: true),
-                    ContactTypeIdentifier = table.Column<string>(type: "TEXT", nullable: true)
+                    Type = table.Column<short>(type: "smallint", maxLength: 256, nullable: false),
+                    Identifier = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    Contact = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailAddress = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    FaxNumber = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    TelephoneNumber = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ContactTypeIdentifier = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -543,30 +542,30 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Index = table.Column<int>(type: "INTEGER", nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SensorIndex = table.Column<int>(type: "INTEGER", nullable: false),
-                    Type = table.Column<string>(type: "TEXT", nullable: true),
-                    DeviceId = table.Column<string>(type: "TEXT", nullable: true),
-                    RawData = table.Column<string>(type: "TEXT", nullable: true),
-                    DataProcessingMethod = table.Column<string>(type: "TEXT", nullable: true),
-                    Time = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    Microorganism = table.Column<string>(type: "TEXT", nullable: true),
-                    ChemicalSubstance = table.Column<string>(type: "TEXT", nullable: true),
-                    Value = table.Column<float>(type: "REAL", nullable: true),
-                    Component = table.Column<string>(type: "TEXT", nullable: true),
-                    StringValue = table.Column<string>(type: "TEXT", nullable: true),
-                    BooleanValue = table.Column<bool>(type: "INTEGER", nullable: false),
-                    HexBinaryValue = table.Column<string>(type: "TEXT", nullable: true),
-                    UriValue = table.Column<string>(type: "TEXT", nullable: true),
-                    MinValue = table.Column<float>(type: "REAL", nullable: true),
-                    MaxValue = table.Column<float>(type: "REAL", nullable: true),
-                    MeanValue = table.Column<float>(type: "REAL", nullable: true),
-                    PercRank = table.Column<float>(type: "REAL", nullable: true),
-                    PercValue = table.Column<float>(type: "REAL", nullable: true),
-                    UnitOfMeasure = table.Column<string>(type: "TEXT", nullable: true),
-                    SDev = table.Column<float>(type: "REAL", nullable: true),
-                    DeviceMetadata = table.Column<string>(type: "TEXT", nullable: true)
+                    Index = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    SensorIndex = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DeviceId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    RawData = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    DataProcessingMethod = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Microorganism = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ChemicalSubstance = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Value = table.Column<float>(type: "real", nullable: true),
+                    Component = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    StringValue = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    BooleanValue = table.Column<bool>(type: "boolean", nullable: false),
+                    HexBinaryValue = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    UriValue = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    MinValue = table.Column<float>(type: "real", nullable: true),
+                    MaxValue = table.Column<float>(type: "real", nullable: true),
+                    MeanValue = table.Column<float>(type: "real", nullable: true),
+                    PercRank = table.Column<float>(type: "real", nullable: true),
+                    PercValue = table.Column<float>(type: "real", nullable: true),
+                    UnitOfMeasure = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    SDev = table.Column<float>(type: "real", nullable: true),
+                    DeviceMetadata = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -585,21 +584,21 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Cbv",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Namespace = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: false),
-                    MasterdataType = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    MasterdataId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    AttributeId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    ParentName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ParentNamespace = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Value = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Namespace = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    MasterdataType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    MasterdataId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    AttributeId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    ParentName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ParentNamespace = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Value = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MasterDataField", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeId, x.Namespace, x.Name });
                     table.ForeignKey(
-                        name: "FK_MasterDataField_MasterDataAttribute_RequestId_MasterdataType_MasterdataId_AttributeId",
+                        name: "FK_MasterDataField_MasterDataAttribute_RequestId_MasterdataTyp~",
                         columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeId },
                         principalSchema: "Cbv",
                         principalTable: "MasterDataAttribute",
@@ -613,8 +612,8 @@ namespace FasTnT.Sqlite.Migrations
                 columns: new[] { "Id", "DataSource", "Name", "UserId" },
                 values: new object[,]
                 {
-                    { -2, "SimpleEventQuery", "SimpleEventQuery", null },
-                    { -1, "SimpleMasterDataQuery", "SimpleMasterDataQuery", null }
+                    { -2, "EventDataSource", "SimpleEventQuery", null },
+                    { -1, "VocabularyDataSource", "SimpleMasterDataQuery", null }
                 });
 
             migrationBuilder.CreateIndex(

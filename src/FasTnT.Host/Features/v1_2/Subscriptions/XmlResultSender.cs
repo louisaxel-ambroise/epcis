@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v1_2.Communication.Formatters;

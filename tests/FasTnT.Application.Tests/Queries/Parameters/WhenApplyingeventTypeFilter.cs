@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.DataSources;
+using FasTnT.Application.Services.DataSources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -17,7 +16,7 @@ public class WhenApplyingeventTypeFilter
     public void Initialize()
     {
         Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
-        Query = new SimpleEventQuery(Context);
+        Query = new EventDataSource(Context);
 
         Context.Add(new Domain.Model.Request
         {
@@ -45,7 +44,9 @@ public class WhenApplyingeventTypeFilter
     [TestMethod]
     public void ItShouldOnlyReturnTheEventsOfTheSpecifiedType()
     {
-        var result = Query.ExecuteAsync(Parameters, CancellationToken.None).Result;
+        Query.ApplyParameters(Parameters);
+
+        var result = Query.ExecuteAsync(CancellationToken.None).Result;
         Assert.AreEqual(1, result.EventList.Count);
         Assert.IsTrue(result.EventList.All(x => x.Type == Domain.Enumerations.EventType.ObjectEvent));
     }

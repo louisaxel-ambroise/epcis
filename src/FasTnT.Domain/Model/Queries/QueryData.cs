@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
 
-namespace FasTnT.Application.Services.Queries;
+namespace FasTnT.Domain.Model.Queries;
 
 public class QueryData
 {

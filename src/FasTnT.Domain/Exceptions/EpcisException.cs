@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Domain.Infrastructure.Exceptions;
+﻿namespace FasTnT.Domain.Exceptions;
 
 public class EpcisException : Exception
 {

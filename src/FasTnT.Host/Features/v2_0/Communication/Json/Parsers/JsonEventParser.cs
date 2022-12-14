@@ -1,7 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
-using LinqKit;
 using System.Text.Json;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;

@@ -1,6 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Application.UseCases.Queries;
@@ -18,8 +16,7 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldReturnAllTheQueryNames()
     {
-        var queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-        var handler = new QueriesUseCasesHandler(Context, UserContext, queries);
+        var handler = new QueriesUseCasesHandler(Context, UserContext);
         var result = handler.ListQueriesAsync(Pagination.Max, CancellationToken.None).Result;
 
         Assert.IsInstanceOfType(result, typeof(List<StoredQuery>));
@@ -31,8 +28,7 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldApplyThePaginationPerPageFilter()
     {
-        var queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-        var handler = new QueriesUseCasesHandler(Context, UserContext, queries);
+        var handler = new QueriesUseCasesHandler(Context, UserContext);
         var result = handler.ListQueriesAsync(new Pagination(1, 0), CancellationToken.None).Result;
 
         Assert.IsInstanceOfType(result, typeof(List<StoredQuery>));
@@ -44,8 +40,7 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldApplyThePaginationStartFromFilter()
     {
-        var queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
-        var handler = new QueriesUseCasesHandler(Context, UserContext, queries);
+        var handler = new QueriesUseCasesHandler(Context, UserContext);
         var result = handler.ListQueriesAsync(new Pagination(30, 1), CancellationToken.None).Result;
 
         Assert.IsInstanceOfType(result, typeof(List<StoredQuery>));

@@ -1,9 +1,7 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.UseCases.Subscriptions;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 using Moq;
 
@@ -13,7 +11,6 @@ namespace FasTnT.Application.Tests.Queries;
 public class WhenHandlingUnsubscribeCommand
 {
     readonly static EpcisContext Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenHandlingUnsubscribeCommand));
-    readonly static IEnumerable<IEpcisDataSource> Queries = new IEpcisDataSource[] { new SimpleEventQuery(Context), new SimpleMasterDataQuery(Context) };
     readonly static Mock<ISubscriptionListener> Listener = new(MockBehavior.Loose);
 
     [ClassInitialize]
@@ -22,7 +19,8 @@ public class WhenHandlingUnsubscribeCommand
         Context.Add(new Subscription
         {
             Name = "TestSubscription",
-            QueryName = Queries.First().Name,
+            QueryName = "SimpleEventQuery",
+            Destination = "",
             FormatterName = "TestFormatter"
         });
 
@@ -34,7 +32,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldReturnAnUnubscribeResult()
     {
         var subscription = "TestSubscription";
-        var handler = new SubscriptionsUseCasesHandler(Context, Queries, Listener.Object);
+        var handler = new SubscriptionsUseCasesHandler(Context, Listener.Object);
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
 
         Assert.AreEqual(0, Context.Set<Subscription>().Count());
@@ -45,7 +43,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameDoesNotExist()
     {
         var subscription = "UnknownSubscription";
-        var handler = new SubscriptionsUseCasesHandler(Context, null, default);
+        var handler = new SubscriptionsUseCasesHandler(Context, default);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
     }

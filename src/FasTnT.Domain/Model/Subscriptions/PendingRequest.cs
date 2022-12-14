@@ -3,5 +3,5 @@
 public class PendingRequest
 {
     public int SubscriptionId { get; set; }
-    public string RequestId { get; set; }
+    public int RequestId { get; set; }
 }

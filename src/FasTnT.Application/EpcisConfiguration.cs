@@ -1,6 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
-using FasTnT.Application.Services.Queries.DataSources;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.UseCases.Captures;
 using FasTnT.Application.UseCases.Queries;
@@ -14,9 +12,6 @@ public static class EpcisConfiguration
 {
     public static IServiceCollection AddEpcisServices(this IServiceCollection services)
     {
-        services.AddScoped<IEpcisDataSource, SimpleEventQuery>();
-        services.AddScoped<IEpcisDataSource, SimpleMasterDataQuery>();
-
         services.AddTransient<IListCaptureRequestsHandler, CaptureUseCasesHandler>();
         services.AddTransient<ICaptureRequestDetailsHandler, CaptureUseCasesHandler>();
         services.AddTransient<ICaptureRequestHandler, CaptureUseCasesHandler>();

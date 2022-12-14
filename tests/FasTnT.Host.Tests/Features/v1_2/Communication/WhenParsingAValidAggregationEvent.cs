@@ -1,5 +1,4 @@
 ﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Infrastructure.Utils;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Host.Features.v1_2.Communication.Parsers;
 

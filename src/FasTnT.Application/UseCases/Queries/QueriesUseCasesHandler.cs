@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries;
+using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
@@ -18,13 +18,11 @@ public class QueriesUseCasesHandler :
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
-    private readonly IEnumerable<IEpcisDataSource> _dataSources;
 
-    public QueriesUseCasesHandler(EpcisContext context, ICurrentUser currentUser, IEnumerable<IEpcisDataSource> dataSources)
+    public QueriesUseCasesHandler(EpcisContext context, ICurrentUser currentUser)
     {
         _context = context;
         _currentUser = currentUser;
-        _dataSources = dataSources;
     }
 
     public async Task<IEnumerable<StoredQuery>> ListQueriesAsync(Pagination pagination, CancellationToken cancellationToken)
@@ -60,7 +58,7 @@ public class QueriesUseCasesHandler :
 
         query.UserId = _currentUser.UserId;
 
-        _context.Set<StoredQuery>().Add(query);
+        _context.Add(query);
         await _context.SaveChangesAsync(cancellationToken);
 
         return query;
@@ -84,7 +82,7 @@ public class QueriesUseCasesHandler :
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' has active subscriptions.");
         }
 
-        _context.Set<StoredQuery>().Remove(query);
+        _context.Remove(query);
         await _context.SaveChangesAsync(cancellationToken);
 
         return query;
@@ -101,13 +99,12 @@ public class QueriesUseCasesHandler :
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
         }
 
-        var performer = _dataSources.Single(x => x.Name == query.DataSource);
-        var context = new EpcisQueryContext(performer, query.Parameters)
-            .MergeParameters(parameters)
-            .MergeParameters(_currentUser.DefaultQueryParameters);
+        var response = await _context.DataSource(query.DataSource)
+            .WithParameters(query.Parameters)
+            .WithParameters(_currentUser.DefaultQueryParameters)
+            .WithParameters(parameters)
+            .ExecuteAsync(cancellationToken);
 
-        var response = await context.ExecuteAsync(cancellationToken);
-
-        return new(queryName, response.EventList, response.VocabularyList);
+        return new(queryName, response);
     }
 }

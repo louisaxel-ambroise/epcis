@@ -1,69 +1,59 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Queries.Utils;
-using FasTnT.Domain.Infrastructure.Exceptions;
+using FasTnT.Application.Services.DataSources.Utils;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Services.Queries.DataSources;
+namespace FasTnT.Application.Services.DataSources;
 
-public class SimpleMasterDataQuery : IEpcisDataSource
+public class VocabularyDataSource : IEpcisDataSource
 {
     private int? _maxEventCount;
     private readonly EpcisContext _context;
 
-    public string Name => nameof(SimpleMasterDataQuery);
-    public bool AllowSubscription => false;
+    public IQueryable<MasterData> Query { get; private set; }
 
-    public SimpleMasterDataQuery(EpcisContext context)
+    public VocabularyDataSource(EpcisContext context)
     {
         _context = context;
+        Query = _context.Set<MasterData>().AsNoTracking();
     }
 
-    public async Task<QueryData> ExecuteAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+    public void ApplyParameters(IEnumerable<QueryParameter> parameters)
     {
-        var query = _context.Set<MasterData>().AsNoTracking();
-
         foreach (var parameter in parameters)
         {
             try
             {
-                query = ApplyParameter(parameter, query);
+                Query = ApplyParameter(parameter, Query);
             }
             catch
             {
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid Query Parameter or Value: {parameter.Name}");
             }
         }
+    }
 
+    public async Task<QueryData> ExecuteAsync(CancellationToken cancellationToken)
+    {
         try
         {
-            var result = await query
+            var result = await Query
                 .Take(_maxEventCount ?? int.MaxValue)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             if (_maxEventCount.HasValue && result.Count > _maxEventCount)
             {
-                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.")
-                {
-                    QueryName = Name
-                };
+                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.");
             }
 
             return result;
         }
-        catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
-        {
-            throw new EpcisException(ExceptionType.QueryParameterException, "Invalid parameter value.");
-        }
         catch
         {
-            throw new EpcisException(ExceptionType.ImplementationException, "Query took too long to execute")
-            {
-                Severity = ExceptionSeverity.Severe,
-                QueryName = Name
-            };
+            throw new EpcisException(ExceptionType.ImplementationException, "Query took too long to execute");
         }
     }
 

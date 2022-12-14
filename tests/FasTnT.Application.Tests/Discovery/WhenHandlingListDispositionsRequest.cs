@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Application.UseCases.TopLevelResources;
 using FasTnT.Domain.Model.Events;
@@ -10,6 +11,7 @@ namespace FasTnT.Application.Tests.Discovery;
 public class WhenHandlingListDispositionsRequest
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListDispositionsRequest));
+    readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [TestInitialize]
     public void Initialize()
@@ -39,7 +41,7 @@ public class WhenHandlingListDispositionsRequest
     [TestMethod]
     public void ItShouldReturnAllTheDispositionsIfPageSizeIsGreaterThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceUseCasesHandler(Context);
+        var handler = new TopLevelResourceUseCasesHandler(Context, UserContext);
         var request = new Pagination(10, 0);
 
         var result = handler.ListDispositions(request, default).Result;
@@ -51,7 +53,7 @@ public class WhenHandlingListDispositionsRequest
     [TestMethod]
     public void ItShouldReturnTheRequestedNumberOfDispositionsIfPageSizeIsLowerThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceUseCasesHandler(Context);
+        var handler = new TopLevelResourceUseCasesHandler(Context, UserContext);
         var request = new Pagination(1, 0);
 
         var result = handler.ListDispositions(request, default).Result;
@@ -63,7 +65,7 @@ public class WhenHandlingListDispositionsRequest
     [TestMethod]
     public void ItShouldReturnTheCorrectPageOfData()
     {
-        var handler = new TopLevelResourceUseCasesHandler(Context);
+        var handler = new TopLevelResourceUseCasesHandler(Context, UserContext);
         var request = new Pagination(10, 1);
 
         var result = handler.ListDispositions(request, default).Result;
