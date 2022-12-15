@@ -4,6 +4,7 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace FasTnT.Application.Services.DataSources;
 
@@ -18,21 +19,6 @@ public class VocabularyDataSource : IEpcisDataSource
     {
         _context = context;
         Query = _context.Set<MasterData>().AsNoTracking();
-    }
-
-    public void ApplyParameters(IEnumerable<QueryParameter> parameters)
-    {
-        foreach (var parameter in parameters)
-        {
-            try
-            {
-                Query = ApplyParameter(parameter, Query);
-            }
-            catch
-            {
-                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid Query Parameter or Value: {parameter.Name}");
-            }
-        }
     }
 
     public async Task<QueryData> ExecuteAsync(CancellationToken cancellationToken)
@@ -57,38 +43,49 @@ public class VocabularyDataSource : IEpcisDataSource
         }
     }
 
-    private IQueryable<MasterData> ApplyParameter(QueryParameter param, IQueryable<MasterData> query)
+    public void Apply(QueryParameter param)
     {
-        return param.Name switch
+        switch(param.Name)
         {
             // Simple filters
-            "maxElementCount" => ParseLimitEventCount(param, query, ref _maxEventCount),
-            "includeAttributes" => param.GetBoolValue() ? query.Include(x => x.Attributes).ThenInclude(x => x.Fields) : query,
-            "includeChildren" => param.GetBoolValue() ? query.Include(x => x.Children) : query,
-            "vocabularyName" => query.Where(x => x.Type == param.Value()),
-            "EQ_userID" => query.Where(x => param.Values.Contains(x.Request.UserId)),
-            "EQ_name" => query.Where(x => param.Values.Any(v => v == x.Id)),
-            "WD_name" => query.Where(x => _context.Set<MasterDataHierarchy>().Any(h => h.Type == x.Type && h.Root == x.Id && param.Values.Contains(x.Id))),
-            "attributeNames" => query.Include(x => x.Attributes.Where(a => param.Values.Contains(a.Id))).ThenInclude(x => x.Fields),
-            "HASATTR" => query.Where(x => x.Attributes.Any(a => a.Id == param.Value())),
+            case "maxElementCount": 
+                ParseLimitEventCount(param); break;
+            case "includeAttributes" or  "includeChildren": break; // TODO: Already included by the "OwnsMany". Maybe review it?
+            case "vocabularyName": 
+                Filter(x => x.Type == param.AsString()); break;
+            case "EQ_userID": 
+                Filter(x => param.Values.Contains(x.Request.UserId)); break;
+            case "EQ_name": 
+                Filter(x => param.Values.Any(v => v == x.Id)); break;
+            case "WD_name": 
+                Filter(x => _context.Set<MasterDataHierarchy>().Any(h => h.Type == x.Type && h.Root == x.Id && param.Values.Contains(x.Id))); break;
+            case "attributeNames": 
+                Query.Include(x => x.Attributes.Where(a => param.Values.Contains(a.Id))).ThenInclude(x => x.Fields); break;
+            case "HASATTR": 
+                Filter(x => x.Attributes.Any(a => a.Id == param.AsString())); break;
             // Family filters
-            var s when s.StartsWith("EQATTR_") => ApplyEqAttrParameter(param, query),
+            case var s when s.StartsWith("EQATTR_"): 
+                ApplyEqAttrParameter(param); break;
             // Any other case is an unknown parameter and should raise a QueryParameter Exception
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is invalid for simplemasterdata query: {param.Name}")
+            default: 
+                throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is invalid for simplemasterdata query: {param.Name}");
         };
     }
 
-    private static IQueryable<MasterData> ParseLimitEventCount(QueryParameter param, IQueryable<MasterData> query, ref int? destination)
+    private void ParseLimitEventCount(QueryParameter param)
     {
-        destination = param.GetIntValue();
-
-        return query;
+        _maxEventCount = param.AsInt();
     }
 
-    private static IQueryable<MasterData> ApplyEqAttrParameter(QueryParameter param, IQueryable<MasterData> query)
+    private void ApplyEqAttrParameter(QueryParameter param)
     {
         var attributeName = param.Name["EQATTR_".Length..];
 
-        return query.Where(x => x.Attributes.Any(x => x.Id == attributeName && param.Values.Any(v => v == x.Value)));
+        Filter(x => x.Attributes.Any(x => x.Id == attributeName && param.Values.Any(v => v == x.Value)));
+    }
+
+    private void Filter(Expression<Func<MasterData, bool>> filter)
+    {
+        Query = Query.Where(filter);
     }
 }

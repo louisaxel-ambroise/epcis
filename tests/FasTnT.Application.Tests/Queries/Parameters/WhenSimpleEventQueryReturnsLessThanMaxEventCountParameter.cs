@@ -10,7 +10,7 @@ public class WhenSimpleEventQueryReturnsLessThanMaxEventCountParameter
 {
     public EpcisContext Context { get; set; }
     public IEpcisDataSource Query { get; set; }
-    public IList<QueryParameter> Parameters { get; set; }
+    public QueryParameter Parameter { get; set; }
 
     [TestInitialize]
     public void Initialize()
@@ -32,13 +32,13 @@ public class WhenSimpleEventQueryReturnsLessThanMaxEventCountParameter
         });
         Context.SaveChanges();
 
-        Parameters = new[] { QueryParameter.Create("maxEventCount", new[] { "2" }) }.ToList();
+        Parameter = QueryParameter.Create("maxEventCount", new[] { "2" });
     }
 
     [TestMethod]
     public void ItShouldThrowAQueryTooLargeExceptionException()
     {
-        Query.ApplyParameters(Parameters);
+        Query.Apply(Parameter);
         var result = Query.ExecuteAsync(default).Result;
 
         Assert.IsNotNull(result);

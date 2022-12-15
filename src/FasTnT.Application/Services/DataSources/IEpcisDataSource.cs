@@ -4,6 +4,6 @@ namespace FasTnT.Application.Services.DataSources;
 
 public interface IEpcisDataSource
 {
-    void ApplyParameters(IEnumerable<QueryParameter> parameters);
+    void Apply(QueryParameter param);
     Task<QueryData> ExecuteAsync(CancellationToken cancellationToken);
 }

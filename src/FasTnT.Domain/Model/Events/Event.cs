@@ -8,7 +8,7 @@ public class Event
     public Request Request { get; set; }
     public DateTime EventTime { get; set; }
     public DateTime CaptureTime { get; set; }
-    public TimeZoneOffset EventTimeZoneOffset { get; set; } = TimeZoneOffset.Default;
+    public TimeZoneOffset EventTimeZoneOffset { get; set; } = new();
     public EventType Type { get; set; }
     public EventAction Action { get; set; }
     public string EventId { get; set; }
@@ -21,7 +21,7 @@ public class Event
     public DateTime? CorrectiveDeclarationTime { get; set; }
     public string CorrectiveReason { get; set; }
     public List<CorrectiveEventId> CorrectiveEventIds { get; set; } = new();
-    public List<Epc> Epcs { get; set; } = new List<Epc>();
+    public List<Epc> Epcs { get; set; } = new();
     public List<BusinessTransaction> Transactions { get; set; } = new();
     public List<Source> Sources { get; set; } = new();
     public List<Destination> Destinations { get; set; } = new();
