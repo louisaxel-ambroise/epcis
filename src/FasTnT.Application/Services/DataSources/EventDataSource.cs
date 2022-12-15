@@ -239,7 +239,7 @@ public class EventDataSource : IEpcisDataSource
             // Any other case is an unknown parameter and should raise a QueryParameter Exception
             default: 
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is not implemented: {param.Name}");
-        };
+        }
     }
 
     private void ApplyHasAttributeParameter(string field, string attributeName)

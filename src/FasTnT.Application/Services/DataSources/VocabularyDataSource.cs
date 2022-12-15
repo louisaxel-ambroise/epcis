@@ -69,7 +69,7 @@ public class VocabularyDataSource : IEpcisDataSource
             // Any other case is an unknown parameter and should raise a QueryParameter Exception
             default: 
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is invalid for simplemasterdata query: {param.Name}");
-        };
+        }
     }
 
     private void ParseLimitEventCount(QueryParameter param)
@@ -84,8 +84,8 @@ public class VocabularyDataSource : IEpcisDataSource
         Filter(x => x.Attributes.Any(x => x.Id == attributeName && param.Values.Any(v => v == x.Value)));
     }
 
-    private void Filter(Expression<Func<MasterData, bool>> filter)
+    private void Filter(Expression<Func<MasterData, bool>> expression)
     {
-        Query = Query.Where(filter);
+        Query = Query.Where(expression);
     }
 }
