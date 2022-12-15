@@ -56,7 +56,7 @@
     <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\StandardBusinessDocumentHeader.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JsonSchema.Net" Version="4.0.0-beta1a" />
+    <PackageReference Include="JsonSchema.Net" Version="4.0.0-beta2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
