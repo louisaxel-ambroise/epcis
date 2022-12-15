@@ -10,7 +10,7 @@ public class WhenApplyingLT_eventTimeFilter
 {
     public EpcisContext Context { get; set; }
     public IEpcisDataSource Query { get; set; }
-    public IList<QueryParameter> Parameters { get; set; }
+    public QueryParameter Parameter { get; set; }
 
     [TestInitialize]
     public void Initialize()
@@ -46,13 +46,13 @@ public class WhenApplyingLT_eventTimeFilter
         });
         Context.SaveChanges();
 
-        Parameters = new[] { QueryParameter.Create("LT_eventTime", new[] { "2020-01-12T10:24:10.000Z" }) }.ToList();
+        Parameter = QueryParameter.Create("LT_eventTime", new[] { "2020-01-12T10:24:10.000Z" });
     }
 
     [TestMethod]
     public void ItShouldOnlyReturnTheEventsCaptureBeforeTheDate()
     {
-        Query.ApplyParameters(Parameters);
+        Query.Apply(Parameter);
         var result = Query.ExecuteAsync(default).Result;
         Assert.AreEqual(1, result.EventList.Count);
         Assert.IsTrue(result.EventList.All(x => x.EventTime < new DateTime(2021, 01, 12, 10, 24, 10)));

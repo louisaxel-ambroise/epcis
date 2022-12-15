@@ -4,6 +4,8 @@ namespace FasTnT.Application.Services.DataSources.Utils;
 
 public static partial class Regexs
 {
+    public static bool IsDate(string value) => Date().IsMatch(value);
+    public static bool IsNumeric(string value) => Numeric().IsMatch(value);
     public static bool IsInnerIlmd(string value) => InnerIlmd().IsMatch(value);
     public static bool IsIlmd(string value) => Ilmd().IsMatch(value);
     public static bool IsInnerSensorElement(string value) => InnerSensorElement().IsMatch(value);
@@ -16,7 +18,10 @@ public static partial class Regexs
     public static bool IsField(string value) => Field().IsMatch(value);
     public static bool IsUoMField(string value) => UoMField().IsMatch(value);
 
-
+    [GeneratedRegex("^-?\\d+(?:\\.\\d+)?$")]
+    private static partial Regex Numeric();
+    [GeneratedRegex("^([0-9]{4})-([0-9]{2})-([0-9]{2})")]
+    private static partial Regex Date();
     [GeneratedRegex("^(GE|GT|LE|LT)_SENSORMETADATA_")]
     private static partial Regex SensorMetadata();
     [GeneratedRegex("^(GE|GT|LE|LT)_INNER_SENSORELEMENT_")]

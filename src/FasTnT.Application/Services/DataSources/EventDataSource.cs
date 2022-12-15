@@ -32,28 +32,13 @@ public class EventDataSource : IEpcisDataSource
         Query = _context.Set<Event>().AsNoTracking();
     }
 
-    public void ApplyParameters(IEnumerable<QueryParameter> parameters)
-    {
-        foreach (var parameter in parameters)
-        {
-            try
-            {
-                Query = ApplyParameter(parameter, Query);
-            }
-            catch
-            {
-                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid Query Parameter or Value: {parameter.Name}");
-            }
-        }
-    }
-
     public async Task<QueryData> ExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {
             var eventIds = await ApplyOrderBy(Query)
-                .Skip(_startFrom).Take(_eventCountLimit)
                 .Select(evt => evt.Id)
+                .Skip(_startFrom).Take(_eventCountLimit)
                 .ToListAsync(cancellationToken);
 
             if (_isMaxCount && eventIds.Count == _eventCountLimit)
@@ -84,201 +69,285 @@ public class EventDataSource : IEpcisDataSource
             : query.OrderByDescending(_orderExpression);
     }
 
-    private IQueryable<Event> ApplyParameter(QueryParameter param, IQueryable<Event> query)
+    public void Apply(QueryParameter param)
     {
-        return param.Name switch
+        switch(param.Name)
         {
             // Order Parameters
-            "orderBy" => ParseOrderField(param, query),
-            "orderDirection" => ParseOrderDirection(param, query),
+            case "orderBy": 
+                ParseOrderField(param); break;
+            case "orderDirection": 
+                ParseOrderDirection(param); break;
             // Simple filters
-            "eventType" => query.Where(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)),
-            "nextPageToken" => ParseNextPageToken(param, query),
-            "eventCountLimit" or "perPage" or "maxEventCount" => ParseLimitEventCount(param, query),
-            "GE_eventTime" => query.Where(x => x.EventTime >= param.GetDate()),
-            "LT_eventTime" => query.Where(x => x.EventTime < param.GetDate()),
-            "GE_recordTime" => query.Where(x => x.CaptureTime >= param.GetDate()),
-            "LT_recordTime" => query.Where(x => x.CaptureTime < param.GetDate()),
-            "EQ_action" => query.Where(x => param.Values.Select(x => Enum.Parse<EventAction>(x, true)).Contains(x.Action)),
-            "EQ_bizLocation" => query.Where(x => param.Values.Contains(x.BusinessLocation)),
-            "EQ_bizStep" => query.Where(x => param.Values.Contains(x.BusinessStep)),
-            "EQ_disposition" => query.Where(x => param.Values.Contains(x.Disposition)),
-            "EQ_eventID" => query.Where(x => param.Values.Contains(x.EventId)),
-            "EQ_transformationID" => query.Where(x => param.Values.Contains(x.TransformationId)),
-            "EQ_readPoint" => query.Where(x => param.Values.Contains(x.ReadPoint)),
-            "EQ_userID" => query.Where(x => param.Values.Contains(x.Request.UserId)),
-            "EXISTS_errorDeclaration" => query.Where(x => x.CorrectiveDeclarationTime.HasValue),
-            "EQ_errorReason" => query.Where(x => param.Values.Contains(x.CorrectiveReason)),
-            "EQ_correctiveEventID" => query.Where(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))),
-            "WD_readPoint" => query.Where(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == ReadPoint && h.Root == x.ReadPoint).Any(h => param.Values.Contains(h.Id))),
-            "WD_bizLocation" => query.Where(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == Location && h.Root == x.BusinessLocation).Any(h => param.Values.Contains(h.Id))),
-            "EQ_requestID" => query.Where(x => param.Values.Select(int.Parse).Contains(x.Request.Id)),
-            "EQ_captureID" => query.Where(x => param.Values.Contains(x.Request.CaptureId)),
-            "EQ_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity == param.GetNumeric())),
-            "GT_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity > param.GetNumeric())),
-            "GE_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity >= param.GetNumeric())),
-            "LT_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity < param.GetNumeric())),
-            "LE_quantity" => query.Where(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity <= param.GetNumeric())),
+            case "eventType": 
+                Filter(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)); break;
+            case "nextPageToken": 
+                ParseNextPageToken(param); break;
+            case "eventCountLimit" or "perPage" or "maxEventCount": 
+                ParseLimitEventCount(param); break;
+            case "GE_eventTime": 
+                Filter(x => x.EventTime >= param.AsDate()); break;
+            case "LT_eventTime": 
+                Filter(x => x.EventTime < param.AsDate()); break;
+            case "GE_recordTime": 
+                Filter(x => x.CaptureTime >= param.AsDate()); break;
+            case "LT_recordTime": 
+                Filter(x => x.CaptureTime < param.AsDate()); break;
+            case "EQ_action": 
+                Filter(x => param.Values.Select(x => Enum.Parse<EventAction>(x, true)).Contains(x.Action)); break;
+            case "EQ_bizLocation": 
+                Filter(x => param.Values.Contains(x.BusinessLocation)); break;
+            case "EQ_bizStep": 
+                Filter(x => param.Values.Contains(x.BusinessStep)); break;
+            case "EQ_disposition": 
+                Filter(x => param.Values.Contains(x.Disposition)); break;
+            case "EQ_eventID": 
+                Filter(x => param.Values.Contains(x.EventId)); break;
+            case "EQ_transformationID": 
+                Filter(x => param.Values.Contains(x.TransformationId)); break;
+            case "EQ_readPoint": 
+                Filter(x => param.Values.Contains(x.ReadPoint)); break;
+            case "EQ_userID": 
+                Filter(x => param.Values.Contains(x.Request.UserId)); break;
+            case "EXISTS_errorDeclaration": 
+                Filter(x => x.CorrectiveDeclarationTime.HasValue); break;
+            case "EQ_errorReason": 
+                Filter(x => param.Values.Contains(x.CorrectiveReason)); break;
+            case "EQ_correctiveEventID": 
+                Filter(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))); break;
+            case "WD_readPoint": 
+                Filter(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == ReadPoint && h.Root == x.ReadPoint).Any(h => param.Values.Contains(h.Id))); break;
+            case "WD_bizLocation": 
+                Filter(x => _context.Set<MasterDataHierarchy>().Where(h => h.Type == Location && h.Root == x.BusinessLocation).Any(h => param.Values.Contains(h.Id))); break;
+            case "EQ_requestID": 
+                Filter(x => param.Values.Select(int.Parse).Contains(x.Request.Id)); break;
+            case "EQ_captureID":
+                Filter(x => param.Values.Contains(x.Request.CaptureId)); break;
+            case "EQ_quantity": 
+                Filter(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity == param.AsFloat())); break;
+            case "GT_quantity":
+                Filter(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity > param.AsFloat())); break;
+            case "GE_quantity": 
+                Filter(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity >= param.AsFloat())); break;
+            case "LT_quantity":
+                Filter(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity < param.AsFloat())); break;
+            case "LE_quantity": 
+                Filter(x => x.Epcs.Any(e => e.Type == EpcType.Quantity && e.Quantity <= param.AsFloat())); break;
             // parameters introduced in EPCIS 2.0
-            "GE_startTime" => query.Where(x => x.SensorElements.Any(s => s.StartTime >= param.GetDate())),
-            "LT_startTime" => query.Where(x => x.SensorElements.Any(s => s.StartTime < param.GetDate())),
-            "GE_endTime" => query.Where(x => x.SensorElements.Any(s => s.EndTime >= param.GetDate())),
-            "LT_endTime" => query.Where(x => x.SensorElements.Any(s => s.EndTime < param.GetDate())),
-            "EQ_type" => query.Where(x => x.SensorElements.Any(s => s.Reports.Any(r => r.Type == param.Value()))),
-            "EQ_deviceID" => query.Where(x => x.SensorElements.Any(s => s.Reports.Any(r => r.DeviceId == param.Value()))),
-            "EQ_dataProcessingMethod" => query.Where(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.DataProcessingMethod)))),
-            "EQ_microorganism" => query.Where(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.Microorganism)))),
-            "EQ_chemicalSubstance" => query.Where(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.ChemicalSubstance)))),
-            "EQ_bizRules" => query.Where(x => x.SensorElements.Any(s => param.Values.Contains(s.BizRules))),
-            "EQ_stringValue" => query.Where(x => x.SensorElements.Any(e => e.Reports.Any(r => r.StringValue == param.Value()))),
-            "EQ_booleanValue" => query.Where(x => x.SensorElements.Any(e => e.Reports.Any(r => r.BooleanValue == param.GetBoolValue()))),
-            "EQ_hexBinaryValue" => query.Where(x => x.SensorElements.Any(e => e.Reports.Any(r => param.Values.Contains(r.HexBinaryValue)))),
-            "EQ_uriValue" => query.Where(x => x.SensorElements.Any(e => e.Reports.Any(r => param.Values.Contains(r.UriValue)))),
-            "GE_percRank" => query.Where(x => x.SensorElements.Any(s => s.Reports.Any(r => r.PercRank >= param.GetNumeric()))),
-            "LT_percRank" => query.Where(x => x.SensorElements.Any(s => s.Reports.Any(r => r.PercRank < param.GetNumeric()))),
-            "EQ_persistentDisposition_set" => ApplyPersistenDispositionFilter(param, PersistentDispositionType.Set, query),
-            "EQ_persistentDisposition_unset" => ApplyPersistenDispositionFilter(param, PersistentDispositionType.Unset, query),
+            case "GE_startTime": 
+                Filter(x => x.SensorElements.Any(s => s.StartTime >= param.AsDate())); break;
+            case "LT_startTime": 
+                Filter(x => x.SensorElements.Any(s => s.StartTime < param.AsDate())); break;
+            case "GE_endTime": 
+                Filter(x => x.SensorElements.Any(s => s.EndTime >= param.AsDate())); break;
+            case "LT_endTime": 
+                Filter(x => x.SensorElements.Any(s => s.EndTime < param.AsDate())); break;
+            case "EQ_type": 
+                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => r.Type == param.AsString()))); break;
+            case "EQ_deviceID": 
+                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => r.DeviceId == param.AsString()))); break;
+            case "EQ_dataProcessingMethod": 
+                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.DataProcessingMethod)))); break;
+            case "EQ_microorganism": 
+                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.Microorganism)))); break;
+            case "EQ_chemicalSubstance": 
+                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.ChemicalSubstance)))); break;
+            case "EQ_bizRules": 
+                Filter(x => x.SensorElements.Any(s => param.Values.Contains(s.BizRules))); break;
+            case "EQ_stringValue": 
+                Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => r.StringValue == param.AsString()))); break;
+            case "EQ_booleanValue": 
+                Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => r.BooleanValue == param.AsBool()))); break;
+            case "EQ_hexBinaryValue": 
+                Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => param.Values.Contains(r.HexBinaryValue)))); break;
+            case "EQ_uriValue": 
+                Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => param.Values.Contains(r.UriValue)))); break;
+            case "GE_percRank": 
+                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => r.PercRank >= param.AsFloat()))); break;
+            case "LT_percRank": 
+                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => r.PercRank < param.AsFloat()))); break;
+            case "EQ_persistentDisposition_set":
+                ApplyPersistenDispositionFilter(param, PersistentDispositionType.Set); break;
+            case "EQ_persistentDisposition_unset": 
+                ApplyPersistenDispositionFilter(param, PersistentDispositionType.Unset); break;
             // Family filters
-            var s when s.StartsWith("MATCH_") => ApplyMatchParameter(param, query),
-            var s when s.StartsWith("EQ_source_") => query.Where(x => x.Sources.Any(s => s.Id == param.GetSimpleId() && param.Values.Contains(s.Type))),
-            var s when s.StartsWith("EQ_destination_") => query.Where(x => x.Destinations.Any(d => d.Id == param.GetSimpleId() && param.Values.Contains(d.Type))),
-            var s when s.StartsWith("EQ_bizTransaction_") => query.Where(x => x.Transactions.Any(t => t.Id == param.GetSimpleId() && param.Values.Contains(t.Type))),
-            var s when s.StartsWith("EQ_INNER_ILMD_") => ApplyFieldParameter(param.Values, query, FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()),
-            var s when s.StartsWith("EQ_ILMD_") => ApplyFieldParameter(param.Values, query, FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()),
-            var s when s.StartsWith("EQ_INNER_SENSORELEMENT_") => ApplyFieldParameter(param.Values, query, FieldType.Sensor, true, param.InnerIlmdName(), param.InnerIlmdNamespace()),
-            var s when s.StartsWith("EQ_SENSORELEMENT_") => ApplyFieldParameter(param.Values, query, FieldType.Sensor, false, param.IlmdName(), param.IlmdNamespace()),
-            var s when s.StartsWith("EQ_SENSORMETADATA_") => ApplyFieldParameter(param.Values, query, FieldType.SensorMetadata, false, param.IlmdName(), param.IlmdNamespace()),
-            var s when s.StartsWith("EQ_INNER_SENSORMETADATA_") => ApplyFieldParameter(param.Values, query, FieldType.SensorMetadata, true, param.InnerIlmdName(), param.InnerIlmdNamespace()),
-            var s when s.StartsWith("EQ_SENSOREPORT_") => ApplyFieldParameter(param.Values, query, FieldType.SensorReport, false, param.IlmdName(), param.IlmdNamespace()),
-            var s when s.StartsWith("EQ_INNER_SENSOREPORT_") => ApplyFieldParameter(param.Values, query, FieldType.SensorReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace()),
-            var s when s.StartsWith("EXISTS_INNER_ILMD_") => ApplyExistsFieldParameter(query, FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()),
-            var s when s.StartsWith("EXISTS_ILMD_") => ApplyExistsFieldParameter(query, FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()),
-            var s when s.StartsWith("EXISTS_INNER_") => ApplyExistsFieldParameter(query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
-            var s when s.StartsWith("EXISTS_") => ApplyExistsFieldParameter(query, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()),
-            var s when s.StartsWith("EQ_INNER_") => ApplyFieldParameter(param.Values, query, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()),
-            var s when s.StartsWith("EQ_value_") => ApplyReportUomParameter(param.Values.Select(float.Parse).Cast<float?>().ToArray(), query, param.ReportFieldUom()),
-            var s when s.StartsWith("EQ_") => ApplyFieldParameter(param.Values, query, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()),
-            var s when s.StartsWith("EQATTR_") => ApplyEqAttributeParameter(param.Values, query, param.MasterdataType(), param.AttributeName()),
-            var s when s.StartsWith("HASATTR_") => ApplyHasAttributeParameter(query, param.MasterdataType(), param.AttributeName()),
+            case var s when s.StartsWith("MATCH_"):
+                ApplyMatchParameter(param); break;
+            case var s when s.StartsWith("EQ_source_"): 
+                Filter(x => x.Sources.Any(s => s.Id == param.GetSimpleId() && param.Values.Contains(s.Type))); break;
+            case var s when s.StartsWith("EQ_destination_"): 
+                Filter(x => x.Destinations.Any(d => d.Id == param.GetSimpleId() && param.Values.Contains(d.Type))); break;
+            case var s when s.StartsWith("EQ_bizTransaction_"): 
+                Filter(x => x.Transactions.Any(t => t.Id == param.GetSimpleId() && param.Values.Contains(t.Type))); break;
+            case var s when s.StartsWith("EQ_INNER_ILMD_"): 
+                ApplyFieldParameter(param.Values, FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_ILMD_"): 
+                ApplyFieldParameter(param.Values, FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_INNER_SENSORELEMENT_"): 
+                ApplyFieldParameter(param.Values, FieldType.Sensor, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_SENSORELEMENT_"): 
+                ApplyFieldParameter(param.Values, FieldType.Sensor, false, param.IlmdName(), param.IlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_SENSORMETADATA_"): 
+                ApplyFieldParameter(param.Values, FieldType.SensorMetadata, false, param.IlmdName(), param.IlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_INNER_SENSORMETADATA_"):
+                ApplyFieldParameter(param.Values, FieldType.SensorMetadata, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_SENSOREPORT_"): 
+                ApplyFieldParameter(param.Values, FieldType.SensorReport, false, param.IlmdName(), param.IlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_INNER_SENSOREPORT_"): 
+                ApplyFieldParameter(param.Values, FieldType.SensorReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+            case var s when s.StartsWith("EXISTS_INNER_ILMD_"): 
+                ApplyExistsFieldParameter(FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+            case var s when s.StartsWith("EXISTS_ILMD_"): 
+                ApplyExistsFieldParameter(FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()); break;
+            case var s when s.StartsWith("EXISTS_INNER_"): 
+                ApplyExistsFieldParameter(FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()); break;
+            case var s when s.StartsWith("EXISTS_"): 
+                ApplyExistsFieldParameter(FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()); break;
+            case var s when s.StartsWith("EQ_INNER_"): 
+                ApplyFieldParameter(param.Values, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()); break;
+            case var s when s.StartsWith("EQ_value_"): 
+                ApplyReportUomParameter(param.Values.Select(float.Parse).Cast<float?>().ToArray(), param.ReportFieldUom()); break;
+            case var s when s.StartsWith("EQ_"): 
+                ApplyFieldParameter(param.Values, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()); break;
+            case var s when s.StartsWith("EQATTR_"): 
+                ApplyEqAttributeParameter(param.Values, param.MasterdataType(), param.AttributeName()); break;
+            case var s when s.StartsWith("HASATTR_"): 
+                ApplyHasAttributeParameter(param.MasterdataType(), param.AttributeName()); break;
             // Regex filters (Date/Numeric value comparison)
-            var r when Regexs.IsInnerIlmd(r) => ApplyComparison(param, query, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true),
-            var r when Regexs.IsIlmd(r) => ApplyComparison(param, query, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false),
-            var r when Regexs.IsSensorElement(r) => ApplyComparison(param, query, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), false),
-            var r when Regexs.IsInnerSensorElement(r) => ApplyComparison(param, query, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regexs.IsSensorMetadata(r) => ApplyComparison(param, query, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), false),
-            var r when Regexs.IsInnerSensorMetadata(r) => ApplyComparison(param, query, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regexs.IsSensorReport(r) => ApplyComparison(param, query, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), false),
-            var r when Regexs.IsInnerSensorReport(r) => ApplyComparison(param, query, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regexs.IsInnerField(r) => ApplyComparison(param, query, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true),
-            var r when Regexs.IsUoMField(r) => ApplyUomComparison(param, query),
-            var r when Regexs.IsField(r) => ApplyComparison(param, query, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false),
+            case var r when Regexs.IsInnerIlmd(r): 
+                ApplyComparison(param, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true); break;
+            case var r when Regexs.IsIlmd(r): 
+                ApplyComparison(param, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false); break;
+            case var r when Regexs.IsSensorElement(r):
+                ApplyComparison(param, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
+            case var r when Regexs.IsInnerSensorElement(r): 
+                ApplyComparison(param, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
+            case var r when Regexs.IsSensorMetadata(r): 
+                ApplyComparison(param, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
+            case var r when Regexs.IsInnerSensorMetadata(r): 
+                ApplyComparison(param, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
+            case var r when Regexs.IsSensorReport(r): 
+                ApplyComparison(param, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
+            case var r when Regexs.IsInnerSensorReport(r): 
+                ApplyComparison(param, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
+            case var r when Regexs.IsInnerField(r): 
+                ApplyComparison(param, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
+            case var r when Regexs.IsUoMField(r): 
+                ApplyUomComparison(param); break;
+            case var r when Regexs.IsField(r): 
+                ApplyComparison(param, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false); break;
             // Any other case is an unknown parameter and should raise a QueryParameter Exception
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is not implemented: {param.Name}")
-        };
+            default: 
+                throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is not implemented: {param.Name}");
+        }
     }
 
-    private IQueryable<Event> ApplyHasAttributeParameter(IQueryable<Event> query, string field, string attributeName)
+    private void ApplyHasAttributeParameter(string field, string attributeName)
     {
-        return field switch
+        switch(field)
         {
-            "bizLocation" => query.Where(e => _context.Set<MasterData>().Any(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attributes.Any(a => a.Id == attributeName))),
-            "readPoint" => query.Where(e => _context.Set<MasterData>().Any(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attributes.Any(a => a.Id == attributeName))),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}"),
+            case "bizLocation":
+                Filter(e => _context.Set<MasterData>().Any(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attributes.Any(a => a.Id == attributeName))); break;
+            case "readPoint":
+                Filter(e => _context.Set<MasterData>().Any(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attributes.Any(a => a.Id == attributeName))); break;
+            default:
+                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
         };
     }
 
-    private IQueryable<Event> ApplyEqAttributeParameter(string[] values, IQueryable<Event> query, string field, string attributeName)
+    private void ApplyEqAttributeParameter(string[] values, string field, string attributeName)
     {
-        return field switch
+        switch(field)
         {
-            "bizLocation" => query.Where(e => _context.Set<MasterData>().Any(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))),
-            "readPoint" => query.Where(e => _context.Set<MasterData>().Any(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}"),
+            case "bizLocation":
+                Filter(e => _context.Set<MasterData>().Any(p => p.Id == e.BusinessLocation && p.Type == Location && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
+            case "readPoint":
+                Filter(e => _context.Set<MasterData>().Any(p => p.Id == e.ReadPoint && p.Type == ReadPoint && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
+            default:
+                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
         };
     }
 
-    private IQueryable<Event> ParseOrderField(QueryParameter param, IQueryable<Event> query)
+    private void ParseOrderField(QueryParameter param)
     {
-        _orderExpression = param.Value() switch
+        _orderExpression = param.AsString() switch
         {
             "eventTime" => (x) => x.EventTime,
             "recordTime" => (x) => x.CaptureTime,
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order field: {param.Value()}")
+            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order field: {param.AsString()}")
         };
-
-        return query;
     }
 
-    private IQueryable<Event> ParseNextPageToken(QueryParameter param, IQueryable<Event> query)
+    private void ParseNextPageToken(QueryParameter param)
     {
-        _startFrom = param.GetIntValue();
-
-        return query;
+        _startFrom = param.AsInt();
     }
 
-    private IQueryable<Event> ParseOrderDirection(QueryParameter param, IQueryable<Event> query)
+    private void ParseOrderDirection(QueryParameter param)
     {
-        _orderDirection = param.Value() switch
+        _orderDirection = param.AsString() switch
         {
             "ASC" => OrderDirection.Ascending,
             "DESC" => OrderDirection.Descending,
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order direction: {param.Value()}")
+            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order direction: {param.AsString()}")
         };
-
-        return query;
     }
 
-    private static IQueryable<Event> ApplyExistsFieldParameter(IQueryable<Event> query, FieldType type, bool inner, string name, string ns)
+    private void ApplyExistsFieldParameter(FieldType type, bool inner, string name, string ns)
     {
-        return query.Where(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && f.Name == name && f.Namespace == ns));
+        Filter(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && f.Name == name && f.Namespace == ns));
     }
 
-    private static IQueryable<Event> ApplyFieldParameter(string[] values, IQueryable<Event> query, FieldType type, bool inner, string name, string ns)
+    private void ApplyFieldParameter(string[] values, FieldType type, bool inner, string name, string ns)
     {
-        return query.Where(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && values.Contains(f.TextValue) && f.Name == name && f.Namespace == ns));
+        Filter(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && values.Contains(f.TextValue) && f.Name == name && f.Namespace == ns));
     }
 
-    private static IQueryable<Event> ApplyReportUomParameter(float?[] values, IQueryable<Event> query, string uom)
+    private void ApplyReportUomParameter(float?[] values, string uom)
     {
-        return query.Where(x => x.SensorElements.Any(e => e.Reports.Any(r => r.UnitOfMeasure == uom && values.Contains(r.Value))));
+        Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => r.UnitOfMeasure == uom && values.Contains(r.Value))));
     }
 
-    private IQueryable<Event> ParseLimitEventCount(QueryParameter param, IQueryable<Event> query)
+    private void ParseLimitEventCount(QueryParameter param)
     {
-        _eventCountLimit = param.GetIntValue();
+        _eventCountLimit = param.AsInt();
         _isMaxCount = param.Name == "maxEventCount";
 
-        return query;
+        if(_eventCountLimit > Constants.Instance.MaxEventsReturnedInQuery)
+        {
+            throw new EpcisException(ExceptionType.QueryParameterException, $"{param.Name} cannot be greater than {Constants.Instance.MaxEventsReturnedInQuery}.");
+        }
     }
 
-    private static IQueryable<Event> ApplyComparison(QueryParameter param, IQueryable<Event> query, FieldType type, string ns, string name, bool inner)
+    private void ApplyComparison(QueryParameter param, FieldType type, string ns, string name, bool inner)
     {
         var customFieldPredicate = PredicateBuilder.New<Field>(f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex != null == inner);
         var fieldValuePredicate = param.Name[..2] switch
         {
-            "GE" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue >= param.GetDate() : f => f.NumericValue >= param.GetNumeric()),
-            "GT" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue > param.GetDate() : f => f.NumericValue > param.GetNumeric()),
-            "LE" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue <= param.GetDate() : f => f.NumericValue <= param.GetNumeric()),
-            "LT" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue < param.GetDate() : f => f.NumericValue < param.GetNumeric()),
+            "GE" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue >= param.AsDate() : f => f.NumericValue >= param.AsFloat()),
+            "GT" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue > param.AsDate() : f => f.NumericValue > param.AsFloat()),
+            "LE" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue <= param.AsDate() : f => f.NumericValue <= param.AsFloat()),
+            "LT" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue < param.AsDate() : f => f.NumericValue < param.AsFloat()),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
         };
 
-        return query.Where(x => x.Fields.AsQueryable().Any(customFieldPredicate.And(fieldValuePredicate)));
+        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.And(fieldValuePredicate)));
     }
 
-    private static IQueryable<Event> ApplyMatchParameter(QueryParameter param, IQueryable<Event> query)
+    private void ApplyMatchParameter(QueryParameter param)
     {
-        var typePredicate = PredicateBuilder.New<Epc>(e => param.GetMatchEpcTypes().Contains(e.Type));
+        var epcType = param.GetMatchEpcTypes();
+        var typePredicate = PredicateBuilder.New<Epc>(e => epcType.Contains(e.Type));
         var likePredicate = PredicateBuilder.New<Epc>();
 
         param.Values.Select(p => p.Replace("*", "%")).ForEach(value => likePredicate.Or(e => EF.Functions.Like(e.Id, value)));
 
         var finalPredicate = typePredicate.And(likePredicate);
 
-        return query.Where(x => x.Epcs.AsQueryable().Any(finalPredicate));
+        Filter(x => x.Epcs.AsQueryable().Any(finalPredicate));
     }
 
-    private static IQueryable<Event> ApplyPersistenDispositionFilter(QueryParameter param, PersistentDispositionType type, IQueryable<Event> query)
+    private void ApplyPersistenDispositionFilter(QueryParameter param, PersistentDispositionType type)
     {
         var typePredicate = PredicateBuilder.New<PersistentDisposition>(x => x.Type == type);
         var anyPredicate = PredicateBuilder.New<PersistentDisposition>();
@@ -286,21 +355,26 @@ public class EventDataSource : IEpcisDataSource
 
         var finalPredicate = typePredicate.And(anyPredicate);
 
-        return query.Where(x => x.PersistentDispositions.AsQueryable().Any(finalPredicate));
+        Filter(x => x.PersistentDispositions.AsQueryable().Any(finalPredicate));
     }
 
-    private static IQueryable<Event> ApplyUomComparison(QueryParameter param, IQueryable<Event> query)
+    private void ApplyUomComparison(QueryParameter param)
     {
         var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == param.ReportFieldUom());
         var fieldValuePredicate = param.Name[..2] switch
         {
-            "GE" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) >= param.GetNumeric()),
-            "GT" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) > param.GetNumeric()),
-            "LE" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) <= param.GetNumeric()),
-            "LT" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) < param.GetNumeric()),
+            "GE" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) >= param.AsFloat()),
+            "GT" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) > param.AsFloat()),
+            "LE" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) <= param.AsFloat()),
+            "LT" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) < param.AsFloat()),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
         };
 
-        return query.Where(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(reportPredicate.And(fieldValuePredicate))));
+        Filter(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(reportPredicate.And(fieldValuePredicate))));
+    }
+
+    private void Filter(Expression<Func<Event, bool>> expression)
+    {
+        Query = Query.Where(expression);
     }
 }

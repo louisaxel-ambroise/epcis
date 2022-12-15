@@ -2,20 +2,19 @@
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.Services.DataSources.Utils;
 
 public static class QueryParameterExtensions
 {
-    public static int GetIntValue(this QueryParameter parameter) => int.Parse(parameter.Value());
-    public static bool GetBoolValue(this QueryParameter parameter) => bool.Parse(parameter.Value());
-    public static double GetNumeric(this QueryParameter parameter) => double.Parse(parameter.Value(), CultureInfo.InvariantCulture);
-    public static DateTime GetDate(this QueryParameter parameter) => DateTime.Parse(parameter.Value(), null, DateTimeStyles.AdjustToUniversal);
-    public static bool IsDateTime(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), "^([0-9]{4})-([0-9]{2})-([0-9]{2})");
-    public static bool IsNumeric(this QueryParameter parameter) => Regex.IsMatch(parameter.Value(), @"^-?\d+(?:\.\d+)?$");
+    public static int AsInt(this QueryParameter parameter) => int.Parse(parameter.AsString());
+    public static bool AsBool(this QueryParameter parameter) => bool.Parse(parameter.AsString());
+    public static double AsFloat(this QueryParameter parameter) => double.Parse(parameter.AsString(), CultureInfo.InvariantCulture);
+    public static DateTime AsDate(this QueryParameter parameter) => DateTime.Parse(parameter.AsString(), null, DateTimeStyles.AdjustToUniversal);
+    public static bool IsDateTime(this QueryParameter parameter) => Regexs.IsDate(parameter.AsString());
+    public static bool IsNumeric(this QueryParameter parameter) => Regexs.IsNumeric(parameter.AsString());
 
-    public static string Value(this QueryParameter parameter)
+    public static string AsString(this QueryParameter parameter)
     {
         if (parameter.Values.Length != 1)
         {
@@ -23,11 +22,6 @@ public static class QueryParameterExtensions
         }
 
         return parameter.Values[0];
-    }
-
-    public static SourceDestinationType GetSourceDestinationType(this QueryParameter parameter)
-    {
-        return parameter.Name.StartsWith("EQ_source") ? SourceDestinationType.Source : SourceDestinationType.Destination;
     }
 
     public static string GetSimpleId(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
