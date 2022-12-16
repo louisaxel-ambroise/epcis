@@ -42,6 +42,6 @@ public static partial class Regexs
     private static partial Regex InnerField();
     [GeneratedRegex("^(GE|GT|LE|LT)_")]
     private static partial Regex Field();
-    [GeneratedRegex("^(GE|GT|LE|LT)_[sDev|((min|max|mean|perc)Value)]_")]
+    [GeneratedRegex("^(GE|GT|LE|LT)_(sDev|((min|max|mean|perc)Value))_")]
     private static partial Regex UoMField();
 }

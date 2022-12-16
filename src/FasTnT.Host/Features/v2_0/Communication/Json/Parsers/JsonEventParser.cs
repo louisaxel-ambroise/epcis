@@ -272,9 +272,9 @@ public class JsonEventParser
                 case "uriValue":
                     report.UriValue = property.Value.GetString(); break;
                 case "minValue":
-                    report.MaxValue = property.Value.GetSingle(); break;
-                case "maxValue":
                     report.MinValue = property.Value.GetSingle(); break;
+                case "maxValue":
+                    report.MaxValue = property.Value.GetSingle(); break;
                 case "meanValue":
                     report.MeanValue = property.Value.GetSingle(); break;
                 case "percRank":

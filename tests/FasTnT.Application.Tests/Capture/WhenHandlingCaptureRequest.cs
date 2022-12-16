@@ -26,5 +26,6 @@ public class WhenHandlingCaptureRequest
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, Context.Set<Request>().Count());
+        SubscriptionListener.Verify(x => x.TriggerAsync(It.IsAny<string[]>(), default));
     }
 }

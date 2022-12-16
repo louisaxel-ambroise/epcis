@@ -31,6 +31,5 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
         {
             throw ex.InnerException;
         }
-
     }
 }
