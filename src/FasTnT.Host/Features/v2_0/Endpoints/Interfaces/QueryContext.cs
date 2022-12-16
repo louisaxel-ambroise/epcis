@@ -4,14 +4,11 @@ namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 
 public record QueryContext(IEnumerable<QueryParameter> Parameters)
 {
+    static readonly List<QueryParameter> Default = new() { QueryParameter.Create("perPage", "30") };
+
     public static ValueTask<QueryContext> BindAsync(HttpContext context)
     {
-        var parameters = context.Request.Query.Select(x => QueryParameter.Create(x.Key, x.Value.ToArray()));
-
-        if (!parameters.Any(x => x.Name == "perPage"))
-        {
-            parameters = parameters.Append(new QueryParameter { Name = "perPage", Values = new[] { "30" } });
-        }
+        var parameters = Default.Union(context.Request.Query.Select(x => QueryParameter.Create(x.Key, x.Value.ToArray())));
 
         return ValueTask.FromResult(new QueryContext(parameters));
     }

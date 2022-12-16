@@ -16,9 +16,9 @@ public static class CaptureEndpoints
         return app;
     }
 
-    private static async Task<IResult> HandleListCapturesQuery(IListCaptureRequestsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleListCapturesQuery(PaginationContext context, IListCaptureRequestsHandler handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ListCapturesAsync(cancellationToken);
+        var response = await handler.ListCapturesAsync(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new ListCapturesResult(response));
     }

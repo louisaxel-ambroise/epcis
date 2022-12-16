@@ -34,32 +34,31 @@ public class EventDataSource : IEpcisDataSource
 
     public async Task<QueryData> ExecuteAsync(CancellationToken cancellationToken)
     {
+        List<int> eventIds;
+
         try
         {
-            var eventIds = await ApplyOrderBy(Query)
+            eventIds = await ApplyOrderBy(Query)
                 .Select(evt => evt.Id)
                 .Skip(_startFrom).Take(_eventCountLimit)
                 .ToListAsync(cancellationToken);
-
-            if (_isMaxCount && eventIds.Count == _eventCountLimit)
-            {
-                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.");
-            }
-
-            var result = await _context.Set<Event>().AsNoTracking()
-                .Where(evt => eventIds.Contains(evt.Id))
-                .ToListAsync(cancellationToken);
-
-            return ApplyOrderBy(result.AsQueryable()).ToList();
         }
-        catch (InvalidOperationException ex) when (ex.InnerException is FormatException)
-        {
-            throw new EpcisException(ExceptionType.QueryParameterException, "Invalid parameter value.");
-        }
-        catch (Exception ex) when (ex is not EpcisException)
+        catch
         {
             throw new EpcisException(ExceptionType.QueryTooComplexException, "Query too complex to be executed on this server.");
         }
+
+        if (_isMaxCount && eventIds.Count == _eventCountLimit)
+        {
+            throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.");
+        }
+
+        var result = await _context.Set<Event>().AsNoTracking()
+            .Where(evt => eventIds.Contains(evt.Id))
+            .ToListAsync(cancellationToken);
+
+        return ApplyOrderBy(result.AsQueryable()).ToList();
+        
     }
 
     private IQueryable<Event> ApplyOrderBy(IQueryable<Event> query)

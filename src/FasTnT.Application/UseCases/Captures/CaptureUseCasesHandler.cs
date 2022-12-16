@@ -6,6 +6,7 @@ using FasTnT.Application.Validators;
 using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.Captures;
@@ -26,10 +27,12 @@ public class CaptureUseCasesHandler :
         _subscriptionListener = subscriptionListener;
     }
 
-    public async Task<IEnumerable<Request>> ListCapturesAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
     {
         var captures = await FilteredQuery()
             .OrderBy(x => x.Id)
+            .Skip(pagination.StartFrom)
+            .Take(pagination.PerPage)
             .ToListAsync(cancellationToken);
 
         return captures;
