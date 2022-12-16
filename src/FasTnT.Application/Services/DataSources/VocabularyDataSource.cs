@@ -23,24 +23,22 @@ public class VocabularyDataSource : IEpcisDataSource
 
     public async Task<QueryData> ExecuteAsync(CancellationToken cancellationToken)
     {
+        List<MasterData> result;
         try
         {
-            var result = await Query
+            result = await Query
                 .Take(_maxEventCount ?? int.MaxValue)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
-
-            if (_maxEventCount.HasValue && result.Count > _maxEventCount)
-            {
-                throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.");
-            }
-
-            return result;
         }
         catch
         {
             throw new EpcisException(ExceptionType.ImplementationException, "Query took too long to execute");
         }
+
+        return result.Count <= _maxEventCount
+            ? result
+            : throw new EpcisException(ExceptionType.QueryTooLargeException, $"Query returned too many events.");
     }
 
     public void Apply(QueryParameter param)

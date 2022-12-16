@@ -18,12 +18,11 @@ public class HttpContextCurrentUser : ICurrentUser
         {
             return;
         }
+
         var parameters = user.Claims.SingleOrDefault(x => x.Type == nameof(DefaultQueryParameters));
 
         UserName = user.Claims.Single(x => x.Type == nameof(UserName)).Value;
         UserId = user.Claims.Single(x => x.Type == nameof(UserId)).Value;
-        DefaultQueryParameters = parameters is not null 
-            ? JsonSerializer.Deserialize<IEnumerable<QueryParameter>>(parameters.Value) 
-            : Enumerable.Empty<QueryParameter>();
+        DefaultQueryParameters = JsonSerializer.Deserialize<IEnumerable<QueryParameter>>(parameters.Value ?? "[]");
     }
 }

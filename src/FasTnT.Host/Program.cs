@@ -9,16 +9,29 @@ using FasTnT.Host.Services.Database;
 using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 Constants.Instance = builder.Configuration.GetSection(nameof(Constants)).Get<Constants>();
 
 builder.Services.AddAuthentication(BasicAuthenticationHandler.SchemeName).AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, null);
-builder.Services.AddAuthorization(Options.AuthorizationPolicies);
-builder.Services.AddHttpLogging(Options.LoggingPolicy);
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("query", policy => policy.RequireClaim("fastnt.query"));
+    options.AddPolicy("capture", policy => policy.RequireClaim("fastnt.capture"));
+});
+builder.Services.AddHttpLogging(options =>
+{
+    options.LoggingFields = HttpLoggingFields.All;
+    options.MediaTypeOptions.AddText("application/xml");
+    options.MediaTypeOptions.AddText("application/json");
+    options.MediaTypeOptions.AddText("application/text+xml");
+    options.RequestBodyLogLimit = 4096;
+    options.ResponseBodyLogLimit = 4096;
+});
 
 // Add the subscription manager as background service
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResultSender.Instance);
 builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
