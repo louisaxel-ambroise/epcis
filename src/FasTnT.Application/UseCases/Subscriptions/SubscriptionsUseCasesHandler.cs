@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.DataSources;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Validators;
 using FasTnT.Domain.Exceptions;
@@ -88,7 +89,7 @@ public class SubscriptionsUseCasesHandler :
         {
             throw new EpcisException(ExceptionType.NoSuchNameException, $"Query with name '{subscription.QueryName}' not found");
         }
-        if (query.DataSource != nameof(EpcisContext.QueryEvents))
+        if (query.DataSource != nameof(EventDataSource))
         {
             throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query '{subscription.QueryName}' does not allow subscription");
         }

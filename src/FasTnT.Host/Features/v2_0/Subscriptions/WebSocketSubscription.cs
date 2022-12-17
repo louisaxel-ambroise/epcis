@@ -30,6 +30,7 @@ public static class WebSocketSubscription
             Parameters = parameters.Select(x => new SubscriptionParameter { Name = x.Name, Values = x.Values }).ToList(),
             QueryName = queryName,
             ReportIfEmpty = false,
+            Destination = string.Empty,
             Schedule = ParseSchedule(httpContext.Request.QueryString),
             Trigger = httpContext.Request.Query.Any(x => x.Key == "stream") ? "stream" : null,
             FormatterName = resultSender.Name
