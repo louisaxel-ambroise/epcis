@@ -5,6 +5,6 @@ public class StoredQuery
     public int Id { get; set; }
     public string Name { get; set; }
     public string UserId { get; set; }
-    public string DataSource { get; set; }
+    public string DataSource { get; set; } = "EventDataSource";
     public List<StoredQueryParameter> Parameters { get; set; } = new();
 }

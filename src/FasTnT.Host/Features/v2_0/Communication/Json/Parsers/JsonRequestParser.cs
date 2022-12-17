@@ -17,7 +17,6 @@ namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers
             return new()
             {
                 Name = name,
-                DataSource = "SimpleEventQuery",
                 Parameters = parameters
             };
         }

@@ -18,3 +18,8 @@ test/*.dll
 *.tfstate
 .terraform/.terraform/*
 *.hcl
+
+#SQLite files
+*.db
+*.db-shm
+*.db-wal
