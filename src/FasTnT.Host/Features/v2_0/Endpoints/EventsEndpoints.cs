@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.UseCases.Queries;
+﻿using FasTnT.Application.UseCases.DataSources;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
@@ -21,64 +21,64 @@ public static class EventsEndpoints
         return app;
     }
 
-    private static Task<IResult> HandleEventQuery(QueryContext parameters, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleEventQuery(QueryContext parameters, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         return ExecuteQuery(handler, parameters.Parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleSingleEventQuery(string eventId, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleSingleEventQuery(string eventId, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var parameter = QueryParameter.Create("EQ_eventID", eventId);
 
         return ExecuteQuery(handler, new[] { parameter }, cancellationToken);
     }
 
-    private static Task<IResult> HandleEventTypeQuery(string eventType, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleEventTypeQuery(string eventType, QueryContext context, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("eventType", eventType));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleEpcQuery(string epc, QueryContext queryParams, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleEpcQuery(string epc, QueryContext queryParams, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var parameters = queryParams.Parameters.Append(QueryParameter.Create("MATCH_anyEPC", epc));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleBizStepQuery(string bizStep, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleBizStepQuery(string bizStep, QueryContext context, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("EQ_bizStep", bizStep));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleBizLocationQuery(string bizLocation, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleBizLocationQuery(string bizLocation, QueryContext context, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("EQ_bizLocation", bizLocation));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleReadPointQuery(string readPoint, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleReadPointQuery(string readPoint, QueryContext context, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("EQ_readPoint", readPoint));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> HandleDispositionQuery(string disposition, QueryContext context, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static Task<IResult> HandleDispositionQuery(string disposition, QueryContext context, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("EQ_disposition", disposition));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static async Task<IResult> ExecuteQuery(IExecuteQueryHandler handler, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+    private static async Task<IResult> ExecuteQuery(IDataRetrieveHandler handler, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var response = await handler.ExecuteQueryAsync("SimpleEventQuery", parameters, cancellationToken);
+        var response = await handler.QueryEventsAsync(parameters, cancellationToken);
 
-        return EpcisResults.Ok(new QueryResult(response));
+        return EpcisResults.Ok(new QueryResult(new ("SimpleEventQuery", response)));
     }
 }

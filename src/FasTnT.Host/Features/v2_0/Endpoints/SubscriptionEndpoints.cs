@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.UseCases.Subscriptions;
+﻿using FasTnT.Application.UseCases.Queries;
+using FasTnT.Application.UseCases.Subscriptions;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
 using FasTnT.Host.Features.v2_0.Subscriptions;
@@ -38,12 +39,15 @@ public static class SubscriptionEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, IRegisterSubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleSubscribeRequest(string query, SubscriptionRequest request, IGetQueryDetailsHandler queryDetailsHandler, IRegisterSubscriptionHandler subscribeHandler, CancellationToken cancellationToken)
     {
-        request.Subscription.QueryName = query;
-        request.Subscription.Name = Guid.NewGuid().ToString();
+        var queryDetails = await queryDetailsHandler.GetQueryDetailsAsync(query, cancellationToken);
 
-        var response = await handler.RegisterSubscriptionAsync(request.Subscription, JsonResultSender.Instance, cancellationToken);
+        request.Subscription.QueryName = queryDetails.Name;
+        request.Subscription.Name = Guid.NewGuid().ToString();
+        request.Subscription.Parameters.AddRange(queryDetails.Parameters);
+
+        var response = await subscribeHandler.RegisterSubscriptionAsync(request.Subscription, JsonResultSender.Instance, cancellationToken);
 
         return Results.Created($"v2_0/queries/{query}/subscriptions/{response.Name}", null);
     }

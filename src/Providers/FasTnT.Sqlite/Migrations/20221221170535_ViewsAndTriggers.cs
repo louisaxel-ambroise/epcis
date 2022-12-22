@@ -20,10 +20,10 @@ AS (
 	SELECT [id], [type], [id]
 	FROM [CurrentMasterdata]
 	UNION ALL
-	SELECT cur.[RequestId], [hierarchy].[Id], [MasterDataType], [ChildrenId]
+	SELECT [hierarchy].[Id], [MasterDataType], [ChildrenId]
 	FROM [MasterdataChildren] children
 	JOIN [CurrentMasterdata] cur ON cur.[Type] = children.[MasterDataType] AND cur.[Id] = [ChildrenId] 
-	JOIN hierarchy ON [MasterDataType] = hierarchy.[type] AND [MasterDataId] = hierarchy.[id] AND [MasterdataRequestId] = hierarchy.[RequestId]
+	JOIN hierarchy ON [MasterDataType] = hierarchy.[type] AND [MasterDataId] = hierarchy.[id]
 )
 SELECT [root], [type], [id] 
 FROM [hierarchy];");

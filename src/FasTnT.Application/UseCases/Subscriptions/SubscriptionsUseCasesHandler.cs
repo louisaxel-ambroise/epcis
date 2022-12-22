@@ -1,9 +1,8 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.DataSources;
 using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,11 +16,13 @@ public class SubscriptionsUseCasesHandler :
     IRegisterSubscriptionHandler
 {
     private readonly EpcisContext _context;
+    private readonly ICurrentUser _currentUser;
     private readonly ISubscriptionListener _listener;
 
-    public SubscriptionsUseCasesHandler(EpcisContext context, ISubscriptionListener listener)
+    public SubscriptionsUseCasesHandler(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener listener)
     {
         _context = context;
+        _currentUser = currentUser;
         _listener = listener;
     }
 
@@ -82,28 +83,13 @@ public class SubscriptionsUseCasesHandler :
         {
             throw new EpcisException(ExceptionType.DuplicateSubscriptionException, $"Subscription '{subscription.Name}' already exists");
         }
-        
-        var query = await _context.Set<StoredQuery>().FirstOrDefaultAsync(x => x.Name == subscription.QueryName, cancellationToken);
 
-        if (query is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Query with name '{subscription.QueryName}' not found");
-        }
-        if (query.DataSource != nameof(EventDataSource))
-        {
-            throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query '{subscription.QueryName}' does not allow subscription");
-        }
-
-        subscription.Parameters.AddRange(query.Parameters.Select(x => new SubscriptionParameter
-        {
-            Name = x.Name,
-            Values = x.Values
-        }));
+        subscription.Parameters.AddRange(_currentUser.DefaultQueryParameters);
 
         _context.Add(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await _listener.RegisterAsync(new SubscriptionContext(subscription, resultSender), cancellationToken);
+        await _listener.RegisterAsync(new (subscription, resultSender), cancellationToken);
 
         return subscription;
     }

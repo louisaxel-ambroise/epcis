@@ -273,19 +273,22 @@ public class JsonEventFormatter
         {
             if (group.Count() > 1)
             {
-                element.Add(_context[group.Key.Namespace] + ":" + group.Key.Name, BuildArrayElement(group));
+                var name = string.IsNullOrEmpty(group.Key.Namespace) ? group.Key.Name : _context[group.Key.Namespace] + ":" + group.Key.Name;
+
+                element.Add(name, BuildArrayElement(group));
             }
             else
             {
                 var field = group.Single();
-                
+                var name = string.IsNullOrEmpty(field.Namespace) ? field.Name : _context[field.Namespace] + ":" + field.Name;
+
                 if (fields.Any(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index))
                 {
-                    element.Add(_context[field.Namespace] + ":" + field.Name, BuildElement(fields, field.Index));
+                    element.Add(name, BuildElement(fields, field.Index));
                 }
                 else
                 {
-                    element.Add(_context[field.Namespace] + ":" + field.Name, field.TextValue);
+                    element.Add(name, field.TextValue);
                 }
             }
         }

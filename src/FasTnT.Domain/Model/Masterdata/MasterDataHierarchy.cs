@@ -6,3 +6,6 @@ public class MasterDataHierarchy
     public string Type { get; set; }
     public string Id { get; set; }
 }
+
+public class BizLocationHierarchy : MasterDataHierarchy { }
+public class ReadPointHierarchy : MasterDataHierarchy { }

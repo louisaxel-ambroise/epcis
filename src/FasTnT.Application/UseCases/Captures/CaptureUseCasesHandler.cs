@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
+using FasTnT.Application.UseCases.DataSources.Utils;
 using FasTnT.Application.Validators;
 using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
@@ -29,7 +29,9 @@ public class CaptureUseCasesHandler :
 
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
     {
-        var captures = await FilteredQuery()
+        var captures = await _context
+            .QueryEvents(_currentUser.DefaultQueryParameters)
+            .Select(x => x.Request)
             .OrderBy(x => x.Id)
             .Skip(pagination.StartFrom)
             .Take(pagination.PerPage)
@@ -40,7 +42,9 @@ public class CaptureUseCasesHandler :
 
     public async Task<Request> GetCaptureDetailsAsync(string captureId, CancellationToken cancellationToken)
     {
-        var capture = await FilteredQuery()
+        var capture = await _context
+            .QueryEvents(_currentUser.DefaultQueryParameters)
+            .Select(x => x.Request)
             .FirstOrDefaultAsync(x => x.CaptureId == captureId, cancellationToken);
 
         if (capture is null)
@@ -74,13 +78,5 @@ public class CaptureUseCasesHandler :
         await _subscriptionListener.TriggerAsync(new[] { "stream" }, cancellationToken);
 
         return request;
-    }
-
-    private IQueryable<Request> FilteredQuery()
-    {
-        return _context.QueryEvents()
-            .WithParameters(_currentUser.DefaultQueryParameters)
-            .Query
-            .Select(x => x.Request);
     }
 }

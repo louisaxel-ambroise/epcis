@@ -4,8 +4,6 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace FasTnT.Postgres.Migrations
 {
     /// <inheritdoc />
@@ -68,8 +66,7 @@ namespace FasTnT.Postgres.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    UserId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    DataSource = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false)
+                    UserId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -84,8 +81,8 @@ namespace FasTnT.Postgres.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
-                    QueryName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     SignatureToken = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    QueryName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     FormatterName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Trigger = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ReportIfEmpty = table.Column<bool>(type: "boolean", nullable: false),
@@ -217,7 +214,7 @@ namespace FasTnT.Postgres.Migrations
 
             migrationBuilder.CreateTable(
                 name: "StoredQueryParameter",
-                schema: "Subscriptions",
+                schema: "Queries",
                 columns: table => new
                 {
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
@@ -243,15 +240,14 @@ namespace FasTnT.Postgres.Migrations
                 {
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     SubscriptionId = table.Column<int>(type: "integer", nullable: false),
-                    SubscriptionName = table.Column<int>(type: "integer", nullable: false),
                     Values = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubscriptionParameter", x => new { x.SubscriptionId, x.Name });
                     table.ForeignKey(
-                        name: "FK_SubscriptionParameter_Subscription_SubscriptionName",
-                        column: x => x.SubscriptionName,
+                        name: "FK_SubscriptionParameter_Subscription_SubscriptionId",
+                        column: x => x.SubscriptionId,
                         principalSchema: "Subscriptions",
                         principalTable: "Subscription",
                         principalColumn: "Id",
@@ -606,16 +602,6 @@ namespace FasTnT.Postgres.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                schema: "Queries",
-                table: "StoredQuery",
-                columns: new[] { "Id", "DataSource", "Name", "UserId" },
-                values: new object[,]
-                {
-                    { -2, "EventDataSource", "SimpleEventQuery", null },
-                    { -1, "VocabularyDataSource", "SimpleMasterDataQuery", null }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Event_RequestId",
                 schema: "Epcis",
@@ -635,12 +621,6 @@ namespace FasTnT.Postgres.Migrations
                 table: "Subscription",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SubscriptionParameter_SubscriptionName",
-                schema: "Subscriptions",
-                table: "SubscriptionParameter",
-                column: "SubscriptionName");
         }
 
         /// <inheritdoc />
@@ -696,7 +676,7 @@ namespace FasTnT.Postgres.Migrations
 
             migrationBuilder.DropTable(
                 name: "StoredQueryParameter",
-                schema: "Subscriptions");
+                schema: "Queries");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionCallback",

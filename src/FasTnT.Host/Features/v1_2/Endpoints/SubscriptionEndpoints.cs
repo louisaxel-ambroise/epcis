@@ -2,6 +2,7 @@
 using FasTnT.Host.Features.v1_2.Subscriptions;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Extensions;
+using FasTnT.Domain.Exceptions;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 
@@ -32,6 +33,11 @@ public static class SubscriptionEndpoints
 
     private static async Task<SubscribeResult> HandleSubscribe(Subscribe request, IRegisterSubscriptionHandler handler, CancellationToken cancellationToken)
     {
+        if(request.Subscription.QueryName != "SimpleEventQuery")
+        {
+            throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query does not allow subscription: {request.Subscription.QueryName}");
+        }
+
         await handler.RegisterSubscriptionAsync(request.Subscription, XmlResultSender.Instance, cancellationToken);
 
         return new();

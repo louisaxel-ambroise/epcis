@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Application.Services.Users;
+using FasTnT.Application.UseCases.DataSources.Utils;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
@@ -28,7 +28,8 @@ public class TopLevelResourceUseCasesHandler :
 
     public async Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken)
     {
-        var epcs = await FilteredQuery()
+        var epcs = await _context
+            .QueryEvents(_currentUser.DefaultQueryParameters)
             .SelectMany(x => x.Epcs.Select(x => x.Id))
             .Distinct()
             .OrderBy(x => x)
@@ -68,19 +69,13 @@ public class TopLevelResourceUseCasesHandler :
 
     private IQueryable<string> DistinctFromEvents(Expression<Func<Event, string>> selector, Pagination pagination)
     {
-        return FilteredQuery()
-               .Select(selector)
-               .Where(x => x != null)
-               .Distinct()
-               .OrderBy(x => x)
-               .Skip(pagination.StartFrom)
-               .Take(pagination.PerPage);
-    }
-
-    private IQueryable<Event> FilteredQuery()
-    {
-        return _context.QueryEvents()
-            .WithParameters(_currentUser.DefaultQueryParameters)
-            .Query;
+        return _context
+            .QueryEvents(_currentUser.DefaultQueryParameters)
+            .Select(selector)
+            .Where(x => x != null)
+            .Distinct()
+            .OrderBy(x => x)
+            .Skip(pagination.StartFrom)
+            .Take(pagination.PerPage);
     }
 }

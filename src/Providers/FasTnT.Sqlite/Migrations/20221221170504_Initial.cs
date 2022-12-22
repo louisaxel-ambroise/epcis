@@ -1,9 +1,6 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
-
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
 namespace FasTnT.Sqlite.Migrations
 {
@@ -67,8 +64,7 @@ namespace FasTnT.Sqlite.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    UserId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
-                    DataSource = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false)
+                    UserId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -603,16 +599,6 @@ namespace FasTnT.Sqlite.Migrations
                         principalTable: "MasterDataAttribute",
                         principalColumns: new[] { "RequestId", "MasterdataType", "MasterdataId", "Id" },
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                schema: "Queries",
-                table: "StoredQuery",
-                columns: new[] { "Id", "DataSource", "Name", "UserId" },
-                values: new object[,]
-                {
-                    { -2, "EventDataSource", "SimpleEventQuery", null },
-                    { -1, "VocabularyDataSource", "SimpleMasterDataQuery", null }
                 });
 
             migrationBuilder.CreateIndex(

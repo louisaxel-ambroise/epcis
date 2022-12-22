@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.UseCases.Queries;
+﻿using FasTnT.Application.UseCases.DataSources;
+using FasTnT.Application.UseCases.Queries;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
 using FasTnT.Host.Features.v2_0.Subscriptions;
@@ -32,11 +33,12 @@ public static class QueriesEndpoints
         return EpcisResults.Ok(new CustomQueryDefinitionResult(response.Name, response.Parameters));
     }
 
-    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryContext context, IExecuteQueryHandler queryHandler, CancellationToken cancellationToken)
+    private static async Task<IResult> HandleGetQueryEvents(string queryName, QueryContext context, IGetQueryDetailsHandler queryDetailsHandler, IDataRetrieveHandler dataQueryHandler, CancellationToken cancellationToken)
     {
-        var response = await queryHandler.ExecuteQueryAsync(queryName, context.Parameters, cancellationToken);
+        var queryDetails = await queryDetailsHandler.GetQueryDetailsAsync(queryName, cancellationToken);
+        var response = await dataQueryHandler.QueryEventsAsync(context.Parameters.Union(queryDetails.Parameters), cancellationToken);
 
-        return EpcisResults.Ok(new QueryResult(response));
+        return EpcisResults.Ok(new QueryResult(new (queryName, response)));
     }
 
     private static async Task<IResult> HandleCreateNamedQuery(CreateCustomQueryRequest command, IStoreQueryHandler handler, CancellationToken cancellationToken)

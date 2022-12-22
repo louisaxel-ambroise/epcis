@@ -27,10 +27,10 @@ public static class WebSocketSubscription
         var subscription = new Subscription
         {
             Name = $"ws-{Guid.NewGuid()}",
-            Parameters = parameters.Select(x => new SubscriptionParameter { Name = x.Name, Values = x.Values }).ToList(),
-            QueryName = queryName,
+            Parameters = parameters.ToList(),
             ReportIfEmpty = false,
             Destination = string.Empty,
+            QueryName = queryName,
             Schedule = ParseSchedule(httpContext.Request.QueryString),
             Trigger = httpContext.Request.Query.Any(x => x.Key == "stream") ? "stream" : null,
             FormatterName = resultSender.Name

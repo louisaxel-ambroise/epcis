@@ -23,6 +23,8 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
 
     public void Execute(CancellationToken cancellationToken)
     {
+        cancellationToken.Register(() => Pulse(() => { })); // Stop background process on cancellation.
+
         while (!cancellationToken.IsCancellationRequested)
         {
             try
@@ -70,13 +72,14 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         var executionTime = DateTime.UtcNow;
         var subscriptionTasks = new Task[subscriptions.Length];
 
-        using var scope = _serviceProvider.CreateScope();
-
         for (var i = 0; i < subscriptions.Length; i++)
         {
+            var scope = _serviceProvider.CreateScope();
             var subscriptionRunner = scope.ServiceProvider.GetService<ISubscriptionRunner>();
 
-            subscriptionTasks[i] = subscriptionRunner.RunAsync(subscriptions[i], executionTime, cancellationToken);
+            subscriptionTasks[i] = subscriptionRunner
+                .RunAsync(subscriptions[i], executionTime, cancellationToken)
+                .ContinueWith(_ => scope.Dispose(), cancellationToken);
         }
 
         try

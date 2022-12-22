@@ -1,9 +1,10 @@
-﻿using FasTnT.Domain.Enumerations;
+﻿using FasTnT.Application.Services.DataSources.Utils;
+using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using System.Globalization;
 
-namespace FasTnT.Application.Services.DataSources.Utils;
+namespace FasTnT.Application.UseCases.DataSources.Utils;
 
 public static class QueryParameterExtensions
 {

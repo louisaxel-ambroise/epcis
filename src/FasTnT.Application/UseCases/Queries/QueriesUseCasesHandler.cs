@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.CustomQueries;
@@ -13,8 +12,7 @@ public class QueriesUseCasesHandler :
     IListQueriesHandler,
     IGetQueryDetailsHandler,
     IStoreQueryHandler,
-    IDeleteQueryHandler,
-    IExecuteQueryHandler
+    IDeleteQueryHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
@@ -29,6 +27,7 @@ public class QueriesUseCasesHandler :
     {
         var queries = await _context.Set<StoredQuery>()
             .AsNoTracking()
+            .OrderBy(x => x.Id)
             .Skip(pagination.StartFrom).Take(pagination.PerPage)
             .ToListAsync(cancellationToken);
 
@@ -86,25 +85,5 @@ public class QueriesUseCasesHandler :
         await _context.SaveChangesAsync(cancellationToken);
 
         return query;
-    }
-
-    public async Task<QueryResponse> ExecuteQueryAsync(string queryName, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
-    {
-        var query = await _context.Set<StoredQuery>()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Name == queryName, cancellationToken);
-
-        if (query is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
-        }
-
-        var response = await _context.DataSource(query.DataSource)
-            .WithParameters(query.Parameters)
-            .WithParameters(_currentUser.DefaultQueryParameters)
-            .WithParameters(parameters)
-            .ExecuteAsync(cancellationToken);
-
-        return new(queryName, response);
     }
 }

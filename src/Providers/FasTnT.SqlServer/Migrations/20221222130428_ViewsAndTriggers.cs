@@ -15,15 +15,15 @@ AS
 SELECT MAX([RequestId]) AS [RequestId], [Type], [Id] FROM [Cbv].[MasterData] GROUP BY [Type], [Id];");
 
             migrationBuilder.Sql(@"CREATE VIEW [Cbv].[MasterdataHierarchy] AS
-WITH hierarchy([requestId], [root], [type], [id])
+WITH hierarchy([root], [type], [id])
 AS (
-	SELECT [requestId], [id], [type], [id]
+	SELECT [id], [type], [id]
 	FROM [Cbv].[CurrentMasterdata]
 	UNION ALL
-	SELECT cur.[RequestId], [hierarchy].[Id], [MasterDataType], [ChildrenId]
+	SELECT [hierarchy].[Id], [MasterDataType], [ChildrenId]
 	FROM [Cbv].[MasterdataChildren] children
 	JOIN [Cbv].[CurrentMasterdata] cur ON cur.[Type] = children.[MasterDataType] AND cur.[Id] = [ChildrenId] 
-	JOIN hierarchy ON [MasterDataType] = hierarchy.[type] AND [MasterDataId] = hierarchy.[id] AND [MasterdataRequestId] = hierarchy.[RequestId]
+	JOIN hierarchy ON [MasterDataType] = hierarchy.[type] AND [MasterDataId] = hierarchy.[id]
 )
 SELECT [root], [type], [id] 
 FROM [hierarchy]");

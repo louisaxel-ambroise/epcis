@@ -2,4 +2,5 @@
 
 namespace FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 
-public record Poll(string QueryName, IEnumerable<QueryParameter> Parameters);
+public record PollEvents(IEnumerable<QueryParameter> Parameters);
+public record PollMasterData(IEnumerable<QueryParameter> Parameters);
