@@ -16,8 +16,6 @@ public class WhenApplyingLT_eventTimeFilter
     public void Initialize()
     {
         Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
-        Query = new EventQueryContext(Context);
-
         Context.Add(new Domain.Model.Request
         {
             Events = new[] {
@@ -52,7 +50,8 @@ public class WhenApplyingLT_eventTimeFilter
     [TestMethod]
     public void ItShouldOnlyReturnTheEventsCaptureBeforeTheDate()
     {
-        Query.Parse(new[] { Parameter });
+        Query = new EventQueryContext(Context, new[] { Parameter });
+
         var result = Query.Apply(Context.Set<Event>()).ToList();
         Assert.AreEqual(1, result.Count);
         Assert.IsTrue(result.All(x => x.EventTime < new DateTime(2021, 01, 12, 10, 24, 10)));

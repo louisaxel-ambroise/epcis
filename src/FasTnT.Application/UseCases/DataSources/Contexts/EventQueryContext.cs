@@ -19,13 +19,10 @@ public class EventQueryContext
     private readonly List<Func<IQueryable<Event>, IQueryable<Event>>> _filters = new();
     private readonly EpcisContext _context;
 
-    public EventQueryContext(EpcisContext context)
+    public EventQueryContext(EpcisContext context, IEnumerable<QueryParameter> parameters)
     {
         _context = context;
-    }
 
-    public void Parse(IEnumerable<QueryParameter> parameters)
-    {
         foreach (var parameter in parameters)
         {
             ParseParameter(parameter);

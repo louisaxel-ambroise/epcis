@@ -28,13 +28,14 @@ public class DataRetrieveUseCaseHandler : IDataRetrieveHandler
             .ToListAsync(cancellationToken);
 
         var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsFloat();
-        if(maxEventCount.HasValue && eventIds.Count == maxEventCount.Value)
+        if(maxEventCount is not null && eventIds.Count >= maxEventCount.Value)
         {
             throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results");
         }
             
         return await _context
             .Set<Event>()
+            .AsNoTracking()
             .Where(x => eventIds.Contains(x.Id))
             .ToListAsync(cancellationToken);
     }

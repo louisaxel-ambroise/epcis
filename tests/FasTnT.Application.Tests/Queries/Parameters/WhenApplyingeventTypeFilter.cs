@@ -16,8 +16,6 @@ public class WhenApplyingeventTypeFilter
     public void Initialize()
     {
         Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
-        Query = new EventQueryContext(Context);
-
         Context.Add(new Domain.Model.Request
         {
             Events = new[] {
@@ -44,7 +42,7 @@ public class WhenApplyingeventTypeFilter
     [TestMethod]
     public void ItShouldOnlyReturnTheEventsOfTheSpecifiedType()
     {
-        Query.Parse(new[] { Parameter });
+        Query = new EventQueryContext(Context, new[] { Parameter });
 
         var result = Query.Apply(Context.Set<Event>()).ToList();
         Assert.AreEqual(1, result.Count);

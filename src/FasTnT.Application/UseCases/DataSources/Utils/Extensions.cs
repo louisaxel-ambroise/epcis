@@ -11,16 +11,14 @@ public static class Extensions
 {
     public static IQueryable<Event> QueryEvents(this EpcisContext context, IEnumerable<QueryParameter> parameters)
     {
-        var queryContext = new EventQueryContext(context);
-        queryContext.Parse(parameters);
+        var queryContext = new EventQueryContext(context, parameters);
 
         return queryContext.Apply(context.Set<Event>().AsNoTracking());
     }
 
     public static IQueryable<MasterData> QueryMasterData(this EpcisContext context, IEnumerable<QueryParameter> parameters)
     {
-        var queryContext = new MasterDataQueryContext(context);
-        queryContext.Parse(parameters);
+        var queryContext = new MasterDataQueryContext(context, parameters);
 
         return queryContext.Apply(context.Set<MasterData>().AsNoTracking());
     }

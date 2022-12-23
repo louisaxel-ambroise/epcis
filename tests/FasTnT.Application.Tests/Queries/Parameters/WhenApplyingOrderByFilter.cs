@@ -16,8 +16,6 @@ public class WhenApplyingOrderByFilter
     public void Initialize()
     {
         Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenApplyingOrderByFilter));
-        Query = new EventQueryContext(Context);
-
         Context.Add(new Domain.Model.Request
         {
             Events = new[] {
@@ -52,7 +50,8 @@ public class WhenApplyingOrderByFilter
     [TestMethod]
     public void ItShouldReturnAllTheEventsWithTheCorrectOrder()
     {
-        Query.Parse(new[] { Parameter });
+        Query = new EventQueryContext(Context, new[] { Parameter });
+
         var result = Query.Apply(Context.Set<Event>()).ToList();
         var sorted = result.OrderByDescending(s => s.EventTime);
 

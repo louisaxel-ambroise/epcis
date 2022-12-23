@@ -32,7 +32,7 @@ public static class XmlQueryParser
         {
             "SimpleEventQuery" => new PollEvents(parameters),
             "SimpleMasterDataQuery" => new PollMasterData(parameters),
-            _ => new PollStoredQuery(queryName, parameters)
+            _ => throw new EpcisException(ExceptionType.NoSuchNameException, $"Unknown Query name: {queryName}")
         };
     }
 

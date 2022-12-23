@@ -13,13 +13,10 @@ public class MasterDataQueryContext
     private readonly List<Func<IQueryable<MasterData>, IQueryable<MasterData>>> _filters = new();
     private readonly EpcisContext _context;
 
-    public MasterDataQueryContext(EpcisContext context)
+    public MasterDataQueryContext(EpcisContext context, IEnumerable<QueryParameter> parameters)
     {
         _context = context;
-    }
 
-    public void Parse(IEnumerable<QueryParameter> parameters)
-    {
         foreach (var parameter in parameters)
         {
             ParseParameter(parameter);

@@ -23,36 +23,27 @@ public static class QueryEndpoints
         action.On<GetQueryNames>(HandleGetQueryNamesQuery);
         action.On<GetStandardVersion>(HandleGetStandardVersionQuery);
         action.On<GetVendorVersion>(HandleGetVendorVersionQuery);
-        action.On<PollEvents>(HandlePollEvents);
-        action.On<PollMasterData>(HandlePollMasterData);
-        action.On<PollStoredQuery>(HandlePollStoredQuery);
+        action.On<PollEvents>(SimpleEventQuery);
+        action.On<PollMasterData>(SimpleMasterDataQuery);
 
         return action;
     }
 
-    private static async Task<PollResult> HandlePollEvents(PollEvents query, IDataRetrieveHandler handler, CancellationToken cancellationToken)
+    private static async Task<PollResult> SimpleEventQuery(PollEvents query, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.QueryEventsAsync(query.Parameters, cancellationToken);
 
-        return new(new ("SimpleEventQuery", response));
+        return new(nameof(SimpleEventQuery), response);
     }
 
-    private static async Task<PollResult> HandlePollMasterData(PollMasterData query, IDataRetrieveHandler handler, CancellationToken cancellationToken)
+    private static async Task<PollResult> SimpleMasterDataQuery(PollMasterData query, IDataRetrieveHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.QueryMasterDataAsync(query.Parameters, cancellationToken);
 
-        return new(new ("SimpleMasterDataQuery", response));
+        return new("SimpleMasterDataQuery", response);
     }
 
-    private static async Task<PollResult> HandlePollStoredQuery(PollStoredQuery query, IGetQueryDetailsHandler queryDetailsHandler, IDataRetrieveHandler dataQueryHandler, CancellationToken cancellationToken)
-    {
-        var queryDetails = await queryDetailsHandler.GetQueryDetailsAsync(query.QueryName, cancellationToken);
-        var response = await dataQueryHandler.QueryEventsAsync(query.Parameters.Union(queryDetails.Parameters), cancellationToken);
-
-        return new(new (query.QueryName, response));
-    }
-
-    private static Task<GetQueryNamesResult> HandleGetQueryNamesQuery(CancellationToken cancellationToken)
+    private static Task<GetQueryNamesResult> HandleGetQueryNamesQuery()
     {
         return Task.FromResult(new GetQueryNamesResult(new[] { "SimpleEventQuery", "SimpleMasterDataQuery" }));
     }
