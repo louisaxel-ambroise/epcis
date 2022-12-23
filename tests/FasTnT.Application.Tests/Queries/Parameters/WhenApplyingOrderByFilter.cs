@@ -6,7 +6,7 @@ using FasTnT.Domain.Model.Queries;
 namespace FasTnT.Application.Tests.Queries.Parameters;
 
 [TestClass]
-public class WhenApplyingeventTypeFilter
+public class WhenApplyingOrderByFilter
 {
     public EpcisContext Context { get; set; }
     public EventQueryContext Query { get; set; }
@@ -15,7 +15,7 @@ public class WhenApplyingeventTypeFilter
     [TestInitialize]
     public void Initialize()
     {
-        Context = Tests.Context.EpcisTestContext.GetContext("simpleEventQuery");
+        Context = Tests.Context.EpcisTestContext.GetContext(nameof(WhenApplyingOrderByFilter));
         Query = new EventQueryContext(Context);
 
         Context.Add(new Domain.Model.Request
@@ -24,11 +24,19 @@ public class WhenApplyingeventTypeFilter
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.ObjectEvent,
+                    EventTime = new (2021, 01, 12, 10, 24, 10),
                     Action = Domain.Enumerations.EventAction.Observe
                 },
                 new Event
                 {
                     Type = Domain.Enumerations.EventType.TransactionEvent,
+                    EventTime = new (2021, 01, 12, 10, 30, 00),
+                    Action = Domain.Enumerations.EventAction.Observe
+                },
+                new Event
+                {
+                    Type = Domain.Enumerations.EventType.TransactionEvent,
+                    EventTime = new (2011, 08, 02, 21, 50, 00),
                     Action = Domain.Enumerations.EventAction.Observe
                 }
             }.ToList(),
@@ -38,16 +46,17 @@ public class WhenApplyingeventTypeFilter
         });
         Context.SaveChanges();
 
-        Parameter = QueryParameter.Create("eventType", "ObjectEvent");
+        Parameter = QueryParameter.Create("orderBy", new[] { "eventTime" });
     }
 
     [TestMethod]
-    public void ItShouldOnlyReturnTheEventsOfTheSpecifiedType()
+    public void ItShouldReturnAllTheEventsWithTheCorrectOrder()
     {
         Query.Parse(new[] { Parameter });
-
         var result = Query.Apply(Context.Set<Event>()).ToList();
-        Assert.AreEqual(1, result.Count);
-        Assert.IsTrue(result.All(x => x.Type == Domain.Enumerations.EventType.ObjectEvent));
+        var sorted = result.OrderByDescending(s => s.EventTime);
+
+        Assert.AreEqual(3, result.Count);
+        CollectionAssert.AreEqual(sorted.ToList(), result.ToList());
     }
 }
