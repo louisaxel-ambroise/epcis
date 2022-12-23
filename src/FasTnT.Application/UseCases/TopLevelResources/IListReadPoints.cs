@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.TopLevelResources;
 
-public interface IListReadPointsHandler
+public interface IListReadPoints
 {
     Task<IEnumerable<string>> ListReadPoints(Pagination pagination, CancellationToken cancellationToken);
 }

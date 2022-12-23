@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.DataSources.Utils;
 
-public static class Extensions
+public static class EpcisContextExtensions
 {
     public static IQueryable<Event> QueryEvents(this EpcisContext context, IEnumerable<QueryParameter> parameters)
     {

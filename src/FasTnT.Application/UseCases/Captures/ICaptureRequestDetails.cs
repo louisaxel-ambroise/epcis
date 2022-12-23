@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.Captures;
 
-public interface ICaptureRequestDetailsHandler
+public interface ICaptureRequestDetails
 {
     Task<Request> GetCaptureDetailsAsync(string captureId, CancellationToken cancellationToken);
 }

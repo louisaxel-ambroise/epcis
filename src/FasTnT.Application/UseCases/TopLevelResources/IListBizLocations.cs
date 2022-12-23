@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.TopLevelResources;
 
-public interface IListBizLocationsHandler
+public interface IListBizLocations
 {
     Task<IEnumerable<string>> ListBizLocations(Pagination pagination, CancellationToken cancellationToken);
 }

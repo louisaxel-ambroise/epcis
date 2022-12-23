@@ -15,7 +15,7 @@ public static class Epcis1_2Configuration
         {
             QueryEndpoints.AddSoapActions(action);
             SubscriptionEndpoints.AddSoapActions(action);
-        }).RequireAuthorization(policyNames: "query");
+        }).RequireAuthorization("query");
 
         return endpoints;
     }

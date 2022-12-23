@@ -13,26 +13,26 @@ public static class EpcisConfiguration
 {
     public static IServiceCollection AddEpcisServices(this IServiceCollection services)
     {
-        services.AddTransient<DataRetrieveUseCaseHandler>();
-        services.AddTransient<IDataRetrieveHandler, DataRetrieveUseCaseHandler>();
-        services.AddTransient<IListCaptureRequestsHandler, CaptureUseCasesHandler>();
-        services.AddTransient<ICaptureRequestDetailsHandler, CaptureUseCasesHandler>();
-        services.AddTransient<ICaptureRequestHandler, CaptureUseCasesHandler>();
-        services.AddTransient<IListQueriesHandler, QueriesUseCasesHandler>();
-        services.AddTransient<IGetQueryDetailsHandler, QueriesUseCasesHandler>();
-        services.AddTransient<IStoreQueryHandler, QueriesUseCasesHandler>();
-        services.AddTransient<IDeleteQueryHandler, QueriesUseCasesHandler>();
-        services.AddTransient<ITriggerSubscriptionHandler, SubscriptionsUseCasesHandler>();
-        services.AddTransient<IDeleteSubscriptionHandler, SubscriptionsUseCasesHandler>();
-        services.AddTransient<IListSubscriptionsHandler, SubscriptionsUseCasesHandler>();
-        services.AddTransient<IRegisterSubscriptionHandler, SubscriptionsUseCasesHandler>();
-        services.AddTransient<IGetSubscriptionDetailsHandler, SubscriptionsUseCasesHandler>();
-        services.AddTransient<IListEpcsHandler, TopLevelResourceUseCasesHandler>();
-        services.AddTransient<IListBizLocationsHandler, TopLevelResourceUseCasesHandler>();
-        services.AddTransient<IListBizStepsHandler, TopLevelResourceUseCasesHandler>();
-        services.AddTransient<IListEventTypesHandler, TopLevelResourceUseCasesHandler>();
-        services.AddTransient<IListReadPointsHandler, TopLevelResourceUseCasesHandler>();
-        services.AddTransient<IListDispositionsHandler, TopLevelResourceUseCasesHandler>();
+        services.AddTransient<DataRetrieverUseCase>();
+        services.AddTransient<IDataRetriever, DataRetrieverUseCase>();
+        services.AddTransient<IListCaptureRequests, CaptureUseCases>();
+        services.AddTransient<ICaptureRequestDetails, CaptureUseCases>();
+        services.AddTransient<ICaptureRequest, CaptureUseCases>();
+        services.AddTransient<IListQueries, QueriesUseCases>();
+        services.AddTransient<IGetQueryDetails, QueriesUseCases>();
+        services.AddTransient<IStoreQuery, QueriesUseCases>();
+        services.AddTransient<IDeleteQuery, QueriesUseCases>();
+        services.AddTransient<ITriggerSubscription, SubscriptionsUseCases>();
+        services.AddTransient<IDeleteSubscription, SubscriptionsUseCases>();
+        services.AddTransient<IListSubscriptions, SubscriptionsUseCases>();
+        services.AddTransient<IRegisterSubscription, SubscriptionsUseCases>();
+        services.AddTransient<IGetSubscriptionDetails, SubscriptionsUseCases>();
+        services.AddTransient<IListEpcs, TopLevelResourceUseCases>();
+        services.AddTransient<IListBizLocations, TopLevelResourceUseCases>();
+        services.AddTransient<IListBizSteps, TopLevelResourceUseCases>();
+        services.AddTransient<IListEventTypes, TopLevelResourceUseCases>();
+        services.AddTransient<IListReadPoints, TopLevelResourceUseCases>();
+        services.AddTransient<IListDispositions, TopLevelResourceUseCases>();
 
         if (!services.Any(x => typeof(ISubscriptionListener).IsAssignableFrom(x.ServiceType)))
         {

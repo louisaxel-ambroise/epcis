@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.Queries;
 
-public interface IStoreQueryHandler
+public interface IStoreQuery
 {
     Task<StoredQuery> StoreQueryAsync(StoredQuery query, CancellationToken cancellationToken);
 }

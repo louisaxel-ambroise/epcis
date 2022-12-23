@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.Queries;
 
-public interface IDeleteQueryHandler
+public interface IDeleteQuery
 {
     Task<StoredQuery> DeleteQueryAsync(string queryName, CancellationToken cancellationToken);
 }

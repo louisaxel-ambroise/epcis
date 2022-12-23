@@ -20,7 +20,7 @@ public class XmlResultSender : IResultSender
 
     public async Task<bool> SendResultAsync(Subscription context, QueryResponse response, CancellationToken cancellationToken)
     {
-        var formattedResponse = XmlResponseFormatter.FormatPoll(new PollResult(response.QueryName, response.EventList));
+        var formattedResponse = XmlResponseFormatter.FormatPoll(new PollResult(response.QueryName, response.SubscriptionId, response.EventList));
 
         using var client = GetHttpClient(context.Destination);
         using var stream = await GetResponseStream(formattedResponse, cancellationToken);

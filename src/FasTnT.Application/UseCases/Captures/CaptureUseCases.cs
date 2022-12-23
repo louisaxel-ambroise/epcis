@@ -11,16 +11,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.Captures;
 
-public class CaptureUseCasesHandler :
-    IListCaptureRequestsHandler,
-    ICaptureRequestDetailsHandler,
-    ICaptureRequestHandler
+public class CaptureUseCases :
+    IListCaptureRequests,
+    ICaptureRequestDetails,
+    ICaptureRequest
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
     private readonly ISubscriptionListener _subscriptionListener;
 
-    public CaptureUseCasesHandler(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener subscriptionListener)
+    public CaptureUseCases(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener subscriptionListener)
     {
         _context = context;
         _currentUser = currentUser;

@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.Subscriptions;
 
-public interface IListSubscriptionsHandler
+public interface IListSubscriptions
 {
     Task<IEnumerable<Subscription>> ListSubscriptionsAsync(string queryName, CancellationToken cancellationToken);
 }

@@ -38,7 +38,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             QueryName = "SimpleEventQuery"
         };
-        var handler = new SubscriptionsUseCasesHandler(Context, new TestCurrentUser(), new TestSubscriptionListener());
+        var handler = new SubscriptionsUseCases(Context, new TestCurrentUser(), new TestSubscriptionListener());
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
@@ -52,7 +52,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             QueryName = "UnknownQuery"
         };
-        var handler = new SubscriptionsUseCasesHandler(Context, new TestCurrentUser(), Listener.Object);
+        var handler = new SubscriptionsUseCases(Context, new TestCurrentUser(), Listener.Object);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
@@ -66,7 +66,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             QueryName = "SimpleMasterdataQuery"
         };
-        var handler = new SubscriptionsUseCasesHandler(Context, new TestCurrentUser(), Listener.Object);
+        var handler = new SubscriptionsUseCases(Context, new TestCurrentUser(), Listener.Object);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }

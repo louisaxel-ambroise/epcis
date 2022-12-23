@@ -10,28 +10,28 @@ public static class SubscriptionEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("v1_2/Trigger", HandleTriggerSubscription).RequireAuthorization("query");
+        app.MapGet("v1_2/Trigger", TriggerSubscription).RequireAuthorization("query");
 
         return app;
     }
 
     public static SoapActionBuilder AddSoapActions(SoapActionBuilder action)
     {
-        action.On<GetSubscriptionIDs>(HandleGetSubscriptionIds);
-        action.On<Subscribe>(HandleSubscribe);
-        action.On<Unsubscribe>(HandleUnsubscribe);
+        action.On<GetSubscriptionIDs>(GetSubscriptionIds);
+        action.On<Subscribe>(Subscribe);
+        action.On<Unsubscribe>(Unsubscribe);
 
         return action;
     }
 
-    private static async Task<GetSubscriptionIDsResult> HandleGetSubscriptionIds(GetSubscriptionIDs query, IListSubscriptionsHandler handler, CancellationToken cancellationToken)
+    private static async Task<GetSubscriptionIDsResult> GetSubscriptionIds(GetSubscriptionIDs query, IListSubscriptions handler, CancellationToken cancellationToken)
     {
         var subscriptions = await handler.ListSubscriptionsAsync(query.QueryName, cancellationToken);
 
         return new GetSubscriptionIDsResult(subscriptions.Select(x => x.Name));
     }
 
-    private static async Task<SubscribeResult> HandleSubscribe(Subscribe request, IRegisterSubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<SubscribeResult> Subscribe(Subscribe request, IRegisterSubscription handler, CancellationToken cancellationToken)
     {
         if(request.Subscription.QueryName != "SimpleEventQuery")
         {
@@ -43,14 +43,14 @@ public static class SubscriptionEndpoints
         return new();
     }
 
-    private static async Task<UnsubscribeResult> HandleUnsubscribe(Unsubscribe request, IDeleteSubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<UnsubscribeResult> Unsubscribe(Unsubscribe request, IDeleteSubscription handler, CancellationToken cancellationToken)
     {
         await handler.DeleteSubscriptionAsync(request.SubscriptionId, cancellationToken);
 
         return new();
     }
 
-    private static async Task<IResult> HandleTriggerSubscription(string triggers, ITriggerSubscriptionHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> TriggerSubscription(string triggers, ITriggerSubscription handler, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(triggers))
         {

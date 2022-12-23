@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.Subscriptions;
 
-public interface IGetSubscriptionDetailsHandler
+public interface IGetSubscriptionDetails
 {
     Task<Subscription> GetSubscriptionDetailsAsync(string name, CancellationToken cancellationToken);
 }

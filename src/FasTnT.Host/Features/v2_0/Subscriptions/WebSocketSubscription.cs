@@ -21,7 +21,7 @@ public static class WebSocketSubscription
 
     private static async Task<Subscription> RegisterSubscription(HttpContext httpContext, WebSocket webSocket, string queryName, IEnumerable<QueryParameter> parameters)
     {
-        var registerHandler = httpContext.RequestServices.GetService<IRegisterSubscriptionHandler>();
+        var register = httpContext.RequestServices.GetService<IRegisterSubscription>();
 
         var resultSender = new WebSocketResultSender(webSocket);
         var subscription = new Subscription
@@ -36,7 +36,7 @@ public static class WebSocketSubscription
             FormatterName = resultSender.Name
         };
 
-        return await registerHandler.RegisterSubscriptionAsync(subscription, resultSender, httpContext.RequestAborted);
+        return await register.RegisterSubscriptionAsync(subscription, resultSender, httpContext.RequestAborted);
     }
 
     private static SubscriptionSchedule ParseSchedule(QueryString query)
@@ -57,7 +57,7 @@ public static class WebSocketSubscription
 
     private static Task RemoveSubscription(HttpContext httpContext, Subscription subscription)
     {
-        var subscriptionRemover = httpContext.RequestServices.GetService<IDeleteSubscriptionHandler>();
+        var subscriptionRemover = httpContext.RequestServices.GetService<IDeleteSubscription>();
 
         return subscriptionRemover.DeleteSubscriptionAsync(subscription.Name, CancellationToken.None);
     }

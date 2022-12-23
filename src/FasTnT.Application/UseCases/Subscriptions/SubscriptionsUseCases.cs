@@ -8,18 +8,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.Subscriptions;
 
-public class SubscriptionsUseCasesHandler :
-    IDeleteSubscriptionHandler,
-    IListSubscriptionsHandler,
-    IGetSubscriptionDetailsHandler,
-    ITriggerSubscriptionHandler,
-    IRegisterSubscriptionHandler
+public class SubscriptionsUseCases :
+    IDeleteSubscription,
+    IListSubscriptions,
+    IGetSubscriptionDetails,
+    ITriggerSubscription,
+    IRegisterSubscription
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
     private readonly ISubscriptionListener _listener;
 
-    public SubscriptionsUseCasesHandler(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener listener)
+    public SubscriptionsUseCases(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener listener)
     {
         _context = context;
         _currentUser = currentUser;

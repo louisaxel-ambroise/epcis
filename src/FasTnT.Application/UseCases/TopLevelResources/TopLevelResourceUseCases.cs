@@ -9,18 +9,18 @@ using System.Linq.Expressions;
 
 namespace FasTnT.Application.UseCases.TopLevelResources;
 
-public class TopLevelResourceUseCasesHandler :
-    IListEpcsHandler,
-    IListDispositionsHandler,
-    IListEventTypesHandler,
-    IListBizStepsHandler,
-    IListBizLocationsHandler,
-    IListReadPointsHandler
+public class TopLevelResourceUseCases :
+    IListEpcs,
+    IListDispositions,
+    IListEventTypes,
+    IListBizSteps,
+    IListBizLocations,
+    IListReadPoints
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
 
-    public TopLevelResourceUseCasesHandler(EpcisContext context, ICurrentUser currentUser)
+    public TopLevelResourceUseCases(EpcisContext context, ICurrentUser currentUser)
     {
         _context = context;
         _currentUser = currentUser;

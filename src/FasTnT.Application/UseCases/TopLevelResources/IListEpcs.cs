@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.TopLevelResources;
 
-public interface IListEpcsHandler
+public interface IListEpcs
 {
     Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken);
 }

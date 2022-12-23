@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host.Services.Subscriptions;
 
@@ -41,7 +42,8 @@ public class SubscriptionBackgroundService : BackgroundService
             }
             else
             {
-                // This is a websocket subscription that was not properly removed. As the connection is lost at this point, it's safe to remove the subscription from the DB
+                // This is a websocket subscription that was not properly removed.
+                // As the connection is lost at this point, it's safe to delete the subscription
                 context.Remove(subscription);
             }
         }

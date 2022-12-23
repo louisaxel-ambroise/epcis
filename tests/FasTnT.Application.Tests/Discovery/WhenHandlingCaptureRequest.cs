@@ -41,7 +41,7 @@ public class WhenHandlingListEpcsRequest
     [TestMethod]
     public void ItShouldReturnAllTheEpcsIfPageSizeIsGreaterThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceUseCasesHandler(Context, UserContext);
+        var handler = new TopLevelResourceUseCases(Context, UserContext);
         var request = new Pagination(10, 0);
 
         var result = handler.ListEpcs(request, default).Result;
@@ -53,7 +53,7 @@ public class WhenHandlingListEpcsRequest
     [TestMethod]
     public void ItShouldReturnTheRequestedNumberOfEpcsIfPageSizeIsLowerThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceUseCasesHandler(Context, UserContext);
+        var handler = new TopLevelResourceUseCases(Context, UserContext);
         var request = new Pagination(1, 0);
 
         var result = handler.ListEpcs(request, default).Result;
@@ -65,7 +65,7 @@ public class WhenHandlingListEpcsRequest
     [TestMethod]
     public void ItShouldReturnTheCorrectPageOfData()
     {
-        var handler = new TopLevelResourceUseCasesHandler(Context, UserContext);
+        var handler = new TopLevelResourceUseCases(Context, UserContext);
         var request = new Pagination(3, 2);
 
         var result = handler.ListEpcs(request, default).Result;

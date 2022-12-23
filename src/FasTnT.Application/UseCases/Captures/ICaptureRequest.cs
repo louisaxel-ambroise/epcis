@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.Captures;
 
-public interface ICaptureRequestHandler
+public interface ICaptureRequest
 {
     Task<Request> StoreAsync(Request request, CancellationToken cancellationToken);
 }

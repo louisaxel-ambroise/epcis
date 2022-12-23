@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.HttpLogging;
 var builder = WebApplication.CreateBuilder(args);
 Constants.Instance = builder.Configuration.GetSection(nameof(Constants)).Get<Constants>();
 
-builder.Services.AddAuthentication(BasicAuthenticationHandler.SchemeName).AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, null);
+builder.Services.AddAuthentication(BasicAuthentication.SchemeName).AddScheme<AuthenticationSchemeOptions, BasicAuthentication>(BasicAuthentication.SchemeName, null);
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("query", policy => policy.RequireClaim("fastnt.query"));

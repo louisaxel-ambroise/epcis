@@ -9,12 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.DataSources;
 
-public class DataRetrieveUseCaseHandler : IDataRetrieveHandler
+public class DataRetrieverUseCase : IDataRetriever
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _user;
 
-    public DataRetrieveUseCaseHandler(EpcisContext context, ICurrentUser user)
+    public DataRetrieverUseCase(EpcisContext context, ICurrentUser user)
     {
         _context = context;
         _user = user;
@@ -22,22 +22,19 @@ public class DataRetrieveUseCaseHandler : IDataRetrieveHandler
 
     public async Task<List<Event>> QueryEventsAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
+        var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsFloat();
         var eventIds = await _context
             .QueryEvents(parameters.Union(_user.DefaultQueryParameters))
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 
-        var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsFloat();
-        if(maxEventCount is not null && eventIds.Count >= maxEventCount.Value)
-        {
-            throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results");
-        }
-            
-        return await _context
-            .Set<Event>()
-            .AsNoTracking()
-            .Where(x => eventIds.Contains(x.Id))
-            .ToListAsync(cancellationToken);
+        return maxEventCount is not null && eventIds.Count >= maxEventCount.Value
+            ? throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results")
+            : await _context
+                .Set<Event>()
+                .AsNoTracking()
+                .Where(x => eventIds.Contains(x.Id))
+                .ToListAsync(cancellationToken);
     }
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)

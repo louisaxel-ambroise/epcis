@@ -15,7 +15,7 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldReturnAPollResponse()
     {
-        var handler = new DataRetrieveUseCaseHandler(Context, UserContext);
+        var handler = new DataRetrieverUseCase(Context, UserContext);
         var result = handler.QueryEventsAsync(new List<QueryParameter>(), CancellationToken.None).Result;
 
         Assert.IsNotNull(result);

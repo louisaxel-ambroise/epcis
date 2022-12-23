@@ -8,16 +8,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.UseCases.Queries;
 
-public class QueriesUseCasesHandler :
-    IListQueriesHandler,
-    IGetQueryDetailsHandler,
-    IStoreQueryHandler,
-    IDeleteQueryHandler
+public class QueriesUseCases :
+    IListQueries,
+    IGetQueryDetails,
+    IStoreQuery,
+    IDeleteQuery
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
 
-    public QueriesUseCasesHandler(EpcisContext context, ICurrentUser currentUser)
+    public QueriesUseCases(EpcisContext context, ICurrentUser currentUser)
     {
         _context = context;
         _currentUser = currentUser;

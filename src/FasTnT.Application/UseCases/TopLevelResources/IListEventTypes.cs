@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.UseCases.TopLevelResources;
 
-public interface IListEventTypesHandler
+public interface IListEventTypes
 {
     Task<IEnumerable<string>> ListEventTypes(Pagination pagination, CancellationToken cancellationToken);
 }
