@@ -17,4 +17,13 @@ public class EpcisContext : DbContext
     {
         EpcisModelConfiguration.Apply(modelBuilder);
     }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        return base.SaveChangesAsync(cancellationToken).ContinueWith(res =>
+        {
+            ChangeTracker.Clear();
+            return res.Result;
+        });
+    }
 }

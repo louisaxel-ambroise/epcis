@@ -3,6 +3,7 @@ using FasTnT.Domain;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Extensions;
 using FasTnT.Application.UseCases.DataSources;
+using FasTnT.Application.UseCases.Queries;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 
@@ -24,6 +25,7 @@ public static class QueryEndpoints
         action.On<GetVendorVersion>(HandleGetVendorVersionQuery);
         action.On<PollEvents>(HandlePollEvents);
         action.On<PollMasterData>(HandlePollMasterData);
+        action.On<PollStoredQuery>(HandlePollStoredQuery);
 
         return action;
     }
@@ -40,6 +42,14 @@ public static class QueryEndpoints
         var response = await handler.QueryMasterDataAsync(query.Parameters, cancellationToken);
 
         return new(new ("SimpleMasterDataQuery", response));
+    }
+
+    private static async Task<PollResult> HandlePollStoredQuery(PollStoredQuery query, IGetQueryDetailsHandler queryDetailsHandler, IDataRetrieveHandler dataQueryHandler, CancellationToken cancellationToken)
+    {
+        var queryDetails = await queryDetailsHandler.GetQueryDetailsAsync(query.QueryName, cancellationToken);
+        var response = await dataQueryHandler.QueryEventsAsync(query.Parameters.Union(queryDetails.Parameters), cancellationToken);
+
+        return new(new (query.QueryName, response));
     }
 
     private static Task<GetQueryNamesResult> HandleGetQueryNamesQuery(CancellationToken cancellationToken)
