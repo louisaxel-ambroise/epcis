@@ -1,8 +1,7 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.UseCases.Queries;
-using FasTnT.Domain.Exceptions;
+using FasTnT.Application.UseCases.DataSources;
 using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.Queries;
@@ -16,17 +15,9 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldReturnAPollResponse()
     {
-        var handler = new QueriesUseCasesHandler(Context, UserContext);
-        var result = handler.ExecuteQueryAsync("SimpleEventQuery", new List<QueryParameter>(), CancellationToken.None).Result;
+        var handler = new DataRetrieverUseCase(Context, UserContext);
+        var result = handler.QueryEventsAsync(new List<QueryParameter>(), CancellationToken.None).Result;
 
         Assert.IsNotNull(result);
-    }
-
-    [TestMethod]
-    public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
-    {
-        var handler = new QueriesUseCasesHandler(Context, UserContext);
-
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.ExecuteQueryAsync("UnknownQuery", new List<QueryParameter>(), CancellationToken.None));
     }
 }

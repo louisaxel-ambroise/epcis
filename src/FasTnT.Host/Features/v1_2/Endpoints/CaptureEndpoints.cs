@@ -7,12 +7,12 @@ public static class CaptureEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.TryMapPost("v1_2/capture", HandleCaptureRequest).RequireAuthorization("capture");
+        app.TryMapPost("v1_2/capture", CaptureRequest).RequireAuthorization("capture");
 
         return app;
     }
 
-    private static async Task<IResult> HandleCaptureRequest(CaptureRequest request, ICaptureRequestHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> CaptureRequest(CaptureRequest request, ICaptureRequest handler, CancellationToken cancellationToken)
     {
         await handler.StoreAsync(request.Request, cancellationToken);
 

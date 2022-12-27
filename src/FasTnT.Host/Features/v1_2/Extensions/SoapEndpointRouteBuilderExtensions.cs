@@ -1,12 +1,12 @@
 ﻿namespace FasTnT.Host.Features.v1_2.Extensions;
 
-public static class EndpointRouteBuilderExtensions
+public static class EndpointRouteHandlerBuilderExtensions
 {
     public static RouteHandlerBuilder MapSoap(this IEndpointRouteBuilder app, string route, Action<SoapActionBuilder> soapActions)
     {
-        var soapRequestHandler = new SoapActionBuilder();
-        soapActions(soapRequestHandler);
+        var soapRequest = new SoapActionBuilder();
+        soapActions(soapRequest);
 
-        return app.MapPost(route, soapRequestHandler.HandleSoapAction);
+        return app.MapPost(route, soapRequest.SoapAction);
     }
 }

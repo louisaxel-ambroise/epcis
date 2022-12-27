@@ -7,7 +7,8 @@ public record SoapEnvelope(string Action, object Query)
     public static async ValueTask<SoapEnvelope> BindAsync(HttpContext context)
     {
         var message = await context.Request.ParseSoapEnvelope(context.RequestAborted);
+        var soapQuery = XmlQueryParser.Parse(message);
 
-        return new(message.Name.LocalName, XmlQueryParser.Parse(message));
+        return new(soapQuery.GetType().Name, soapQuery);
     }
 }

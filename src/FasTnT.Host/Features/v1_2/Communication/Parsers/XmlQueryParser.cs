@@ -1,4 +1,5 @@
 ﻿using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Subscriptions;
@@ -22,12 +23,17 @@ public static class XmlQueryParser
         };
     }
 
-    public static Poll ParsePollQuery(XElement element)
+    public static object ParsePollQuery(XElement element)
     {
         var queryName = element.Element("queryName").Value;
         var parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToArray();
 
-        return new(queryName, parameters);
+        return queryName switch
+        {
+            "SimpleEventQuery" => new PollEvents(parameters),
+            "SimpleMasterDataQuery" => new PollMasterData(parameters),
+            _ => throw new EpcisException(ExceptionType.NoSuchNameException, $"Unknown Query name: {queryName}")
+        };
     }
 
     public static Unsubscribe ParseUnsubscribe(XElement element)
@@ -55,7 +61,7 @@ public static class XmlQueryParser
 
     public static GetQueryNames ParseGetQueryNames() => new();
 
-    private static IEnumerable<SubscriptionParameter> ParseQueryParameters(IEnumerable<XElement> elements)
+    private static IEnumerable<QueryParameter> ParseQueryParameters(IEnumerable<XElement> elements)
     {
         foreach (var element in elements ?? Array.Empty<XElement>())
         {

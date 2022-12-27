@@ -6,12 +6,21 @@ namespace FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 
 public record PollResult
 {
-    public PollResult(QueryResponse response)
+    public PollResult(string queryName, List<Event> eventList)
     {
-        QueryName = response.QueryName;
-        SubscriptionId = response.SubscriptionId;
-        EventList = response.EventList;
-        VocabularyList = response.VocabularyList;
+        QueryName = queryName;
+        EventList = eventList;
+    }
+
+    public PollResult(string queryName, List<MasterData> vocabularyList)
+    {
+        QueryName = queryName;
+        VocabularyList = vocabularyList;
+    }
+
+    public PollResult(string queryName, string subscriptionId, List<Event> eventList) : this(queryName, eventList)
+    {
+        SubscriptionId = subscriptionId;
     }
 
     public string QueryName { get; init; }

@@ -8,65 +8,65 @@ public static class TopLevelEndpoints
 {
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.Get("v2_0/eventTypes", HandleListEventTypes).RequireAuthorization("query");
-        app.Get("v2_0/epcs", HandleListEpcs).RequireAuthorization("query");
-        app.Get("v2_0/bizSteps", HandleListBizSteps).RequireAuthorization("query");
-        app.Get("v2_0/bizLocations", HandleListBizLocations).RequireAuthorization("query");
-        app.Get("v2_0/readPoints", HandleListReadPoints).RequireAuthorization("query");
-        app.Get("v2_0/dispositions", HandleListDispositions).RequireAuthorization("query");
-        app.Get("v2_0/eventTypes/{eventType}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.Get("v2_0/epcs/{epc}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.Get("v2_0/bizSteps/{bizStep}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.Get("v2_0/bizLocations/{bizLocation}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.Get("v2_0/readPoints/{readPoint}", HandleSubResourceRequest).RequireAuthorization("query");
-        app.Get("v2_0/dispositions/{disposition}", HandleSubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/eventTypes", ListEventTypes).RequireAuthorization("query");
+        app.Get("v2_0/epcs", ListEpcs).RequireAuthorization("query");
+        app.Get("v2_0/bizSteps", ListBizSteps).RequireAuthorization("query");
+        app.Get("v2_0/bizLocations", ListBizLocations).RequireAuthorization("query");
+        app.Get("v2_0/readPoints", ListReadPoints).RequireAuthorization("query");
+        app.Get("v2_0/dispositions", ListDispositions).RequireAuthorization("query");
+        app.Get("v2_0/eventTypes/{eventType}", SubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/epcs/{epc}", SubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/bizSteps/{bizStep}", SubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/bizLocations/{bizLocation}", SubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/readPoints/{readPoint}", SubResourceRequest).RequireAuthorization("query");
+        app.Get("v2_0/dispositions/{disposition}", SubResourceRequest).RequireAuthorization("query");
 
         return app;
     }
 
-    private static async Task<IResult> HandleListEventTypes(PaginationContext context, IListEventTypesHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> ListEventTypes(PaginationContext context, IListEventTypes handler, CancellationToken cancellationToken)
     {
         var response = await handler.ListEventTypes(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListEpcs(PaginationContext context, IListEpcsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> ListEpcs(PaginationContext context, IListEpcs handler, CancellationToken cancellationToken)
     {
         var response = await handler.ListEpcs(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListBizSteps(PaginationContext context, IListBizStepsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> ListBizSteps(PaginationContext context, IListBizSteps handler, CancellationToken cancellationToken)
     {
         var response = await handler.ListBizSteps(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListBizLocations(PaginationContext context, IListBizLocationsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> ListBizLocations(PaginationContext context, IListBizLocations handler, CancellationToken cancellationToken)
     {
         var response = await handler.ListBizLocations(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListReadPoints(PaginationContext context, IListReadPointsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> ListReadPoints(PaginationContext context, IListReadPoints handler, CancellationToken cancellationToken)
     {
         var response = await handler.ListReadPoints(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static async Task<IResult> HandleListDispositions(PaginationContext context, IListDispositionsHandler handler, CancellationToken cancellationToken)
+    private static async Task<IResult> ListDispositions(PaginationContext context, IListDispositions handler, CancellationToken cancellationToken)
     {
         var response = await handler.ListDispositions(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }
 
-    private static IResult HandleSubResourceRequest()
+    private static IResult SubResourceRequest()
     {
         return EpcisResults.Ok(new CollectionResult(new[] { "events" }));
     }

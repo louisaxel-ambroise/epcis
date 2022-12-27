@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using FasTnT.Domain;
-using FasTnT.Application.UseCases.Queries;
-using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Extensions;
+using FasTnT.Application.UseCases.DataSources;
+using FasTnT.Application.UseCases.Queries;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 
@@ -13,47 +13,52 @@ public static class QueryEndpoints
 
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("v1_2/query.svc", HandleGetWsdl).AllowAnonymous();
+        app.MapGet("v1_2/query.svc", GetWsdl).AllowAnonymous();
 
         return app;
     }
 
     public static SoapActionBuilder AddSoapActions(SoapActionBuilder action)
     {
-        action.On<GetQueryNames>(HandleGetQueryNamesQuery);
-        action.On<GetStandardVersion>(HandleGetStandardVersionQuery);
-        action.On<GetVendorVersion>(HandleGetVendorVersionQuery);
-        action.On<Poll>(HandlePollQuery);
+        action.On<GetQueryNames>(GetQueryNamesQuery);
+        action.On<GetStandardVersion>(GetStandardVersionQuery);
+        action.On<GetVendorVersion>(GetVendorVersionQuery);
+        action.On<PollEvents>(SimpleEventQuery);
+        action.On<PollMasterData>(SimpleMasterDataQuery);
 
         return action;
     }
 
-    private static async Task<PollResult> HandlePollQuery(Poll query, IExecuteQueryHandler handler, CancellationToken cancellationToken)
+    private static async Task<PollResult> SimpleEventQuery(PollEvents query, IDataRetriever handler, CancellationToken cancellationToken)
     {
-        var response = await handler.ExecuteQueryAsync(query.QueryName, query.Parameters, cancellationToken);
+        var response = await handler.QueryEventsAsync(query.Parameters, cancellationToken);
 
-        return new(response);
+        return new(nameof(SimpleEventQuery), response);
     }
 
-    private static async Task<GetQueryNamesResult> HandleGetQueryNamesQuery(IListQueriesHandler handler, CancellationToken cancellationToken)
+    private static async Task<PollResult> SimpleMasterDataQuery(PollMasterData query, IDataRetriever handler, CancellationToken cancellationToken)
     {
-        var queries = await handler.ListQueriesAsync(Pagination.Max, cancellationToken);
-        var queryNames = queries.Select(x => x.Name);
+        var response = await handler.QueryMasterDataAsync(query.Parameters, cancellationToken);
 
-        return new(queryNames);
+        return new(nameof(SimpleMasterDataQuery), response);
     }
 
-    private static Task<GetStandardVersionResult> HandleGetStandardVersionQuery()
+    private static Task<GetQueryNamesResult> GetQueryNamesQuery()
+    {
+        return Task.FromResult(new GetQueryNamesResult(new[] { nameof(SimpleEventQuery), nameof(SimpleMasterDataQuery) }));
+    }
+
+    private static Task<GetStandardVersionResult> GetStandardVersionQuery()
     {
         return Task.FromResult(new GetStandardVersionResult("1.2"));
     }
 
-    private static Task<GetVendorVersionResult> HandleGetVendorVersionQuery()
+    private static Task<GetVendorVersionResult> GetVendorVersionQuery()
     {
         return Task.FromResult(new GetVendorVersionResult(Constants.Instance.VendorVersion));
     }
 
-    private static async Task HandleGetWsdl(HttpResponse response, CancellationToken cancellationToken)
+    private static async Task GetWsdl(HttpResponse response, CancellationToken cancellationToken)
     {
         response.ContentType = "text/xml";
 

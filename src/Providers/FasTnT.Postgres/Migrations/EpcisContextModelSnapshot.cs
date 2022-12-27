@@ -30,11 +30,6 @@ namespace FasTnT.Postgres.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DataSource")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -50,20 +45,6 @@ namespace FasTnT.Postgres.Migrations
                         .IsUnique();
 
                     b.ToTable("StoredQuery", "Queries");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = -2,
-                            DataSource = "EventDataSource",
-                            Name = "SimpleEventQuery"
-                        },
-                        new
-                        {
-                            Id = -1,
-                            DataSource = "VocabularyDataSource",
-                            Name = "SimpleMasterDataQuery"
-                        });
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
@@ -152,11 +133,16 @@ namespace FasTnT.Postgres.Migrations
                     b.ToTable("MasterData", "Cbv");
 
                     b.ToView("CurrentMasterdata", "Cbv");
+
+                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterData");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy", b =>
                 {
                     b.Property<string>("Id")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Root")
@@ -170,6 +156,10 @@ namespace FasTnT.Postgres.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("MasterDataHierarchy", "Cbv");
+
+                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterDataHierarchy");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
@@ -296,6 +286,34 @@ namespace FasTnT.Postgres.Migrations
                     b.ToTable("SubscriptionExecutionRecord", "Subscriptions");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocation", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPoint", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocationHierarchy", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPointHierarchy", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
                 {
                     b.OwnsMany("FasTnT.Domain.Model.CustomQueries.StoredQueryParameter", "Parameters", b1 =>
@@ -312,7 +330,7 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.HasKey("QueryId", "Name");
 
-                            b1.ToTable("StoredQueryParameter", "Subscriptions");
+                            b1.ToTable("StoredQueryParameter", "Queries");
 
                             b1.WithOwner("Query")
                                 .HasForeignKey("QueryId");
@@ -923,6 +941,26 @@ namespace FasTnT.Postgres.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
                 {
+                    b.OwnsMany("FasTnT.Domain.Model.Queries.QueryParameter", "Parameters", b1 =>
+                        {
+                            b1.Property<int>("SubscriptionId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("Name")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
+
+                            b1.Property<string>("Values")
+                                .HasColumnType("text");
+
+                            b1.HasKey("SubscriptionId", "Name");
+
+                            b1.ToTable("SubscriptionParameter", "Subscriptions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SubscriptionId");
+                        });
+
                     b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule", b1 =>
                         {
                             b1.Property<int>("SubscriptionId")
@@ -958,33 +996,6 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("SubscriptionId");
-                        });
-
-                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", "Parameters", b1 =>
-                        {
-                            b1.Property<int>("SubscriptionId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Name")
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
-
-                            b1.Property<int>("SubscriptionName")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Values")
-                                .HasColumnType("text");
-
-                            b1.HasKey("SubscriptionId", "Name");
-
-                            b1.HasIndex("SubscriptionName");
-
-                            b1.ToTable("SubscriptionParameter", "Subscriptions");
-
-                            b1.WithOwner("Subscription")
-                                .HasForeignKey("SubscriptionName");
-
-                            b1.Navigation("Subscription");
                         });
 
                     b.Navigation("Parameters");
