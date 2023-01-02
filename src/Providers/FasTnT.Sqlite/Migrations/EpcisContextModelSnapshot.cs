@@ -23,11 +23,6 @@ namespace FasTnT.Sqlite.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("DataSource")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -43,20 +38,6 @@ namespace FasTnT.Sqlite.Migrations
                         .IsUnique();
 
                     b.ToTable("StoredQuery", "Queries");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = -2,
-                            DataSource = "EventDataSource",
-                            Name = "SimpleEventQuery"
-                        },
-                        new
-                        {
-                            Id = -1,
-                            DataSource = "VocabularyDataSource",
-                            Name = "SimpleMasterDataQuery"
-                        });
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
@@ -143,6 +124,10 @@ namespace FasTnT.Sqlite.Migrations
                     b.ToTable("MasterData", "Cbv");
 
                     b.ToView("CurrentMasterdata", "Cbv");
+
+                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterData");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy", b =>
@@ -151,7 +136,6 @@ namespace FasTnT.Sqlite.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Root")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
@@ -161,6 +145,10 @@ namespace FasTnT.Sqlite.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("MasterDataHierarchy", "Cbv");
+
+                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterDataHierarchy");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
@@ -191,10 +179,7 @@ namespace FasTnT.Sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Request", "Epcis", t =>
-                        {
-                            t.HasTrigger("SubscriptionPendingRequests");
-                        });
+                    b.ToTable("Request", "Epcis");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.PendingRequest", b =>
@@ -255,10 +240,7 @@ namespace FasTnT.Sqlite.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Subscription", "Subscriptions", t =>
-                        {
-                            t.HasTrigger("SubscriptionInitialRequests");
-                        });
+                    b.ToTable("Subscription", "Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", b =>
@@ -281,6 +263,34 @@ namespace FasTnT.Sqlite.Migrations
                     b.HasKey("SubscriptionId", "ExecutionTime");
 
                     b.ToTable("SubscriptionExecutionRecord", "Subscriptions");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocation", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPoint", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocationHierarchy", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPointHierarchy", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>

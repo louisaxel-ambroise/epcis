@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.DataSources.Utils;
+using FasTnT.Application.UseCases.DataSources.Utils;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
@@ -33,10 +33,10 @@ public class SubscriptionRunner : ISubscriptionRunner
 
             if (pendingRequests.Any())
             {
-                var queryData = await _context.QueryEvents()
-                    .WithParameters(context.Subscription.Parameters)
-                    .WithParameters(new[] { QueryParameter.Create("EQ_requestID", pendingRequests.Select(x => x.RequestId.ToString()).ToArray()) } )
-                    .ExecuteAsync(cancellationToken);
+                var queryData = await _context
+                    .QueryEvents(context.Subscription.Parameters)
+                    .Where(x => pendingRequests.Select(x => x.RequestId).Contains(x.Request.Id))
+                    .ToListAsync(cancellationToken);
 
                 response = new QueryResponse(context.Subscription.QueryName, context.Subscription.Name, queryData);
             }

@@ -20,7 +20,7 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
     [ExpectedException(typeof(EpcisException))]
     public void ItShoultThrowAnException()
     {
-        var handler = new CaptureUseCasesHandler(Context, UserContext, SubscriptionListener.Object);
+        var handler = new CaptureUseCases(Context, UserContext, SubscriptionListener.Object);
         var request = new Request { SchemaVersion = "1.0" };
 
         try

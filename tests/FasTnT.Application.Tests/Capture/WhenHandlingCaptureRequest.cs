@@ -20,7 +20,7 @@ public class WhenHandlingCaptureRequest
     [TestMethod]
     public void ItShouldReturnACaptureResultAndStoreTheRequest()
     {
-        var handler = new CaptureUseCasesHandler(Context, UserContext, SubscriptionListener.Object);
+        var handler = new CaptureUseCases(Context, UserContext, SubscriptionListener.Object);
         var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.ObjectEvent } } };
         var result = handler.StoreAsync(request, default).Result;
 

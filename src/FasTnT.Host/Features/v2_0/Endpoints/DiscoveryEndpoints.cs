@@ -9,17 +9,17 @@ public static class DiscoveryEndpoints
 
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
-        app.Get("v2_0/", HandleTopLevelResources).RequireAuthorization("query");
+        app.Get("v2_0/", TopLevelResources).RequireAuthorization("query");
 
         foreach (var path in Endpoints.GroupBy(x => x.Path))
         {
-            app.Options(path.Key, HandleDiscovery(path.Select(x => x.Method))).AllowAnonymous();
+            app.Options(path.Key, Discovery(path.Select(x => x.Method))).AllowAnonymous();
         }
 
         return app;
     }
 
-    private static Delegate HandleDiscovery(IEnumerable<string> methods)
+    private static Delegate Discovery(IEnumerable<string> methods)
     {
         return (HttpContext ctx) =>
         {
@@ -29,7 +29,7 @@ public static class DiscoveryEndpoints
         };
     }
 
-    private static Task<IResult> HandleTopLevelResources()
+    private static Task<IResult> TopLevelResources()
     {
         var resources = Endpoints
             .Select(x => x.Path.Split('/').FirstOrDefault(x => x != "v2_0"))

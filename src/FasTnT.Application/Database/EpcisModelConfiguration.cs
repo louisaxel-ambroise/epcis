@@ -3,6 +3,7 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -74,8 +75,8 @@ public static class EpcisModelConfiguration
         var masterData = modelBuilder.Entity<MasterData>();
         masterData.ToView("CurrentMasterdata", Cbv);
         masterData.ToTable(nameof(MasterData), Cbv);
-        masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
         masterData.Property<int>("RequestId");
+        masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
         masterData.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
         masterData.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
         masterData.OwnsMany(x => x.Attributes, c =>
@@ -111,13 +112,21 @@ public static class EpcisModelConfiguration
             c.HasOne(x => x.MasterData).WithMany(x => x.Children);
             c.Property(x => x.ChildrenId).HasMaxLength(256);
         });
+        masterData.HasDiscriminator(x => x.Type)
+            .HasValue<BizLocation>("urn:epcglobal:epcis:vtype:BusinessLocation")
+            .HasValue<ReadPoint>("urn:epcglobal:epcis:vtype:ReadPoint")
+            .IsComplete(false);
 
         var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
         mdHierarchy.ToView(nameof(MasterDataHierarchy), Cbv);
-        mdHierarchy.Property(x => x.Root).IsRequired();
-        mdHierarchy.Property(x => x.Id).IsRequired();
-        mdHierarchy.Property(x => x.Type).IsRequired();
         mdHierarchy.HasNoKey();
+        mdHierarchy.Property(x => x.Root).IsRequired(true);
+        mdHierarchy.Property(x => x.Id).IsRequired(true);
+        mdHierarchy.Property(x => x.Type).IsRequired(true);
+        mdHierarchy.HasDiscriminator(x => x.Type)
+            .HasValue<BizLocationHierarchy>("urn:epcglobal:epcis:vtype:BusinessLocation")
+            .HasValue<ReadPointHierarchy>("urn:epcglobal:epcis:vtype:ReadPoint")
+            .IsComplete(false);
 
         var evt = modelBuilder.Entity<Event>();
         evt.ToTable(nameof(Event), Epcis);
@@ -269,10 +278,9 @@ public static class EpcisModelConfiguration
         });
         subscription.OwnsMany(x => x.Parameters, c =>
         {
-            c.ToTable(nameof(SubscriptionParameter), Subscriptions);
+            c.ToTable("SubscriptionParameter", Subscriptions);
             c.Property<int>("SubscriptionId").IsRequired(true);
-            c.HasKey("SubscriptionId", nameof(SubscriptionParameter.Name));
-            c.HasOne(x => x.Subscription).WithMany(x => x.Parameters).HasForeignKey("SubscriptionName");
+            c.HasKey("SubscriptionId", nameof(QueryParameter.Name));
             c.Property(x => x.Values).IsRequired(false).HasJsonArrayConversion();
             c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
         });
@@ -298,21 +306,15 @@ public static class EpcisModelConfiguration
         storedQuery.HasKey(x => x.Id);
         storedQuery.Property(x => x.Id).ValueGeneratedOnAdd();
         storedQuery.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
-        storedQuery.Property(x => x.DataSource).IsRequired(true).HasMaxLength(30);
         storedQuery.Property(x => x.UserId).IsRequired(false).HasMaxLength(50);
         storedQuery.OwnsMany(x => x.Parameters, c =>
         {
-            c.ToTable(nameof(StoredQueryParameter), Subscriptions);
+            c.ToTable("StoredQueryParameter", Queries);
             c.Property<int>("QueryId");
             c.HasKey("QueryId", nameof(StoredQueryParameter.Name));
             c.Property(x => x.Values).IsRequired(false).HasJsonArrayConversion();
             c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
         });
-        storedQuery.HasData
-        (
-            new { Id = -2, Name = "SimpleEventQuery", DataSource = "EventDataSource" },
-            new { Id = -1, Name = "SimpleMasterDataQuery", DataSource = "VocabularyDataSource" }
-        );
         storedQuery.HasIndex(x => x.Name).IsUnique();
     }
 
