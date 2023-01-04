@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Events;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.UseCases.DataSources.Utils;
@@ -67,10 +68,18 @@ public class CaptureUseCases :
         }
 
         var captureTime = DateTime.UtcNow;
-        
-        request.Events.ForEach(x => x.CaptureTime = captureTime);
+
         request.CaptureTime = captureTime;
         request.UserId = _currentUser.UserId;
+        request.Events.ForEach(evt =>
+        {
+            evt.CaptureTime = captureTime;
+
+            if (string.IsNullOrEmpty(evt.EventId))
+            {
+                evt.EventId = EventHash.Compute(evt);
+            }
+        });
 
         _context.Add(request);
 
