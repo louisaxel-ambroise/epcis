@@ -1,8 +1,8 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers.DataSources.Utils;
 using FasTnT.Application.Services.Events;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.DataSources.Utils;
 using FasTnT.Application.Validators;
 using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
@@ -10,18 +10,15 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.UseCases.Captures;
+namespace FasTnT.Application.Handlers;
 
-public class CaptureUseCases :
-    IListCaptureRequests,
-    ICaptureRequestDetails,
-    ICaptureRequest
+public class CaptureHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
     private readonly ISubscriptionListener _subscriptionListener;
 
-    public CaptureUseCases(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener subscriptionListener)
+    public CaptureHandler(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener subscriptionListener)
     {
         _context = context;
         _currentUser = currentUser;

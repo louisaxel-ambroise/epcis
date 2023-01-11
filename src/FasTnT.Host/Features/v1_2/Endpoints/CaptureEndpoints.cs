@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.UseCases.Captures;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
@@ -12,7 +12,7 @@ public static class CaptureEndpoints
         return app;
     }
 
-    private static async Task<IResult> CaptureRequest(CaptureRequest request, ICaptureRequest handler, CancellationToken cancellationToken)
+    private static async Task<IResult> CaptureRequest(CaptureRequest request, CaptureHandler handler, CancellationToken cancellationToken)
     {
         await handler.StoreAsync(request.Request, cancellationToken);
 

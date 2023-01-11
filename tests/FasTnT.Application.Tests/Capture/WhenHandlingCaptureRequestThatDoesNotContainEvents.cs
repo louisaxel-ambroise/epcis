@@ -2,7 +2,7 @@
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.UseCases.Captures;
+using FasTnT.Application.Handlers;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using Moq;
@@ -20,7 +20,7 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
     [ExpectedException(typeof(EpcisException))]
     public void ItShoultThrowAnException()
     {
-        var handler = new CaptureUseCases(Context, UserContext, SubscriptionListener.Object);
+        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener.Object);
         var request = new Request { SchemaVersion = "1.0" };
 
         try

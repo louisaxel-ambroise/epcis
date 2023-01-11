@@ -1,11 +1,11 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.UseCases.DataSources.Contexts;
+using FasTnT.Application.Handlers.DataSources.Contexts;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.UseCases.DataSources.Utils;
+namespace FasTnT.Application.Handlers.DataSources.Utils;
 
 public static class EpcisContextExtensions
 {

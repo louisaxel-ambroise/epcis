@@ -1,26 +1,20 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers.DataSources.Utils;
 using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.DataSources.Utils;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace FasTnT.Application.UseCases.TopLevelResources;
+namespace FasTnT.Application.Handlers;
 
-public class TopLevelResourceUseCases :
-    IListEpcs,
-    IListDispositions,
-    IListEventTypes,
-    IListBizSteps,
-    IListBizLocations,
-    IListReadPoints
+public class TopLevelResourceHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
 
-    public TopLevelResourceUseCases(EpcisContext context, ICurrentUser currentUser)
+    public TopLevelResourceHandler(EpcisContext context, ICurrentUser currentUser)
     {
         _context = context;
         _currentUser = currentUser;

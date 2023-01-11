@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.UseCases.Subscriptions;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using System.Net.WebSockets;
@@ -21,7 +21,7 @@ public static class WebSocketSubscription
 
     private static async Task<Subscription> RegisterSubscription(HttpContext httpContext, WebSocket webSocket, string queryName, IEnumerable<QueryParameter> parameters)
     {
-        var register = httpContext.RequestServices.GetService<IRegisterSubscription>();
+        var register = httpContext.RequestServices.GetService<SubscriptionsHandler>();
 
         var resultSender = new WebSocketResultSender(webSocket);
         var subscription = new Subscription
@@ -57,7 +57,7 @@ public static class WebSocketSubscription
 
     private static Task RemoveSubscription(HttpContext httpContext, Subscription subscription)
     {
-        var subscriptionRemover = httpContext.RequestServices.GetService<IDeleteSubscription>();
+        var subscriptionRemover = httpContext.RequestServices.GetService<SubscriptionsHandler>();
 
         return subscriptionRemover.DeleteSubscriptionAsync(subscription.Name, CancellationToken.None);
     }

@@ -1,10 +1,6 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.UseCases.Captures;
-using FasTnT.Application.UseCases.DataSources;
-using FasTnT.Application.UseCases.Queries;
-using FasTnT.Application.UseCases.Subscriptions;
-using FasTnT.Application.UseCases.TopLevelResources;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FasTnT.Application;
@@ -13,26 +9,12 @@ public static class EpcisConfiguration
 {
     public static IServiceCollection AddEpcisServices(this IServiceCollection services)
     {
-        services.AddTransient<DataRetrieverUseCase>();
-        services.AddTransient<IDataRetriever, DataRetrieverUseCase>();
-        services.AddTransient<IListCaptureRequests, CaptureUseCases>();
-        services.AddTransient<ICaptureRequestDetails, CaptureUseCases>();
-        services.AddTransient<ICaptureRequest, CaptureUseCases>();
-        services.AddTransient<IListQueries, QueriesUseCases>();
-        services.AddTransient<IGetQueryDetails, QueriesUseCases>();
-        services.AddTransient<IStoreQuery, QueriesUseCases>();
-        services.AddTransient<IDeleteQuery, QueriesUseCases>();
-        services.AddTransient<ITriggerSubscription, SubscriptionsUseCases>();
-        services.AddTransient<IDeleteSubscription, SubscriptionsUseCases>();
-        services.AddTransient<IListSubscriptions, SubscriptionsUseCases>();
-        services.AddTransient<IRegisterSubscription, SubscriptionsUseCases>();
-        services.AddTransient<IGetSubscriptionDetails, SubscriptionsUseCases>();
-        services.AddTransient<IListEpcs, TopLevelResourceUseCases>();
-        services.AddTransient<IListBizLocations, TopLevelResourceUseCases>();
-        services.AddTransient<IListBizSteps, TopLevelResourceUseCases>();
-        services.AddTransient<IListEventTypes, TopLevelResourceUseCases>();
-        services.AddTransient<IListReadPoints, TopLevelResourceUseCases>();
-        services.AddTransient<IListDispositions, TopLevelResourceUseCases>();
+        services.AddTransient<DataRetrieverHandler>();
+        services.AddTransient<DataRetrieverHandler>();
+        services.AddTransient<CaptureHandler>();
+        services.AddTransient<QueriesHandler>();
+        services.AddTransient<SubscriptionsHandler>();
+        services.AddTransient<TopLevelResourceHandler>();
 
         if (!services.Any(x => typeof(ISubscriptionListener).IsAssignableFrom(x.ServiceType)))
         {

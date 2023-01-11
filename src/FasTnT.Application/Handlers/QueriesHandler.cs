@@ -6,18 +6,14 @@ using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.UseCases.Queries;
+namespace FasTnT.Application.Handlers;
 
-public class QueriesUseCases :
-    IListQueries,
-    IGetQueryDetails,
-    IStoreQuery,
-    IDeleteQuery
+public class QueriesHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
 
-    public QueriesUseCases(EpcisContext context, ICurrentUser currentUser)
+    public QueriesHandler(EpcisContext context, ICurrentUser currentUser)
     {
         _context = context;
         _currentUser = currentUser;
