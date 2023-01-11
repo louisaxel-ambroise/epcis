@@ -1,7 +1,6 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Model.Subscriptions;
-using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Host.Services.Subscriptions;
 

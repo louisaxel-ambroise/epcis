@@ -2,7 +2,7 @@
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Application.Tests.Subscriptions;
-using FasTnT.Application.UseCases.Subscriptions;
+using FasTnT.Application.Handlers;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 using Moq;
@@ -38,7 +38,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             QueryName = "SimpleEventQuery"
         };
-        var handler = new SubscriptionsUseCases(Context, new TestCurrentUser(), new TestSubscriptionListener());
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new TestSubscriptionListener());
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
@@ -52,7 +52,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             QueryName = "UnknownQuery"
         };
-        var handler = new SubscriptionsUseCases(Context, new TestCurrentUser(), Listener.Object);
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), Listener.Object);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }
@@ -66,7 +66,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             QueryName = "SimpleMasterdataQuery"
         };
-        var handler = new SubscriptionsUseCases(Context, new TestCurrentUser(), Listener.Object);
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), Listener.Object);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }

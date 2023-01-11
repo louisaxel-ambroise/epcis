@@ -6,20 +6,15 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.UseCases.Subscriptions;
+namespace FasTnT.Application.Handlers;
 
-public class SubscriptionsUseCases :
-    IDeleteSubscription,
-    IListSubscriptions,
-    IGetSubscriptionDetails,
-    ITriggerSubscription,
-    IRegisterSubscription
+public class SubscriptionsHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
     private readonly ISubscriptionListener _listener;
 
-    public SubscriptionsUseCases(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener listener)
+    public SubscriptionsHandler(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener listener)
     {
         _context = context;
         _currentUser = currentUser;
@@ -89,7 +84,7 @@ public class SubscriptionsUseCases :
         _context.Add(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await _listener.RegisterAsync(new (subscription, resultSender), cancellationToken);
+        await _listener.RegisterAsync(new(subscription, resultSender), cancellationToken);
 
         return subscription;
     }

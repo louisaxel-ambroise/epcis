@@ -6,11 +6,11 @@ using FasTnT.Domain.Model.Queries;
 using LinqKit;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using FasTnT.Application.UseCases.DataSources.Utils;
 using FasTnT.Application.Database;
 using FasTnT.Domain.Model.Masterdata;
+using FasTnT.Application.Handlers.DataSources.Utils;
 
-namespace FasTnT.Application.UseCases.DataSources.Contexts;
+namespace FasTnT.Application.Handlers.DataSources.Contexts;
 
 public class EventQueryContext
 {

@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.UseCases.TopLevelResources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -41,7 +41,7 @@ public class WhenHandlingListReadPointsRequest
     [TestMethod]
     public void ItShouldReturnAllTheReadPointsIfPageSizeIsGreaterThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceUseCases(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context, UserContext);
         var request = new Pagination(10, 0);
 
         var result = handler.ListReadPoints(request, default).Result;
@@ -53,7 +53,7 @@ public class WhenHandlingListReadPointsRequest
     [TestMethod]
     public void ItShouldReturnTheRequestedNumberOfReadPointsIfPageSizeIsLowerThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceUseCases(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context, UserContext);
         var request = new Pagination(1, 0);
 
         var result = handler.ListReadPoints(request, default).Result;
@@ -65,7 +65,7 @@ public class WhenHandlingListReadPointsRequest
     [TestMethod]
     public void ItShouldReturnTheCorrectPageOfData()
     {
-        var handler = new TopLevelResourceUseCases(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context, UserContext);
         var request = new Pagination(10, 1);
 
         var result = handler.ListReadPoints(request, default).Result;

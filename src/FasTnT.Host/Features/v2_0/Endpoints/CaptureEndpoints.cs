@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.UseCases.Captures;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
 
@@ -16,28 +16,28 @@ public static class CaptureEndpoints
         return app;
     }
 
-    private static async Task<IResult> ListCapturesQuery(PaginationContext context, IListCaptureRequests handler, CancellationToken cancellationToken)
+    private static async Task<IResult> ListCapturesQuery(PaginationContext context, CaptureHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.ListCapturesAsync(context.Pagination, cancellationToken);
 
         return EpcisResults.Ok(new ListCapturesResult(response));
     }
 
-    private static async Task<IResult> CaptureDetailQuery(string captureId, ICaptureRequestDetails handler, CancellationToken cancellationToken)
+    private static async Task<IResult> CaptureDetailQuery(string captureId, CaptureHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.GetCaptureDetailsAsync(captureId, cancellationToken);
 
         return EpcisResults.Ok(new CaptureDetailsResult(response));
     }
 
-    private static async Task<IResult> CaptureRequest(CaptureDocumentRequest request, ICaptureRequest handler, CancellationToken cancellationToken)
+    private static async Task<IResult> CaptureRequest(CaptureDocumentRequest request, CaptureHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.StoreAsync(request.Request, cancellationToken);
 
         return Results.Created($"v2_0/capture/ {response.CaptureId}", null);
     }
 
-    private static async Task<IResult> CaptureSingleEventRequest(CaptureEventRequest request, ICaptureRequest handler, CancellationToken cancellationToken)
+    private static async Task<IResult> CaptureSingleEventRequest(CaptureEventRequest request, CaptureHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.StoreAsync(request.Request, cancellationToken);
 

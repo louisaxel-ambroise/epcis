@@ -2,7 +2,7 @@
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.UseCases.Captures;
+using FasTnT.Application.Handlers;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
@@ -20,7 +20,7 @@ public class WhenHandlingCaptureRequest
     [TestMethod]
     public void ItShouldReturnACaptureResultAndStoreTheRequest()
     {
-        var handler = new CaptureUseCases(Context, UserContext, SubscriptionListener.Object);
+        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener.Object);
         var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.ObjectEvent } } };
         var result = handler.StoreAsync(request, default).Result;
 

@@ -1,20 +1,20 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers.DataSources.Utils;
 using FasTnT.Application.Services.Users;
-using FasTnT.Application.UseCases.DataSources.Utils;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.UseCases.DataSources;
+namespace FasTnT.Application.Handlers;
 
-public class DataRetrieverUseCase : IDataRetriever
+public class DataRetrieverHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _user;
 
-    public DataRetrieverUseCase(EpcisContext context, ICurrentUser user)
+    public DataRetrieverHandler(EpcisContext context, ICurrentUser user)
     {
         _context = context;
         _user = user;

@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.UseCases.DataSources;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
@@ -21,61 +21,61 @@ public static class EventsEndpoints
         return app;
     }
 
-    private static Task<IResult> EventQuery(QueryContext parameters, IDataRetriever handler, CancellationToken cancellationToken)
+    private static Task<IResult> EventQuery(QueryContext parameters, DataRetrieverHandler handler, CancellationToken cancellationToken)
     {
         return ExecuteQuery(handler, parameters.Parameters, cancellationToken);
     }
 
-    private static Task<IResult> SingleEventQuery(string eventId, IDataRetriever handler, CancellationToken cancellationToken)
+    private static Task<IResult> SingleEventQuery(string eventId, DataRetrieverHandler handler, CancellationToken cancellationToken)
     {
         var parameter = QueryParameter.Create("EQ_eventID", eventId);
 
         return ExecuteQuery(handler, new[] { parameter }, cancellationToken);
     }
 
-    private static Task<IResult> EventTypeQuery(string eventType, QueryContext context, IDataRetriever handler, CancellationToken cancellationToken)
+    private static Task<IResult> EventTypeQuery(string eventType, QueryContext context, DataRetrieverHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("eventType", eventType));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> EpcQuery(string epc, QueryContext queryParams, IDataRetriever handler, CancellationToken cancellationToken)
+    private static Task<IResult> EpcQuery(string epc, QueryContext queryParams, DataRetrieverHandler handler, CancellationToken cancellationToken)
     {
         var parameters = queryParams.Parameters.Append(QueryParameter.Create("MATCH_anyEPC", epc));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> BizStepQuery(string bizStep, QueryContext context, IDataRetriever handler, CancellationToken cancellationToken)
+    private static Task<IResult> BizStepQuery(string bizStep, QueryContext context, DataRetrieverHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("EQ_bizStep", bizStep));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> BizLocationQuery(string bizLocation, QueryContext context, IDataRetriever handler, CancellationToken cancellationToken)
+    private static Task<IResult> BizLocationQuery(string bizLocation, QueryContext context, DataRetrieverHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("EQ_bizLocation", bizLocation));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> ReadPointQuery(string readPoint, QueryContext context, IDataRetriever handler, CancellationToken cancellationToken)
+    private static Task<IResult> ReadPointQuery(string readPoint, QueryContext context, DataRetrieverHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("EQ_readPoint", readPoint));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static Task<IResult> DispositionQuery(string disposition, QueryContext context, IDataRetriever handler, CancellationToken cancellationToken)
+    private static Task<IResult> DispositionQuery(string disposition, QueryContext context, DataRetrieverHandler handler, CancellationToken cancellationToken)
     {
         var parameters = context.Parameters.Append(QueryParameter.Create("EQ_disposition", disposition));
 
         return ExecuteQuery(handler, parameters, cancellationToken);
     }
 
-    private static async Task<IResult> ExecuteQuery(IDataRetriever handler, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
+    private static async Task<IResult> ExecuteQuery(DataRetrieverHandler handler, IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
         var response = await handler.QueryEventsAsync(parameters, cancellationToken);
 

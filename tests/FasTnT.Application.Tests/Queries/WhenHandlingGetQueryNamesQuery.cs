@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.UseCases.Queries;
 using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Queries;
 
@@ -34,7 +34,7 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldReturnAllTheQueryNames()
     {
-        var handler = new QueriesUseCases(Context, UserContext);
+        var handler = new QueriesHandler(Context, UserContext);
         var result = handler.ListQueriesAsync(Pagination.Max, CancellationToken.None).Result;
 
         Assert.IsInstanceOfType(result, typeof(List<StoredQuery>));
@@ -46,7 +46,7 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldApplyThePaginationPerPageFilter()
     {
-        var handler = new QueriesUseCases(Context, UserContext);
+        var handler = new QueriesHandler(Context, UserContext);
         var result = handler.ListQueriesAsync(new Pagination(1, 0), CancellationToken.None).Result;
 
         Assert.IsInstanceOfType(result, typeof(List<StoredQuery>));
@@ -58,7 +58,7 @@ public class WhenHandlingGetQueryNamesQuery
     [TestMethod]
     public void ItShouldApplyThePaginationStartFromFilter()
     {
-        var handler = new QueriesUseCases(Context, UserContext);
+        var handler = new QueriesHandler(Context, UserContext);
         var result = handler.ListQueriesAsync(new Pagination(30, 1), CancellationToken.None).Result;
 
         Assert.IsInstanceOfType(result, typeof(List<StoredQuery>));

@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.UseCases.Queries;
-using FasTnT.Application.UseCases.Subscriptions;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
 using FasTnT.Host.Features.v2_0.Subscriptions;
@@ -18,28 +17,28 @@ public static class SubscriptionEndpoints
         return app;
     }
 
-    private static async Task<IResult> SubscriptionQuery(string query, IListSubscriptions handler, CancellationToken cancellationToken)
+    private static async Task<IResult> SubscriptionQuery(string query, SubscriptionsHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.ListSubscriptionsAsync(query, cancellationToken);
 
         return EpcisResults.Ok(new ListSubscriptionsResult(response));
     }
 
-    private static async Task<IResult> SubscriptionDetailQuery(string name, IGetSubscriptionDetails handler, CancellationToken cancellationToken)
+    private static async Task<IResult> SubscriptionDetailQuery(string name, SubscriptionsHandler handler, CancellationToken cancellationToken)
     {
         var response = await handler.GetSubscriptionDetailsAsync(name, cancellationToken);
 
         return EpcisResults.Ok(new SubscriptionDetailsResult(response));
     }
 
-    private static async Task<IResult> DeleteSubscription(string name, IDeleteSubscription handler, CancellationToken cancellationToken)
+    private static async Task<IResult> DeleteSubscription(string name, SubscriptionsHandler handler, CancellationToken cancellationToken)
     {
         await handler.DeleteSubscriptionAsync(name, cancellationToken);
 
         return Results.NoContent();
     }
 
-    private static async Task<IResult> SubscribeRequest(SubscriptionRequest request, IGetQueryDetails queryDetails, IRegisterSubscription subscribe, CancellationToken cancellationToken)
+    private static async Task<IResult> SubscribeRequest(SubscriptionRequest request, QueriesHandler queryDetails, SubscriptionsHandler subscribe, CancellationToken cancellationToken)
     {
         var query = await queryDetails.GetQueryDetailsAsync(request.QueryName, cancellationToken);
 

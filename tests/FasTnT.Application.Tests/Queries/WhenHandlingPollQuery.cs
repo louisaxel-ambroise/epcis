@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.UseCases.DataSources;
 using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.Queries;
@@ -15,7 +15,7 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldReturnAPollResponse()
     {
-        var handler = new DataRetrieverUseCase(Context, UserContext);
+        var handler = new DataRetrieverHandler(Context, UserContext);
         var result = handler.QueryEventsAsync(new List<QueryParameter>(), CancellationToken.None).Result;
 
         Assert.IsNotNull(result);

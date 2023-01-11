@@ -30,12 +30,10 @@ builder.Services.AddHttpLogging(options =>
     options.ResponseBodyLogLimit = 4096;
 });
 
-// Add the subscription manager as background service
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResultSender.Instance);
 builder.Services.AddHostedService<SubscriptionBackgroundService>();
-
-builder.Services.AddScoped<ICurrentUser>(svc => new HttpContextCurrentUser(svc.GetRequiredService<IHttpContextAccessor>()));
+builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
 
