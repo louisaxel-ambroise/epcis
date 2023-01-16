@@ -7,15 +7,13 @@ namespace FasTnT.Host.Features.v2_0.Endpoints;
 
 public static class QueriesEndpoints
 {
-    public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
+    public static void AddRoutes(IEndpointRouteBuilder app)
     {
         app.Get("v2_0/queries", ListNamedQueries).RequireAuthorization("query");
         app.Get("v2_0/queries/{queryName}", GetQueryDefinition).RequireAuthorization("query");
         app.Get("v2_0/queries/{queryName}/events", ctx => ctx.WebSockets.IsWebSocketRequest ? WebSocketSubscription.SubscribeAsync : GetQueryEvents).RequireAuthorization("query");
         app.Post("v2_0/queries", CreateNamedQuery).RequireAuthorization("query");
         app.MapDelete("v2_0/queries/{queryName}", DeleteNamedQuery).RequireAuthorization("query");
-
-        return app;
     }
 
     private static async Task<IResult> ListNamedQueries(PaginationContext pagination, QueriesHandler handler, CancellationToken cancellationToken)

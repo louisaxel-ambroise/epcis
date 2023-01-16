@@ -6,7 +6,7 @@ namespace FasTnT.Host.Features.v2_0.Endpoints;
 
 public static class TopLevelEndpoints
 {
-    public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
+    public static void AddRoutes(IEndpointRouteBuilder app)
     {
         app.Get("v2_0/eventTypes", ListEventTypes).RequireAuthorization("query");
         app.Get("v2_0/epcs", ListEpcs).RequireAuthorization("query");
@@ -20,8 +20,6 @@ public static class TopLevelEndpoints
         app.Get("v2_0/bizLocations/{bizLocation}", SubResourceRequest).RequireAuthorization("query");
         app.Get("v2_0/readPoints/{readPoint}", SubResourceRequest).RequireAuthorization("query");
         app.Get("v2_0/dispositions/{disposition}", SubResourceRequest).RequireAuthorization("query");
-
-        return app;
     }
 
     private static async Task<IResult> ListEventTypes(PaginationContext context, TopLevelResourceHandler handler, CancellationToken cancellationToken)

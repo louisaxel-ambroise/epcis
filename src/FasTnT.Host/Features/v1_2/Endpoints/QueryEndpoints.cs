@@ -17,15 +17,13 @@ public static class QueryEndpoints
         return app;
     }
 
-    public static SoapActionBuilder AddSoapActions(SoapActionBuilder action)
+    public static void AddSoapActions(SoapActionBuilder action)
     {
         action.On<GetQueryNames>(GetQueryNamesQuery);
         action.On<GetStandardVersion>(GetStandardVersionQuery);
         action.On<GetVendorVersion>(GetVendorVersionQuery);
         action.On<PollEvents>(SimpleEventQuery);
         action.On<PollMasterData>(SimpleMasterDataQuery);
-
-        return action;
     }
 
     private static async Task<PollResult> SimpleEventQuery(PollEvents query, DataRetrieverHandler handler, CancellationToken cancellationToken)
