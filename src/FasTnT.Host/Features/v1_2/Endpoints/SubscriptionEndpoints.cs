@@ -8,20 +8,16 @@ namespace FasTnT.Host.Features.v1_2.Endpoints;
 
 public static class SubscriptionEndpoints
 {
-    public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
+    public static void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("v1_2/Trigger", TriggerSubscription).RequireAuthorization("query");
-
-        return app;
     }
 
-    public static SoapActionBuilder AddSoapActions(SoapActionBuilder action)
+    public static void AddSoapActions(SoapActionBuilder action)
     {
         action.On<GetSubscriptionIDs>(GetSubscriptionIds);
         action.On<Subscribe>(Subscribe);
         action.On<Unsubscribe>(Unsubscribe);
-
-        return action;
     }
 
     private static async Task<GetSubscriptionIDsResult> GetSubscriptionIds(GetSubscriptionIDs query, SubscriptionsHandler handler, CancellationToken cancellationToken)

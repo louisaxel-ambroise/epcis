@@ -7,7 +7,7 @@ namespace FasTnT.Host.Features.v2_0.Endpoints;
 
 public static class EventsEndpoints
 {
-    public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
+    public static void AddRoutes(IEndpointRouteBuilder app)
     {
         app.Get("v2_0/events", EventQuery).RequireAuthorization("query");
         app.Get("v2_0/events/{*eventId}", SingleEventQuery).RequireAuthorization("query");
@@ -17,8 +17,6 @@ public static class EventsEndpoints
         app.Get("v2_0/bizLocations/{bizLocation}/events", BizLocationQuery).RequireAuthorization("query");
         app.Get("v2_0/readPoints/{readPoint}/events", ReadPointQuery).RequireAuthorization("query");
         app.Get("v2_0/dispositions/{disposition}/events", DispositionQuery).RequireAuthorization("query");
-
-        return app;
     }
 
     private static Task<IResult> EventQuery(QueryContext parameters, DataRetrieverHandler handler, CancellationToken cancellationToken)

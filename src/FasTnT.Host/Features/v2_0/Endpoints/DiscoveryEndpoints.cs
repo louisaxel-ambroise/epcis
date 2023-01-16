@@ -7,7 +7,7 @@ public static class DiscoveryEndpoints
 {
     public static readonly List<(string Path, string Method)> Endpoints = new();
 
-    public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
+    public static void AddRoutes(IEndpointRouteBuilder app)
     {
         app.Get("v2_0/", TopLevelResources).RequireAuthorization("query");
 
@@ -15,8 +15,6 @@ public static class DiscoveryEndpoints
         {
             app.Options(path.Key, Discovery(path.Select(x => x.Method))).AllowAnonymous();
         }
-
-        return app;
     }
 
     private static Delegate Discovery(IEnumerable<string> methods)

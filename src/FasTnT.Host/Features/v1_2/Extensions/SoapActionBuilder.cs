@@ -10,41 +10,43 @@ public class SoapActionBuilder
     public void On<TAction>(Delegate requestDelegate) => On(typeof(TAction).Name, requestDelegate);
     public void On(string action, Delegate requestDelegate) => _mappedActions[action] = requestDelegate;
 
-    internal async Task<IResult> SoapAction(SoapEnvelope envelope, HttpContext context, CancellationToken cancellationToken)
+    internal Task<IResult> SoapAction(SoapEnvelope envelope, HttpContext context, CancellationToken cancellationToken)
     {
-        if (_mappedActions.TryGetValue(envelope.Action, out var handler))
+        return _mappedActions.TryGetValue(envelope.Action, out var handler)
+            ? HandleSoapAction(handler, envelope, context, cancellationToken)
+            : throw new Exception($"Unknown soap action: '{envelope.Action}'");
+    }
+
+    private static async Task<IResult> HandleSoapAction(Delegate handler, SoapEnvelope envelope, HttpContext context, CancellationToken cancellationToken)
+    {
+        try
         {
-            try
-            {
-                var parameters = handler.Method.GetParameters();
-                var paramList = new object[parameters.Length];
+            var parameters = handler.Method.GetParameters();
+            var paramList = new object[parameters.Length];
 
-                for (int i = 0; i < paramList.Length; i++)
+            for (int i = 0; i < paramList.Length; i++)
+            {
+                if (parameters[i].ParameterType.Name == envelope.Action)
                 {
-                    if (parameters[i].ParameterType.Name == envelope.Action)
-                    {
-                        paramList[i] = envelope.Query;
-                    }
-                    else if (parameters[i].ParameterType == typeof(CancellationToken))
-                    {
-                        paramList[i] = cancellationToken;
-                    }
-                    else
-                    {
-                        paramList[i] = context.RequestServices.GetService(parameters[i].ParameterType);
-                    }
+                    paramList[i] = envelope.Query;
                 }
-
-                var result = await handler.DynamicInvoke(paramList).CastTask();
-
-                return SoapResults.Create(result);
+                else if (parameters[i].ParameterType == typeof(CancellationToken))
+                {
+                    paramList[i] = cancellationToken;
+                }
+                else
+                {
+                    paramList[i] = context.RequestServices.GetService(parameters[i].ParameterType);
+                }
             }
-            catch (Exception ex)
-            {
-                return SoapResults.Fault(ex is EpcisException epcisException ? epcisException : EpcisException.Default);
-            }
+
+            var result = await handler.DynamicInvoke(paramList).CastTask();
+
+            return SoapResults.Create(result);
         }
-
-        throw new Exception($"Unknown soap action: '{envelope.Action}'");
+        catch (Exception ex)
+        {
+            return SoapResults.Fault(ex is EpcisException epcisException ? epcisException : EpcisException.Default);
+        }
     }
 }

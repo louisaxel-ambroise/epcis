@@ -6,14 +6,12 @@ namespace FasTnT.Host.Features.v2_0.Endpoints;
 
 public static class CaptureEndpoints
 {
-    public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
+    public static void AddRoutes(IEndpointRouteBuilder app)
     {
         app.Get("v2_0/capture", ListCapturesQuery).RequireAuthorization();
         app.Get("v2_0/capture/{captureId}", CaptureDetailQuery).RequireAuthorization();
         app.Post("v2_0/capture", CaptureRequest).RequireAuthorization("capture");
         app.Post("v2_0/events", CaptureSingleEventRequest).RequireAuthorization("capture");
-
-        return app;
     }
 
     private static async Task<IResult> ListCapturesQuery(PaginationContext context, CaptureHandler handler, CancellationToken cancellationToken)

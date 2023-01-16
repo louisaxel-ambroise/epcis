@@ -7,14 +7,12 @@ namespace FasTnT.Host.Features.v2_0.Endpoints;
 
 public static class SubscriptionEndpoints
 {
-    public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
+    public static void AddRoutes(IEndpointRouteBuilder app)
     {
         app.Get("v2_0/queries/{query}/subscriptions", SubscriptionQuery).RequireAuthorization("query");
         app.Get("v2_0/queries/{query}/subscriptions/{name}", SubscriptionDetailQuery).RequireAuthorization("query").WithName("SubscriptionDetail");
         app.MapDelete("v2_0/queries/{query}/subscriptions/{name}", DeleteSubscription).RequireAuthorization("query");
         app.Post("v2_0/queries/{query}/subscriptions", SubscribeRequest).RequireAuthorization("query");
-
-        return app;
     }
 
     private static async Task<IResult> SubscriptionQuery(string query, SubscriptionsHandler handler, CancellationToken cancellationToken)
