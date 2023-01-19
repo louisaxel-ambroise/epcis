@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FasTnT.Sqlite.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20221221170504_Initial")]
-    partial class Initial
+    [Migration("20230119130531_ViewsAndTriggers")]
+    partial class ViewsAndTriggers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.2");
 
             modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
                 {
@@ -136,9 +136,11 @@ namespace FasTnT.Sqlite.Migrations
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy", b =>
                 {
                     b.Property<string>("Id")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Root")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
@@ -182,7 +184,10 @@ namespace FasTnT.Sqlite.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Request", "Epcis");
+                    b.ToTable("Request", "Epcis", t =>
+                        {
+                            t.HasTrigger("SubscriptionPendingRequests");
+                        });
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.PendingRequest", b =>
@@ -243,7 +248,10 @@ namespace FasTnT.Sqlite.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Subscription", "Subscriptions");
+                    b.ToTable("Subscription", "Subscriptions", t =>
+                        {
+                            t.HasTrigger("SubscriptionInitialRequests");
+                        });
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", b =>
@@ -312,7 +320,7 @@ namespace FasTnT.Sqlite.Migrations
 
                             b1.HasKey("QueryId", "Name");
 
-                            b1.ToTable("StoredQueryParameter", "Subscriptions");
+                            b1.ToTable("StoredQueryParameter", "Queries");
 
                             b1.WithOwner("Query")
                                 .HasForeignKey("QueryId");
@@ -923,6 +931,26 @@ namespace FasTnT.Sqlite.Migrations
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
                 {
+                    b.OwnsMany("FasTnT.Domain.Model.Queries.QueryParameter", "Parameters", b1 =>
+                        {
+                            b1.Property<int>("SubscriptionId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Name")
+                                .HasMaxLength(256)
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Values")
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("SubscriptionId", "Name");
+
+                            b1.ToTable("SubscriptionParameter", "Subscriptions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SubscriptionId");
+                        });
+
                     b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule", b1 =>
                         {
                             b1.Property<int>("SubscriptionId")
@@ -958,33 +986,6 @@ namespace FasTnT.Sqlite.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("SubscriptionId");
-                        });
-
-                    b.OwnsMany("FasTnT.Domain.Model.Subscriptions.SubscriptionParameter", "Parameters", b1 =>
-                        {
-                            b1.Property<int>("SubscriptionId")
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<string>("Name")
-                                .HasMaxLength(256)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<int>("SubscriptionName")
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<string>("Values")
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("SubscriptionId", "Name");
-
-                            b1.HasIndex("SubscriptionName");
-
-                            b1.ToTable("SubscriptionParameter", "Subscriptions");
-
-                            b1.WithOwner("Subscription")
-                                .HasForeignKey("SubscriptionName");
-
-                            b1.Navigation("Subscription");
                         });
 
                     b.Navigation("Parameters");

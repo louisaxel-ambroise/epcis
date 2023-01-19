@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -79,8 +80,8 @@ namespace FasTnT.Sqlite.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    QueryName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     SignatureToken = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    QueryName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     FormatterName = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false),
                     Trigger = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     ReportIfEmpty = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -212,7 +213,7 @@ namespace FasTnT.Sqlite.Migrations
 
             migrationBuilder.CreateTable(
                 name: "StoredQueryParameter",
-                schema: "Subscriptions",
+                schema: "Queries",
                 columns: table => new
                 {
                     Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
@@ -238,15 +239,14 @@ namespace FasTnT.Sqlite.Migrations
                 {
                     Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SubscriptionName = table.Column<int>(type: "INTEGER", nullable: false),
                     Values = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubscriptionParameter", x => new { x.SubscriptionId, x.Name });
                     table.ForeignKey(
-                        name: "FK_SubscriptionParameter_Subscription_SubscriptionName",
-                        column: x => x.SubscriptionName,
+                        name: "FK_SubscriptionParameter_Subscription_SubscriptionId",
+                        column: x => x.SubscriptionId,
                         principalSchema: "Subscriptions",
                         principalTable: "Subscription",
                         principalColumn: "Id",
@@ -620,12 +620,6 @@ namespace FasTnT.Sqlite.Migrations
                 table: "Subscription",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SubscriptionParameter_SubscriptionName",
-                schema: "Subscriptions",
-                table: "SubscriptionParameter",
-                column: "SubscriptionName");
         }
 
         /// <inheritdoc />
@@ -681,7 +675,7 @@ namespace FasTnT.Sqlite.Migrations
 
             migrationBuilder.DropTable(
                 name: "StoredQueryParameter",
-                schema: "Subscriptions");
+                schema: "Queries");
 
             migrationBuilder.DropTable(
                 name: "SubscriptionCallback",
