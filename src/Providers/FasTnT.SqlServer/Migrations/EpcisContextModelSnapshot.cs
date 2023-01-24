@@ -345,7 +345,8 @@ namespace FasTnT.SqlServer.Migrations
                 {
                     b.HasOne("FasTnT.Domain.Model.Request", "Request")
                         .WithMany("Events")
-                        .HasForeignKey("RequestId");
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.BusinessTransaction", "Transactions", b1 =>
                         {

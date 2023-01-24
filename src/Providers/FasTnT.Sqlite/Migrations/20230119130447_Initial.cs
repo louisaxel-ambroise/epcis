@@ -140,7 +140,8 @@ namespace FasTnT.Sqlite.Migrations
                         column: x => x.RequestId,
                         principalSchema: "Epcis",
                         principalTable: "Request",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
