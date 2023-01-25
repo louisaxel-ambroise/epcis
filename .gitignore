@@ -4,10 +4,9 @@
 # Csharp files
 bin
 obj
-src/*.dll
-test/*.dll
 *.suo
 *.user
+*appsettings.*.json
 
 # Test files
 *.opencover.xml
