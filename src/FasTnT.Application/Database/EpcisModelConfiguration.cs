@@ -32,8 +32,8 @@ public static class EpcisModelConfiguration
         request.Property(x => x.CaptureTime).IsRequired();
         request.Property(x => x.CaptureId).IsRequired().HasMaxLength(256);
         request.Property(x => x.SchemaVersion).IsRequired(true).HasMaxLength(10);
-        request.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("RequestId");
-        request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId");
+        request.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
+        request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
         request.OwnsOne(x => x.StandardBusinessHeader, c =>
         {
             c.ToTable(nameof(StandardBusinessHeader), Sbdh);
