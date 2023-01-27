@@ -9,11 +9,6 @@ public class EpcisContext : DbContext
         SavedChanges += (_, _) => ChangeTracker.Clear();
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         EpcisModelConfiguration.Apply(modelBuilder);
