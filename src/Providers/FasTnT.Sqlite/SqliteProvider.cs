@@ -8,7 +8,7 @@ public static class SqliteProvider
 {
     public static void Configure(IServiceCollection services, string connectionString, int commandTimeout)
     {
-        services.AddDbContext<EpcisContext>(o => o.UseSqlite(connectionString, x =>
+        services.AddDbContextPool<EpcisContext>(o => o.UseSqlite(connectionString, x =>
         {
             x.MigrationsAssembly(typeof(SqliteProvider).Assembly.FullName);
             x.CommandTimeout(commandTimeout);

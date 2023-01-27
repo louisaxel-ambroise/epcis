@@ -8,7 +8,7 @@ public static class PostgresProvider
 {
     public static void Configure(IServiceCollection services, string connectionString, int commandTimeout)
     {
-        services.AddDbContext<EpcisContext>(o => o.UseNpgsql(connectionString, x =>
+        services.AddDbContextPool<EpcisContext>(o => o.UseNpgsql(connectionString, x =>
         {
             x.MigrationsAssembly(typeof(PostgresProvider).Assembly.FullName);
             x.CommandTimeout(commandTimeout);

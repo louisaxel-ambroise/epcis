@@ -12,14 +12,16 @@ public static class EpcisContextExtensions
     public static IQueryable<Event> QueryEvents(this EpcisContext context, IEnumerable<QueryParameter> parameters)
     {
         var queryContext = new EventQueryContext(context, parameters);
+        var dataset = context.Set<Event>().AsNoTrackingWithIdentityResolution();
 
-        return queryContext.Apply(context.Set<Event>().AsNoTracking());
+        return queryContext.Apply(dataset);
     }
 
     public static IQueryable<MasterData> QueryMasterData(this EpcisContext context, IEnumerable<QueryParameter> parameters)
     {
         var queryContext = new MasterDataQueryContext(context, parameters);
+        var dataset = context.Set<MasterData>().AsNoTrackingWithIdentityResolution();
 
-        return queryContext.Apply(context.Set<MasterData>().AsNoTracking());
+        return queryContext.Apply(dataset);
     }
 }
