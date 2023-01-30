@@ -152,9 +152,9 @@ public class EventQueryContext
             case var s when s.StartsWith("EQ_INNER_SENSORMETADATA_"):
                 ApplyFieldParameter(param.Values, FieldType.SensorMetadata, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
             case var s when s.StartsWith("EQ_SENSOREPORT_"):
-                ApplyFieldParameter(param.Values, FieldType.SensorReport, false, param.IlmdName(), param.IlmdNamespace()); break;
+                ApplyFieldParameter(param.Values, FieldType.SensoReport, false, param.IlmdName(), param.IlmdNamespace()); break;
             case var s when s.StartsWith("EQ_INNER_SENSOREPORT_"):
-                ApplyFieldParameter(param.Values, FieldType.SensorReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+                ApplyFieldParameter(param.Values, FieldType.SensoReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
             case var s when s.StartsWith("EXISTS_INNER_ILMD_"):
                 ApplyExistsFieldParameter(FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
             case var s when s.StartsWith("EXISTS_ILMD_"):
@@ -178,18 +178,10 @@ public class EventQueryContext
                 ApplyComparison(param, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true); break;
             case var r when Regexs.IsIlmd(r):
                 ApplyComparison(param, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false); break;
-            case var r when Regexs.IsSensorElement(r):
-                ApplyComparison(param, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
-            case var r when Regexs.IsInnerSensorElement(r):
-                ApplyComparison(param, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
-            case var r when Regexs.IsSensorMetadata(r):
-                ApplyComparison(param, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
-            case var r when Regexs.IsInnerSensorMetadata(r):
-                ApplyComparison(param, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
-            case var r when Regexs.IsSensorReport(r):
-                ApplyComparison(param, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
-            case var r when Regexs.IsInnerSensorReport(r):
-                ApplyComparison(param, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
+            case var r when Regexs.IsSensorFilter(r, out var type):
+                ApplyComparison(param, type, param.SensorFieldNamespace(), param.SensorFieldName(), false); break;
+            case var r when Regexs.IsInnerSensorFilter(r, out var type):
+                ApplyComparison(param, type, param.InnerSensorFieldNamespace(), param.InnerSensorFieldName(), true); break;
             case var r when Regexs.IsInnerField(r):
                 ApplyComparison(param, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
             case var r when Regexs.IsUoMField(r):

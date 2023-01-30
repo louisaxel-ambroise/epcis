@@ -176,7 +176,7 @@ public class JsonEventFormatter
             ["deviceMetadata"] = report.DeviceMetadata
         };
 
-        var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.SensorReport && x.EntityIndex == report.Index));
+        var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.SensoReport && x.EntityIndex == report.Index));
         foreach (var field in customFields)
         {
             element[field.Key] = field.Value;

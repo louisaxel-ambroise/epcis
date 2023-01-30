@@ -252,7 +252,7 @@ public class XmlEventParser
             }
             else
             {
-                ParseCustomFields(field, FieldType.SensorReport, null, report.Index);
+                ParseCustomFields(field, FieldType.SensoReport, null, report.Index);
             }
         }
 

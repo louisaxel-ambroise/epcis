@@ -226,7 +226,7 @@ public static class XmlEventFormatter
         xmlElement.AddIfNotNull(CreateAttribute("percValue", report.PercValue));
         xmlElement.AddIfNotNull(CreateAttribute("dataProcessingMethod", report.DataProcessingMethod));
 
-        foreach (var field in report.SensorElement.Event.Fields.Where(x => x.Type == FieldType.SensorReport && x.EntityIndex == report.Index))
+        foreach (var field in report.SensorElement.Event.Fields.Where(x => x.Type == FieldType.SensoReport && x.EntityIndex == report.Index))
         {
             xmlElement.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
         }

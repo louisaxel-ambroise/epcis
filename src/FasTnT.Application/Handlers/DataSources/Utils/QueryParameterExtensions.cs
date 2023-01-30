@@ -32,6 +32,10 @@ public static class QueryParameterExtensions
     public static string IlmdNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[0];
     public static string InnerFieldName(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[1];
     public static string InnerFieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[0];
+    public static string SensorFieldName(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[1];
+    public static string SensorFieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[0];
+    public static string InnerSensorFieldName(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[1];
+    public static string InnerSensorFieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[0];
     public static string FieldName(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[1];
     public static string FieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[0];
     public static string AttributeName(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];

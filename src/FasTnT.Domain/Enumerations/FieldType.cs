@@ -2,6 +2,7 @@
 
 public enum FieldType
 {
+    Unknown = 0,
     Ilmd = 1,
     CustomField = 2,
     Extension = 3,
@@ -16,5 +17,5 @@ public enum FieldType
     Attribute = 12,
     Sensor = 13,
     SensorMetadata = 14,
-    SensorReport = 15
+    SensoReport = 15
 }
