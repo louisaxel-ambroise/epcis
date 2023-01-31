@@ -27,7 +27,6 @@ public static class WebSocketSubscription
         var subscription = new Subscription
         {
             Name = $"ws-{Guid.NewGuid()}",
-            Parameters = parameters.ToList(),
             ReportIfEmpty = false,
             Destination = string.Empty,
             QueryName = queryName,

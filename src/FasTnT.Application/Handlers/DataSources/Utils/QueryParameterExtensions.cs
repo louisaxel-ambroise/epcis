@@ -12,8 +12,8 @@ public static class QueryParameterExtensions
     public static bool AsBool(this QueryParameter parameter) => bool.Parse(parameter.AsString());
     public static double AsFloat(this QueryParameter parameter) => double.Parse(parameter.AsString(), CultureInfo.InvariantCulture);
     public static DateTime AsDate(this QueryParameter parameter) => DateTime.Parse(parameter.AsString(), null, DateTimeStyles.AdjustToUniversal);
-    public static bool IsDateTime(this QueryParameter parameter) => Regexs.IsDate(parameter.AsString());
-    public static bool IsNumeric(this QueryParameter parameter) => Regexs.IsNumeric(parameter.AsString());
+    public static bool IsDateTime(this QueryParameter parameter) => Regexs.Date().IsMatch(parameter.AsString());
+    public static bool IsNumeric(this QueryParameter parameter) => Regexs.Numeric().IsMatch(parameter.AsString());
 
     public static string AsString(this QueryParameter parameter)
     {

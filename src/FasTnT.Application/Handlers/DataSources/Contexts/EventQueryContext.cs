@@ -174,19 +174,19 @@ public class EventQueryContext
             case var s when s.StartsWith("HASATTR_"):
                 ApplyHasAttributeParameter(param.MasterdataType(), param.AttributeName()); break;
             // Regex filters (Date/Numeric value comparison)
-            case var r when Regexs.IsInnerIlmd(r):
+            case var r when Regexs.InnerIlmd().IsMatch(r):
                 ApplyComparison(param, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true); break;
-            case var r when Regexs.IsIlmd(r):
+            case var r when Regexs.Ilmd().IsMatch(r):
                 ApplyComparison(param, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false); break;
-            case var r when Regexs.IsSensorFilter(r, out var type):
+            case var r when Regexs.IsMatch(r, Regexs.SensorFilter(), out var type):
                 ApplyComparison(param, type, param.SensorFieldNamespace(), param.SensorFieldName(), false); break;
-            case var r when Regexs.IsInnerSensorFilter(r, out var type):
+            case var r when Regexs.IsMatch(r, Regexs.InnerSensorFilter(), out var type):
                 ApplyComparison(param, type, param.InnerSensorFieldNamespace(), param.InnerSensorFieldName(), true); break;
-            case var r when Regexs.IsInnerField(r):
+            case var r when Regexs.InnerField().IsMatch(r):
                 ApplyComparison(param, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
-            case var r when Regexs.IsUoMField(r):
+            case var r when Regexs.UoMField().IsMatch(r):
                 ApplyUomComparison(param); break;
-            case var r when Regexs.IsField(r):
+            case var r when Regexs.Field().IsMatch(r):
                 ApplyComparison(param, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false); break;
             // Any other case is an unknown parameter and should raise a QueryParameter Exception
             default:

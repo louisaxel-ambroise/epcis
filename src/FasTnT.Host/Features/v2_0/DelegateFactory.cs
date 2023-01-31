@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
+using FasTnT.Host.Features.v2_0.Extensions;
 
 namespace FasTnT.Host.Features.v2_0;
 
@@ -17,9 +18,7 @@ public static class DelegateFactory
                 ValidateHeaders(epcisHeaders);
                 SetResponseHeaders(context.Response);
 
-                var handler = handlerProvider(context);
-
-                await RequestDelegateFactory.Create(handler, new() { ServiceProvider = context.RequestServices }).RequestDelegate.Invoke(context);
+                await context.InvokeHandler(handlerProvider);
             }
             catch (Exception ex)
             {
