@@ -32,16 +32,16 @@ public static class QueriesEndpoints
 
     private static async Task<IResult> GetQueryEvents(string queryName, QueryContext context, QueriesHandler queryHandler, DataRetrieverHandler dataHandler, HttpContext httpContext)
     {
+        var query = await queryHandler.GetQueryDetailsAsync(queryName, httpContext.RequestAborted);
+        
         if (httpContext.WebSockets.IsWebSocketRequest)
         {
-            var query = await queryHandler.GetQueryDetailsAsync(queryName, httpContext.RequestAborted);
             await WebSocketSubscription.SubscribeAsync(httpContext, queryName, query.Parameters);
 
             return Results.Empty;
         }
         else
         {
-            var query = await queryHandler.GetQueryDetailsAsync(queryName, httpContext.RequestAborted);
             var response = await dataHandler.QueryEventsAsync(context.Parameters.Union(query.Parameters), httpContext.RequestAborted);
 
             return EpcisResults.Ok(new QueryResult(new(queryName, response)));

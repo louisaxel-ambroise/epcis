@@ -1,20 +1,9 @@
-﻿using FasTnT.Domain.Enumerations;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.Services.DataSources.Utils;
 
 public static partial class Regexs
 {
-    public static bool IsMatch(string value, Regex regex, out FieldType type)
-    {
-        var match = regex.Match(value);
-        type = match.Success 
-            ? Enum.Parse<FieldType>(match.Groups[nameof(type)].Value, true)
-            : FieldType.Unknown;
-
-        return match.Success;
-    }
-
     [GeneratedRegex("^(GE|GT|LE|LT)_(?<type>SENSORMETADATA|SENSORELEMENT|SENSOREPORT)_")]
     public static partial Regex SensorFilter();
     [GeneratedRegex("^(GE|GT|LE|LT)_INNER_(?<type>SENSORMETADATA|SENSORELEMENT|SENSOREPORT)_")]
