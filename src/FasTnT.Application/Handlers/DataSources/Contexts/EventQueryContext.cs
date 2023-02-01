@@ -151,9 +151,9 @@ public class EventQueryContext
                 ApplyFieldParameter(param.Values, FieldType.SensorMetadata, false, param.IlmdName(), param.IlmdNamespace()); break;
             case var s when s.StartsWith("EQ_INNER_SENSORMETADATA_"):
                 ApplyFieldParameter(param.Values, FieldType.SensorMetadata, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
-            case var s when s.StartsWith("EQ_SENSOREPORT_"):
+            case var s when s.StartsWith("EQ_SENSORREPORT_"):
                 ApplyFieldParameter(param.Values, FieldType.SensorReport, false, param.IlmdName(), param.IlmdNamespace()); break;
-            case var s when s.StartsWith("EQ_INNER_SENSOREPORT_"):
+            case var s when s.StartsWith("EQ_INNER_SENSORREPORT_"):
                 ApplyFieldParameter(param.Values, FieldType.SensorReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
             case var s when s.StartsWith("EXISTS_INNER_ILMD_"):
                 ApplyExistsFieldParameter(FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
@@ -174,27 +174,19 @@ public class EventQueryContext
             case var s when s.StartsWith("HASATTR_"):
                 ApplyHasAttributeParameter(param.MasterdataType(), param.AttributeName()); break;
             // Regex filters (Date/Numeric value comparison)
-            case var r when Regexs.IsInnerIlmd(r):
+            case var r when Regexs.InnerIlmd().IsMatch(r):
                 ApplyComparison(param, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true); break;
-            case var r when Regexs.IsIlmd(r):
+            case var r when Regexs.Ilmd().IsMatch(r):
                 ApplyComparison(param, FieldType.Ilmd, param.IlmdNamespace(), param.IlmdName(), false); break;
-            case var r when Regexs.IsSensorElement(r):
-                ApplyComparison(param, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
-            case var r when Regexs.IsInnerSensorElement(r):
-                ApplyComparison(param, FieldType.Sensor, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
-            case var r when Regexs.IsSensorMetadata(r):
-                ApplyComparison(param, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
-            case var r when Regexs.IsInnerSensorMetadata(r):
-                ApplyComparison(param, FieldType.SensorMetadata, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
-            case var r when Regexs.IsSensorReport(r):
-                ApplyComparison(param, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), false); break;
-            case var r when Regexs.IsInnerSensorReport(r):
-                ApplyComparison(param, FieldType.SensorReport, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
-            case var r when Regexs.IsInnerField(r):
+            case var r when Regexs.SensorFilter().IsMatch(r):
+                ApplyComparison(param, param.SensorType(), param.SensorFieldNamespace(), param.SensorFieldName(), false); break;
+            case var r when Regexs.InnerSensorFilter().IsMatch(r):
+                ApplyComparison(param, param.InnerSensorType(), param.InnerSensorFieldNamespace(), param.InnerSensorFieldName(), true); break;
+            case var r when Regexs.InnerField().IsMatch(r):
                 ApplyComparison(param, FieldType.Extension, param.InnerFieldNamespace(), param.InnerFieldName(), true); break;
-            case var r when Regexs.IsUoMField(r):
+            case var r when Regexs.UoMField().IsMatch(r):
                 ApplyUomComparison(param); break;
-            case var r when Regexs.IsField(r):
+            case var r when Regexs.Field().IsMatch(r):
                 ApplyComparison(param, FieldType.Extension, param.FieldNamespace(), param.FieldName(), false); break;
             // Any other case is an unknown parameter and should raise a QueryParameter Exception
             default:

@@ -2,6 +2,7 @@
 
 public enum FieldType
 {
+    Unknown = 0,
     Ilmd = 1,
     CustomField = 2,
     Extension = 3,

@@ -11,7 +11,7 @@ public static class QueriesEndpoints
     {
         app.Get("v2_0/queries", ListNamedQueries).RequireAuthorization("query");
         app.Get("v2_0/queries/{queryName}", GetQueryDefinition).RequireAuthorization("query");
-        app.Get("v2_0/queries/{queryName}/events", ctx => ctx.WebSockets.IsWebSocketRequest ? WebSocketSubscription.SubscribeAsync : GetQueryEvents).RequireAuthorization("query");
+        app.Get("v2_0/queries/{queryName}/events", GetQueryEvents).RequireAuthorization("query");
         app.Post("v2_0/queries", CreateNamedQuery).RequireAuthorization("query");
         app.MapDelete("v2_0/queries/{queryName}", DeleteNamedQuery).RequireAuthorization("query");
     }
@@ -30,12 +30,22 @@ public static class QueriesEndpoints
         return EpcisResults.Ok(new CustomQueryDefinitionResult(response.Name, response.Parameters));
     }
 
-    private static async Task<IResult> GetQueryEvents(string queryName, QueryContext context, QueriesHandler queryHandler, DataRetrieverHandler dataHandler, CancellationToken cancellationToken)
+    private static async Task<IResult> GetQueryEvents(string queryName, QueryContext context, QueriesHandler queryHandler, DataRetrieverHandler dataHandler, HttpContext httpContext)
     {
-        var query = await queryHandler.GetQueryDetailsAsync(queryName, cancellationToken);
-        var response = await dataHandler.QueryEventsAsync(context.Parameters.Union(query.Parameters), cancellationToken);
+        var query = await queryHandler.GetQueryDetailsAsync(queryName, httpContext.RequestAborted);
+        
+        if (httpContext.WebSockets.IsWebSocketRequest)
+        {
+            await WebSocketSubscription.SubscribeAsync(httpContext, queryName, query.Parameters);
 
-        return EpcisResults.Ok(new QueryResult(new (queryName, response)));
+            return Results.Empty;
+        }
+        else
+        {
+            var response = await dataHandler.QueryEventsAsync(context.Parameters.Union(query.Parameters), httpContext.RequestAborted);
+
+            return EpcisResults.Ok(new QueryResult(new(queryName, response)));
+        }
     }
 
     private static async Task<IResult> CreateNamedQuery(CreateCustomQueryRequest command, QueriesHandler handler, CancellationToken cancellationToken)
