@@ -17,5 +17,5 @@ public enum FieldType
     Attribute = 12,
     Sensor = 13,
     SensorMetadata = 14,
-    SensoReport = 15
+    SensorReport = 15
 }

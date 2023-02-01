@@ -498,7 +498,7 @@ public class XmlEventParser
             }
             else
             {
-                _evt.Fields.Add(ParseCustomFields(field, FieldType.SensoReport));
+                _evt.Fields.Add(ParseCustomFields(field, FieldType.SensorReport));
             }
         }
 

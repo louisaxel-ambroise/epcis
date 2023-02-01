@@ -288,7 +288,7 @@ public class JsonEventParser
                 case "deviceMetadata":
                     report.DeviceMetadata = property.Value.GetString(); break;
                 default:
-                    _evt.Fields.AddRange(ParseCustomField(property, FieldType.SensoReport, null, report.Index)); break;
+                    _evt.Fields.AddRange(ParseCustomField(property, FieldType.SensorReport, null, report.Index)); break;
             }
         }
 

@@ -4,9 +4,9 @@ namespace FasTnT.Application.Services.DataSources.Utils;
 
 public static partial class Regexs
 {
-    [GeneratedRegex("^(GE|GT|LE|LT)_(?<type>SENSORMETADATA|SENSORELEMENT|SENSOREPORT)_")]
+    [GeneratedRegex("^(GE|GT|LE|LT)_(?<type>SENSORMETADATA|SENSORELEMENT|SENSORREPORT)_")]
     public static partial Regex SensorFilter();
-    [GeneratedRegex("^(GE|GT|LE|LT)_INNER_(?<type>SENSORMETADATA|SENSORELEMENT|SENSOREPORT)_")]
+    [GeneratedRegex("^(GE|GT|LE|LT)_INNER_(?<type>SENSORMETADATA|SENSORELEMENT|SENSORREPORT)_")]
     public static partial Regex InnerSensorFilter();
     [GeneratedRegex("^-?\\d+(?:\\.\\d+)?$")]
     public static partial Regex Numeric();

@@ -151,10 +151,10 @@ public class EventQueryContext
                 ApplyFieldParameter(param.Values, FieldType.SensorMetadata, false, param.IlmdName(), param.IlmdNamespace()); break;
             case var s when s.StartsWith("EQ_INNER_SENSORMETADATA_"):
                 ApplyFieldParameter(param.Values, FieldType.SensorMetadata, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
-            case var s when s.StartsWith("EQ_SENSOREPORT_"):
-                ApplyFieldParameter(param.Values, FieldType.SensoReport, false, param.IlmdName(), param.IlmdNamespace()); break;
-            case var s when s.StartsWith("EQ_INNER_SENSOREPORT_"):
-                ApplyFieldParameter(param.Values, FieldType.SensoReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_SENSORREPORT_"):
+                ApplyFieldParameter(param.Values, FieldType.SensorReport, false, param.IlmdName(), param.IlmdNamespace()); break;
+            case var s when s.StartsWith("EQ_INNER_SENSORREPORT_"):
+                ApplyFieldParameter(param.Values, FieldType.SensorReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
             case var s when s.StartsWith("EXISTS_INNER_ILMD_"):
                 ApplyExistsFieldParameter(FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
             case var s when s.StartsWith("EXISTS_ILMD_"):
