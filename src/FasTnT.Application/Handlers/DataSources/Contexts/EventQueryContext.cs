@@ -3,7 +3,6 @@ using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
-using LinqKit;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using FasTnT.Application.Database;
@@ -265,60 +264,66 @@ public class EventQueryContext
 
     private void ApplyComparison(QueryParameter param, FieldType type, string ns, string name, bool inner)
     {
-        var customFieldPredicate = PredicateBuilder.New<Field>(f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex != null == inner);
-        var fieldValuePredicate = param.Name[..2] switch
+        var customFieldPredicate = (Expression<Func<Field, bool>>) (f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex != null == inner);
+        var fieldValuePredicate = (Expression<Func<Field, bool>>) (param.Name[..2] switch
         {
-            "GE" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue >= param.AsDate() : f => f.NumericValue >= param.AsFloat()),
-            "GT" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue > param.AsDate() : f => f.NumericValue > param.AsFloat()),
-            "LE" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue <= param.AsDate() : f => f.NumericValue <= param.AsFloat()),
-            "LT" => PredicateBuilder.New<Field>(param.IsDateTime() ? f => f.DateValue < param.AsDate() : f => f.NumericValue < param.AsFloat()),
+            "GE" => param.IsDateTime() ? f => f.DateValue >= param.AsDate() : f => f.NumericValue >= param.AsFloat(),
+            "GT" => param.IsDateTime() ? f => f.DateValue > param.AsDate() : f => f.NumericValue > param.AsFloat(),
+            "LE" => param.IsDateTime() ? f => f.DateValue <= param.AsDate() : f => f.NumericValue <= param.AsFloat(),
+            "LT" => param.IsDateTime() ? f => f.DateValue < param.AsDate() : f => f.NumericValue < param.AsFloat(),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        };
+        });
 
-        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.And(fieldValuePredicate)));
+        Filter(x => x.Fields.AsQueryable().Any(AndAlso(customFieldPredicate, fieldValuePredicate)));
     }
 
     private void ApplyMatchParameter(QueryParameter param)
     {
         var epcType = param.GetMatchEpcTypes();
-        var typePredicate = PredicateBuilder.New<Epc>(e => epcType.Contains(e.Type));
-        var likePredicate = PredicateBuilder.New<Epc>();
+        var values = param.Values.Select(p => p.Replace("*", "%"));
+        var typePredicate = (Expression<Func<Epc, bool>>)(e => epcType.Contains(e.Type));
+        var likePredicate = values.Aggregate((Expression<Func<Epc, bool>>)(e => false), (expr, value) => OrElse(expr, e => EF.Functions.Like(e.Id, value)));
 
-        param.Values.Select(p => p.Replace("*", "%")).ForEach(value => likePredicate.Or(e => EF.Functions.Like(e.Id, value)));
-
-        var finalPredicate = typePredicate.And(likePredicate);
-
-        Filter(x => x.Epcs.AsQueryable().Any(finalPredicate));
+        Filter(x => x.Epcs.AsQueryable().Any(AndAlso(typePredicate, likePredicate)));
     }
 
     private void ApplyPersistenDispositionFilter(QueryParameter param, PersistentDispositionType type)
     {
-        var typePredicate = PredicateBuilder.New<PersistentDisposition>(x => x.Type == type);
-        var anyPredicate = PredicateBuilder.New<PersistentDisposition>();
-        param.Values.ForEach(value => anyPredicate.Or(e => e.Id == value));
+        var typePredicate = (Expression<Func<PersistentDisposition, bool>>) (x => x.Type == type);
+        var anyPredicate = (Expression<Func<PersistentDisposition, bool>>)(x => false);
 
-        var finalPredicate = typePredicate.And(anyPredicate);
+        Array.ForEach(param.Values, value => OrElse(anyPredicate, e => e.Id == value));
 
-        Filter(x => x.PersistentDispositions.AsQueryable().Any(finalPredicate));
+        Filter(x => x.PersistentDispositions.AsQueryable().Any(AndAlso(typePredicate, anyPredicate)));
     }
 
     private void ApplyUomComparison(QueryParameter param)
     {
-        var reportPredicate = PredicateBuilder.New<SensorReport>(r => r.UnitOfMeasure == param.ReportFieldUom());
-        var fieldValuePredicate = param.Name[..2] switch
+        var customFieldPredicate = (Expression<Func<SensorReport, bool>>) (r => r.UnitOfMeasure == param.ReportFieldUom());
+        var fieldValuePredicate = (Expression<Func<SensorReport, bool>>) (param.Name[..2] switch
         {
-            "GE" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) >= param.AsFloat()),
-            "GT" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) > param.AsFloat()),
-            "LE" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) <= param.AsFloat()),
-            "LT" => PredicateBuilder.New<SensorReport>(r => EF.Property<float?>(r, param.ReportField()) < param.AsFloat()),
+            "GE" => r => EF.Property<float?>(r, param.ReportField()) >= param.AsFloat(),
+            "GT" => r => EF.Property<float?>(r, param.ReportField()) > param.AsFloat(),
+            "LE" => r => EF.Property<float?>(r, param.ReportField()) <= param.AsFloat(),
+            "LT" => r => EF.Property<float?>(r, param.ReportField()) < param.AsFloat(),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        };
+        });
 
-        Filter(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(reportPredicate.And(fieldValuePredicate))));
+        Filter(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(AndAlso(customFieldPredicate, fieldValuePredicate))));
     }
 
     private void Filter(Expression<Func<Event, bool>> expression)
     {
         _filters.Add(evt => evt.Where(expression));
+    }
+
+    public static Expression<Func<T, bool>> AndAlso<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
+    {
+        return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
+    }
+
+    public static Expression<Func<T, bool>> OrElse<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
+    {
+        return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
     }
 }
