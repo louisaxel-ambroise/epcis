@@ -20,6 +20,14 @@ public class TopLevelResourceHandler
         _currentUser = currentUser;
     }
 
+    public static IEnumerable<string> ListEventTypes(Pagination pagination)
+    {
+        return Enum.GetValues<EventType>()
+            .Skip(pagination.StartFrom)
+            .Take(pagination.PerPage)
+            .Select(x => x.ToString());
+    }
+
     public async Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken)
     {
         var epcs = await _context
@@ -32,13 +40,6 @@ public class TopLevelResourceHandler
             .ToListAsync(cancellationToken);
 
         return epcs;
-    }
-
-    public Task<IEnumerable<string>> ListEventTypes(Pagination pagination, CancellationToken cancellationToken)
-    {
-        var eventTypes = Enum.GetValues<EventType>();
-
-        return Task.FromResult(eventTypes.Select(x => x.ToString()));
     }
 
     public async Task<IEnumerable<string>> ListDispositions(Pagination pagination, CancellationToken cancellationToken)
