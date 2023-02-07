@@ -22,9 +22,9 @@ public static class TopLevelEndpoints
         app.Get("v2_0/dispositions/{disposition}", SubResourceRequest).RequireAuthorization("query");
     }
 
-    private static async Task<IResult> ListEventTypes(PaginationContext context, TopLevelResourceHandler handler, CancellationToken cancellationToken)
+    private static IResult ListEventTypes(PaginationContext context)
     {
-        var response = await handler.ListEventTypes(context.Pagination, cancellationToken);
+        var response = TopLevelResourceHandler.ListEventTypes(context.Pagination);
 
         return EpcisResults.Ok(new CollectionResult(response));
     }

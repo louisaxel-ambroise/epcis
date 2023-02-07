@@ -74,14 +74,14 @@ public class JsonMasterdataParser
 
         foreach (var property in element.EnumerateObject())
         {
-            var fieldName = ParseName(property.Name);
+            var (ns, name) = ParseName(property.Name);
 
-            result.AddRange(ParseFields(property.Value, fieldName.Name, fieldName.Namespace));
+            result.AddRange(ParseFields(property.Value, name, ns));
             result.Add(new MasterDataField
             {
                 Value = property.Value.ValueKind == JsonValueKind.Object ? null : property.Value.GetString(),
-                Name = fieldName.Name,
-                Namespace = fieldName.Namespace,
+                Name = name,
+                Namespace = ns,
                 ParentName = parentName,
                 ParentNamespace = parentNamespace,
             });
