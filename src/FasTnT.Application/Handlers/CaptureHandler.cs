@@ -64,13 +64,11 @@ public class CaptureHandler
             throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }
 
-        var captureTime = DateTime.UtcNow;
-
-        request.CaptureTime = captureTime;
+        request.CaptureTime = DateTime.UtcNow;
         request.UserId = _currentUser.UserId;
         request.Events.ForEach(evt =>
         {
-            evt.CaptureTime = captureTime;
+            evt.CaptureTime = request.CaptureTime;
 
             if (string.IsNullOrEmpty(evt.EventId))
             {

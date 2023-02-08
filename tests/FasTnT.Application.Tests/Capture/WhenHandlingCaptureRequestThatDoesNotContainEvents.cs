@@ -5,7 +5,6 @@ using FasTnT.Application.Tests.Context;
 using FasTnT.Application.Handlers;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
-using Moq;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -14,13 +13,13 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static Mock<ISubscriptionListener> SubscriptionListener = new(MockBehavior.Loose);
+    readonly static ISubscriptionListener SubscriptionListener = new TestSubscriptionListener();
 
     [TestMethod]
     [ExpectedException(typeof(EpcisException))]
     public void ItShoultThrowAnException()
     {
-        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener.Object);
+        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener);
         var request = new Request { SchemaVersion = "1.0" };
 
         try

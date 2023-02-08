@@ -28,6 +28,9 @@
 				<uom>KGM</uom>
 			</quantityElement>
 		</quantityList>
+    <ilmd>
+      <lotnumber xmlns="https://fastnt.net/epcis">230501</lotnumber>
+    </ilmd>
 		<extension>
 			<sensorElementList>
 				<sensorElement>

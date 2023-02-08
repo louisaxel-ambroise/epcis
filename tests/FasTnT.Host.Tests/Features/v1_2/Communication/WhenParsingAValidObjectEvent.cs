@@ -93,4 +93,10 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
         Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sscc:4001356.5900000822"), "EPC urn:epc:id:sscc:4001356.5900000822 is expected");
         Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:409876.0000001.L1" && e.Quantity == 3500 && e.UnitOfMeasure == "KGM"), "Quantity EPC urn:epc:class:lgtin:409876.0000001.L1 is expected");
     }
+
+    [TestMethod]
+    public void IlmdShouldBeParsedCorrectly()
+    {
+        Assert.AreEqual(1, Event.Fields.Count(x => x.Type == FieldType.Ilmd));
+    }
 }
