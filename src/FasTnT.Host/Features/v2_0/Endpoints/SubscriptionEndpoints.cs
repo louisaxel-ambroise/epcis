@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Handlers;
+using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
 using FasTnT.Host.Features.v2_0.Subscriptions;

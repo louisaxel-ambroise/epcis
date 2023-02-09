@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model.CustomQueries;
+﻿using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v2_0.Subscriptions;
 using System.Text.Json;
@@ -51,9 +51,9 @@ namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers
                 };
         }
 
-        private static List<StoredQueryParameter> ParseQueryParameters(JsonElement jsonElement)
+        private static List<QueryParameter> ParseQueryParameters(JsonElement jsonElement)
         {
-            var parameters = new List<StoredQueryParameter>();
+            var parameters = new List<QueryParameter>();
 
             if (jsonElement.ValueKind == JsonValueKind.Object)
             {

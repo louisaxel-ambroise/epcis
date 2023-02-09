@@ -2,7 +2,6 @@
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.Queries;
