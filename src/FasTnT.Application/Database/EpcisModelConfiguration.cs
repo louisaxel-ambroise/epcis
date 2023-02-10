@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
@@ -279,7 +278,7 @@ public static class EpcisModelConfiguration
         subscription.OwnsMany(x => x.Parameters, c =>
         {
             c.ToTable("SubscriptionParameter", Subscriptions);
-            c.Property<int>("SubscriptionId").IsRequired(true);
+            c.WithOwner().HasForeignKey("SubscriptionId");
             c.HasKey("SubscriptionId", nameof(QueryParameter.Name));
             c.Property(x => x.Values).IsRequired(false).HasJsonArrayConversion();
             c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
@@ -310,8 +309,8 @@ public static class EpcisModelConfiguration
         storedQuery.OwnsMany(x => x.Parameters, c =>
         {
             c.ToTable("StoredQueryParameter", Queries);
-            c.Property<int>("QueryId");
-            c.HasKey("QueryId", nameof(StoredQueryParameter.Name));
+            c.WithOwner().HasForeignKey("QueryId");
+            c.HasKey("QueryId", nameof(QueryParameter.Name));
             c.Property(x => x.Values).IsRequired(false).HasJsonArrayConversion();
             c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
         });

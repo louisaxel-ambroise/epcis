@@ -1,7 +1,6 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.CustomQueries;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;

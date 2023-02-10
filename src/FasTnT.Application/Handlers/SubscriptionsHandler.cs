@@ -52,7 +52,6 @@ public class SubscriptionsHandler
         var subscription = await _context.Set<Subscription>()
             .AsNoTracking()
             .Where(x => x.Name == name)
-            .Include(x => x.Parameters)
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
         if (subscription is null)

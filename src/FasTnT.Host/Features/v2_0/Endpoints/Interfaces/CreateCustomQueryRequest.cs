@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model.CustomQueries;
+﻿using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces;

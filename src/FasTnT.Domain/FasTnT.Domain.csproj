@@ -4,4 +4,7 @@
     <LangVersion>10</LangVersion>
 	  <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Model\CustomQueries\" />
+  </ItemGroup>
 </Project>
