@@ -13,7 +13,7 @@ public static class QueriesEndpoints
         app.Get("v2_0/queries/{queryName}", GetQueryDefinition).RequireAuthorization("query");
         app.Get("v2_0/queries/{queryName}/events", GetQueryEvents).RequireAuthorization("query");
         app.Post("v2_0/queries", CreateNamedQuery).RequireAuthorization("query");
-        app.MapDelete("v2_0/queries/{queryName}", DeleteNamedQuery).RequireAuthorization("query");
+        app.Delete("v2_0/queries/{queryName}", DeleteNamedQuery).RequireAuthorization("query");
     }
 
     private static async Task<IResult> ListNamedQueries(PaginationContext pagination, QueriesHandler handler, CancellationToken cancellationToken)
