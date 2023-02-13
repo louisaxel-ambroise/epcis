@@ -18,23 +18,31 @@ public static class Epcis2_0Configuration
 
     internal static RouteHandlerBuilder Get(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
     {
-        return endpoints.MapMethod(HttpMethods.Get, pattern, DelegateFactory.Create(_ => handler));
+        return MapMethod(endpoints, HttpMethods.Get, pattern, handler);
+    }
+
+    internal static RouteHandlerBuilder Delete(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
+    {
+        return MapMethod(endpoints, HttpMethods.Delete, pattern, handler);
     }
 
     internal static RouteHandlerBuilder Post(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
     {
-        return endpoints.MapMethod(HttpMethods.Post, pattern, DelegateFactory.Create(_ => handler));
+        return MapMethod(endpoints, HttpMethods.Post, pattern, handler);
     }
 
     internal static RouteHandlerBuilder Options(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
     {
-        return endpoints.MapMethods(pattern, new[] { HttpMethods.Options }, DelegateFactory.Create(_ => handler));
+        return MapMethod(endpoints, HttpMethods.Options, pattern, handler);
     }
 
-    private static RouteHandlerBuilder MapMethod(this IEndpointRouteBuilder endpoints, string method, string pattern, Delegate handler)
+    private static RouteHandlerBuilder MapMethod(IEndpointRouteBuilder endpoints, string method, string pattern, Delegate handler)
     {
-        DiscoveryEndpoints.Endpoints.Add((pattern, method));
+        if (method != HttpMethods.Options)
+        {
+            DiscoveryEndpoints.Endpoints.Add((pattern, method));
+        }
 
-        return endpoints.MapMethods(pattern, new[] { method }, handler);
+        return endpoints.MapMethods(pattern, new[] { method }, DelegateFactory.Create(_ => handler));
     }
 }

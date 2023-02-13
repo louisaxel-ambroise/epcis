@@ -5,6 +5,8 @@
 	  <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Model\CustomQueries\" />
+    <Compile Remove="Model\CustomQueries\**" />
+    <EmbeddedResource Remove="Model\CustomQueries\**" />
+    <None Remove="Model\CustomQueries\**" />
   </ItemGroup>
 </Project>

@@ -10,8 +10,8 @@ public static class SubscriptionEndpoints
     public static void AddRoutes(IEndpointRouteBuilder app)
     {
         app.Get("v2_0/queries/{query}/subscriptions", SubscriptionQuery).RequireAuthorization("query");
-        app.Get("v2_0/queries/{query}/subscriptions/{name}", SubscriptionDetailQuery).RequireAuthorization("query").WithName("SubscriptionDetail");
-        app.MapDelete("v2_0/queries/{query}/subscriptions/{name}", DeleteSubscription).RequireAuthorization("query");
+        app.Get("v2_0/queries/{query}/subscriptions/{name}", SubscriptionDetailQuery).RequireAuthorization("query");
+        app.Delete("v2_0/queries/{query}/subscriptions/{name}", DeleteSubscription).RequireAuthorization("query");
         app.Post("v2_0/queries/{query}/subscriptions", SubscribeRequest).RequireAuthorization("query");
     }
 
