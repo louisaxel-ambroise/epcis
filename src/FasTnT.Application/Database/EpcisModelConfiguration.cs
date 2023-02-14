@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Text.Json;
+using static System.Text.Json.JsonSerializer;
 
 namespace FasTnT.Application.Database;
 
@@ -317,20 +318,10 @@ public static class EpcisModelConfiguration
         storedQuery.HasIndex(x => x.Name).IsUnique();
     }
 
-    private static PropertyBuilder<string[]> HasJsonArrayConversion(this PropertyBuilder<string[]> builder, JsonSerializerOptions options = null)
+    private static PropertyBuilder<T[]> HasJsonArrayConversion<T>(this PropertyBuilder<T[]> builder, JsonSerializerOptions options = null)
     {
-        var converter = new ValueConverter<string[], string>
-        (
-            v => JsonSerializer.Serialize(v, options),
-            v => JsonSerializer.Deserialize<string[]>(v, options)
-        );
-
-        var comparer = new ValueComparer<string[]>
-        (
-            (l, r) => JsonSerializer.Serialize(l, options) == JsonSerializer.Serialize(r, options),
-            v => v == null ? 0 : JsonSerializer.Serialize(v, options).GetHashCode(),
-            v => v.ToArray()
-        );
+        var converter = new ValueConverter<T[], string>(v => Serialize(v, options), v => Deserialize<T[]>(v, options));
+        var comparer = new ValueComparer<T[]>((l, r) => Equals(l, r), v => Serialize(v ?? Array.Empty<T>(), options).GetHashCode(), v => v);
 
         builder.HasConversion(converter);
         builder.Metadata.SetValueConverter(converter);
