@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<link href="css/desktop.css" rel="stylesheet">
+		<meta name="viewport" content="initial-scale=1" />
+		<title>FasT&amp;T EPCIS</title>
+	</head>
+	<body>
+		<menu>
+			<ul>
+				<li><a href="index.html">Repository</a></li>
+				<li><a href="server.html">Test Server</a></li>
+				<li><a href="contact.html">Contact</a></li>
+		</menu>
+		<header>
+			<h1>FasT&amp;T</h1>
+			<h2>EPCIS repository</h2>
+			<div class="traceability">
+				<span class="icon">
+					<img src="images/production.png" />
+					Production
+				</span>
+				<span class="icon">
+					<img src="images/transformation.png" />
+					Transformation
+				</span>
+				<span class="icon">
+					<img src="images/packing.png" />
+					Packing
+				</span>
+				<span class="icon">
+					<img src="images/shipping.png" />
+					Shipping
+				</span>
+			</div>
+		</header>
+		<main>
+			<section>
+				<h1>Presentation</h1>
+				<p>FasT&amp;T provides a full implementation of GS1 EPCIS repository for both <em>1.2</em> and <em>2.0</em> versions <i>(with full retrocompatibility of 1.0 and 1.1 versions)</i></p>
+				<p>It is written in <strong>C#</strong> with <strong>.NET7</strong> and uses <strong>EntityFramework Core</strong> as storage mechanism so it supports most of the common RDBMS providers. It is currently possible to store data in SQL Server, Sqlite and PostGreSQL databases.</p>
+				<div class="img">
+					<span>{}</span> or <span>&lt;/&gt;</span>
+				</div>
+				<p>EPCIS v2.0 specification introduces a new <strong>JSON</strong> format of the events, which makes them more developer-friendly. FasT&amp;T still includes and fully supports the <strong>XML</strong> representation to keep compatibility with existing systems.</p>
+				<p>The stored events are not bound to any representation. So a request captured in JSON format can be queries and formatted in XML and vice-versa. This allows multiple different systems to exchange traceability data in a simple and centralised way.</p>
+				<p>The new websocket support queries enables client applications to subscribe to newly stored events in an easy way.</p>
+				<div class="highlighted">
+					<p>There is a <a href="server.html">test server</a> available to test the capabilities of the repository. It contains all the capabilities of the repository and is hosted in Microsoft Azure</p>
+				</div>
+			</section>
+			<section>
+				<h1>Setup</h1>
+				<p>The repository can be setup very easily in different ways.</p>
+				
+				<h2>1. Building from source</h2>
+				<p>To setup the repository from the source code, simply download the source code or clone the repository on GitHub and start the API with the command:
+				<code>$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}"</code></p>
+				
+				<h2>2. Deploy from Docker image</h2>
+				<p>A docker image is provided and can be downloaded like this:
+				<code>$ docker pull ghcr.io/louisaxel-ambroise/epcis:develop</code></p>
+				
+				<h2>3. Deploy in Microsoft Azure</h2>
+				<p>A Terraform scipt is included in the GitHub repository to easily deploy the EPCIS repository into Microsoft Azure:<code>$ terraform init<br />$ terraform workspace new dev<br />$ terraform plan --out dev.tfplan<br />$ terraform apply dev.tfplan</code></p>
+			</section>
+			<section>
+				<h1>Pricing And Usage</h1>
+				<p>FasT&amp;T is a free and open-source project licensed under Apache license 2.0. It means the you can see, use, distribute and modify the repository as you want.</p>
+				<p>You can use this EPCIS repository as you with, for example:</p>
+				<ul>
+					<li>As a help to develop a system that needs to communicate using EPCIS</li>
+					<li>As a full standalone EPCIS repository to capture/query traceability data</li>
+					<li>Using only the parsing/formatting classes to serialize data from/to EPCIS structure</li>
+					<li>...</li>
+				</ul>
+			</section>
+			<section>
+				<h1>Contact And Links</h1>
+				<p>FasT&amp;T is developed and maintained by <a href="https://github.com/louisaxel-ambroise" target="_blank">Louis-Axel Ambroise</a>. You can contact me directly for any question/suggestion.</p>
+				<p>There is an instance of FasT&amp;T deployed and available for everybody at the URL: <a href="https://fastnt-dev.azurewebsites.net/" target="_blank">https://fastnt-dev.azurewebsites.net/</a></p>
+			</section>
+		</main>
+		<footer>
+			FasT&amp;T 2023
+		</footer>
+	</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<link href="css/desktop.css" rel="stylesheet">
+		<style>
+			.credentials{ margin: 20px; }
+		</style>
+		<meta name="viewport" content="initial-scale=1" />
+		<title>FasT&amp;T EPCIS</title>
+	</head>
+	<script>
+const body = JSON.stringify(JSON.parse('{"@context":["https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"],"type":"ObjectEvent","action":"OBSERVE","bizStep":"shipping","disposition":"in_transit","epcList":["urn:epc:id:sgtin:0614141.107346.2017","urn:epc:id:sgtin:0614141.107346.2018"],"eventTime":"2005-04-03T20:33:31.116000-06:00","eventTimeZoneOffset":"-06:00","readPoint":{"id":"urn:epc:id:sgln:0614141.07346.1234"}}'), null, 2);
+	
+function clear(elt){
+	document.getElementById(elt).innerHTML = "";
+}
+
+function get_credentials(){
+	let username = document.getElementById('username').value;
+	let password = document.getElementById('password').value;
+	return window.btoa(unescape(encodeURIComponent(username + ':' + password)));
+}
+	
+function send_query(){
+	clear('http_comms');
+	let request = new XMLHttpRequest();
+	let url='https://fastnt-dev.azurewebsites.net/v2_0/events';
+	request.open("GET", url);
+	request.setRequestHeader("Authorization", "Basic " + get_credentials());
+	request.setRequestHeader("Content-Type", "application/json");
+	request.setRequestHeader("Accept", "application/json");
+	document.getElementById("http_comms").innerHTML = "<pre>GET " + url + '\r\n' + "Authorization: Basic YWRtaW46UEBzc3cwcmQ=" + '\r\n' + "Accept: application/json</pre>";
+	request.send();
+	request.onreadystatechange = (e) => {
+		if (request.readyState === XMLHttpRequest.DONE) {
+			if(request.status === 200){
+				document.getElementById("http_comms").innerHTML += "<pre>HTTP/1.1 200 OK\r\n" + JSON.stringify(JSON.parse(request.responseText), null, 2) + "</pre>";
+			}
+			else{
+				document.getElementById("http_comms").innerHTML += "<pre>" + JSON.stringify(JSON.parse(request.responseText), null, 2) + "</pre>";
+			}
+		}
+	}
+}
+	
+function send_capture(){
+	clear('http_comms');
+	let request = new XMLHttpRequest();
+	let url='https://fastnt-dev.azurewebsites.net/v2_0/events';
+	
+	request.open("POST", url);
+	request.setRequestHeader("Authorization", "Basic " + get_credentials());
+	request.setRequestHeader("Content-Type", "application/json");
+	request.setRequestHeader("Accept", "application/json");
+	document.getElementById("http_comms").innerHTML = "<pre>POST " + url + '\r\n' + "Authorization: Basic YWRtaW46UEBzc3cwcmQ=" + '\r\n' + "Accept: application/json\r\n" + body + "</pre>";
+	request.send(body);
+	request.onreadystatechange = (e) => {
+		if (request.readyState === XMLHttpRequest.DONE) {
+			if(request.status === 201){
+				document.getElementById("http_comms").innerHTML += "<pre>HTTP/1.1 201 Created</pre>";
+			}
+			else{
+				document.getElementById("http_comms").innerHTML += "<pre>" + JSON.stringify(JSON.parse(request.responseText), null, 2) + "</pre>";
+			}
+		}
+	}
+}
+	</script>
+	<body>
+		<menu>
+			<ul>
+				<li><a href="index.html">Repository</a></li>
+				<li><a href="server.html">Test Server</a></li>
+				<li><a href="contact.html">Contact</a></li>
+		</menu>
+		<header>
+			<h1>FasT&amp;T</h1>
+			<h2>Test Server</h2>
+			<div class="traceability">
+				<span class="icon">
+					<img src="images/production.png" />
+					Production
+				</span>
+				<span class="icon">
+					<img src="images/transformation.png" />
+					Transformation
+				</span>
+				<span class="icon">
+					<img src="images/packing.png" />
+					Packing
+				</span>
+				<span class="icon">
+					<img src="images/shipping.png" />
+					Shipping
+				</span>
+			</div>
+		</header>
+		<main>
+			<section>
+				<h1>Public EPCIS repository</h1>
+				<p>An instance of the FasT&amp;T repository is deployed and freely accessible from anywhere. It includes all the implemented features of the repository.</p>
+				<p>It is available at the following URL: <a href="https://fastnt-dev.azurewebsites.net/" target="_blank">https://fastnt-dev.azurewebsites.net/</a></p>
+			</section>
+			<section>
+				<h1>Usage</h1>
+				<p>The repository requires an authorization header that must be a valid basic auth value. This header is used to filter the data and return only the events captured using the same username/password values to avoid any noise from other tests.</p>
+				<p>You can send a test query by clicking on the button below:</p>
+				<div class="credentials">
+					<input type="text" id="username" placeholder="Enter username" />
+					<input type="text" id="password" placeholder="Enter password" />
+				</div>
+				<input type="button" value="Query events" onclick="send_query();" />
+				<input type="button" value="Capture an event" onclick="send_capture();" />
+				<div id="http_comms"></div>
+			</section>
+		</main>
+		<footer>
+			FasT&amp;T 2023
+		</footer>
+	</body>
+</html>

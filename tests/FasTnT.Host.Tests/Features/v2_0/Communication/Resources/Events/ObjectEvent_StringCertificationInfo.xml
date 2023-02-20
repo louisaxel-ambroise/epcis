@@ -1,9 +1,0 @@
-﻿<ObjectEvent>
-  <eventTime>2018-06-12T06:31:32Z</eventTime>
-  <eventTimeZoneOffset>-04:00</eventTimeZoneOffset>
-  <epcList>
-    <epc>urn:epc:id:sscc:005434.40000000021</epc>
-  </epcList>
-  <action>OBSERVE</action>
-  <certificationInfo>urn:fastnt:cert:115120.021</certificationInfo>
-</ObjectEvent>
