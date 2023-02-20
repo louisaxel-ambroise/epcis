@@ -2,9 +2,7 @@ using FasTnT.Application;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Host.Features.v1_2;
-using FasTnT.Host.Features.v1_2.Subscriptions;
 using FasTnT.Host.Features.v2_0;
-using FasTnT.Host.Features.v2_0.Subscriptions;
 using FasTnT.Host.Services.Database;
 using FasTnT.Host.Services.Subscriptions;
 using FasTnT.Host.Services.User;
@@ -31,23 +29,20 @@ builder.Services.AddHttpLogging(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddEpcisSubscriptionServices(XmlResultSender.Instance, JsonResultSender.Instance);
-builder.Services.AddHostedService<SubscriptionBackgroundService>();
-builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
+builder.Services.AddEpcisSubscriptionServices();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
+builder.Services.AddHostedService<SubscriptionBackgroundService>();
+builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 
 var app = builder.Build();
 
-if (builder.Environment.IsDevelopment())
-{
-    app.UseDefaultFiles().UseStaticFiles();
-}
 if(builder.Configuration.GetValue("FasTnT.Database.ApplyMigrations", false))
 {
     app.ApplyMigrations();
 }
 
+app.UseDefaultFiles().UseStaticFiles();
 app.UseRouting();
 app.UseHttpLogging();
 app.UseAuthentication();

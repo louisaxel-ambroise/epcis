@@ -165,7 +165,7 @@ public static class XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));
         xmlEvent.AddIfNotNull(CreateDestinationList(evt));
-        xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Ilmd, "ilmd"));
+        xmlEvent.AddIfNotNull(CreateIlmdFields(evt));
         xmlEvent.AddIfNotNull(CreateSensorElementList(evt));
         xmlEvent.AddIfNotNull(CreatePersistentDispositionList(evt));
         xmlEvent.AddIfNotNull(CreateFromCustomFields(evt, FieldType.Extension, "extension"));
@@ -202,6 +202,15 @@ public static class XmlEventFormatter
     private static XElement CreateDestinationList(Event evt)
     {
         return new XElement("destinationList", evt.Destinations.Select(x => new XElement("destination", new XAttribute("type", x.Type), x.Id)));
+    }
+
+    private static XElement CreateIlmdFields(Event evt)
+    {
+        var ilmd = new XElement("ilmd");
+        ilmd.AddIfNotNull(CreateCustomFields(evt, FieldType.Ilmd));
+        ilmd.AddIfNotNull(CreateFromCustomFields(evt, FieldType.IlmdExtension, "extension"));
+
+        return ilmd;
     }
 
     private static XElement CreateFromCustomFields(Event evt, FieldType type, string elementName)
@@ -273,6 +282,8 @@ public static class XmlEventFormatter
         errorDeclaration.AddIfNotNull(new XElement("declarationTime", evt.CorrectiveDeclarationTime));
         errorDeclaration.AddIfNotNull(new XElement("reason", evt.CorrectiveReason));
         errorDeclaration.AddIfNotNull(new XElement("correctiveEventIDs", evt.CorrectiveEventIds.Select(x => new XElement("correctiveEventID", x))));
+        errorDeclaration.AddIfNotNull(CreateFromCustomFields(evt, FieldType.ErrorDeclarationExtension, "extension"));
+        errorDeclaration.AddIfNotNull(CreateCustomFields(evt, FieldType.ErrorDeclarationCustomField));
 
         return errorDeclaration;
     }

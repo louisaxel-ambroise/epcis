@@ -2,20 +2,20 @@
 
 public enum FieldType
 {
-    Unknown = 0,
-    Ilmd = 1,
-    CustomField = 2,
-    Extension = 3,
-    BaseExtension = 4,
-    ErrorDeclarationExtension = 5,
-    ErrorDeclarationCustomField = 6,
-    IlmdExtension = 7,
-    BusinessLocationCustomField = 8,
-    BusinessLocationExtension = 9,
-    ReadPointCustomField = 10,
-    ReadPointExtension = 11,
-    Attribute = 12,
-    Sensor = 13,
-    SensorMetadata = 14,
-    SensorReport = 15
+    None,
+    Ilmd,
+    CustomField,
+    Extension,
+    BaseExtension,
+    ErrorDeclarationExtension,
+    ErrorDeclarationCustomField,
+    IlmdExtension,
+    BusinessLocationCustomField,
+    BusinessLocationExtension,
+    ReadPointCustomField,
+    ReadPointExtension,
+    Attribute,
+    Sensor,
+    SensorMetadata,
+    SensorReport
 }

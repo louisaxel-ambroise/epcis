@@ -15,29 +15,17 @@ public static class EpcisConfiguration
         services.AddTransient<QueriesHandler>();
         services.AddTransient<SubscriptionsHandler>();
         services.AddTransient<TopLevelResourceHandler>();
-
-        if (!services.Any(x => typeof(ISubscriptionListener).IsAssignableFrom(x.ServiceType)))
-        {
-            services.AddSingleton<ISubscriptionListener, NoOpSubscriptionListener>();
-        }
-
         services.AddHealthChecks().AddDbContextCheck<EpcisContext>();
 
         return services;
     }
 
-    public static IServiceCollection AddEpcisSubscriptionServices(this IServiceCollection services, params IResultSender[] resultSenders)
+    public static IServiceCollection AddEpcisSubscriptionServices(this IServiceCollection services)
     {
         services.AddTransient<ISubscriptionRunner, SubscriptionRunner>();
         services.AddSingleton<ISubscriptionService, SubscriptionService>();
-        services.AddSingleton<IEnumerable<IResultSender>>(resultSenders);
-
         services.AddSingleton<ISubscriptionListener>(ctx => ctx.GetService<ISubscriptionService>());
 
         return services;
-    }
-
-    private class NoOpSubscriptionListener : ISubscriptionListener
-    {
     }
 }
