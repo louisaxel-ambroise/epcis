@@ -11,18 +11,22 @@ The repository fully supports the following databases:
  - PostGreSQL *(provider: Postgres)*
  - Sqlite *(provider: Sqlite)*
 
-There is a [sandbox](https://louisaxel-ambroise.github.io/epcis/server.html) available if you want to quickly test this repository capabilities.
+## Environments and Testing
+
+There is a [sandbox](https://louisaxel-ambroise.github.io/epcis/server.html) available if you want to quickly test this EPCIS repository capabilities.
+
+A [Postman team](https://www.postman.com/fastnt-epcis) is also available that contains collections for both XML/SOAP and JSON endpoints. Alternatively, a [SoapUI project](https://github.com/louisaxel-ambroise/epcis/blob/main/Documents/EPCIS%201.2%20queries-soapui-project.xml) can be found in the source code that contains queries for the v1.2 implementation.
 
 ## Setup
 
 1. Download the source code, and setup a database for FasTnT ;
-2. Start the repository with the command `$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}" --FasTnT.Database.Provider "{yourProvider}"` ;
+2. Start the repository with the command `$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "Data Source=fastnt.db;" --FasTnT.Database.Provider "Sqlite"` ;
 
-That's it! You have a properly working EPCIS repository.
+That's it! You have a properly working EPCIS repository using Sqlite as storage.
 
-The default value for the database provider is *SqlServer*.
+You can obviously replace the Connection String and Database Provider with the values that suits better your needs (SqlServer or PostGreSQL).
 
-You can also setup FasTnT EPCIS using the Docker image or in Azure quite easily. Check the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki/Installation) for more details.
+You can also setup FasTnT EPCIS using the Docker image or in Azure very easily. Check the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki/Installation) for more details.
 
 ## HTTP Endpoints
 

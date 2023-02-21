@@ -4549,9 +4549,6 @@
         "scheme": "basic"
       }
     },
-    "security": {
-      "basicAuth": []
-    },
     "responses":
       {
         "101WebsocketCreated": {
