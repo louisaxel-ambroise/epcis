@@ -1,5 +1,7 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Subscriptions;
 using System.Xml.XPath;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
@@ -42,6 +44,9 @@ public static class XmlEpcisDocumentParser
 
         switch (element.Name.LocalName)
         {
+            case "QueryResults":
+                ParseCallbackResult(element, request);
+                break;
             case "EventList":
                 request.Events = XmlEventParser.ParseEvents(element).ToList();
                 break;
@@ -51,5 +56,18 @@ public static class XmlEpcisDocumentParser
             default:
                 throw new EpcisException(ExceptionType.ValidationException, $"Invalid element: {element.Name.LocalName}");
         }
+    }
+
+    private static void ParseCallbackResult(XElement queryResults, Request request)
+    {
+        var subscriptionId = queryResults.Element("subscriptionID")?.Value;
+        var eventList = queryResults.Element("resultsBody").Element("EventList");
+
+        request.Events.AddRange(XmlEventParser.ParseEvents(eventList));
+        request.SubscriptionCallback = new SubscriptionCallback
+        {
+            CallbackType = QueryCallbackType.Success,
+            SubscriptionId = subscriptionId
+        };
     }
 }

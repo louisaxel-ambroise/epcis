@@ -30,8 +30,7 @@ public class JsonEventFormatter
             ["eventTime"] = _evt.EventTime,
             ["recordTime"] = _evt.CaptureTime,
             ["eventTimeZoneOffset"] = _evt.EventTimeZoneOffset.Representation,
-            ["eventID"] = _evt.EventId,
-            ["certificationInfo"] = _evt.CertificationInfo
+            ["eventID"] = _evt.EventId
         };
 
         if (_evt.CorrectiveDeclarationTime.HasValue)
@@ -45,13 +44,13 @@ public class JsonEventFormatter
         }
         if (_evt.Action != EventAction.None)
         {
-            element["action"] = _evt.Action.ToString();
+            element["action"] = _evt.Action.ToUpperString();
         }
         if (_evt.Epcs.Count > 0)
         {
             AddEpcs(element, _evt.Epcs);
         }
-
+        element.AddIfNotNull(_evt.CertificationInfo, "certificationInfo");
         element.AddIfNotNull(_evt.TransformationId, "transformationID");
         element.AddIfNotNull(_evt.BusinessStep, "bizStep");
         element.AddIfNotNull(_evt.Disposition, "disposition");

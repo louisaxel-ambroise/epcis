@@ -11,4 +11,6 @@ public static class Extensions
 
         dictionary[key] = value;
     }
+
+    public static string ToUpperString(this object value) => value.ToString().ToUpperInvariant();
 }

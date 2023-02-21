@@ -146,6 +146,7 @@ public static class JsonResponseFormatter
                 queryResults = new
                 {
                     queryName = result.QueryName,
+                    subscriptionID = result.SubscriptionId,
                     resultsBody = new
                     {
                         eventList = result.EventList.Select(x => JsonEventFormatter.FormatEvent(x, context))
