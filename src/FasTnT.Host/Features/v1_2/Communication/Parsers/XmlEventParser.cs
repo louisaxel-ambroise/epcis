@@ -41,8 +41,8 @@ public class XmlEventParser
 
         return eventElement.Name.LocalName switch
         {
-            "TransformationEvent" => ParseTransformationEvent(element),
-            "extension" => ParseEventListSubExtension(element),
+            "TransformationEvent" => ParseTransformationEvent(eventElement),
+            "extension" => ParseEventListSubExtension(eventElement),
             _ => throw new ArgumentException($"Element '{element.Name.LocalName}' not expected in this context")
         };
     }
@@ -52,7 +52,7 @@ public class XmlEventParser
         var eventElement = element.Elements().First();
 
         return eventElement.Name.LocalName == "AssociationEvent" 
-            ? ParseAssociationEvent(element)
+            ? ParseAssociationEvent(eventElement)
             : throw new ArgumentException($"Element '{element.Name.LocalName}' not expected in this context");
     }
 
