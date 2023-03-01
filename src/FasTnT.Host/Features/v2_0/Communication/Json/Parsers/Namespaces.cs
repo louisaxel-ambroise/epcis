@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using FasTnT.Domain.Exceptions;
+using System.Text.Json;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
 
@@ -17,7 +18,11 @@ public class Namespaces
 
         if (context != null && context.Value.ValueKind == JsonValueKind.Array)
         {
-            foreach (var ctxNamespace in context.Value.EnumerateArray().Where(x => x.ValueKind == JsonValueKind.Object).Select(x => x.EnumerateObject().First()))
+            var namespaces = context.Value.EnumerateArray()
+                .Where(x => x.ValueKind == JsonValueKind.Object)
+                .Select(x => x.EnumerateObject().First());
+
+            foreach (var ctxNamespace in namespaces)
             {
                 parsed[ctxNamespace.Name] = ctxNamespace.Value.GetString();
             }
@@ -48,5 +53,20 @@ public class Namespaces
         return this;
     }
 
-    public string this[string key] => _namespaces[key];
+    public (string Namespace, string Name) ParseName(string name)
+    {
+        var parts = name.Split(':', 2);
+
+        if(parts.Length == 1)
+        {
+            return (string.Empty, name);
+        }
+
+        if (!_namespaces.TryGetValue(parts[0], out var namespaceName))
+        {
+            throw new EpcisException(ExceptionType.ValidationException, $"Namespace not found: {parts[0]}");
+        }
+
+        return (namespaceName, parts[1]);
+    }
 }

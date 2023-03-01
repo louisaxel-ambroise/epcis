@@ -199,14 +199,14 @@ public class JsonEventParser
     {
         return jsonProperty.Value.EnumerateObject().SelectMany(e =>
         {
-            var (ns, name) = ParseName(e.Name);
+            var (ns, name) = _extensions.ParseName(e.Name);
             return ParseCustomField(e.Value, FieldType.Ilmd, name, ns);
         });
     }
 
     private IEnumerable<Field> ParseCustomField(JsonProperty jsonProperty)
     {
-        var (ns, name) = ParseName(jsonProperty.Name);
+        var (ns, name) = _extensions.ParseName(jsonProperty.Name);
         return ParseCustomField(jsonProperty.Value, FieldType.CustomField, name, ns);
     }
 
@@ -325,7 +325,7 @@ public class JsonEventParser
 
     private IEnumerable<Field> ParseCustomField(JsonProperty jsonProperty, FieldType type, int? parentIndex = null, int? entityIndex = null)
     {
-        var (ns, name) = ParseName(jsonProperty.Name);
+        var (ns, name) = _extensions.ParseName(jsonProperty.Name);
         return ParseCustomField(jsonProperty.Value, type, name, ns, parentIndex, entityIndex);
     }
 
@@ -355,7 +355,7 @@ public class JsonEventParser
         {
             customFields.AddRange(element.EnumerateObject().SelectMany(e =>
             {
-                var (ns, name) = ParseName(e.Name);
+                var (ns, name) = _extensions.ParseName(e.Name);
                 
                 return ParseCustomField(e.Value, type, name, ns, field.Index, entityIndex);
             }));
@@ -368,12 +368,5 @@ public class JsonEventParser
         }
 
         return customFields;
-    }
-
-    private (string Namespace, string Name) ParseName(string name)
-    {
-        var parts = name.Split(':', 2);
-
-        return (_extensions[parts[0]], parts[1]);
     }
 }

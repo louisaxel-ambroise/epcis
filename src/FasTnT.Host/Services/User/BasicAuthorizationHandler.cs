@@ -92,12 +92,11 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
         };
         claims.AddRange(requiredClaims.Select(x => new Claim(x, x)));
 
-        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
-        var ticket = new AuthenticationTicket(principal, Scheme.Name);
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Basic));
 
         Request.HttpContext.User = principal;
 
-        return AuthenticateResult.Success(ticket);
+        return AuthenticateResult.Success(new AuthenticationTicket(principal, Basic));
     }
 
     private static string Hash(string username, string password)

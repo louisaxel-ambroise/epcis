@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Model.Masterdata;
+﻿using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Model.Masterdata;
 using System.Text.Json;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
@@ -74,7 +75,7 @@ public class JsonMasterdataParser
 
         foreach (var property in element.EnumerateObject())
         {
-            var (ns, name) = ParseName(property.Name);
+            var (ns, name) = _extensions.ParseName(property.Name);
 
             result.AddRange(ParseFields(property.Value, name, ns));
             result.Add(new MasterDataField
@@ -88,12 +89,5 @@ public class JsonMasterdataParser
         }
 
         return result;
-    }
-
-    private (string Namespace, string Name) ParseName(string name)
-    {
-        var parts = name.Split(':', 2);
-
-        return (_extensions[parts[0]], parts[1]);
     }
 }
