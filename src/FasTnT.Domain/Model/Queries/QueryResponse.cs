@@ -5,10 +5,10 @@ namespace FasTnT.Domain.Model.Queries;
 
 public class QueryResponse
 {
-    public string QueryName { get; init; }
+    public string QueryName { get; set; }
     public string SubscriptionId { get; set; }
-    public List<Event> EventList { get; init; }
-    public List<MasterData> VocabularyList { get; init; }
+    public List<Event> EventList { get; set; }
+    public List<MasterData> VocabularyList { get; set; }
 
     public QueryResponse(string queryName, QueryData queryData) : this(queryName, null, queryData)
     {

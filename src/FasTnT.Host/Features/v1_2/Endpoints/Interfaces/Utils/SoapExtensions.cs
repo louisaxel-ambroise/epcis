@@ -31,15 +31,22 @@ public static class SoapExtensions
 
     public static async Task<XElement> ParseSoapEnvelope(this HttpRequest request, CancellationToken cancellationToken)
     {
-        var document = await XDocument.LoadAsync(request.Body, LoadOptions.None, cancellationToken);
-        var envelopBody = document.XPathSelectElement("SoapEnvelop:Envelope/SoapEnvelop:Body", Namespaces.Resolver);
-
-        if (envelopBody == null || !envelopBody.HasElements)
+        try
         {
-            return null;
-        }
+            var document = await XDocument.LoadAsync(request.Body, LoadOptions.None, cancellationToken);
+            var envelopBody = document.XPathSelectElement("SoapEnvelop:Envelope/SoapEnvelop:Body", Namespaces.Resolver);
 
-        return envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query);
+            if (envelopBody == null || !envelopBody.HasElements)
+            {
+                return null;
+            }
+
+            return envelopBody.Elements().SingleOrDefault(x => x.Name.NamespaceName == Namespaces.Query);
+        }
+        catch
+        {
+            throw new EpcisException(ExceptionType.ValidationException, "Malformed or Invalid SOAP payload");
+        }
     }
 
     public static XElement FormatFault(EpcisException exception)

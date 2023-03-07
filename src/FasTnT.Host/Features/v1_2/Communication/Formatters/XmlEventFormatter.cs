@@ -325,8 +325,8 @@ public static class XmlEventFormatter
         }
 
         xmlElement.Add(metadata);
-        xmlElement.AddIfNotNull(element.Reports.Select(x => CreateSensorReport(x, element.Event.Fields)));
-        xmlElement.AddIfNotNull(element.Event.Fields.Where(x => x.Type == FieldType.Sensor).Select(x => FormatField(x, element.Event.Fields)));
+        xmlElement.AddIfNotNull(element.Reports.Select(x => CreateSensorReport(x, fields)));
+        xmlElement.AddIfNotNull(fields.Where(x => x.Type == FieldType.Sensor).Select(x => FormatField(x, fields)));
 
         return xmlElement;
     }

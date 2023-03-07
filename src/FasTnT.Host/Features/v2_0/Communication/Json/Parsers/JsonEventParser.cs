@@ -30,7 +30,6 @@ public class JsonEventParser
 
     public Event Parse()
     {
-
         foreach (var property in _element.EnumerateObject())
         {
             switch (property.Name)
@@ -90,7 +89,7 @@ public class JsonEventParser
                 case "ilmd":
                     _evt.Fields.AddRange(ParseIlmd(property)); break;
                 case "recordTime":
-                /* Don't do anything - record time is set to the time the event was inserted. */
+                    /* Don't do anything - record time is set to the time the event was inserted. */
                 case "@context":
                     /* Don't do anything - context was already parsed. */
                     break;

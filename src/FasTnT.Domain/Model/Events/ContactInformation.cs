@@ -4,12 +4,11 @@ namespace FasTnT.Domain.Model.Events;
 
 public class ContactInformation
 {
-    public StandardBusinessHeader Header { get; set; }
-    public ContactInformationType Type { get; set; }
-    public string Identifier { get; set; }
-    public string Contact { get; set; }
-    public string EmailAddress { get; set; }
-    public string FaxNumber { get; set; }
-    public string TelephoneNumber { get; set; }
-    public string ContactTypeIdentifier { get; set; }
+    public ContactInformationType Type { get; init; }
+    public string Identifier { get; init; }
+    public string Contact { get; init; }
+    public string EmailAddress { get; init; }
+    public string FaxNumber { get; init; }
+    public string TelephoneNumber { get; init; }
+    public string ContactTypeIdentifier { get; init; }
 }

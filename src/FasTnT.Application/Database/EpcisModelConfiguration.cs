@@ -45,7 +45,6 @@ public static class EpcisModelConfiguration
             c.Property(x => x.InstanceIdentifier).HasMaxLength(256).IsRequired(true);
             c.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
             c.Property(x => x.CreationDateTime).IsRequired(false);
-            c.HasOne(x => x.Request).WithOne(x => x.StandardBusinessHeader).HasForeignKey<StandardBusinessHeader>("RequestId").IsRequired(true);
             c.OwnsMany(x => x.ContactInformations, c =>
             {
                 c.ToTable(nameof(ContactInformation), Sbdh);
@@ -58,7 +57,6 @@ public static class EpcisModelConfiguration
                 c.Property(x => x.FaxNumber).HasMaxLength(256).IsRequired(false);
                 c.Property(x => x.TelephoneNumber).HasMaxLength(256).IsRequired(false);
                 c.Property(x => x.ContactTypeIdentifier).HasMaxLength(256).IsRequired(false);
-                c.HasOne(x => x.Header).WithMany(x => x.ContactInformations).HasForeignKey("RequestId");
             });
         });
         request.OwnsOne(x => x.SubscriptionCallback, c =>
@@ -156,7 +154,6 @@ public static class EpcisModelConfiguration
             c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
             c.Property(x => x.Quantity).IsRequired(false);
             c.Property(x => x.UnitOfMeasure).IsRequired(false).HasMaxLength(10);
-            c.HasOne(x => x.Event).WithMany(x => x.Epcs).HasForeignKey("EventId");
         });
         evt.OwnsMany(x => x.Sources, c =>
         {
@@ -181,7 +178,6 @@ public static class EpcisModelConfiguration
             c.HasKey("EventId", nameof(BusinessTransaction.Type), nameof(BusinessTransaction.Id));
             c.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
             c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-            c.HasOne(x => x.Event).WithMany(x => x.Transactions).HasForeignKey("EventId");
         });
         evt.OwnsMany(x => x.PersistentDispositions, c =>
         {
@@ -190,7 +186,6 @@ public static class EpcisModelConfiguration
             c.HasKey("EventId", nameof(PersistentDisposition.Type), nameof(PersistentDisposition.Id));
             c.Property(x => x.Type).HasConversion<short>().IsRequired(true);
             c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-            c.HasOne(x => x.Event).WithMany(x => x.PersistentDispositions).HasForeignKey("EventId");
         });
         evt.OwnsMany(x => x.SensorElements, c =>
         {
@@ -205,7 +200,6 @@ public static class EpcisModelConfiguration
             c.Property(x => x.BizRules).HasMaxLength(256);
             c.Property(x => x.DeviceId).HasMaxLength(256);
             c.Property(x => x.DeviceMetadata).HasMaxLength(256);
-            c.HasOne(x => x.Event).WithMany(x => x.SensorElements).HasForeignKey("EventId");
             c.OwnsMany(x => x.Reports, c =>
             {
                 c.ToTable(nameof(SensorReport), Epcis);
@@ -227,7 +221,6 @@ public static class EpcisModelConfiguration
                 c.Property(x => x.Type).HasMaxLength(256);
                 c.Property(x => x.UnitOfMeasure).HasMaxLength(256);
                 c.Property(x => x.UriValue).HasMaxLength(2048);
-                c.HasOne(x => x.SensorElement).WithMany(x => x.Reports).HasForeignKey("EventId", "SensorIndex");
             });
         });
         evt.OwnsMany(x => x.Fields, c =>
@@ -242,7 +235,6 @@ public static class EpcisModelConfiguration
             c.Property(x => x.TextValue).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.NumericValue).IsRequired(false);
             c.Property(x => x.DateValue).IsRequired(false);
-            c.HasOne(x => x.Event).WithMany(x => x.Fields).HasForeignKey("EventId");
         });
         evt.OwnsMany(x => x.CorrectiveEventIds, c =>
         {

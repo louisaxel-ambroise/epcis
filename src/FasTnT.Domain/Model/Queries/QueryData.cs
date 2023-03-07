@@ -5,8 +5,8 @@ namespace FasTnT.Domain.Model.Queries;
 
 public class QueryData
 {
-    public List<Event> EventList { get; init; }
-    public List<MasterData> VocabularyList { get; init; }
+    public List<Event> EventList { get; set; }
+    public List<MasterData> VocabularyList { get; set; }
 
     public static QueryData Empty => new() { EventList = new() };
 
