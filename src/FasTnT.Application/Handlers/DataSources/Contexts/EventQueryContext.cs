@@ -102,29 +102,29 @@ public class EventQueryContext
             case "LT_endTime":
                 Filter(x => x.SensorElements.Any(s => s.EndTime < param.AsDate())); break;
             case "EQ_type":
-                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => r.Type == param.AsString()))); break;
+                Filter(x => x.Reports.Any(r => r.Type == param.AsString())); break;
             case "EQ_deviceID":
-                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => r.DeviceId == param.AsString()))); break;
+                Filter(x => x.Reports.Any(r => r.DeviceId == param.AsString())); break;
             case "EQ_dataProcessingMethod":
-                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.DataProcessingMethod)))); break;
+                Filter(x => x.Reports.Any(r => param.Values.Contains(r.DataProcessingMethod))); break;
             case "EQ_microorganism":
-                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.Microorganism)))); break;
+                Filter(x => x.Reports.Any(r => param.Values.Contains(r.Microorganism))); break;
             case "EQ_chemicalSubstance":
-                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => param.Values.Contains(r.ChemicalSubstance)))); break;
+                Filter(x => x.Reports.Any(r => param.Values.Contains(r.ChemicalSubstance))); break;
             case "EQ_bizRules":
                 Filter(x => x.SensorElements.Any(s => param.Values.Contains(s.BizRules))); break;
             case "EQ_stringValue":
-                Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => r.StringValue == param.AsString()))); break;
+                Filter(x => x.Reports.Any(r => r.StringValue == param.AsString())); break;
             case "EQ_booleanValue":
-                Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => r.BooleanValue == param.AsBool()))); break;
+                Filter(x => x.Reports.Any(r => r.BooleanValue == param.AsBool())); break;
             case "EQ_hexBinaryValue":
-                Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => param.Values.Contains(r.HexBinaryValue)))); break;
+                Filter(x => x.Reports.Any(r => param.Values.Contains(r.HexBinaryValue))); break;
             case "EQ_uriValue":
-                Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => param.Values.Contains(r.UriValue)))); break;
+                Filter(x => x.Reports.Any(r => param.Values.Contains(r.UriValue))); break;
             case "GE_percRank":
-                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => r.PercRank >= param.AsFloat()))); break;
+                Filter(x => x.Reports.Any(r => r.PercRank >= param.AsFloat())); break;
             case "LT_percRank":
-                Filter(x => x.SensorElements.Any(s => s.Reports.Any(r => r.PercRank < param.AsFloat()))); break;
+                Filter(x => x.Reports.Any(r => r.PercRank < param.AsFloat())); break;
             case "EQ_persistentDisposition_set":
                 ApplyPersistenDispositionFilter(param, PersistentDispositionType.Set); break;
             case "EQ_persistentDisposition_unset":
@@ -259,7 +259,7 @@ public class EventQueryContext
 
     private void ApplyReportUomParameter(float?[] values, string uom)
     {
-        Filter(x => x.SensorElements.Any(e => e.Reports.Any(r => r.UnitOfMeasure == uom && values.Contains(r.Value))));
+        Filter(x => x.Reports.Any(r => r.UnitOfMeasure == uom && values.Contains(r.Value)));
     }
 
     private void ApplyComparison(QueryParameter param, FieldType type, string ns, string name, bool inner)
@@ -309,7 +309,7 @@ public class EventQueryContext
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
         });
 
-        Filter(x => x.SensorElements.Any(x => x.Reports.AsQueryable().Any(AndAlso(customFieldPredicate, fieldValuePredicate))));
+        Filter(x => x.Reports.AsQueryable().Any(AndAlso(customFieldPredicate, fieldValuePredicate)));
     }
 
     private void Filter(Expression<Func<Event, bool>> expression)

@@ -113,7 +113,7 @@ public class JsonEventFormatter
         {
             ["type"] = "epcis:SensorElement",
             ["sensorMetadata"] = MapSensorMetadata(sensor),
-            ["sensorReport"] = sensor.Reports.Select(MapSensorReport)
+            ["sensorReport"] = _evt.Reports.Where(x => x.SensorIndex == sensor.Index).Select(MapSensorReport)
         };
 
         var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.Sensor && x.ParentIndex == sensor.Index));

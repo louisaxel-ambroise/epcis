@@ -1,10 +1,7 @@
-﻿using FasTnT.Domain.Enumerations;
-
-namespace FasTnT.Domain.Model.Events;
+﻿namespace FasTnT.Domain.Model.Events;
 
 public class Field
 {
-    public Event Event { get; set; }
     public FieldType Type { get; set; }
     public string Name { get; set; }
     public string Namespace { get; set; }

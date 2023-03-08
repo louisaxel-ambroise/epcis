@@ -300,12 +300,12 @@ public static class XmlEventFormatter
 
     private static XElement CreateSensorElementList(Event evt)
     {
-        var sensorElements = evt.SensorElements.Select(x => CreateSensorElement(x, evt.Fields));
+        var sensorElements = evt.SensorElements.Select(x => CreateSensorElement(x, evt.Reports, evt.Fields));
 
         return new XElement("sensorElementList", sensorElements);
     }
 
-    private static XElement CreateSensorElement(SensorElement element, List<Field> fields)
+    private static XElement CreateSensorElement(SensorElement element, List<SensorReport> reports, List<Field> fields)
     {
         var xmlElement = new XElement("sensorElement");
 
@@ -325,8 +325,8 @@ public static class XmlEventFormatter
         }
 
         xmlElement.Add(metadata);
-        xmlElement.AddIfNotNull(element.Reports.Select(x => CreateSensorReport(x, element.Event.Fields)));
-        xmlElement.AddIfNotNull(element.Event.Fields.Where(x => x.Type == FieldType.Sensor).Select(x => FormatField(x, element.Event.Fields)));
+        xmlElement.AddIfNotNull(reports.Where(x => x.SensorIndex == element.Index).Select(x => CreateSensorReport(x, fields)));
+        xmlElement.AddIfNotNull(fields.Where(x => x.Type == FieldType.Sensor).Select(x => FormatField(x, fields)));
 
         return xmlElement;
     }

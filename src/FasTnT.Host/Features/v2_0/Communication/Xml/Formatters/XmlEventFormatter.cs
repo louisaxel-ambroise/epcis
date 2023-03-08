@@ -170,12 +170,12 @@ public static class XmlEventFormatter
 
     private static XElement CreateSensorElementList(Event evt)
     {
-        var sensorElements = evt.SensorElements.Select(CreateSensorElement);
+        var sensorElements = evt.SensorElements.Select(x => CreateSensorElement(x, evt.Reports, evt.Fields));
 
         return new XElement("sensorElementList", sensorElements);
     }
 
-    private static XElement CreateSensorElement(SensorElement element)
+    private static XElement CreateSensorElement(SensorElement element, List<SensorReport> reports, List<Field> fields)
     {
         var xmlElement = new XElement("sensorElement");
 
@@ -189,19 +189,19 @@ public static class XmlEventFormatter
         metadata.AddIfNotNull(CreateAttribute("bizRules", element.BizRules));
         metadata.AddIfNotNull(CreateAttribute("dataProcessingMethod", element.DataProcessingMethod));
 
-        foreach (var field in element.Event.Fields.Where(x => x.Type == FieldType.SensorMetadata && x.EntityIndex == element.Index))
+        foreach (var field in fields.Where(x => x.Type == FieldType.SensorMetadata && x.EntityIndex == element.Index))
         {
             metadata.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
         }
 
         xmlElement.Add(metadata);
-        xmlElement.AddIfNotNull(element.Reports.Select(CreateSensorReport));
-        xmlElement.AddIfNotNull(FormatFields(element.Event.Fields.Where(x => x.Type == FieldType.Sensor && x.EntityIndex == element.Index)));
+        xmlElement.AddIfNotNull(reports.Where(x => x.SensorIndex == element.Index).Select(x => CreateSensorReport(x, fields)));
+        xmlElement.AddIfNotNull(FormatFields(fields.Where(x => x.Type == FieldType.Sensor && x.EntityIndex == element.Index)));
 
         return xmlElement;
     }
 
-    private static XElement CreateSensorReport(SensorReport report)
+    private static XElement CreateSensorReport(SensorReport report, List<Field> fields)
     {
         var xmlElement = new XElement("sensorReport");
         xmlElement.AddIfNotNull(CreateAttribute("value", report.Value));
@@ -226,7 +226,7 @@ public static class XmlEventFormatter
         xmlElement.AddIfNotNull(CreateAttribute("percValue", report.PercValue));
         xmlElement.AddIfNotNull(CreateAttribute("dataProcessingMethod", report.DataProcessingMethod));
 
-        foreach (var field in report.SensorElement.Event.Fields.Where(x => x.Type == FieldType.SensorReport && x.EntityIndex == report.Index))
+        foreach (var field in fields.Where(x => x.Type == FieldType.SensorReport && x.EntityIndex == report.Index))
         {
             xmlElement.AddIfNotNull(new XAttribute(XName.Get(field.Name, field.Namespace), field.TextValue));
         }

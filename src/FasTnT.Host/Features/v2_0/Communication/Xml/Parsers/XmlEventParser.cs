@@ -196,7 +196,11 @@ public class XmlEventParser
 
     private void ParseSensorReport(SensorElement sensorElement, XElement element)
     {
-        var report = new SensorReport { Index = ++_index };
+        var report = new SensorReport
+        {
+            Index = ++_index,
+            SensorIndex = sensorElement.Index
+        };
 
         foreach (var field in element.Attributes())
         {
@@ -256,7 +260,7 @@ public class XmlEventParser
             }
         }
 
-        sensorElement.Reports.Add(report);
+        _evt.Reports.Add(report);
     }
 
     private void ParseSensorMetadata(SensorElement sensorElement, XElement metadata)

@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Domain.Model.Events;
+﻿namespace FasTnT.Domain.Enumerations;
 
 public enum PersistentDispositionType
 {

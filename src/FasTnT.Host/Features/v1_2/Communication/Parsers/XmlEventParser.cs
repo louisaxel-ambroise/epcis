@@ -428,7 +428,7 @@ public class XmlEventParser
                 }
                 else if (field.Name.LocalName == "sensorReport")
                 {
-                    ParseSensorReport(sensorElement, field); break;
+                    _evt.Reports.Add(ParseSensorReport(sensorElement, field)); break;
                 }
             }
             else
@@ -440,9 +440,13 @@ public class XmlEventParser
         return sensorElement;
     }
 
-    private void ParseSensorReport(SensorElement sensorElement, XElement element)
+    private SensorReport ParseSensorReport(SensorElement sensorElement, XElement element)
     {
-        var report = new SensorReport();
+        var report = new SensorReport
+        {
+            Index = ++_index,
+            SensorIndex = sensorElement.Index
+        };
 
         foreach (var field in element.Attributes())
         {
@@ -502,7 +506,7 @@ public class XmlEventParser
             }
         }
 
-        sensorElement.Reports.Add(report);
+       return report;
     }
 
     private void ParseSensorMetadata(SensorElement sensorElement, XElement metadata)
