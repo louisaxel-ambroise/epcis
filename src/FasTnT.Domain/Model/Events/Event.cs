@@ -1,6 +1,4 @@
-﻿using FasTnT.Domain.Enumerations;
-
-namespace FasTnT.Domain.Model.Events;
+﻿namespace FasTnT.Domain.Model.Events;
 
 public class Event
 {
@@ -26,6 +24,7 @@ public class Event
     public List<Source> Sources { get; set; } = new();
     public List<Destination> Destinations { get; set; } = new();
     public List<SensorElement> SensorElements { get; set; } = new();
+    public List<SensorReport> Reports { get; set; } = new();
     public List<PersistentDisposition> PersistentDispositions { get; set; } = new();
     public List<Field> Fields { get; set; } = new();
 }

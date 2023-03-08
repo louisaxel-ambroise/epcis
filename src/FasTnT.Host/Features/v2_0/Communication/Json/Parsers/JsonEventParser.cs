@@ -222,7 +222,7 @@ public class JsonEventParser
                 case "sensorMetadata":
                     ParseSensorMetadata(sensorElement, property.Value); break;
                 case "sensorReport":
-                    sensorElement.Reports.AddRange(ParseSensorReports(property.Value)); break;
+                    _evt.Reports.AddRange(ParseSensorReports(property.Value, sensorElement.Index)); break;
                 default:
                     ParseCustomField(property, FieldType.Sensor, null, sensorElement.Index); break;
             }
@@ -231,14 +231,18 @@ public class JsonEventParser
         return sensorElement;
     }
 
-    private IEnumerable<SensorReport> ParseSensorReports(JsonElement element)
+    private IEnumerable<SensorReport> ParseSensorReports(JsonElement element, int sensorIndex)
     {
-        return element.EnumerateArray().Select(ParseSensorReport);
+        return element.EnumerateArray().Select(x => ParseSensorReport(x, sensorIndex));
     }
 
-    private SensorReport ParseSensorReport(JsonElement element)
+    private SensorReport ParseSensorReport(JsonElement element, int sensorIndex)
     {
-        var report = new SensorReport { Index = ++_index };
+        var report = new SensorReport
+        {
+            Index = ++_index,
+            SensorIndex = sensorIndex
+        };
 
         foreach (var property in element.EnumerateObject())
         {

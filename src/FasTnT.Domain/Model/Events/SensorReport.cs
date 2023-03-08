@@ -3,6 +3,7 @@
 public class SensorReport
 {
     public int Index { get; set; }
+    public int SensorIndex { get; set; }
     public string Type { get; set; }
     public string DeviceId { get; set; }
     public string RawData { get; set; }

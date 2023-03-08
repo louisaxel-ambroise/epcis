@@ -1,6 +1,4 @@
-﻿using FasTnT.Domain.Enumerations;
-
-namespace FasTnT.Domain.Model.Events;
+﻿namespace FasTnT.Domain.Model.Events;
 
 public class Field
 {
