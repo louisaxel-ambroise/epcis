@@ -64,6 +64,7 @@ main { width:900px; margin:0 auto 40px auto; color:#333; border:1px solid #ddd; 
 section{ padding:40px 20px 20px 20px; display:block; width:860px; border-radius:3px; }
 main h1 { 
 	margin:0 0 15px 0;
+	padding:0 2px;
 	text-transform:none;
 	border-bottom:4px solid #0b2636; 
 	font-weight:500;
@@ -75,7 +76,7 @@ main h1 {
 main h2 { 
 	margin:10px;
 	text-transform:none;
-	border-bottom:2px solid #bbb; 
+	border-bottom:2px solid #80a3bf; 
 	font-weight:500;
 	font-size:1.2em; 
 	letter-spacing:1px;
@@ -90,6 +91,7 @@ footer{ font-size:.7em; text-align:center; padding-bottom:30px; }
 .img{ margin:20px auto; padding:0; width:450px; font-size:50px; text-align:center; font-family: monospace; line-height:90px; height:100px; background:#f8f8f8; border:1px solid #ddd; }
 .img span{ color: #081936; letter-spacing:5px; font-weight:500; font-size:60px;}
 code, pre{ margin:10px 0; display:block;padding:5px; font-size:12px; font-family: monospace; background:#444; line-height:150%;;color:#f8f8f8; border:1px solid #333; }
+.code{ font-size:120%; font-family: monospace; }
 
 main ul{ margin:10px 40px; }
 main li{ margin:10px; }
@@ -102,3 +104,4 @@ input[type=button]{
 	font-weight:bold;
 }
 h4{ font-size:0.9em;margin:5px;padding:0;height:1em; }
+p a { color:#154c79; }

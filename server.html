@@ -71,6 +71,7 @@ function send_capture(){
 			<ul>
 				<li><a href="index.html">Repository</a></li>
 				<li><a href="server.html">Test Server</a></li>
+				<li><a href="client.html">Client library</a></li>
 				<li><a href="contact.html">Contact</a></li>
 		</menu>
 		<header>
@@ -104,14 +105,19 @@ function send_capture(){
 			<section>
 				<h1>Usage</h1>
 				<p>The repository requires an authorization header that must be a valid basic auth value. This header is used to filter the data and return only the events captured using the same username/password values to avoid any noise from other tests.</p>
-				<p>You can send a test query by clicking on the button below:</p>
+				<p>You can send a very simple example of EPCIS 2.0 capture/query requests by clicking on the buttons below:</p>
 				<div class="credentials">
-					<input type="text" id="username" placeholder="Enter username" />
-					<input type="text" id="password" placeholder="Enter password" />
+					<input type="text" id="username" placeholder="Enter username" value="username" />
+					<input type="text" id="password" placeholder="Enter password" value="password" />
 				</div>
-				<input type="button" value="Query events" onclick="send_query();" />
 				<input type="button" value="Capture an event" onclick="send_capture();" />
+				<input type="button" value="Query events" onclick="send_query();" />
 				<div id="http_comms"></div>
+			</section>
+			<section>
+				<h1>Postman collection</h1>
+				<p>A postman collection is available <a href="" target="_blank">at this URL</a> and contains a handful examples of both 1.2 and 2.0 requests.</p>
+				<p>You can use it against the public test server if you only want to test the repository capabilities. The <span class="code">sandbox-dev</span> predefined environment contains the correct URL and a default username/password values to send requests to this server.</p>
 			</section>
 		</main>
 		<footer>
