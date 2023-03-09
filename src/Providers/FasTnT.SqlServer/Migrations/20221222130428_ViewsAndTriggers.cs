@@ -50,7 +50,7 @@ AS
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"DROP TRIGGER [Subscriptions].[SubscriptionInitialRequests];");
-            migrationBuilder.Sql(@"DROP TRIGGER [Subscriptions].[InsertPendingRequests];");
+            migrationBuilder.Sql(@"DROP TRIGGER [Epcis].[InsertPendingRequests];");
             migrationBuilder.Sql(@"DROP VIEW [Cbv].[MasterdataHierarchy];");
             migrationBuilder.Sql(@"DROP VIEW [Cbv].[CurrentMasterdata];");
         }
