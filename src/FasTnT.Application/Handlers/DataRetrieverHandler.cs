@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Handlers.DataSources.Utils;
 using FasTnT.Application.Services.Users;
+using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
@@ -22,19 +23,26 @@ public class DataRetrieverHandler
 
     public async Task<List<Event>> QueryEventsAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsFloat();
+        var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsInt();
         var eventIds = await _context
             .QueryEvents(parameters.Union(_user.DefaultQueryParameters))
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 
-        return maxEventCount is not null && eventIds.Count >= maxEventCount.Value
-            ? throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results")
-            : await _context
-                .Set<Event>()
-                .AsNoTracking()
+        if (eventIds.Count >= (maxEventCount ?? Constants.Instance.MaxEventsReturnedInQuery))
+        {
+            throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results");
+        }
+        else if (!eventIds.Any())
+        {
+            return new List<Event>();
+        }
+
+        return _context.Set<Event>()
                 .Where(x => eventIds.Contains(x.Id))
-                .ToListAsync(cancellationToken);
+                .AsEnumerable()
+                .OrderBy(x => eventIds.IndexOf(x.Id))
+                .ToList();
     }
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
