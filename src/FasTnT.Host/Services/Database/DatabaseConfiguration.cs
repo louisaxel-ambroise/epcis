@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Oracle;
 using FasTnT.Postgres;
 using FasTnT.Sqlite;
 using FasTnT.SqlServer;
@@ -27,6 +28,7 @@ public static class DatabaseConfiguration
             nameof(SqlServer) => SqlServerProvider.Configure,
             nameof(Postgres) => PostgresProvider.Configure,
             nameof(Sqlite) => SqliteProvider.Configure,
+            nameof(Oracle) => OracleProvider.Configure,
             _ => throw new Exception($"Unsupported provider: {provider}")
         };
     }
