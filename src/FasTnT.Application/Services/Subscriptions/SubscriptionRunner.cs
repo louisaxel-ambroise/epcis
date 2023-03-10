@@ -23,9 +23,9 @@ public class SubscriptionRunner : ISubscriptionRunner
     {
         _logger.LogInformation("Running Subscription {Name}", context.Subscription.Name);
 
-        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = executionTime, ResultsSent = true, Successful = true, SubscriptionId = context.Subscription.Id };
-        var pendingRequests = await _context.Set<PendingRequest>().Where(x => x.SubscriptionId == context.Subscription.Id).ToListAsync(cancellationToken);
         var resultsSent = false;
+        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = executionTime, ResultsSent = true, Successful = true, SubscriptionId = context.Subscription.Id };
+        var pendingRequests = await _context.Set<PendingRequest>().Where(x => x.SubscriptionId == context.Subscription.Id).Take(100).ToListAsync(cancellationToken);
 
         try
         {
