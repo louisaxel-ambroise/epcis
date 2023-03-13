@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Domain.Model.Masterdata;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Xml.Linq;
@@ -6,9 +7,17 @@ using System.Xml.Linq;
 namespace FasTnT.Host.Tests.Features.v2_0.Communication;
 
 [TestClass]
-public class WhenFormattingAnEmptySubscriptionResult
+public class WhenFormattingAQueryResponseVithVocabulary
 {
-    public QueryResponse Result = new("ExampleQueryName", "ASubscription", QueryData.Empty);
+    public QueryResponse Result = new("ExampleQueryName", new List<MasterData>
+    {
+        new MasterData
+        {
+            Id = "md0.1230",
+            Type = "readPoint",
+            Attributes = new List<MasterDataAttribute>{ new MasterDataAttribute { Id = "test", Value = "xyz" } }
+        }
+    });
     public string Formatted { get; set; }
 
     [TestInitialize]
@@ -29,9 +38,16 @@ public class WhenFormattingAnEmptySubscriptionResult
         var element = XElement.Parse(Formatted);
 
         Assert.IsTrue(element.Name == XName.Get("QueryResults", "urn:epcglobal:epcis-query:xsd:1"));
-        Assert.AreEqual(3, element.Elements().Count());
+        Assert.AreEqual(2, element.Elements().Count());
         Assert.AreEqual(Result.QueryName, element.Element("queryName").Value);
-        Assert.AreEqual(Result.SubscriptionId, element.Element("subscriptionID").Value);
         Assert.IsNotNull(element.Element("resultsBody"));
+    }
+
+    [TestMethod]
+    public void ThereShouldNotBeASubscriptionIDField()
+    {
+        var element = XElement.Parse(Formatted);
+
+        Assert.IsNull(element.Element("subscriptionID"));
     }
 }

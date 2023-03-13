@@ -13,7 +13,7 @@ public class WhenFormattingAGetStandardVersionResult
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.FormatStandardVersion(Result);
+        Formatted = XmlResponseFormatter.Format(Result);
     }
 
     [TestMethod]
