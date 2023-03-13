@@ -23,6 +23,7 @@ public class TopLevelResourceHandler
     public static IEnumerable<string> ListEventTypes(Pagination pagination)
     {
         return Enum.GetValues<EventType>()
+            .Where(x => !new[] { EventType.None, EventType.QuantityEvent }.Contains(x))
             .Skip(pagination.StartFrom)
             .Take(pagination.PerPage)
             .Select(x => x.ToString());

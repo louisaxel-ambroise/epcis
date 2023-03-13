@@ -13,7 +13,7 @@ public class WhenFormattingAGetSubscriptionIdsResult
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.FormatSubscriptionIds(Result);
+        Formatted = XmlResponseFormatter.Format(Result);
     }
 
     [TestMethod]

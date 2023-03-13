@@ -13,7 +13,7 @@ public class WhenFormattingAGetVendorVersionResult
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.FormatVendorVersion(Result);
+        Formatted = XmlResponseFormatter.Format(Result);
     }
 
     [TestMethod]

@@ -13,7 +13,7 @@ public class WhenFormattingAGetQueryNamesResult
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.FormatGetQueryNames(Result);
+        Formatted = XmlResponseFormatter.Format(Result);
     }
 
     [TestMethod]
