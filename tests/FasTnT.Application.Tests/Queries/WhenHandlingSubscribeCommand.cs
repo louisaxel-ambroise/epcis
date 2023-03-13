@@ -28,15 +28,65 @@ public class WhenHandlingSubscribeCommand
     }
 
     [TestMethod]
+    public void ItShouldRegisterTheSubscriptionIfCreatedSuccessfully()
+    {
+        var subscription = new Subscription
+        {
+            Name = "NewSubscription",
+            Destination = "https://test.com/",
+            FormatterName = string.Empty,
+            QueryName = "SimpleEventQuery",
+            Trigger = "test"
+        };
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), Listener);
+        var result = handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None).Result;
+
+        Assert.IsInstanceOfType<Subscription>(result);
+    }
+
+    [TestMethod]
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameAlreadyExist()
     {
         var subscription = new Subscription
         {
             Name = "TestSubscription",
+            Destination = "https://test.com/",
+            FormatterName = string.Empty,
+            QueryName = "SimpleEventQuery",
+            Trigger = "test"
+        };
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), Listener);
+
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
+    }
+
+    [TestMethod]
+    public void ItShouldThrowAnExceptionIfTheSubscriptionHasEmptyDestination()
+    {
+        var subscription = new Subscription
+        {
+            Name = "TestSubscription",
             Destination = "",
+            FormatterName = string.Empty,
+            QueryName = "SimpleEventQuery",
+            Trigger = "test"
+        };
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), Listener);
+
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
+    }
+
+    [TestMethod]
+    public void ItShouldThrowAnExceptionIfTheSubscriptionHasNoScheduleOrTrigger()
+    {
+        var subscription = new Subscription
+        {
+            Name = "TestSubscription",
+            Destination = "https://test.com",
+            FormatterName = string.Empty,
             QueryName = "SimpleEventQuery"
         };
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new TestSubscriptionListener());
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), Listener);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
     }

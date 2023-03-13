@@ -7,9 +7,9 @@ using FasTnT.Domain.Model.Queries;
 namespace FasTnT.Application.Tests.Queries;
 
 [TestClass]
-public class WhenHandlingGetQueryNamesQuery
+public class WhenHandlingListQueries
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetQueryNamesQuery));
+    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListQueries));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassInitialize]
