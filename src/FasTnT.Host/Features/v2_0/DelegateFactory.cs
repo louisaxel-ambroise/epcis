@@ -1,7 +1,6 @@
 ﻿using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
-using FasTnT.Host.Features.v2_0.Extensions;
 
 namespace FasTnT.Host.Features.v2_0;
 
@@ -21,7 +20,7 @@ public static class DelegateFactory
                 var options = new RequestDelegateFactoryOptions { ServiceProvider = context.RequestServices };
                 var factory = RequestDelegateFactory.Create(handlerProvider(context), options);
 
-                return factory.RequestDelegate.Invoke(context);
+                await factory.RequestDelegate.Invoke(context);
             }
             catch (Exception ex)
             {
