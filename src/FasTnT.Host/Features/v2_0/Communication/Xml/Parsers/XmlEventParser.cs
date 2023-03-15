@@ -103,12 +103,13 @@ public class XmlEventParser
     {
         foreach (var field in element.Elements())
         {
-            switch (field.Name.LocalName)
+            if (field.Name.LocalName == "id")
             {
-                case "id":
-                    _evt.ReadPoint = field.Value; break;
-                default:
-                    ParseCustomFields(field, FieldType.ReadPointCustomField, null, null); break;
+                _evt.ReadPoint = field.Value;
+            }
+            else 
+            { 
+                ParseCustomFields(field, FieldType.ReadPointCustomField, null, null); break;
             }
         }
     }
@@ -117,12 +118,13 @@ public class XmlEventParser
     {
         foreach (var field in element.Elements())
         {
-            switch (field.Name.LocalName)
+            if (field.Name.LocalName == "id")
             {
-                case "id":
-                    _evt.BusinessLocation = field.Value; break;
-                default:
-                    ParseCustomFields(field, FieldType.BusinessLocationCustomField, null, null); break;
+                _evt.BusinessLocation = field.Value;
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.BusinessLocationCustomField, null, null); break;
             }
         }
     }

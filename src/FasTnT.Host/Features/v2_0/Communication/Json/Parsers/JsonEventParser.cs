@@ -121,14 +121,15 @@ public class JsonEventParser
 
     private void ParseReadPoint(JsonProperty readPoint)
     {
-        foreach(var property in readPoint.Value.EnumerateObject())
+        foreach (var property in readPoint.Value.EnumerateObject())
         {
-            switch (property.Name)
+            if (property.Name == "id")
             {
-                case "id":
-                    _evt.ReadPoint = property.Value.GetString(); break;
-                default:
-                    _evt.Fields.AddRange(ParseCustomField(property, FieldType.ReadPointCustomField)); break;
+                _evt.ReadPoint = property.Value.GetString();
+            }
+            else
+            {
+                _evt.Fields.AddRange(ParseCustomField(property, FieldType.ReadPointCustomField)); break;
             }
         }
     }
@@ -137,12 +138,13 @@ public class JsonEventParser
     {
         foreach(var property in bizLocation.Value.EnumerateObject())
         {
-            switch (property.Name)
+            if (property.Name == "id")
             {
-                case "id":
-                    _evt.BusinessLocation = property.Value.GetString(); break;
-                default:
-                    _evt.Fields.AddRange(ParseCustomField(property, FieldType.BusinessLocationCustomField)); break;
+                _evt.BusinessLocation = property.Value.GetString();
+            }
+            else
+            {
+                _evt.Fields.AddRange(ParseCustomField(property, FieldType.BusinessLocationCustomField)); break;
             }
         }
     }
