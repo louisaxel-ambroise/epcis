@@ -47,7 +47,7 @@ app.UseRouting();
 app.UseHttpLogging();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health").AllowAnonymous();
 app.UseWebSockets();
 
 app.UseEpcis12Endpoints();

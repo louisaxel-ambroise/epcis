@@ -19,12 +19,4 @@ public static class HttpContextExtensions
     {
         return context.Request.Scheme + "://" + context.Request.Host + context.Request.Path + "?" + queryString;
     }
-
-    public static Task InvokeHandler(this HttpContext context, Func<HttpContext, Delegate> handlerProvider)
-    {
-        var options = new RequestDelegateFactoryOptions { ServiceProvider = context.RequestServices };
-        var factory = RequestDelegateFactory.Create(handlerProvider(context), options);
-
-        return factory.RequestDelegate.Invoke(context);
-    }
 }

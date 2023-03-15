@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using FasTnT.Application.Services.Users;
 using System.Text.Json;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FasTnT.Host.Services.User;
 
@@ -24,30 +25,34 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        return Task.Run(() =>
+        return Context.GetEndpoint()?.Metadata?.GetMetadata<AuthorizeAttribute>() is null
+            ? Task.Run(AuthenticateResult.NoResult)
+            : Task.Run(ProcessAuthenticationAsync);
+    }
+
+    private AuthenticateResult ProcessAuthenticationAsync()
+    {
+        try
         {
-            try
+            var authValue = RetrieveAuthorizationValue(Request);
+
+            if (string.IsNullOrEmpty(authValue))
             {
-                var authValue = RetrieveAuthorizationValue(Request);
-
-                if (string.IsNullOrEmpty(authValue))
-                {
-                    return AuthenticateResult.Fail("Missing Authorization Header");
-                }
-                else
-                {
-                    var (username, password) = ParseAuthenticationHeader(authValue);
-
-                    return Authenticated(username, password, new[] { "fastnt.query", "fastnt.capture" });
-                }
+                return AuthenticateResult.Fail("Missing Authorization Header");
             }
-            catch (Exception ex)
+            else
             {
-                Logger.LogError(ex, "Invalid authorization information");
+                var (username, password) = ParseAuthenticationHeader(authValue);
 
-                return AuthenticateResult.Fail(ex.Message);
+                return Authenticated(username, password, new[] { "fastnt.query", "fastnt.capture" });
             }
-        });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Invalid authorization information");
+
+            return AuthenticateResult.Fail(ex.Message);
+        }
     }
 
     private static string RetrieveAuthorizationValue(HttpRequest request)

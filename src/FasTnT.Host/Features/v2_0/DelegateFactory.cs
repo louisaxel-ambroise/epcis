@@ -18,7 +18,10 @@ public static class DelegateFactory
                 ValidateHeaders(epcisHeaders);
                 SetResponseHeaders(context.Response);
 
-                await context.InvokeHandler(handlerProvider);
+                var options = new RequestDelegateFactoryOptions { ServiceProvider = context.RequestServices };
+                var factory = RequestDelegateFactory.Create(handlerProvider(context), options);
+
+                return factory.RequestDelegate.Invoke(context);
             }
             catch (Exception ex)
             {
