@@ -134,15 +134,15 @@ public class XmlEventParser
         ParseV2Extensions(element.Element("extension"));
     }
 
-    public Event ParseQuantityEvent(XElement eventRoot)
+    public Event ParseQuantityEvent(XElement element)
     {
-        ParseBase(eventRoot, EventType.QuantityEvent);
-        ParseExtension(eventRoot.Element("extension"), FieldType.Extension);
+        ParseBase(element, EventType.QuantityEvent);
+        ParseExtension(element.Element("extension"), FieldType.Extension);
 
         _evt.Epcs.Add(new Epc
         {
-            Id = eventRoot.Element("epcClass").Value,
-            Quantity = float.Parse(eventRoot.Element("quantity").Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB")),
+            Id = element.Element("epcClass").Value,
+            Quantity = float.TryParse(element.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out var quantity) ? quantity : default,
             Type = EpcType.Quantity
         });
 
@@ -387,7 +387,7 @@ public class XmlEventParser
         return new()
         {
             Id = element.Value,
-            Type = element.Attribute("type").Value
+            Type = element.Attribute("type")?.Value ?? string.Empty
         };
     }
 
@@ -496,6 +496,8 @@ public class XmlEventParser
                         report.PercValue = float.Parse(field.Value); break;
                     case "dataProcessingMethod":
                         report.DataProcessingMethod = field.Value; break;
+                    case "coordinateReferenceSystem":
+                        report.CoordinateReferenceSystem = field.Value; break;
                     default:
                         throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }

@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Host.Features.v2_0.Communication.Json.Utils;
+using System.Xml;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
 
@@ -57,11 +58,27 @@ public class JsonEventFormatter
 
         if (_evt.ReadPoint is not null)
         {
-            element["readPoint"] = new { id = _evt.ReadPoint };
+            var readPoint = new Dictionary<string, object> { { "id", _evt.ReadPoint } };
+            var readPointFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.ReadPointCustomField));
+
+            foreach (var field in readPointFields)
+            {
+                readPoint[field.Key] = field.Value;
+            }
+
+            element["readPoint"] = readPoint;
         }
         if (_evt.BusinessLocation is not null)
         {
-            element["bizLocation"] = new { id = _evt.BusinessLocation };
+            var bizLocation = new Dictionary<string, object> { { "id", _evt.ReadPoint } };
+            var bizLocationFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.ReadPointCustomField));
+
+            foreach (var field in bizLocationFields)
+            {
+                bizLocation[field.Key] = field.Value;
+            }
+
+            element["bizLocation"] = bizLocation;
         }
         if (_evt.Sources.Count > 0)
         {
@@ -69,11 +86,11 @@ public class JsonEventFormatter
         }
         if (_evt.Destinations.Count > 0)
         {
-            element["destList"] = _evt.Destinations.Select(x => new { type = x.Type, destination = x.Id });
+            element["destinationList"] = _evt.Destinations.Select(x => new { type = x.Type, destination = x.Id });
         }
         if (_evt.Transactions.Count > 0)
         {
-            element["bizTransactionList"] = _evt.Transactions.Select(x => new { type = x.Type, bizTransaction = x.Id });
+            element["bizTransactionList"] = _evt.Transactions.Select(x => new { type = string.IsNullOrEmpty(x.Type) ? null : x.Type, bizTransaction = x.Id });
         }
         if (_evt.PersistentDispositions.Count > 0)
         {
@@ -172,7 +189,8 @@ public class JsonEventFormatter
             ["percValue"] = report.PercValue,
             ["uom"] = report.UnitOfMeasure,
             ["sDev"] = report.SDev,
-            ["deviceMetadata"] = report.DeviceMetadata
+            ["deviceMetadata"] = report.DeviceMetadata,
+            ["coordinateReferenceSystem"] = report.CoordinateReferenceSystem
         };
 
         var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.SensorReport && x.EntityIndex == report.Index));
