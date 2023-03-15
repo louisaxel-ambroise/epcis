@@ -225,7 +225,17 @@ public static class XmlEventFormatter
     {
         var list = new XElement("bizTransactionList");
 
-        list.AddIfNotNull(evt.Transactions.Select(x => new XElement("bizTransaction", new XAttribute("type", x.Type), x.Id)));
+        list.AddIfNotNull(evt.Transactions.Select(x =>
+        {
+            var txElement = new XElement("bizTransaction", x.Id);
+
+            if (!string.IsNullOrEmpty(x.Type))
+            {
+                txElement.Add(new XAttribute("type", x.Type));
+            }
+
+            return txElement;
+        }));
 
         return list;
     }
@@ -355,6 +365,7 @@ public static class XmlEventFormatter
         xmlElement.AddIfNotNull(CreateAttribute("percRank", report.PercRank));
         xmlElement.AddIfNotNull(CreateAttribute("percValue", report.PercValue));
         xmlElement.AddIfNotNull(CreateAttribute("dataProcessingMethod", report.DataProcessingMethod));
+        xmlElement.AddIfNotNull(CreateAttribute("coordinateReferenceSystem", report.CoordinateReferenceSystem));
 
         foreach (var field in fields.Where(x => x.EntityIndex == report.Index && x.Type == FieldType.SensorReport))
         {

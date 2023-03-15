@@ -73,9 +73,9 @@ public class JsonEventParser
                 case "eventTimeZoneOffset":
                     _evt.EventTimeZoneOffset = property.Value.GetString(); break;
                 case "readPoint":
-                    _evt.ReadPoint = ParseIdElement(property.Value); break;
+                    ParseReadPoint(property); break;
                 case "bizLocation":
-                    _evt.BusinessLocation = ParseIdElement(property.Value); break;
+                    ParseBizLocation(property); break;
                 case "sourceList":
                     _evt.Sources.AddRange(ParseSourceList(property.Value)); break;
                 case "destinationList":
@@ -119,7 +119,33 @@ public class JsonEventParser
         }
     }
 
-    private static string ParseIdElement(JsonElement element) => element.GetProperty("id").GetString();
+    private void ParseReadPoint(JsonProperty readPoint)
+    {
+        foreach(var property in readPoint.Value.EnumerateObject())
+        {
+            switch (property.Name)
+            {
+                case "id":
+                    _evt.ReadPoint = property.Value.GetString(); break;
+                default:
+                    _evt.Fields.AddRange(ParseCustomField(property, FieldType.ReadPointCustomField)); break;
+            }
+        }
+    }
+
+    private void ParseBizLocation(JsonProperty bizLocation)
+    {
+        foreach(var property in bizLocation.Value.EnumerateObject())
+        {
+            switch (property.Name)
+            {
+                case "id":
+                    _evt.BusinessLocation = property.Value.GetString(); break;
+                default:
+                    _evt.Fields.AddRange(ParseCustomField(property, FieldType.BusinessLocationCustomField)); break;
+            }
+        }
+    }
 
     private static IEnumerable<Epc> ParseEpcList(JsonElement element, EpcType type)
     {
@@ -146,7 +172,7 @@ public class JsonEventParser
         return element.EnumerateArray().Select(x => new BusinessTransaction
         {
             Id = x.GetProperty("bizTransaction").GetString(),
-            Type = x.GetProperty("type").GetString()
+            Type = x.TryGetProperty("type", out var txType) ? txType.GetString() : string.Empty
         });
     }
 
@@ -290,6 +316,8 @@ public class JsonEventParser
                     report.SDev = property.Value.GetSingle(); break;
                 case "deviceMetadata":
                     report.DeviceMetadata = property.Value.GetString(); break;
+                case "coordinateReferenceSystem":
+                    report.CoordinateReferenceSystem = property.Value.GetString(); break;
                 default:
                     _evt.Fields.AddRange(ParseCustomField(property, FieldType.SensorReport, null, report.Index)); break;
             }
