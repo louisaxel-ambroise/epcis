@@ -17,7 +17,7 @@ namespace FasTnT.Postgres.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.3")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -532,6 +532,10 @@ namespace FasTnT.Postgres.Migrations
                                 .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Component")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
+
+                            b1.Property<string>("CoordinateReferenceSystem")
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 

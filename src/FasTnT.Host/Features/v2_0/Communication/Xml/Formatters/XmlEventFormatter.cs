@@ -196,7 +196,7 @@ public static class XmlEventFormatter
 
         xmlElement.Add(metadata);
         xmlElement.AddIfNotNull(reports.Where(x => x.SensorIndex == element.Index).Select(x => CreateSensorReport(x, fields)));
-        xmlElement.AddIfNotNull(FormatFields(fields.Where(x => x.Type == FieldType.Sensor && x.EntityIndex == element.Index)));
+        xmlElement.AddIfNotNull(fields.Where(x => x.Type == FieldType.Sensor && x.EntityIndex == element.Index).Select(x => FormatField(x, fields)));
 
         return xmlElement;
     }
@@ -225,6 +225,7 @@ public static class XmlEventFormatter
         xmlElement.AddIfNotNull(CreateAttribute("percRank", report.PercRank));
         xmlElement.AddIfNotNull(CreateAttribute("percValue", report.PercValue));
         xmlElement.AddIfNotNull(CreateAttribute("dataProcessingMethod", report.DataProcessingMethod));
+        xmlElement.AddIfNotNull(CreateAttribute("coordinateReferenceSystem", report.CoordinateReferenceSystem));
 
         foreach (var field in fields.Where(x => x.Type == FieldType.SensorReport && x.EntityIndex == report.Index))
         {
@@ -268,7 +269,17 @@ public static class XmlEventFormatter
     {
         var list = new XElement("bizTransactionList");
 
-        list.AddIfNotNull(evt.Transactions.Select(x => new XElement("bizTransaction", new XAttribute("type", x.Type), x.Id)));
+        list.AddIfNotNull(evt.Transactions.Select(x =>
+        {
+            var txElement = new XElement("bizTransaction", x.Id);
+
+            if(!string.IsNullOrEmpty(x.Type))
+            {
+                txElement.Add(new XAttribute("type", x.Type));
+            }
+
+            return txElement;
+        }));
 
         return list;
     }
@@ -321,28 +332,19 @@ public static class XmlEventFormatter
         return errorDeclaration;
     }
 
+
     private static IEnumerable<XElement> CreateCustomFields(Event evt, FieldType type)
     {
-        return FormatFields(evt.Fields.Where(x => x.Type == type));
+        return evt.Fields.Where(x => x.Type == type && x.ParentIndex is null).Select(x => FormatField(x, evt.Fields));
     }
 
-    private static IEnumerable<XElement> FormatFields(IEnumerable<Field> fields, int? parentIndex = null)
+    private static XElement FormatField(Field field, IEnumerable<Field> fields)
     {
-        return fields.Where(x => x.ParentIndex == parentIndex).Select(x =>
-        {
-            var element = new XElement(XName.Get(x.Name, x.Namespace ?? string.Empty), x.TextValue);
+        var attributes = fields.Where(x => x.ParentIndex == field.Index && x.Type == FieldType.Attribute).Select(x => new XAttribute(XName.Get(x.Name, x.Namespace), x.TextValue));
+        var element = new XElement(XName.Get(field.Name, field.Namespace ?? string.Empty), field.TextValue, attributes);
 
-            foreach (var attribute in fields.Where(i => i.Type == FieldType.Attribute && i.ParentIndex == x.Index))
-            {
-                element.Add(new XAttribute(XName.Get(attribute.Name, attribute.Namespace), attribute.TextValue));
-            }
+        element.AddIfNotNull(fields.Where(x => x.ParentIndex == field.Index && x.Type != FieldType.Attribute).Select(x => FormatField(x, fields)));
 
-            if(fields.Any(i => i.Type != FieldType.Attribute && i.ParentIndex == x.Index))
-            {
-                element.AddIfNotNull(FormatFields(fields, x.Index));
-            }
-
-            return element;
-        });
+        return element;
     }
 }

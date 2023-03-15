@@ -51,9 +51,9 @@ public class XmlEventParser
                     case "transformationID":
                         _evt.TransformationId = field.Value; break;
                     case "readPoint":
-                        _evt.ReadPoint = field.Element("id").Value; break;
+                        ParseReadPoint(field); break;
                     case "bizLocation":
-                        _evt.BusinessLocation = field.Element("id").Value; break;
+                        ParseBizLocation(field); break;
                     case "eventID":
                         _evt.EventId = field.Value; break;
                     case "parentID":
@@ -99,6 +99,36 @@ public class XmlEventParser
         return _evt;
     }
 
+    private void ParseReadPoint(XElement element)
+    {
+        foreach (var field in element.Elements())
+        {
+            if (field.Name.LocalName == "id")
+            {
+                _evt.ReadPoint = field.Value;
+            }
+            else 
+            { 
+                ParseCustomFields(field, FieldType.ReadPointCustomField, null, null); break;
+            }
+        }
+    }
+
+    private void ParseBizLocation(XElement element)
+    {
+        foreach (var field in element.Elements())
+        {
+            if (field.Name.LocalName == "id")
+            {
+                _evt.BusinessLocation = field.Value;
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.BusinessLocationCustomField, null, null); break;
+            }
+        }
+    }
+
     private void ParseIlmd(XElement element)
     {
         foreach (var field in element.Elements())
@@ -121,7 +151,7 @@ public class XmlEventParser
         return field.Elements().Select(x => new Epc
         {
             Id = x.Element("epcClass").Value,
-            Quantity = float.Parse(x.Element("quantity")?.Value),
+            Quantity = float.TryParse(x.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float quantity) ? quantity : default(float?),
             UnitOfMeasure = x.Element("uom")?.Value,
             Type = type,
         });
@@ -132,7 +162,7 @@ public class XmlEventParser
         return field.Elements().Select(x => new BusinessTransaction
         {
             Id = x.Value,
-            Type = x.Attribute("type").Value
+            Type = x.Attribute("type")?.Value ?? string.Empty
         });
     }
 
@@ -250,6 +280,8 @@ public class XmlEventParser
                         report.PercValue = float.Parse(field.Value); break;
                     case "dataProcessingMethod":
                         report.DataProcessingMethod = field.Value; break;
+                    case "coordinateReferenceSystem":
+                        report.CoordinateReferenceSystem = field.Value; break;
                     default:
                         throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }

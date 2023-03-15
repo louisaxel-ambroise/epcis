@@ -8,6 +8,7 @@ public class SensorReport
     public string DeviceId { get; set; }
     public string RawData { get; set; }
     public string DataProcessingMethod { get; set; }
+    public string CoordinateReferenceSystem { get; set; }
     public DateTime? Time { get; set; }
     public string Microorganism { get; set; }
     public string ChemicalSubstance { get; set; }

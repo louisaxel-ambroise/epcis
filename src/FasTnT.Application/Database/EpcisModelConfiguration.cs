@@ -229,6 +229,7 @@ public static class EpcisModelConfiguration
             c.Property(x => x.Type).HasMaxLength(256);
             c.Property(x => x.UnitOfMeasure).HasMaxLength(256);
             c.Property(x => x.UriValue).HasMaxLength(2048);
+            c.Property(x => x.CoordinateReferenceSystem).HasMaxLength(256);
         });
         evt.OwnsMany(x => x.Fields, c =>
         {
