@@ -47,7 +47,7 @@ public class JsonMasterdataParser
                 case "children":
                     masterdata.Children = property.Value.EnumerateArray().Select(x => new MasterDataChildren { ChildrenId = x.GetString() }).ToList(); break;
                 default:
-                    throw new NotImplementedException();
+                    throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected field: {property.Name}");
             }
         }
 

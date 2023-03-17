@@ -1,15 +1,15 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers.DataSources.Utils;
+using FasTnT.Application.DataSources.Utils;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using System.Linq.Expressions;
 
-namespace FasTnT.Application.Handlers.DataSources.Contexts;
+namespace FasTnT.Application.DataSources;
 
 public class MasterDataQueryContext
 {
-    private readonly List<Func<IQueryable<MasterData>, IQueryable<MasterData>>> _pagination = new();
+    private int _take = int.MaxValue;
     private readonly List<Func<IQueryable<MasterData>, IQueryable<MasterData>>> _filters = new();
     private readonly EpcisContext _context;
 
@@ -29,7 +29,7 @@ public class MasterDataQueryContext
         {
             // Simple filters
             case "maxElementCount":
-                _pagination.Add(x => x.Take(param.AsInt())); break;
+                _take = Math.Min(_take, param.AsInt()); break;
             case "vocabularyName":
                 Filter(x => x.Type == param.AsString()); break;
             case "EQ_userID":
@@ -43,7 +43,7 @@ public class MasterDataQueryContext
             // Family filters
             case var s when s.StartsWith("EQATTR_"):
                 ApplyEqAttrParameter(param); break;
-            case "attributeNames" or "includeAttributes" or "includeChildren": break; // TODO: Already included by the "OwnsMany". Maybe review it?
+            case "attributeNames" or "includeAttributes" or "includeChildren": break; // EF Core automatically included these field due to the "OwnsMany" mapping. Maybe review it to only display them when the parameters are specified?
             // Any other case is an unknown parameter and should raise a QueryParameter Exception
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is invalid for simplemasterdata query: {param.Name}");
@@ -52,17 +52,9 @@ public class MasterDataQueryContext
 
     public IQueryable<MasterData> Apply(IQueryable<MasterData> query)
     {
-        return Paginate(Filter(query));
-    }
-
-    public IQueryable<MasterData> Filter(IQueryable<MasterData> query)
-    {
-        return _filters.Aggregate(query, (query, filter) => filter(query));
-    }
-
-    public IQueryable<MasterData> Paginate(IQueryable<MasterData> query)
-    {
-        return _pagination.Aggregate(query, (query, filter) => filter(query));
+        return _filters
+            .Aggregate(query, (q, f) => f(q))
+            .Take(_take);
     }
 
     private void ApplyEqAttrParameter(QueryParameter param)

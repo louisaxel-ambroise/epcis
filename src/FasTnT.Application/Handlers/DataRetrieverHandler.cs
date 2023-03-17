@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers.DataSources.Utils;
+using FasTnT.Application.DataSources.Utils;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
@@ -25,7 +25,7 @@ public class DataRetrieverHandler
     {
         var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsInt();
         var eventIds = await _context
-            .QueryEvents(parameters.Union(_user.DefaultQueryParameters))
+            .QueryEvents(_user.DefaultQueryParameters.Union(parameters))
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 
@@ -48,7 +48,7 @@ public class DataRetrieverHandler
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
         return await _context
-            .QueryMasterData(parameters.Union(_user.DefaultQueryParameters))
+            .QueryMasterData(parameters)
             .ToListAsync(cancellationToken);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers.DataSources.Contexts;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -9,7 +8,6 @@ namespace FasTnT.Application.Tests.Queries.Parameters;
 public class WhenSimpleEventQueryReturnsLessThanMaxEventCountParameter
 {
     public EpcisContext Context { get; set; }
-    public EventQueryContext Query { get; set; }
     public QueryParameter Parameter { get; set; }
 
     [TestInitialize]
@@ -36,8 +34,7 @@ public class WhenSimpleEventQueryReturnsLessThanMaxEventCountParameter
     [TestMethod]
     public void ItShouldThrowAQueryTooLargeExceptionException()
     {
-        Query = new EventQueryContext(Context, new[] { Parameter });
-        var result = Query.Apply(Context.Set<Event>()).ToList();
+        var result = Context.QueryEvents(new[] { Parameter }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Count, 1);

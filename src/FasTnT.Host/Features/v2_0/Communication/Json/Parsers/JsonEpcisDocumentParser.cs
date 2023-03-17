@@ -18,8 +18,14 @@ public static class JsonEpcisDocumentParser
         }
 
         var request = new Request();
+        var header = new StandardBusinessHeader
+        {
+            Version = "2.0",
+            TypeVersion = "2.0",
+            Standard = "EPCGlobal",
+            Type = "Events"
+        };
 
-        // TODO: parse sender/receiver that is in root element in JSON format.
         foreach (var property in document.RootElement.EnumerateObject())
         {
             switch (property.Name)
@@ -32,10 +38,21 @@ public static class JsonEpcisDocumentParser
                     request.Masterdata = ParseMasterdata(property.Value, extensions); break;
                 case "epcisBody":
                     ParseBodyIntoRequest(property.Value, request, extensions); break;
+                case "sender":
+                    header.ContactInformations.Add(new ContactInformation { Identifier = property.Value.GetString(), Type = ContactInformationType.Sender }); break;
+                case "receiver":
+                    header.ContactInformations.Add(new ContactInformation { Identifier = property.Value.GetString(), Type = ContactInformationType.Receiver }); break;
+                case "instanceIdentifier":
+                    header.InstanceIdentifier = property.Value.GetString(); break;
                 case "id" or "type" or "@context": break; // Ignore these fields - they are either already parsed or irrelevant
                 default:
                     throw new EpcisException(ExceptionType.ImplementationException, $"Unknown property type: '{property.Name}'");
             }
+        }
+
+        if(header.ContactInformations.Any() || !string.IsNullOrWhiteSpace(header.InstanceIdentifier))
+        {
+            request.StandardBusinessHeader = header;
         }
 
         return request;

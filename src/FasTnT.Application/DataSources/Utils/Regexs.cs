@@ -2,7 +2,7 @@
 
 namespace FasTnT.Application.Services.DataSources.Utils;
 
-public static partial class Regexs
+internal static partial class Regexs
 {
     [GeneratedRegex("^(GE|GT|LE|LT)_(?<type>SENSORMETADATA|SENSORELEMENT|SENSORREPORT)_")]
     public static partial Regex SensorFilter();

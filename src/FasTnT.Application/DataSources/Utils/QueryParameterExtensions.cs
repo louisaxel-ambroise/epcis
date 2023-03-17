@@ -4,9 +4,9 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using System.Globalization;
 
-namespace FasTnT.Application.Handlers.DataSources.Utils;
+namespace FasTnT.Application.DataSources.Utils;
 
-public static class QueryParameterExtensions
+internal static class QueryParameterExtensions
 {
     public static int AsInt(this QueryParameter parameter) => int.Parse(parameter.AsString());
     public static bool AsBool(this QueryParameter parameter) => bool.Parse(parameter.AsString());

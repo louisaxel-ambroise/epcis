@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Handlers;
-using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
