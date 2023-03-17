@@ -15,8 +15,7 @@ namespace FasTnT.Application.DataSources;
 public class EventQueryContext
 {
     private bool _ascending;
-    private int _skip = 0;
-    private int _take = Constants.Instance.MaxEventsReturnedInQuery;
+    private int _skip, _take = Constants.Instance.MaxEventsReturnedInQuery;
     private readonly List<Func<IQueryable<Event>, IQueryable<Event>>> _filters = new();
     private readonly EpcisContext _context;
 
