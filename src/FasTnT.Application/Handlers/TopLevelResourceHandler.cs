@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers.DataSources.Utils;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
@@ -12,12 +11,12 @@ namespace FasTnT.Application.Handlers;
 public class TopLevelResourceHandler
 {
     private readonly EpcisContext _context;
-    private readonly ICurrentUser _currentUser;
+    private readonly ICurrentUser _user;
 
-    public TopLevelResourceHandler(EpcisContext context, ICurrentUser currentUser)
+    public TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
     {
         _context = context;
-        _currentUser = currentUser;
+        _user = user;
     }
 
     public static IEnumerable<string> ListEventTypes(Pagination pagination)
@@ -32,7 +31,7 @@ public class TopLevelResourceHandler
     public async Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken)
     {
         var epcs = await _context
-            .QueryEvents(_currentUser.DefaultQueryParameters)
+            .QueryEvents(_user.DefaultQueryParameters)
             .SelectMany(x => x.Epcs.Select(x => x.Id))
             .Distinct()
             .OrderBy(x => x)
@@ -66,7 +65,7 @@ public class TopLevelResourceHandler
     private IQueryable<string> DistinctFromEvents(Expression<Func<Event, string>> selector, Pagination pagination)
     {
         return _context
-            .QueryEvents(_currentUser.DefaultQueryParameters)
+            .QueryEvents(_user.DefaultQueryParameters)
             .Select(selector)
             .Where(x => x != null)
             .Distinct()

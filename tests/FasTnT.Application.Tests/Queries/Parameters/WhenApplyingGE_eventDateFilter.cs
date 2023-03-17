@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers.DataSources.Contexts;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -9,7 +8,6 @@ namespace FasTnT.Application.Tests.Queries.Parameters;
 public class WhenApplyingGE_eventTimeFilter
 {
     public EpcisContext Context { get; set; }
-    public EventQueryContext Query { get; set; }
     public QueryParameter Parameter { get; set; }
 
     [TestInitialize]
@@ -50,9 +48,8 @@ public class WhenApplyingGE_eventTimeFilter
     [TestMethod]
     public void ItShouldOnlyReturnTheEventsCaptureAfterOrOnTheDate()
     {
-        Query = new EventQueryContext(Context, new[] { Parameter });
+        var result = Context.QueryEvents(new[] { Parameter }).ToList();
 
-        var result = Query.Apply(Context.Set<Event>()).ToList();
         Assert.AreEqual(2, result.Count);
         Assert.IsTrue(result.All(x => x.EventTime >= new DateTime(2021, 01, 12, 10, 24, 10)));
     }

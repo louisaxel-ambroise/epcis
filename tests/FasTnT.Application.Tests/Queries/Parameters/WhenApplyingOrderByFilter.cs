@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers.DataSources.Contexts;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -9,7 +8,6 @@ namespace FasTnT.Application.Tests.Queries.Parameters;
 public class WhenApplyingOrderByFilter
 {
     public EpcisContext Context { get; set; }
-    public EventQueryContext Query { get; set; }
     public QueryParameter Parameter { get; set; }
 
     [TestInitialize]
@@ -50,9 +48,7 @@ public class WhenApplyingOrderByFilter
     [TestMethod]
     public void ItShouldReturnAllTheEventsWithTheCorrectOrder()
     {
-        Query = new EventQueryContext(Context, new[] { Parameter });
-
-        var result = Query.Apply(Context.Set<Event>()).ToList();
+        var result = Context.QueryEvents(new[] { Parameter }).ToList();
         var sorted = result.OrderByDescending(s => s.EventTime);
 
         Assert.AreEqual(3, result.Count);

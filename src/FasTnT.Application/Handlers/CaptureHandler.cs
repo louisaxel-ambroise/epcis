@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers.DataSources.Utils;
 using FasTnT.Application.Services.Events;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
@@ -15,20 +14,20 @@ namespace FasTnT.Application.Handlers;
 public class CaptureHandler
 {
     private readonly EpcisContext _context;
-    private readonly ICurrentUser _currentUser;
+    private readonly ICurrentUser _user;
     private readonly ISubscriptionListener _subscriptionListener;
 
-    public CaptureHandler(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener subscriptionListener)
+    public CaptureHandler(EpcisContext context, ICurrentUser user, ISubscriptionListener subscriptionListener)
     {
         _context = context;
-        _currentUser = currentUser;
+        _user = user;
         _subscriptionListener = subscriptionListener;
     }
 
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
     {
         var captures = await _context
-            .QueryEvents(_currentUser.DefaultQueryParameters)
+            .QueryEvents(_user.DefaultQueryParameters)
             .Select(x => x.Request)
             .OrderBy(x => x.Id)
             .Skip(pagination.StartFrom)
@@ -41,7 +40,7 @@ public class CaptureHandler
     public async Task<Request> GetCaptureDetailsAsync(string captureId, CancellationToken cancellationToken)
     {
         var capture = await _context
-            .QueryEvents(_currentUser.DefaultQueryParameters)
+            .QueryEvents(_user.DefaultQueryParameters)
             .Select(x => x.Request)
             .FirstOrDefaultAsync(x => x.CaptureId == captureId, cancellationToken);
 
@@ -63,9 +62,13 @@ public class CaptureHandler
         {
             throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }
+        if(!HeaderValidator.IsValid(request.StandardBusinessHeader))
+        {
+            throw new EpcisException(ExceptionType.ValidationException, "Standard Business Header in EPCIS request is not valid");
+        }
 
         request.CaptureTime = DateTime.UtcNow;
-        request.UserId = _currentUser.UserId;
+        request.UserId = _user.UserId;
         request.Events.ForEach(evt =>
         {
             evt.CaptureTime = request.CaptureTime;

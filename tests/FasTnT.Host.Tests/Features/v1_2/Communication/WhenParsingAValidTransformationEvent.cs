@@ -70,6 +70,4 @@ public class WhenParsingAValidTransformationEvent : XmlParsingTestCase
     {
         Assert.AreEqual(1, Event.Fields.Where(x => x.Type == FieldType.CustomField).Count());
     }
-
-    // TODO: EPCs (input/output and lists)
 }

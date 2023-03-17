@@ -1,6 +1,5 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Host.Features.v2_0.Communication.Json.Utils;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
 using System.Xml.Linq;
 

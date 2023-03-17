@@ -7,14 +7,15 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using FasTnT.Application.Database;
 using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Application.Handlers.DataSources.Utils;
+using FasTnT.Application.DataSources.Utils;
+using FasTnT.Domain;
 
-namespace FasTnT.Application.Handlers.DataSources.Contexts;
+namespace FasTnT.Application.DataSources;
 
 public class EventQueryContext
 {
     private bool _ascending;
-    private readonly List<Func<IQueryable<Event>, IQueryable<Event>>> _pagination = new();
+    private int _skip, _take = Constants.Instance.MaxEventsReturnedInQuery;
     private readonly List<Func<IQueryable<Event>, IQueryable<Event>>> _filters = new();
     private readonly EpcisContext _context;
 
@@ -32,18 +33,19 @@ public class EventQueryContext
     {
         switch (param.Name)
         {
-            // Order Parameters
+            // Order parameters
             case "orderBy":
                 ParseOrderField(param); break;
             case "orderDirection":
                 _ascending = param.AsString() == "ASC"; break;
+            // Pagination parameters
+            case "nextPageToken":
+                _skip = Math.Max(_skip, param.AsInt()); break;
+            case "eventCountLimit" or "perPage" or "maxEventCount":
+                _take = Math.Min(_take, param.AsInt()); break;
             // Simple filters
             case "eventType":
                 Filter(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)); break;
-            case "nextPageToken":
-                _pagination.Add(x => x.Skip(param.AsInt())); break;
-            case "eventCountLimit" or "perPage" or "maxEventCount":
-                _pagination.Add(x => x.Take(param.AsInt())); break;
             case "GE_eventTime":
                 Filter(x => x.EventTime >= param.AsDate()); break;
             case "LT_eventTime":
@@ -195,17 +197,10 @@ public class EventQueryContext
 
     public IQueryable<Event> Apply(IQueryable<Event> query)
     {
-        return Paginate(Filter(query));
-    }
-
-    public IQueryable<Event> Filter(IQueryable<Event> query)
-    {
-        return _filters.Aggregate(query, (query, filter) => filter(query));
-    }
-
-    public IQueryable<Event> Paginate(IQueryable<Event> query)
-    {
-        return _pagination.Aggregate(query, (query, filter) => filter(query));
+        return _filters
+            .Aggregate(query, (q, f) => f(q))
+            .Skip(_skip)
+            .Take(_take);
     }
 
     private void ApplyHasAttributeParameter(string field, string attributeName)
@@ -222,7 +217,7 @@ public class EventQueryContext
     }
 
     private void ApplyEqAttributeParameter(string[] values, string field, string attributeName)
-    {
+    { 
         switch (field)
         {
             case "bizLocation":
@@ -239,9 +234,9 @@ public class EventQueryContext
         switch (param.AsString())
         {
             case "eventTime":
-                _pagination.Add(x => _ascending ? x.OrderBy(x => x.EventTime) : x.OrderByDescending(x => x.EventTime)); break;
+                _filters.Add(x => _ascending ? x.OrderBy(x => x.EventTime) : x.OrderByDescending(x => x.EventTime)); break;
             case "recordTime":
-                _pagination.Add(x => _ascending ? x.OrderBy(x => x.CaptureTime) : x.OrderByDescending(x => x.CaptureTime)); break;
+                _filters.Add(x => _ascending ? x.OrderBy(x => x.CaptureTime) : x.OrderByDescending(x => x.CaptureTime)); break;
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order field: {param.AsString()}");
         }
@@ -264,8 +259,8 @@ public class EventQueryContext
 
     private void ApplyComparison(QueryParameter param, FieldType type, string ns, string name, bool inner)
     {
-        var customFieldPredicate = (Expression<Func<Field, bool>>) (f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex != null == inner);
-        var fieldValuePredicate = (Expression<Func<Field, bool>>) (param.Name[..2] switch
+        var customFieldPredicate = (Expression<Func<Field, bool>>)(f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex != null == inner);
+        var fieldValuePredicate = (Expression<Func<Field, bool>>)(param.Name[..2] switch
         {
             "GE" => param.IsDateTime() ? f => f.DateValue >= param.AsDate() : f => f.NumericValue >= param.AsFloat(),
             "GT" => param.IsDateTime() ? f => f.DateValue > param.AsDate() : f => f.NumericValue > param.AsFloat(),
@@ -289,7 +284,7 @@ public class EventQueryContext
 
     private void ApplyPersistenDispositionFilter(QueryParameter param, PersistentDispositionType type)
     {
-        var typePredicate = (Expression<Func<PersistentDisposition, bool>>) (x => x.Type == type);
+        var typePredicate = (Expression<Func<PersistentDisposition, bool>>)(x => x.Type == type);
         var anyPredicate = (Expression<Func<PersistentDisposition, bool>>)(x => false);
 
         Array.ForEach(param.Values, value => OrElse(anyPredicate, e => e.Id == value));
@@ -299,8 +294,8 @@ public class EventQueryContext
 
     private void ApplyUomComparison(QueryParameter param)
     {
-        var customFieldPredicate = (Expression<Func<SensorReport, bool>>) (r => r.UnitOfMeasure == param.ReportFieldUom());
-        var fieldValuePredicate = (Expression<Func<SensorReport, bool>>) (param.Name[..2] switch
+        var customFieldPredicate = (Expression<Func<SensorReport, bool>>)(r => r.UnitOfMeasure == param.ReportFieldUom());
+        var fieldValuePredicate = (Expression<Func<SensorReport, bool>>)(param.Name[..2] switch
         {
             "GE" => r => EF.Property<float?>(r, param.ReportField()) >= param.AsFloat(),
             "GT" => r => EF.Property<float?>(r, param.ReportField()) > param.AsFloat(),
