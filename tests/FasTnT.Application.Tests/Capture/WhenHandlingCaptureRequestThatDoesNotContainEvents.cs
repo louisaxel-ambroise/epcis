@@ -5,7 +5,6 @@ using FasTnT.Application.Tests.Context;
 using FasTnT.Application.Handlers;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -15,6 +14,15 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
     readonly static ISubscriptionListener SubscriptionListener = new TestSubscriptionListener();
+
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if (Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
 
     [TestMethod]
     [ExpectedException(typeof(EpcisException))]

@@ -10,6 +10,15 @@ public class WhenHandlingTriggerCommand
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingTriggerCommand));
     readonly static TestSubscriptionListener Listener = new();
 
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if (Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
+
     [TestMethod]
     public void ItShouldTriggerTheListener()
     {

@@ -12,6 +12,15 @@ public class WhenHandlingPollQuery
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingPollQuery));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if (Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
+
     [TestMethod]
     public void ItShouldReturnAPollResponse()
     {

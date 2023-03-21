@@ -15,7 +15,7 @@ namespace FasTnT.Application.DataSources;
 public class EventQueryContext
 {
     private bool _ascending;
-    private int _skip, _take = Constants.Instance.MaxEventsReturnedInQuery;
+    private int? _skip, _take;
     private readonly List<Func<IQueryable<Event>, IQueryable<Event>>> _filters = new();
     private readonly EpcisContext _context;
 
@@ -27,6 +27,9 @@ public class EventQueryContext
         {
             ParseParameter(parameter);
         }
+
+        _filters.Add(x => _skip.HasValue ? x.Skip(_skip.Value) : x);
+        _filters.Add(x => _take.HasValue ? x.Take(_take.Value) : x);
     }
 
     private void ParseParameter(QueryParameter param)
@@ -40,9 +43,9 @@ public class EventQueryContext
                 _ascending = param.AsString() == "ASC"; break;
             // Pagination parameters
             case "nextPageToken":
-                _skip = Math.Max(_skip, param.AsInt()); break;
+                _skip = Math.Max(_skip ?? 0, param.AsInt()); break;
             case "eventCountLimit" or "perPage" or "maxEventCount":
-                _take = Math.Min(_take, param.AsInt()); break;
+                _take = Math.Max(_take ?? 0, param.AsInt()); break;
             // Simple filters
             case "eventType":
                 Filter(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)); break;
@@ -195,12 +198,9 @@ public class EventQueryContext
         }
     }
 
-    public IQueryable<Event> Apply(IQueryable<Event> query)
+    public IQueryable<Event> ApplyTo(IQueryable<Event> query)
     {
-        return _filters
-            .Aggregate(query, (q, f) => f(q))
-            .Skip(_skip)
-            .Take(_take);
+        return _filters.Aggregate(query, (q, f) => f(q));
     }
 
     private void ApplyHasAttributeParameter(string field, string attributeName)

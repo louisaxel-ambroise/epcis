@@ -12,6 +12,15 @@ public class WhenHandlingListQueries
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListQueries));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if (Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
+
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {

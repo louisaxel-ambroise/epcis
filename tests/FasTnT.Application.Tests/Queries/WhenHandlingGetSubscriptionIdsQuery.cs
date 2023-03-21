@@ -10,6 +10,15 @@ public class WhenHandlingGetSubscriptionIdsQuery
 {
     public readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetSubscriptionIdsQuery));
 
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if (Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
+
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {

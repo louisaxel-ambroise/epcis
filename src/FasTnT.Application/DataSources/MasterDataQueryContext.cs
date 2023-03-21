@@ -37,7 +37,7 @@ public class MasterDataQueryContext
             case "EQ_name":
                 Filter(x => param.Values.Any(v => v == x.Id)); break;
             case "WD_name":
-                Filter(x => _context.Set<MasterDataHierarchy>().Any(h => h.Type == x.Type && h.Root == x.Id && param.Values.Contains(x.Id))); break;
+                Filter(x => _context.Set<MasterDataHierarchy>().Any(h => h.Type == x.Type && h.Root == x.Id && param.Values.Contains(h.Id))); break;
             case "HASATTR":
                 Filter(x => x.Attributes.Any(a => a.Id == param.AsString())); break;
             // Family filters
@@ -50,10 +50,11 @@ public class MasterDataQueryContext
         }
     }
 
-    public IQueryable<MasterData> Apply(IQueryable<MasterData> query)
+    public IQueryable<MasterData> ApplyTo(IQueryable<MasterData> query)
     {
         return _filters
             .Aggregate(query, (q, f) => f(q))
+            .OrderBy(x => x.Id)
             .Take(_take);
     }
 

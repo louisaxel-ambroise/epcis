@@ -13,6 +13,15 @@ public class WhenHandlingSubscribeCommand
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingSubscribeCommand));
     readonly static TestSubscriptionListener Listener = new();
 
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if (Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
+
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {

@@ -14,6 +14,12 @@ public class DataRetrieverHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _user;
+    private static readonly IEnumerable<QueryParameter> DefaultEventParameters = new[]
+    {
+        new QueryParameter { Name = "orderBy", Values = new[]{ "eventTime" } },
+        new QueryParameter { Name = "perPage", Values = new[]{ Constants.Instance.MaxEventsReturnedInQuery.ToString() } },
+        new QueryParameter { Name = "nextPageToken", Values = new[]{ "0" } }
+    };
 
     public DataRetrieverHandler(EpcisContext context, ICurrentUser user)
     {
@@ -23,9 +29,10 @@ public class DataRetrieverHandler
 
     public async Task<List<Event>> QueryEventsAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
+        var userParameters = _user.DefaultQueryParameters.Union(DefaultEventParameters);
         var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsInt();
         var eventIds = await _context
-            .QueryEvents(_user.DefaultQueryParameters.Union(parameters))
+            .QueryEvents(userParameters.Union(parameters))
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 

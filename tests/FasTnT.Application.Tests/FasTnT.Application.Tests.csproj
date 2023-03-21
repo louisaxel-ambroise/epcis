@@ -11,6 +11,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="7.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
@@ -22,5 +23,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\FasTnT.Application\FasTnT.Application.csproj" />
     <ProjectReference Include="..\..\src\FasTnT.Domain\FasTnT.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Providers\FasTnT.Sqlite\FasTnT.Sqlite.csproj" />
   </ItemGroup>
 </Project>

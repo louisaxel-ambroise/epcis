@@ -13,13 +13,12 @@ public class EpcisContext : DbContext
         SavedChanges += (_, _) => ChangeTracker.Clear();
     }
 
-
     public IQueryable<Event> QueryEvents(IEnumerable<QueryParameter> parameters)
     {
         var eventContext = new EventQueryContext(this, parameters);
         var dataset = Set<Event>().AsNoTracking();
 
-        return eventContext.Apply(dataset);
+        return eventContext.ApplyTo(dataset);
     }
 
     public IQueryable<MasterData> QueryMasterData(IEnumerable<QueryParameter> parameters)
@@ -27,7 +26,7 @@ public class EpcisContext : DbContext
         var masterdataContext = new MasterDataQueryContext(this, parameters);
         var dataset = Set<MasterData>().AsNoTracking();
 
-        return masterdataContext.Apply(dataset);
+        return masterdataContext.ApplyTo(dataset);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
