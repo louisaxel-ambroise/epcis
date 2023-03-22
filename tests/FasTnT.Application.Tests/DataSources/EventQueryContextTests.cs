@@ -32,7 +32,7 @@ public class EventQueryContextTests
         {
             new Request
             {
-                CaptureId = "1",
+                CaptureId = "capture_id_test",
                 Id = 1,
                 SchemaVersion = "2.0",
                 Events = new List<Event> {
@@ -41,7 +41,11 @@ public class EventQueryContextTests
                         Type = EventType.ObjectEvent,
                         Action = EventAction.Add,
                         BusinessLocation = "test_location",
+                        CorrectiveDeclarationTime = DateTime.UtcNow,
+                        CorrectiveReason = "invalid_evt",
+                        CorrectiveEventIds = new List<CorrectiveEventId>{{ new CorrectiveEventId { CorrectiveId = "ni://test2" } }},
                         BusinessStep = "step",
+                        EventId = "ni://test",
                         CaptureTime =  new DateTime(2020, 03, 15, 21, 14, 10),
                         EventTime =  new DateTime(2020, 02, 15, 21, 14, 10),
                         EventTimeZoneOffset = "+02:00",
@@ -52,15 +56,46 @@ public class EventQueryContextTests
                         Type = EventType.AssociationEvent,
                         Action = EventAction.Observe,
                         BusinessLocation = "test_location2",
+                        TransformationId = "transformationIdEvent",
+                        ReadPoint = "rp_test",
                         Disposition = "disposition",
                         CaptureTime = new DateTime(2021, 03, 15, 21, 14, 10),
                         EventTime = new DateTime(2021, 02, 15, 21, 14, 10),
                         EventTimeZoneOffset = "+01:00",
-                        Epcs = new List<Epc>{ new Epc { Id = "epc2", Type = EpcType.List } }
+                        Epcs = new List<Epc>{ new Epc { Id = "epc2", Type = EpcType.List }, new Epc { Id = "epc.value.1", Type = EpcType.List } },
+                        Fields = new List<Field>
+                        {
+                            new Field
+                            {
+                                Index = 1,
+                                Type = FieldType.Ilmd,
+                                Name = "container",
+                                Namespace = "test"
+                            },
+                            new Field
+                            {
+                                Index = 2,
+                                ParentIndex = 1,
+                                Type = FieldType.Ilmd,
+                                Name = "numeric",
+                                Namespace = "test",
+                                NumericValue = 6.2,
+                                TextValue = "6.2"
+                            },
+                            new Field
+                            {
+                                Index = 3,
+                                Type = FieldType.Ilmd,
+                                Name = "numeric",
+                                Namespace = "test",
+                                NumericValue = 2.5,
+                                TextValue = "2.5"
+                            }
+                        }
                     }
                 }
             }
-        });
+        }); ;
 
         Context.SaveChanges();
     }
@@ -218,6 +253,114 @@ public class EventQueryContextTests
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheEQ_eventIDFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("EQ_eventID", "ni://test") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.EventId == "ni://test"));
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheEQ_readPointFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("EQ_readPoint", "rp_test") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.ReadPoint == "rp_test"));
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheEQ_transformationIDFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("EQ_transformationID", "transformationIdEvent") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.ReadPoint == "rp_test"));
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheEXISTS_errorDeclarationFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("EXISTS_errorDeclaration", "") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.CorrectiveDeclarationTime.HasValue));
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheEQ_errorReasonFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("EQ_errorReason", "invalid_evt") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.CorrectiveReason == "invalid_evt"));
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheEQ_correctiveEventIDFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("EQ_correctiveEventID", "ni://test2") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.CorrectiveEventIds.Any(c => c.CorrectiveId == "ni://test2")));
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheEQ_requestIDFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("EQ_requestID", "1") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.Count);
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheEQ_captureIDFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("EQ_captureID", "capture_id_test") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.Count);
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheInnerIlmdFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("GE_INNER_ILMD_test#numeric", "5") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.Fields.Any(f => f.Namespace == "test" && f.Name == "numeric" && f.ParentIndex.HasValue && f.NumericValue >= 5)));
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheIlmdFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("LT_ILMD_test#numeric", "3") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.Fields.Any(f => f.Namespace == "test" && f.Name == "numeric" && !f.ParentIndex.HasValue && f.NumericValue < 3)));
+    }
+
+    [TestMethod]
+    public void ItShouldApplyTheMATCH_anyEpcFilter()
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("MATCH_anyEPC", "epc.*") }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(x => x.Epcs.Any(e => e.Id.StartsWith("epc."))));
     }
 
     [TestMethod]
