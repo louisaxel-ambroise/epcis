@@ -2,5 +2,6 @@
 
 public interface ISubscriptionService : ISubscriptionListener
 {
-    void Execute(CancellationToken cancellationToken);
+    void Run(CancellationToken cancellationToken);
+    void Execute(DateTime executionDate, CancellationToken cancellationToken);
 }

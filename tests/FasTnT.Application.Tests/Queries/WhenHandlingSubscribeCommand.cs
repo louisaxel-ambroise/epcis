@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Tests.Subscriptions;
 using FasTnT.Application.Handlers;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
@@ -12,6 +11,15 @@ public class WhenHandlingSubscribeCommand
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingSubscribeCommand));
     readonly static TestSubscriptionListener Listener = new();
+
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if (Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)

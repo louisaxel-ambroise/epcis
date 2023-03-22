@@ -17,6 +17,15 @@ public class WhenHandlingCaptureRequestGivenItExceedTheMaximumNumberOfEvents
     readonly static ICurrentUser UserContext = new TestCurrentUser();
     readonly static TestSubscriptionListener SubscriptionListener = new();
 
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if (Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
+
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {

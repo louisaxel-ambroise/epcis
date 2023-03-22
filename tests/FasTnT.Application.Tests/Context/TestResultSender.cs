@@ -4,20 +4,23 @@ using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using System.Threading.Tasks;
 
-namespace FasTnT.Application.Tests.Subscriptions;
-
+namespace FasTnT.Application.Tests.Context;
 
 public class TestResultSender : IResultSender
 {
     public string Name => "TestFormatter";
+    public bool ErrorSent { get; set; }
+    public bool ResultSent { get; set; }
 
     public Task<bool> SendErrorAsync(Subscription context, EpcisException error, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        ErrorSent = true;
+        return Task.FromResult(true);
     }
 
     public Task<bool> SendResultAsync(Subscription context, QueryResponse response, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        ResultSent = true;
+        return Task.FromResult(true);
     }
 }

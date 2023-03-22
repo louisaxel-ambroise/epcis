@@ -1,25 +1,24 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Tests.Context;
 
 public static class EpcisTestContext
 {
-    public static DbContextOptions<EpcisContext> GetOptions(string databaseName)
-    {
-        return new DbContextOptionsBuilder<EpcisContext>()
-            .UseInMemoryDatabase(databaseName)
-            .Options;
-    }
-
     public static EpcisContext GetContext(string databaseName, bool reset = true)
     {
-        var context = new EpcisContext(GetOptions(databaseName));
+        var context = new EpcisContext(new DbContextOptionsBuilder<EpcisContext>().UseSqlite($"Data Source={databaseName}", x =>
+        {
+            x.MigrationsAssembly(typeof(SqliteProvider).Assembly.FullName);
+            x.CommandTimeout(30);
+            x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+        }).Options);
 
         if (reset)
         {
             context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
+            context.Database.Migrate();
         }
 
         return context;

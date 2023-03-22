@@ -19,7 +19,7 @@ public class SubscriptionBackgroundService : BackgroundService
     {
         Initialize(stoppingToken);
 
-        return Task.Run(() => _subscriptionService.Execute(stoppingToken), stoppingToken);
+        return Task.Run(() => _subscriptionService.Run(stoppingToken), stoppingToken);
     }
 
     private void Initialize(CancellationToken stoppingToken)

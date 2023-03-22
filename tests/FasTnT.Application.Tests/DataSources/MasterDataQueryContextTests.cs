@@ -15,6 +15,15 @@ public class MasterDataQueryContextTests
     readonly static ICurrentUser UserContext = new TestCurrentUser();
     readonly static TestSubscriptionListener SubscriptionListener = new();
 
+    [ClassCleanup]
+    public static void Cleanup()
+    {
+        if(Context != null)
+        {
+            Context.Database.EnsureDeleted();
+        }
+    }
+
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
@@ -127,14 +136,15 @@ public class MasterDataQueryContextTests
         Assert.AreEqual("MD02", result.Single().Id);
     }
 
-    [TestMethod, Ignore("InMemory database doesn't have views currently")]
+    [TestMethod]
     public void ItShouldApplyTheWDNameParameter()
     {
         var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "WD_name", Values = new[] { "MD03" } } }).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
-        Assert.AreEqual("MD02", result.Single().Id);
+        Assert.AreEqual(2, result.Count);
+        Assert.IsTrue(result.Any(x => x.Id == "MD02"));
+        Assert.IsTrue(result.Any(x => x.Id == "MD03"));
     }
 
     [TestMethod]

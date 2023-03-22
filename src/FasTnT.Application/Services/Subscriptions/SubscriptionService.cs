@@ -21,7 +21,7 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         _logger = logger;
     }
 
-    public void Execute(CancellationToken cancellationToken)
+    public void Run(CancellationToken cancellationToken)
     {
         cancellationToken.Register(() => Pulse(() => { })); // Stop background process on cancellation.
 
@@ -29,16 +29,20 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         {
             try
             {
-                var executionDate = DateTime.UtcNow;
-                var triggeredSubscriptions = GetScheduledSubscriptions(executionDate).Union(GetTriggeredSubscriptions());
-
-                Execute(triggeredSubscriptions.ToArray(), cancellationToken);
+                Execute(DateTime.UtcNow, cancellationToken);
             }
             finally
             {
                 WaitTillNextExecutionOrNotification();
             }
         }
+    }
+
+    public void Execute(DateTime executionDate, CancellationToken cancellationToken)
+    {
+        var triggeredSubscriptions = GetScheduledSubscriptions(executionDate).Union(GetTriggeredSubscriptions());
+
+        Execute(triggeredSubscriptions.ToArray(), cancellationToken);
     }
 
     private IEnumerable<SubscriptionContext> GetTriggeredSubscriptions()
