@@ -20,4 +20,8 @@
     <ProjectReference Include="..\..\src\FasTnT.Host\FasTnT.Host.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="v1_2\" />
+  </ItemGroup>
+
 </Project>

@@ -1,13 +1,14 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
-using FasTnT.IntegrationTests.Interfaces;
+using FasTnT.IntegrationTests.v2_0.Interfaces;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace FasTnT.IntegrationTests;
+namespace FasTnT.IntegrationTests.v2_0;
 
 [TestClass]
 public class DiscoveryEndpointsTests
@@ -18,14 +19,14 @@ public class DiscoveryEndpointsTests
     [ClassInitialize]
     public static void AssemblyInit(TestContext _)
     {
-        TestHost = new FasTnTApplicationFactory();
+        TestHost = new FasTnTApplicationFactory(nameof(DiscoveryEndpointsTests));
         Client = TestHost.CreateDefaultClient();
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "YWRtaW46UEBzc3cwcmQ=");
 
         using (var scope = TestHost.Server.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetService<EpcisContext>();
-            
+
             dbContext.Add(new Request
             {
                 CaptureTime = DateTime.Now,
@@ -36,13 +37,15 @@ public class DiscoveryEndpointsTests
                 {
                     new Event
                     {
+                        Action = EventAction.Add,
+                        Type = EventType.ObjectEvent,
                         Disposition = "disp",
                         BusinessLocation = "loc1",
                         BusinessStep = "step",
                         ReadPoint = "readpoint",
                         Epcs = new List<Epc> {
-                            new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:1" },
-                            new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:2" },
+                            new Epc { Type = EpcType.List, Id = "test:epc:1" },
+                            new Epc { Type = EpcType.List, Id = "test:epc:2" },
                         }
                     },
                     new Event
@@ -50,7 +53,7 @@ public class DiscoveryEndpointsTests
                         BusinessLocation = "loc2",
                         BusinessStep = "step",
                         Epcs = new List<Epc> {
-                            new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:3" }
+                            new Epc { Type = EpcType.List, Id = "test:epc:3" }
                         }
                     }
                 }
@@ -71,8 +74,8 @@ public class DiscoveryEndpointsTests
                         BusinessStep = "secondstep",
                         ReadPoint = "secondreadpoint",
                         Epcs = new List<Epc> {
-                            new Epc { Type = Domain.Enumerations.EpcType.List, Id = "second:epc:1" },
-                            new Epc { Type = Domain.Enumerations.EpcType.List, Id = "second:epc:2" },
+                            new Epc { Type = EpcType.List, Id = "second:epc:1" },
+                            new Epc { Type = EpcType.List, Id = "second:epc:2" },
                         }
                     }
                 }
