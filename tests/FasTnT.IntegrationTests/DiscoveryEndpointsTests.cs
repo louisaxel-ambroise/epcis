@@ -25,10 +25,7 @@ public class DiscoveryEndpointsTests
         using (var scope = TestHost.Server.Services.CreateScope())
         {
             var dbContext = scope.ServiceProvider.GetService<EpcisContext>();
-
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
-
+            
             dbContext.Add(new Request
             {
                 CaptureTime = DateTime.Now,

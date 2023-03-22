@@ -10,9 +10,24 @@ internal class FasTnTApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureHostConfiguration(config =>
         {
-            config.AddInMemoryCollection(new Dictionary<string, string> { { "FasTnT.Database.ApplyMigrations", "false" }, { "FasTnT.Database.Provider", "Sqlite" }, { "ConnectionStrings.FasTnT.Database", "Data Source=fastnt.db;" } });
+            config.AddInMemoryCollection(new Dictionary<string, string> { { "FasTnT.Database.ApplyMigrations", "true" }, { "FasTnT.Database.Provider", "Sqlite" }, { "ConnectionStrings.FasTnT.Database", "Data Source=fastnt.db;" } });
         });
 
+        if (File.Exists("fastnt.db"))
+        {
+            File.Delete("fastnt.db");
+        }
+
         return base.CreateHost(builder);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+
+        if (disposing && File.Exists("fastnt.db"))
+        {
+            File.Delete("fastnt.db");
+        }
     }
 }
