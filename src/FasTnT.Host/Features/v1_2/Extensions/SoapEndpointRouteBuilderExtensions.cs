@@ -7,6 +7,6 @@ public static class EndpointRouteHandlerBuilderExtensions
         var soapRequest = new SoapActionBuilder();
         soapActions(soapRequest);
 
-        return app.MapPost(route, soapRequest.SoapAction);
+        return app.MapPost(route, ErrorHandlingFactory.HandleSoap(soapRequest.SoapAction));
     }
 }

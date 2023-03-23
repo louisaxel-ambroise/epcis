@@ -22,6 +22,6 @@ public static class Epcis1_2Configuration
 
     internal static RouteHandlerBuilder TryMapPost(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)
     {
-        return endpoints.MapPost(pattern, ErrorHandlingFactory.Create(handler));
+        return endpoints.MapPost(pattern, ErrorHandlingFactory.HandleError(handler));
     }
 }

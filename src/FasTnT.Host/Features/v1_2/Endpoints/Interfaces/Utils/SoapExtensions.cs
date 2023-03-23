@@ -8,7 +8,7 @@ namespace FasTnT.Host.Features.v1_2.Endpoints.Interfaces.Utils;
 
 public static class SoapExtensions
 {
-    private static readonly XmlWriterSettings _soapsettings = new() { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates };
+    private static readonly XmlWriterSettings _soapsettings = new() { Async = true, NamespaceHandling = NamespaceHandling.OmitDuplicates, Indent = false };
 
     public static async Task FormatSoap(this HttpResponse response, XElement element, CancellationToken cancellationToken)
     {
@@ -25,8 +25,17 @@ public static class SoapExtensions
             new XAttribute(XNamespace.Xmlns + "xsi", Namespaces.XSI));
 
         await using var xmlWriter = XmlWriter.Create(response.Body, _soapsettings);
-
         await xmlResponse.WriteToAsync(xmlWriter, cancellationToken);
+    }
+
+    public static Task FormatSoapFault(this HttpResponse response, EpcisException error, CancellationToken cancellationToken)
+    {
+        var fault = new XElement(XName.Get("Fault", Namespaces.SoapEnvelop),
+            new XElement("faultCode", "Server"),
+            new XElement("faultstring", error.Message),
+            new XElement("detail", XmlResponseFormatter.FormatError(error)));
+
+        return FormatSoap(response, fault, cancellationToken);
     }
 
     public static async Task<XElement> ParseSoapEnvelope(this HttpRequest request, CancellationToken cancellationToken)
