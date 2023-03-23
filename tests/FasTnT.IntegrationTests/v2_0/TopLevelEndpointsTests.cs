@@ -1,11 +1,5 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Events;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 
 namespace FasTnT.IntegrationTests.v2_0;
 
