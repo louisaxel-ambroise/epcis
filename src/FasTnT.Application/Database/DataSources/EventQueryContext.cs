@@ -5,20 +5,19 @@ using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using FasTnT.Application.Database;
 using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Application.DataSources.Utils;
+using FasTnT.Application.Database.DataSources.Utils;
 
-namespace FasTnT.Application.DataSources;
+namespace FasTnT.Application.Database.DataSources;
 
-public class EventQueryContext
+internal class EventQueryContext
 {
     private bool _ascending;
     private int? _skip, _take;
     private readonly List<Func<IQueryable<Event>, IQueryable<Event>>> _filters = new();
     private readonly EpcisContext _context;
 
-    public EventQueryContext(EpcisContext context, IEnumerable<QueryParameter> parameters)
+    internal EventQueryContext(EpcisContext context, IEnumerable<QueryParameter> parameters)
     {
         _context = context;
 
@@ -216,7 +215,7 @@ public class EventQueryContext
     }
 
     private void ApplyEqAttributeParameter(string[] values, string field, string attributeName)
-    { 
+    {
         switch (field)
         {
             case "bizLocation":

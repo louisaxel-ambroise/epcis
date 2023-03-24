@@ -1,19 +1,18 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.DataSources.Utils;
+﻿using FasTnT.Application.Database.DataSources.Utils;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using System.Linq.Expressions;
 
-namespace FasTnT.Application.DataSources;
+namespace FasTnT.Application.Database.DataSources;
 
-public class MasterDataQueryContext
+internal class MasterDataQueryContext
 {
     private int _take = int.MaxValue;
     private readonly List<Func<IQueryable<MasterData>, IQueryable<MasterData>>> _filters = new();
     private readonly EpcisContext _context;
 
-    public MasterDataQueryContext(EpcisContext context, IEnumerable<QueryParameter> parameters)
+    internal MasterDataQueryContext(EpcisContext context, IEnumerable<QueryParameter> parameters)
     {
         _context = context;
 

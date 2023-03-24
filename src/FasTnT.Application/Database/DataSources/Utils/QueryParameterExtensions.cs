@@ -4,7 +4,7 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using System.Globalization;
 
-namespace FasTnT.Application.DataSources.Utils;
+namespace FasTnT.Application.Database.DataSources.Utils;
 
 internal static class QueryParameterExtensions
 {

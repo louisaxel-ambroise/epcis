@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.DataSources.Utils;
+using FasTnT.Application.Database.DataSources.Utils;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
