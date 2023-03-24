@@ -161,5 +161,5 @@ public static class JsonResponseFormatter
     // Builds a context for JSON format.
     // key=namespace, value=prefix
     // The prefixes are incremental (ext1, ext2, ext...)
-    private static IDictionary<string, string> BuildContext(IEnumerable<string> namespaces, int counter = 0) => namespaces.ToDictionary(x => x, x => $"ext{counter++}");
+    private static Dictionary<string, string> BuildContext(IEnumerable<string> namespaces, int counter = 0) => namespaces.ToDictionary(x => x, x => $"ext{counter++}");
 }
