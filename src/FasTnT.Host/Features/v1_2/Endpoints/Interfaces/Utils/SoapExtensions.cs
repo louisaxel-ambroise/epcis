@@ -1,6 +1,7 @@
-﻿using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
-using FasTnT.Host.Features.v1_2.Communication.Utils;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Format.v1_2.Utils;
+using FasTnT.Host.Features.v1_2.Communication;
 using System.Xml;
 using System.Xml.XPath;
 

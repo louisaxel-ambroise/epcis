@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Application.Services.Storage;
 using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.Storage;
 
 namespace FasTnT.Host.Services.Subscriptions;
 

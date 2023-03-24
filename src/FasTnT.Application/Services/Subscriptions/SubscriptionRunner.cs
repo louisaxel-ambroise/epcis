@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Domain.Exceptions;
 using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Domain.Model.Subscriptions;
-using FasTnT.Application.Storage;
+using FasTnT.Application.Services.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -44,8 +44,6 @@ public class SubscriptionRunner : ISubscriptionRunner
         }
         catch (EpcisException ex)
         {
-            ex.SubscriptionId = context.Subscription.Name;
-
             resultsSent = await context.SendExceptionResult(ex, cancellationToken);
         }
 

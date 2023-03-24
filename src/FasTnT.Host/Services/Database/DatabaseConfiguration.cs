@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.Storage;
+﻿using FasTnT.Application.Services.Storage;
 using FasTnT.Postgres;
 using FasTnT.Sqlite;
 using FasTnT.SqlServer;

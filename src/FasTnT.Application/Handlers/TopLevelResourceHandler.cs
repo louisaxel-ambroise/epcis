@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Domain.Model.Events;
 using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Services.Storage;
 using FasTnT.Application.Services.Users;
-using FasTnT.Application.Storage;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

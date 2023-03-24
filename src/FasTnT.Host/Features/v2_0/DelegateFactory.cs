@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application;
+using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
+using FasTnT.Host.Features.v2_0.Communication;
 
 namespace FasTnT.Host.Features.v2_0;
 

@@ -8,8 +8,6 @@ namespace FasTnT.Host.Features.v1_2.Endpoints;
 
 public static class QueryEndpoints
 {
-    internal const string WsdlPath = "FasTnT.Host.Features.v1_2.Artifacts.epcis1_2.wsdl";
-
     public static IEndpointRouteBuilder AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("v1_2/query.svc", GetWsdl).AllowAnonymous();
@@ -59,7 +57,9 @@ public static class QueryEndpoints
     {
         response.ContentType = "text/xml";
 
-        await using var wsdl = Assembly.GetExecutingAssembly().GetManifestResourceStream(WsdlPath);
-        await wsdl.CopyToAsync(response.Body, cancellationToken).ConfigureAwait(false);
+        await using var wsdl = Assembly
+            .GetExecutingAssembly()
+            .GetManifestResourceStream("FasTnT.Host.Features.v1_2.Communication.Artifacts.epcis1_2.wsdl");
+        await wsdl.CopyToAsync(response.Body, cancellationToken);
     }
 }

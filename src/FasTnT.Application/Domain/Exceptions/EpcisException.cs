@@ -7,7 +7,6 @@ public class EpcisException : Exception
     public ExceptionType ExceptionType { get; }
     public ExceptionSeverity Severity { get; set; }
     public string QueryName { get; set; }
-    public string SubscriptionId { get; set; }
 
     public EpcisException(ExceptionType exceptionType, string message) : base(message)
     {

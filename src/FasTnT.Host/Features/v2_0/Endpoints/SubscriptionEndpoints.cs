@@ -1,7 +1,7 @@
-﻿using FasTnT.Application.Handlers;
+﻿using FasTnT.Application.Domain.Format.v2_0.Subscriptions;
+using FasTnT.Application.Handlers;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
-using FasTnT.Host.Features.v2_0.Subscriptions;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints;
 

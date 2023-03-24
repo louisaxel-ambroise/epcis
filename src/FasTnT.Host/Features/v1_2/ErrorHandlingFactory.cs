@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
+using FasTnT.Host.Features.v1_2.Communication;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces.Utils;
 
 namespace FasTnT.Host.Features.v1_2;

@@ -1,0 +1,80 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Features\v1_2\Communication\Resources\CallbackRequests\ImplementationExceptionRequest.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\CallbackRequests\QueryTooLargeRequest.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\CallbackRequests\SuccessfulRequest.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Events\AggregationEvent_Full.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Events\ObjectEvent_Full.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Events\TransformationEvent_Full.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Queries\GetQueryNames.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Queries\GetStandardVersion.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Queries\GetSubscriptionIDs.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Queries\GetVendorVersion.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Queries\InvalidQuery.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Queries\Unsubscribe.xml" />
+    <None Remove="Features\v1_2\Communication\Resources\Requests\InvalidRequest.xml" />
+    <None Remove="Features\v2_0\Communication\Resources\Events\ObjectEvent_Full.json" />
+    <None Remove="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfo.json" />
+    <None Remove="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfo.xml" />
+    <None Remove="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfoArray.json" />
+    <None Remove="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfoArrayInvalid.json" />
+    <None Remove="Features\v2_0\Communication\Resources\Events\TransformationEvent_Full.json" />
+    <None Remove="Features\v2_0\Communication\Resources\Requests\Request_ObjectEvent_WithMasterdata.json" />
+    <None Remove="Features\v2_0\Communication\Resources\Requests\Request_ObjectEvent_WithMasterdata.xml" />
+    <None Remove="Features\v2_0\Communication\Resources\Requests\Request_ObjectEvent_WithMultipleMasterdata.json" />
+    <None Remove="Features\v2_0\Communication\Resources\Requests\Request_WithHeader.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\CallbackRequests\ImplementationExceptionRequest.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\CallbackRequests\QueryTooLargeRequest.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\CallbackRequests\SuccessfulRequest.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Events\AggregationEvent_Full.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Events\ObjectEvent_Full.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Events\TransformationEvent_Full.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Queries\GetQueryNames.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Queries\GetStandardVersion.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Queries\GetSubscriptionIDs.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Queries\GetVendorVersion.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Queries\InvalidQuery.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Queries\Unsubscribe.xml" />
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\Requests\InvalidRequest.xml" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\ObjectEvent_Full.json" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfo.json" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfo.xml" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfoArray.json" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfoArrayInvalid.json" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\TransformationEvent_Full.json" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Requests\Request_ObjectEvent_WithMasterdata.json" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Requests\Request_ObjectEvent_WithMasterdata.xml" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Requests\Request_ObjectEvent_WithMultipleMasterdata.json" />
+    <EmbeddedResource Include="Features\v2_0\Communication\Resources\Requests\Request_WithHeader.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+    <PackageReference Include="coverlet.collector" Version="3.2.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\FasTnT.Application\FasTnT.Application.csproj" />
+    <ProjectReference Include="..\..\src\FasTnT.Host\FasTnT.Host.csproj" />
+  </ItemGroup>
+
+</Project>

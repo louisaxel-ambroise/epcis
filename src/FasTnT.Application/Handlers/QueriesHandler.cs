@@ -1,8 +1,8 @@
 ﻿using FasTnT.Application.Domain.Exceptions;
 using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Application.Services.Storage;
 using FasTnT.Application.Services.Users;
-using FasTnT.Application.Storage;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Handlers;

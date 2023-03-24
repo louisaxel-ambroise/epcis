@@ -17,13 +17,7 @@ public record PollResult
         VocabularyList = vocabularyList;
     }
 
-    public PollResult(string queryName, string subscriptionId, List<Event> eventList) : this(queryName, eventList)
-    {
-        SubscriptionId = subscriptionId;
-    }
-
     public string QueryName { get; init; }
-    public string SubscriptionId { get; set; }
     public List<Event> EventList { get; init; }
     public List<MasterData> VocabularyList { get; init; }
 }
