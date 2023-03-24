@@ -1,11 +1,7 @@
-﻿using FasTnT.Application.Database;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.Tests.Context;
-using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

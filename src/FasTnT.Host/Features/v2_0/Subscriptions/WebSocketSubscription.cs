@@ -1,6 +1,6 @@
-﻿using FasTnT.Application.Handlers;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Application.Handlers;
 using System.Net.WebSockets;
 using System.Web;
 

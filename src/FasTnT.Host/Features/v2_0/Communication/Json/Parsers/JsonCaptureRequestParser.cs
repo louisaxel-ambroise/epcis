@@ -1,6 +1,6 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model;
+using FasTnT.Application.Domain.Model.Events;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
 

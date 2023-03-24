@@ -1,10 +1,10 @@
-﻿using FasTnT.Application.Database.DataSources.Utils;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model.Masterdata;
+using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Storage.DataSources.Utils;
 using System.Linq.Expressions;
 
-namespace FasTnT.Application.Database.DataSources;
+namespace FasTnT.Application.Storage.DataSources;
 
 internal class MasterDataQueryContext
 {

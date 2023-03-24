@@ -1,9 +1,9 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Model;
+using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Domain.Model.Masterdata;
+using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Application.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System.Text.Json;
 using static System.Text.Json.JsonSerializer;
 
-namespace FasTnT.Application.Database;
+namespace FasTnT.Application.Storage;
 
 public static class EpcisModelConfiguration
 {

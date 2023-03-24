@@ -1,6 +1,6 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model.Events;
 
 namespace FasTnT.Host.Features.v1_2.Communication.Parsers;
 

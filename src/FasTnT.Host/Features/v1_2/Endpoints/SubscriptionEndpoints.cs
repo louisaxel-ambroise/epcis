@@ -1,8 +1,8 @@
 ﻿using FasTnT.Host.Features.v1_2.Subscriptions;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Extensions;
-using FasTnT.Domain.Exceptions;
 using FasTnT.Application.Handlers;
+using FasTnT.Application.Domain.Exceptions;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 

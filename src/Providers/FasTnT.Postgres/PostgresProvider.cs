@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.Database;
+﻿using FasTnT.Application.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 

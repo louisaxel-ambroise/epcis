@@ -1,6 +1,5 @@
-﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Services.Subscriptions;
 using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Context;

@@ -1,11 +1,10 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Database.DataSources.Utils;
+﻿using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Domain.Model.Masterdata;
+using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Services.Users;
-using FasTnT.Domain;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Domain.Model.Queries;
+using FasTnT.Application.Storage;
+using FasTnT.Application.Storage.DataSources.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Handlers;

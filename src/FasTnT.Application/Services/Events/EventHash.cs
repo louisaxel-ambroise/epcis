@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Application.Domain.Model.Events;
 
 namespace FasTnT.Application.Services.Events;
 

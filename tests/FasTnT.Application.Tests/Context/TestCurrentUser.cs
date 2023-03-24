@@ -1,7 +1,4 @@
-﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Model.Queries;
-
-namespace FasTnT.Application.Tests.Context;
+﻿namespace FasTnT.Application.Tests.Context;
 
 public class TestCurrentUser : ICurrentUser
 {

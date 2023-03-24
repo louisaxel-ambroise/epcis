@@ -1,10 +1,11 @@
-﻿using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Xml.Linq;
 
-namespace FasTnT.Host.Tests.Features.v2_0.Communication;
+namespace FasTnT.Host.Tests.Features.v2_0.Communication.XML;
 
 [TestClass]
 public class WhenFormattingAQueryResponse
@@ -13,8 +14,8 @@ public class WhenFormattingAQueryResponse
     {
         new Event
         {
-            Type = Domain.Enumerations.EventType.ObjectEvent,
-            Fields = new List<Field>{ new Field { Type = Domain.Enumerations.FieldType.Extension, Namespace = "customNamespace", Name = "test", TextValue = "value" } }
+            Type = EventType.ObjectEvent,
+            Fields = new List<Field>{ new Field { Type = FieldType.Extension, Namespace = "customNamespace", Name = "test", TextValue = "value" } }
         }
     });
     public string Formatted { get; set; }

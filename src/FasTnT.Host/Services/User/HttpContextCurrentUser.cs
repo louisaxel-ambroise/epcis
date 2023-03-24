@@ -1,5 +1,5 @@
-﻿using FasTnT.Application.Services.Users;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Services.Users;
 using System.Text.Json;
 
 namespace FasTnT.Host.Services.User;

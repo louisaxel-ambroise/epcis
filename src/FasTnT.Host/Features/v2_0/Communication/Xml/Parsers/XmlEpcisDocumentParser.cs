@@ -1,7 +1,7 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model;
+using FasTnT.Application.Domain.Model.Subscriptions;
 using System.Xml.XPath;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;

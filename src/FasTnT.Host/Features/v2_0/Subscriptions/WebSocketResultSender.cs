@@ -1,7 +1,7 @@
-﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Net.WebSockets;

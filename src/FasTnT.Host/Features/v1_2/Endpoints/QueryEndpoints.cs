@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
-using FasTnT.Domain;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Extensions;
 using FasTnT.Application.Handlers;
+using FasTnT.Application;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 

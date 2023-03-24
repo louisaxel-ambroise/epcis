@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain;
-using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application;
+using FasTnT.Application.Domain.Exceptions;
 using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
 
 namespace FasTnT.Host.Features.v2_0;

@@ -1,10 +1,9 @@
-﻿using FasTnT.Application.Services.DataSources.Utils;
-using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Services.DataSources.Utils;
 using System.Globalization;
 
-namespace FasTnT.Application.Database.DataSources.Utils;
+namespace FasTnT.Application.Storage.DataSources.Utils;
 
 internal static class QueryParameterExtensions
 {

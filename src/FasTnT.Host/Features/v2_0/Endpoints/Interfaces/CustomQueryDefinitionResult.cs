@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Domain.Model.Queries;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 

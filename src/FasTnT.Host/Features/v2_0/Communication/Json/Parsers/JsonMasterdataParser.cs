@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Masterdata;
+﻿using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model.Masterdata;
 using System.Text.Json;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;

@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;

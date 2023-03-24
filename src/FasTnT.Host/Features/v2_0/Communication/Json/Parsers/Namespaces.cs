@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using System.Text.Json;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;

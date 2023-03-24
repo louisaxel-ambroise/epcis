@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Masterdata;
+﻿using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Domain.Model.Masterdata;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 

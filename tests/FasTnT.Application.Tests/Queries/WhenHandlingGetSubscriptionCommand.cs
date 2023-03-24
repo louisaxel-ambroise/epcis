@@ -1,8 +1,5 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Handlers;
+using FasTnT.Application.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application.Tests.Queries;
 

@@ -1,10 +1,10 @@
-﻿using FasTnT.Application.Database.DataSources;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Storage.DataSources;
+using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Domain.Model.Masterdata;
+using FasTnT.Application.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Database;
+namespace FasTnT.Application.Storage;
 
 public class EpcisContext : DbContext
 {

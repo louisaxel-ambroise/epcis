@@ -1,5 +1,5 @@
-﻿using FasTnT.Application.Handlers;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Handlers;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
 

@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Model;
 using FasTnT.Host.Features.v1_2.Communication.Parsers;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;

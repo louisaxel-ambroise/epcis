@@ -1,14 +1,13 @@
 ﻿using FasTnT.Application.Services.DataSources.Utils;
-using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Queries;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Application.Database.DataSources.Utils;
+using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Domain.Model.Masterdata;
+using FasTnT.Application.Storage.DataSources.Utils;
+using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Domain.Exceptions;
 
-namespace FasTnT.Application.Database.DataSources;
+namespace FasTnT.Application.Storage.DataSources;
 
 internal class EventQueryContext
 {

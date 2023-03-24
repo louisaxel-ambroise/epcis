@@ -1,6 +1,5 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Application.Domain.Model;
+using FasTnT.Application.Domain.Model.Events;
 
 namespace FasTnT.Application.Validators;
 

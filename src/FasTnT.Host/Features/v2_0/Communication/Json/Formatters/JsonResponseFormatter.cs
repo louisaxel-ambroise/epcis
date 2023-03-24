@@ -1,7 +1,7 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model;
+using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;

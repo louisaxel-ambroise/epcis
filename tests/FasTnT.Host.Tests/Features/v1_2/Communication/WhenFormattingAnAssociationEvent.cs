@@ -1,10 +1,10 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Model.Events;
 using FasTnT.Host.Features.v1_2.Communication.Formatters;
 
 using System.Xml.Linq;
 
-namespace FasTnT.Host.Tests.Features.v1_2.Communication.XML;
+namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
 [TestClass]
 public class WhenFormattingAnAssociationEvent
@@ -26,7 +26,7 @@ public class WhenFormattingAnAssociationEvent
             EventId = "ni://test",
             Action = EventAction.Add,
             Epcs = new List<Epc> { new Epc { Type = EpcType.ParentId, Id = "test:epc:parent" }, new Epc { Type = EpcType.ChildEpc, Id = "test:childepc" } },
-            Fields = new List<Field> { new Field { Type = FieldType.Ilmd, Name = "field", Namespace = "fastnt.ns", TextValue = "OK"} }
+            Fields = new List<Field> { new Field { Type = FieldType.Ilmd, Name = "field", Namespace = "fastnt.ns", TextValue = "OK" } }
         };
 
         Formatted = XmlEventFormatter.FormatList(new List<Event> { AssociationEvent }).FirstOrDefault();

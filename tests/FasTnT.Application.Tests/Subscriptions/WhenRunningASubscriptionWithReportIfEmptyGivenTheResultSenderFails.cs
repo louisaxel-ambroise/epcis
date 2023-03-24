@@ -1,7 +1,5 @@
-﻿using FasTnT.Application.Database;
+﻿using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.Tests.Context;
-using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

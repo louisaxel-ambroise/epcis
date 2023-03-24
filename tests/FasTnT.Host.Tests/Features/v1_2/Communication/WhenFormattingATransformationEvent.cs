@@ -1,10 +1,10 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Model.Events;
 using FasTnT.Host.Features.v1_2.Communication.Formatters;
 
 using System.Xml.Linq;
 
-namespace FasTnT.Host.Tests.Features.v1_2.Communication.XML;
+namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
 [TestClass]
 public class WhenFormattingATransformationEvent

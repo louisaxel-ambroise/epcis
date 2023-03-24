@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Model.Events;
 using FasTnT.Host.Features.v2_0.Communication.Json.Utils;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Formatters;

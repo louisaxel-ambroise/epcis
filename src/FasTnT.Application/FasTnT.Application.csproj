@@ -9,7 +9,4 @@
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="7.0.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FasTnT.Domain\FasTnT.Domain.csproj" />
-  </ItemGroup>
 </Project>

@@ -1,12 +1,11 @@
-﻿using FasTnT.Application.Database;
+﻿using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model;
+using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Services.Events;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
+using FasTnT.Application.Storage;
 using FasTnT.Application.Validators;
-using FasTnT.Domain;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Handlers;

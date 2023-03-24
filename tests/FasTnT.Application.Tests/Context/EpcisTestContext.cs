@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Sqlite;
+﻿using FasTnT.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Tests.Context;

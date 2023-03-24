@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Model.Subscriptions;
 using System.Text.RegularExpressions;
 
 namespace FasTnT.Application.Validators;

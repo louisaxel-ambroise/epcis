@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using Json.Schema;
 using System.Text.Json;
 

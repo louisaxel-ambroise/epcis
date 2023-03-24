@@ -1,6 +1,5 @@
 using FasTnT.Application;
 using FasTnT.Application.Services.Users;
-using FasTnT.Domain;
 using FasTnT.Host.Features.v1_2;
 using FasTnT.Host.Features.v2_0;
 using FasTnT.Host.Services.Database;

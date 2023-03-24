@@ -1,9 +1,9 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Application.Domain.Exceptions;
+using FasTnT.Application.Domain.Model;
+using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application.Domain.Model.Masterdata;
+using FasTnT.Application.Domain.Model.Subscriptions;
 using System.Text.Json;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;

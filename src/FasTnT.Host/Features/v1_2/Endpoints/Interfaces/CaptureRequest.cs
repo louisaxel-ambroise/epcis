@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Application.Domain.Model;
 using FasTnT.Host.Features.v1_2.Communication.Parsers;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints.Interfaces;

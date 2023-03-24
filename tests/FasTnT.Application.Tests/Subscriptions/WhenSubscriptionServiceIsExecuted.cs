@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.Tests.Context;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

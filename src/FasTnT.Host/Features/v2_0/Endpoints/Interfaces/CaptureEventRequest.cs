@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Application.Domain.Model;
 using FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces;

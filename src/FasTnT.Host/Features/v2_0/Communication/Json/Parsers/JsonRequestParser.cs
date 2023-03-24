@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v2_0.Subscriptions;
 using System.Text.Json;
 

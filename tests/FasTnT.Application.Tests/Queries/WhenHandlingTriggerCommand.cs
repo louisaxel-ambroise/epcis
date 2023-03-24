@@ -1,6 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
+﻿using FasTnT.Application.Handlers;
 
 namespace FasTnT.Application.Tests.Queries;
 

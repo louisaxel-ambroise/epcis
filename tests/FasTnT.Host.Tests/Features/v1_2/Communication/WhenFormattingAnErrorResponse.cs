@@ -1,4 +1,4 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using FasTnT.Host.Features.v1_2.Communication.Formatters;
 using System.Xml.Linq;
 

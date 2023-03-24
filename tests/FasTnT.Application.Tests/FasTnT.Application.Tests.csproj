@@ -21,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\FasTnT.Application\FasTnT.Application.csproj" />
-    <ProjectReference Include="..\..\src\FasTnT.Domain\FasTnT.Domain.csproj" />
     <ProjectReference Include="..\..\src\Providers\FasTnT.Sqlite\FasTnT.Sqlite.csproj" />
   </ItemGroup>
 </Project>

@@ -41,7 +41,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
-    <ProjectReference Include="..\FasTnT.Domain\FasTnT.Domain.csproj" />
     <ProjectReference Include="..\Providers\FasTnT.Postgres\FasTnT.Postgres.csproj" />
     <ProjectReference Include="..\Providers\FasTnT.Sqlite\FasTnT.Sqlite.csproj" />
     <ProjectReference Include="..\Providers\FasTnT.SqlServer\FasTnT.SqlServer.csproj" />

@@ -1,8 +1,8 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
-namespace FasTnT.Host.Tests.Features.v2_0.Communication;
+namespace FasTnT.Host.Tests.Features.v2_0.Communication.XML;
 
 [TestClass]
 public class WhenFormattingAnErrorResponseWithQueryName

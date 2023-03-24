@@ -1,9 +1,5 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Users;
-using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Handlers;
+using FasTnT.Application.Domain.Model.Events;
 
 namespace FasTnT.Application.Tests.Discovery;
 

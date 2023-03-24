@@ -1,7 +1,5 @@
-﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
+﻿using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Application.Services.Subscriptions;
 using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Context;
