@@ -10,6 +10,7 @@ public class EpcisContext : DbContext
 {
     public EpcisContext(DbContextOptions<EpcisContext> options) : base(options)
     {
+        ChangeTracker.AutoDetectChangesEnabled = false;
         SavedChanges += (_, _) => ChangeTracker.Clear();
     }
 
