@@ -6,7 +6,6 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /epcis
 COPY ["src/FasTnT.Host/", "FasTnT.Host/"]
 COPY ["src/FasTnT.Application/", "FasTnT.Application/"]
-COPY ["src/FasTnT.Domain/", "FasTnT.Domain/"]
 COPY ["src/Providers/FasTnT.Sqlite/", "Providers/FasTnT.Sqlite/"]
 COPY ["src/Providers/FasTnT.Postgres/", "Providers/FasTnT.Postgres/"]
 COPY ["src/Providers/FasTnT.SqlServer/", "Providers/FasTnT.SqlServer/"]
