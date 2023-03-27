@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Model.Events;
-using FasTnT.Application.Services.Storage;
 
 namespace FasTnT.Application.Tests.DataSources;
 
@@ -9,7 +8,6 @@ public class EventQueryContextTests
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(EventQueryContextTests));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static TestSubscriptionListener SubscriptionListener = new();
 
     [ClassCleanup]
     public static void Cleanup()

@@ -4,6 +4,7 @@ using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Exceptions;
 using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Format.v1_2.Subscriptions;
+using FasTnT.Application.Services.Subscriptions;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 
@@ -47,14 +48,14 @@ public static class SubscriptionEndpoints
         return new();
     }
 
-    private static async Task<IResult> TriggerSubscription(string triggers, SubscriptionsHandler handler, CancellationToken cancellationToken)
+    private static IResult TriggerSubscription(string triggers)
     {
         if (string.IsNullOrWhiteSpace(triggers))
         {
             return Results.BadRequest();
         }
 
-        await handler.TriggerSubscriptionAsync(triggers.Split(';'), cancellationToken);
+        EpcisEvents.Instance.Trigger(triggers.Split(';'));
 
         return Results.NoContent();
     }

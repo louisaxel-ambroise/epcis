@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 
 namespace FasTnT.Application.Services.Subscriptions;
 
-public sealed class SubscriptionService : ISubscriptionService, ISubscriptionListener
+public sealed class SubscriptionService : ISubscriptionService
 {
     private static readonly object _monitor = new();
     private readonly IServiceProvider _serviceProvider;
@@ -24,7 +24,7 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
 
     public void Run(CancellationToken cancellationToken)
     {
-        Initialize(cancellationToken);
+        Initialize();
         cancellationToken.Register(() => Pulse(() => { })); // Stop background process on cancellation.
 
         while (!cancellationToken.IsCancellationRequested)
@@ -99,15 +99,15 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         }
     }
 
-    public Task RegisterAsync(SubscriptionContext context, CancellationToken _)
+    public void Register(SubscriptionContext context)
     {
         Pulse(() =>
         {
-            if (context.SubscriptionMethod == SubscriptionMethod.Scheduled)
+            if (context.IsScheduled())
             {
                 _scheduledExecutions[context] = SubscriptionSchedule.GetNextOccurence(context.Subscription.Schedule, DateTime.UtcNow);
             }
-            else if (context.SubscriptionMethod == SubscriptionMethod.Triggered)
+            else
             {
                 if (!_triggeredSubscriptions.ContainsKey(context.Subscription.Trigger))
                 {
@@ -117,11 +117,9 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
                 _triggeredSubscriptions[context.Subscription.Trigger].Add(context);
             }
         });
-
-        return Task.CompletedTask;
     }
 
-    public Task RemoveAsync(string subscriptionName, CancellationToken cancellationToken)
+    public void Remove(string subscriptionName)
     {
         Pulse(() =>
         {
@@ -137,31 +135,32 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
                 }
             }
         });
-
-        return Task.CompletedTask;
     }
 
-    public Task TriggerAsync(string[] triggers, CancellationToken cancellationToken)
+    public Task Trigger(IEnumerable<string> triggers)
     {
         Pulse(() =>
         {
-            for (var i = 0; i < triggers.Length; i++)
+            foreach(var trigger in triggers)
             {
-                _triggeredValues.Enqueue(triggers[i]);
+                _triggeredValues.Enqueue(trigger);
             }
         });
 
         return Task.CompletedTask;
     }
 
-    private void Initialize(CancellationToken cancellationToken)
+    private void Initialize()
     {
+        EpcisEvents.Instance.OnSubscriptionRegistered += (sender, context) => Register(context);
+        EpcisEvents.Instance.OnSubscriptionRemoved += (sender, subscriptionName) => Remove(subscriptionName);
+        EpcisEvents.Instance.OnSubscriptionTriggered += (sender, triggers) => Trigger(triggers);
+
         using var scope = _serviceProvider.CreateScope();
         using var context = scope.ServiceProvider.GetService<EpcisContext>();
 
         var resultSenders = scope.ServiceProvider.GetServices<IResultSender>();
         var subscriptions = context.Set<Subscription>().ToList();
-        var tasks = new List<Task>(subscriptions.Count);
 
         foreach (var subscription in subscriptions)
         {
@@ -174,10 +173,8 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
                 continue;
             }
 
-            tasks.Add(RegisterAsync(new SubscriptionContext(subscription, resultSender), cancellationToken));
+            Register(new SubscriptionContext(subscription, resultSender));
         }
-
-        Task.WaitAll(tasks.ToArray(), cancellationToken);
     }
 
     private static void Pulse(Action action)

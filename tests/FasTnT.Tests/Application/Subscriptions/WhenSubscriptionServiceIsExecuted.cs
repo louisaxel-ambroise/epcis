@@ -8,7 +8,7 @@ namespace FasTnT.Application.Tests.Subscriptions;
 [TestClass]
 public class WhenSubscriptionServiceIsExecuted
 {
-    public static ISubscriptionService SubscriptionService { get; set; }
+    public static SubscriptionService SubscriptionService { get; set; }
     public static SubscriptionContext[] Subscriptions { get; private set; }
 
     [ClassInitialize]
@@ -44,10 +44,10 @@ public class WhenSubscriptionServiceIsExecuted
 
         foreach(var subscription in Subscriptions)
         {
-            SubscriptionService.RegisterAsync(subscription, CancellationToken.None);
+            SubscriptionService.Register(subscription);
         }
 
-        SubscriptionService.TriggerAsync(new[] { "SecondTrigger" }, CancellationToken.None).Wait();
+        SubscriptionService.Trigger(new[] { "SecondTrigger" }).Wait();
         SubscriptionService.Execute(DateTime.UtcNow.AddDays(1), CancellationToken.None);
     }
 

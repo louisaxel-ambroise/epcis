@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Model.Events;
-using FasTnT.Application.Services.Storage;
 
 namespace FasTnT.Application.Tests.Discovery;
 

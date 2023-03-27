@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Domain.Model.Subscriptions;
-using FasTnT.Application.Services.Storage;
 using FasTnT.Application.Services.Subscriptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -49,6 +48,7 @@ public class WhenRunningASubscriptionWithReportIfEmptyGivenTheResultSenderFails
     [TestMethod]
     public void TheSubscriptionExecutionRecordShouldContainAReason()
     {
-        Assert.AreEqual("Failed to send context.Subscription result", Context.Set<SubscriptionExecutionRecord>().First().Reason);
+        Assert.AreEqual("Failed to send subscription result", Context.Set<SubscriptionExecutionRecord>().First().Reason);
     }
 }
+    

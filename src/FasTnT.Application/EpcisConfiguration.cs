@@ -26,7 +26,6 @@ public static class EpcisConfiguration
     {
         services.AddTransient<ISubscriptionRunner, SubscriptionRunner>();
         services.AddSingleton<ISubscriptionService, SubscriptionService>();
-        services.AddSingleton<ISubscriptionListener>(ctx => ctx.GetService<ISubscriptionService>());
         services.AddSingleton(XmlResultSender.Instance);
         services.AddSingleton(JsonResultSender.Instance);
 

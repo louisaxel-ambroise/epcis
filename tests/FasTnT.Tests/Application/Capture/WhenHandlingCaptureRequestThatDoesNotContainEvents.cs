@@ -1,6 +1,4 @@
-﻿using FasTnT.Application.Services.Subscriptions;
-using FasTnT.Application.Handlers;
-using FasTnT.Application.Services.Storage;
+﻿using FasTnT.Application.Handlers;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -9,7 +7,6 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static ISubscriptionListener SubscriptionListener = new TestSubscriptionListener();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -24,7 +21,7 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
     [ExpectedException(typeof(EpcisException))]
     public void ItShoultThrowAnException()
     {
-        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener);
+        var handler = new CaptureHandler(Context, UserContext);
         var request = new Request { SchemaVersion = "1.0" };
 
         try

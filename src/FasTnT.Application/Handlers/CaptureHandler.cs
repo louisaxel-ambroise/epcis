@@ -14,13 +14,11 @@ public class CaptureHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _user;
-    private readonly ISubscriptionListener _subscriptionListener;
 
-    public CaptureHandler(EpcisContext context, ICurrentUser user, ISubscriptionListener subscriptionListener)
+    public CaptureHandler(EpcisContext context, ICurrentUser user)
     {
         _context = context;
         _user = user;
-        _subscriptionListener = subscriptionListener;
     }
 
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
@@ -81,7 +79,7 @@ public class CaptureHandler
         _context.Add(request);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await _subscriptionListener.TriggerAsync(new[] { "stream" }, cancellationToken);
+        EpcisEvents.Instance.NotifyCapture(request);
 
         return request;
     }

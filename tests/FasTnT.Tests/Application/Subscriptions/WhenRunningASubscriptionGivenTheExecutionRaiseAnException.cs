@@ -1,7 +1,6 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Model.Events;
 using FasTnT.Application.Domain.Model.Subscriptions;
-using FasTnT.Application.Services.Storage;
 using FasTnT.Application.Services.Subscriptions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

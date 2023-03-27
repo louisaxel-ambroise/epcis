@@ -4,24 +4,18 @@ using FasTnT.Application.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application.Services.Subscriptions;
 
-public enum SubscriptionMethod
-{
-    Triggered,
-    Scheduled
-}
-
 public class SubscriptionContext
 {
     public Subscription Subscription { get; }
     public IResultSender ResultSender { get; }
-
-    public SubscriptionMethod SubscriptionMethod => Subscription.Trigger is null ? SubscriptionMethod.Scheduled : SubscriptionMethod.Triggered;
 
     public SubscriptionContext(Subscription subscription, IResultSender resultSender)
     {
         Subscription = subscription;
         ResultSender = resultSender;
     }
+
+    public bool IsScheduled() => Subscription.Trigger is null;
 
     public Task<bool> SendQueryResults(QueryResponse response, CancellationToken cancellationToken)
     {

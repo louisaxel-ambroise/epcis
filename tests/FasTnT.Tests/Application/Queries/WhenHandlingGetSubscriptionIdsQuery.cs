@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Handlers;
-using FasTnT.Application.Services.Storage;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -42,7 +41,7 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [TestMethod]
     public void ItShouldReturnTheListOfExistingSubscriptionIdsForTheSpecifiedRequest()
     {
-        var handler = new SubscriptionsHandler(Context, default, new TestSubscriptionListener());
+        var handler = new SubscriptionsHandler(Context, default);
         var result = handler.ListSubscriptionsAsync("TestQuery", CancellationToken.None).Result;
 
         Assert.AreEqual(1, result.Count());
@@ -52,7 +51,7 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [TestMethod]
     public void ItShouldReturnAnEmptyListWhenNoSubscriptionMatch()
     {
-        var handler = new SubscriptionsHandler(Context, default, new TestSubscriptionListener());
+        var handler = new SubscriptionsHandler(Context, default);
         var result = handler.ListSubscriptionsAsync("UnknownQuery", CancellationToken.None).Result;
 
         Assert.AreEqual(0, result.Count());

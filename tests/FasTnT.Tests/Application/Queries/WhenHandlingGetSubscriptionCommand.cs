@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Model.Subscriptions;
-using FasTnT.Application.Services.Storage;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -8,7 +7,6 @@ namespace FasTnT.Application.Tests.Queries;
 public class WhenHandlingGetSubscriptionCommand
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetSubscriptionCommand));
-    readonly static TestSubscriptionListener Listener = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -36,7 +34,7 @@ public class WhenHandlingGetSubscriptionCommand
     [TestMethod]
     public void ItShouldReturnTheSubscriptionIfItExists()
     {
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), Listener);
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
         var result = handler.GetSubscriptionDetailsAsync("TestSubscription", CancellationToken.None).Result;
 
         Assert.IsInstanceOfType<Subscription>(result);
@@ -48,7 +46,7 @@ public class WhenHandlingGetSubscriptionCommand
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheSubscriptionDoesNotExists()
     {
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), Listener);
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetSubscriptionDetailsAsync("UnknownSubscription", CancellationToken.None));
     }
 }
