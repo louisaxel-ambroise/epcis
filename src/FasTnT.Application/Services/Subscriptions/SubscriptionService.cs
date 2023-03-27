@@ -12,8 +12,8 @@ public sealed class SubscriptionService : ISubscriptionService
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SubscriptionService> _logger;
 
-    private readonly ConcurrentDictionary<SubscriptionContext, DateTime> _scheduledExecutions = new();
-    private readonly ConcurrentDictionary<string, List<SubscriptionContext>> _triggeredSubscriptions = new();
+    private readonly ConcurrentDictionary<ISubscriptionContext, DateTime> _scheduledExecutions = new();
+    private readonly ConcurrentDictionary<string, List<ISubscriptionContext>> _triggeredSubscriptions = new();
     private readonly ConcurrentQueue<string> _triggeredValues = new();
 
     public SubscriptionService(IServiceProvider serviceProvider, ILogger<SubscriptionService> logger)
@@ -47,25 +47,25 @@ public sealed class SubscriptionService : ISubscriptionService
         Execute(triggeredSubscriptions.ToArray(), cancellationToken);
     }
 
-    private IEnumerable<SubscriptionContext> GetTriggeredSubscriptions()
+    private IEnumerable<ISubscriptionContext> GetTriggeredSubscriptions()
     {
-        var subscriptions = new List<SubscriptionContext>();
+        var subscriptions = new List<ISubscriptionContext>();
 
         while (_triggeredValues.TryDequeue(out string trigger))
         {
-            subscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out var sub) ? sub : Array.Empty<SubscriptionContext>());
+            subscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out var sub) ? sub : Array.Empty<ISubscriptionContext>());
         }
 
         return subscriptions;
     }
 
-    private IEnumerable<SubscriptionContext> GetScheduledSubscriptions(DateTime executionDate)
+    private IEnumerable<ISubscriptionContext> GetScheduledSubscriptions(DateTime executionDate)
     {
         var plannedExecutions = _scheduledExecutions.Where(x => x.Value <= executionDate).ToArray();
 
         foreach (var plannedExecution in plannedExecutions)
         {
-            var nextOccurence = SubscriptionSchedule.GetNextOccurence(plannedExecution.Key.Subscription.Schedule, plannedExecution.Value);
+            var nextOccurence = plannedExecution.Key.GetNextOccurence(plannedExecution.Value);
 
             _scheduledExecutions.TryUpdate(plannedExecution.Key, nextOccurence, plannedExecution.Value);
         }
@@ -73,20 +73,20 @@ public sealed class SubscriptionService : ISubscriptionService
         return plannedExecutions.Select(x => x.Key);
     }
 
-    private void Execute(SubscriptionContext[] subscriptions, CancellationToken cancellationToken)
+    private void Execute(ISubscriptionContext[] subscriptions, CancellationToken cancellationToken)
     {
         var executionTime = DateTime.UtcNow;
-        var subscriptionTasks = new Task[subscriptions.Length];
+        var subscriptionTasks = subscriptions
+            .Select(subscription =>
+            {
+                var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetService<EpcisContext>();
 
-        for (var i = 0; i < subscriptions.Length; i++)
-        {
-            var scope = _serviceProvider.CreateScope();
-            var subscriptionRunner = scope.ServiceProvider.GetService<ISubscriptionRunner>();
-
-            subscriptionTasks[i] = subscriptionRunner
-                .RunAsync(subscriptions[i], executionTime, cancellationToken)
-                .ContinueWith(_ => scope.Dispose(), cancellationToken);
-        }
+                return subscription
+                    .ExecuteAsync(context, executionTime, cancellationToken)
+                    .ContinueWith(_ => { scope.Dispose(); }, cancellationToken);
+            })
+            .ToArray();
 
         try
         {
@@ -94,27 +94,27 @@ public sealed class SubscriptionService : ISubscriptionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occured while executing subscriptions");
             // Don't throw the exception as we want the background process to continue
+            _logger.LogError(ex, "An error occured while executing subscriptions");
         }
     }
 
-    public void Register(SubscriptionContext context)
+    public void Register(ISubscriptionContext context)
     {
         Pulse(() =>
         {
             if (context.IsScheduled())
             {
-                _scheduledExecutions[context] = SubscriptionSchedule.GetNextOccurence(context.Subscription.Schedule, DateTime.UtcNow);
+                _scheduledExecutions[context] = context.GetNextOccurence(DateTime.UtcNow);
             }
             else
             {
-                if (!_triggeredSubscriptions.ContainsKey(context.Subscription.Trigger))
+                if (!_triggeredSubscriptions.ContainsKey(context.Trigger))
                 {
-                    _triggeredSubscriptions[context.Subscription.Trigger] = new();
+                    _triggeredSubscriptions[context.Trigger] = new();
                 }
 
-                _triggeredSubscriptions[context.Subscription.Trigger].Add(context);
+                _triggeredSubscriptions[context.Trigger].Add(context);
             }
         });
     }
@@ -123,15 +123,15 @@ public sealed class SubscriptionService : ISubscriptionService
     {
         Pulse(() =>
         {
-            if (_scheduledExecutions.Any(x => x.Key.Subscription.Name == subscriptionName))
+            if (_scheduledExecutions.Any(x => x.Key.Name == subscriptionName))
             {
-                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Subscription.Name == subscriptionName).Key, out DateTime value);
+                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Name == subscriptionName).Key, out DateTime value);
             }
             else
             {
                 foreach (var triggered in _triggeredSubscriptions)
                 {
-                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Subscription.Name == subscriptionName));
+                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Name == subscriptionName));
                 }
             }
         });
@@ -152,9 +152,9 @@ public sealed class SubscriptionService : ISubscriptionService
 
     private void Initialize()
     {
-        EpcisEvents.Instance.OnSubscriptionRegistered += (sender, context) => Register(context);
-        EpcisEvents.Instance.OnSubscriptionRemoved += (sender, subscriptionName) => Remove(subscriptionName);
-        EpcisEvents.Instance.OnSubscriptionTriggered += (sender, triggers) => Trigger(triggers);
+        EpcisEvents.Instance.OnSubscriptionRegistered += (_, context) => Register(context);
+        EpcisEvents.Instance.OnSubscriptionRemoved += (_, subscriptionName) => Remove(subscriptionName);
+        EpcisEvents.Instance.OnSubscriptionTriggered += (_, triggers) => Trigger(triggers);
 
         using var scope = _serviceProvider.CreateScope();
         using var context = scope.ServiceProvider.GetService<EpcisContext>();
@@ -173,7 +173,7 @@ public sealed class SubscriptionService : ISubscriptionService
                 continue;
             }
 
-            Register(new SubscriptionContext(subscription, resultSender));
+            Register(new PersistentSubscriptionContext(subscription, resultSender));
         }
     }
 

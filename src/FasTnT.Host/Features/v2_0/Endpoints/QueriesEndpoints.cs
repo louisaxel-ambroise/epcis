@@ -36,7 +36,7 @@ public static class QueriesEndpoints
         
         if (httpContext.WebSockets.IsWebSocketRequest)
         {
-            await WebSocketSubscription.SubscribeAsync(httpContext, queryName, query.Parameters);
+            await WebSocketSubscriptionContext.SubscribeAsync(httpContext, queryName, query.Parameters);
 
             return Results.Empty;
         }

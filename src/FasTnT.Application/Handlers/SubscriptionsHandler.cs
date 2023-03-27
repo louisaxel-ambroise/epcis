@@ -75,7 +75,7 @@ public class SubscriptionsHandler
         _context.Add(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.Instance.Register(new(subscription, resultSender));
+        EpcisEvents.Instance.Register(new PersistentSubscriptionContext(subscription, resultSender));
 
         return subscription;
     }
