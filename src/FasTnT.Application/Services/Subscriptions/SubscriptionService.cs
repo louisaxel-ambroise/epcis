@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Application.Services.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
@@ -23,6 +24,7 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
 
     public void Run(CancellationToken cancellationToken)
     {
+        Initialize(cancellationToken);
         cancellationToken.Register(() => Pulse(() => { })); // Stop background process on cancellation.
 
         while (!cancellationToken.IsCancellationRequested)
@@ -33,7 +35,7 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
             }
             finally
             {
-                WaitTillNextExecutionOrNotification();
+                WaitTillNextExecution();
             }
         }
     }
@@ -152,6 +154,32 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         return Task.CompletedTask;
     }
 
+    private void Initialize(CancellationToken cancellationToken)
+    {
+        using var scope = _serviceProvider.CreateScope();
+        using var context = scope.ServiceProvider.GetService<EpcisContext>();
+
+        var resultSenders = scope.ServiceProvider.GetServices<IResultSender>();
+        var subscriptions = context.Set<Subscription>().ToList();
+        var tasks = new List<Task>(subscriptions.Count);
+
+        foreach (var subscription in subscriptions)
+        {
+            var resultSender = resultSenders.SingleOrDefault(x => x.Name == subscription.FormatterName);
+
+            // If no ResultSender matches the subscription's one, it means that it is a websocket subscription. 
+            // These subscriptions can't be registered in the background handler so we can skip this row.
+            if (resultSender is null)
+            {
+                continue;
+            }
+
+            tasks.Add(RegisterAsync(new SubscriptionContext(subscription, resultSender), cancellationToken));
+        }
+
+        Task.WaitAll(tasks.ToArray(), cancellationToken);
+    }
+
     private static void Pulse(Action action)
     {
         lock (_monitor)
@@ -161,7 +189,7 @@ public sealed class SubscriptionService : ISubscriptionService, ISubscriptionLis
         }
     }
 
-    private void WaitTillNextExecutionOrNotification()
+    private void WaitTillNextExecution()
     {
         lock (_monitor)
         {

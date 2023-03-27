@@ -24,7 +24,10 @@ public class SubscriptionRunner : ISubscriptionRunner
 
         var resultsSent = false;
         var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = executionTime, ResultsSent = true, Successful = true, SubscriptionId = context.Subscription.Id };
-        var pendingRequests = await _context.Set<PendingRequest>().Where(x => x.SubscriptionId == context.Subscription.Id).Take(100).ToListAsync(cancellationToken);
+        var pendingRequests = await _context.Set<PendingRequest>()
+            .Where(x => x.SubscriptionId == context.Subscription.Id)
+            .Take(100)
+            .ToListAsync(cancellationToken);
 
         try
         {

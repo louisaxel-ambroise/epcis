@@ -23,7 +23,8 @@ public class SubscriptionsHandler
 
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
     {
-        var subscription = await _context.Set<Subscription>().FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
+        var subscription = await _context.Set<Subscription>()
+            .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
         if (subscription is null)
         {
@@ -40,7 +41,6 @@ public class SubscriptionsHandler
     public async Task<IEnumerable<Subscription>> ListSubscriptionsAsync(string queryName, CancellationToken cancellationToken)
     {
         var subscriptions = await _context.Set<Subscription>()
-            .AsNoTracking()
             .Where(x => x.QueryName == queryName)
             .ToListAsync(cancellationToken);
 
@@ -50,7 +50,6 @@ public class SubscriptionsHandler
     public async Task<Subscription> GetSubscriptionDetailsAsync(string name, CancellationToken cancellationToken)
     {
         var subscription = await _context.Set<Subscription>()
-            .AsNoTracking()
             .Where(x => x.Name == name)
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 

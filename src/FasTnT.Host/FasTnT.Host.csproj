@@ -6,27 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Features\v1_2\Communication\Artifacts\epcis1_2.wsdl" />
-    <EmbeddedResource Include="Schemas\v1_2\BasicTypes.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\BusinessScope.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\DocumentIdentification.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\EPCglobal-epcis-1_2.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\EPCglobal-epcis-masterdata-1_2.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\EPCglobal-epcis-query-1_2.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\EPCglobal.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\Manifest.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\Partner.xsd" />
-    <EmbeddedResource Include="Schemas\v1_2\StandardBusinessDocumentHeader.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\epcis2_0.json" />
-    <EmbeddedResource Include="Schemas\v2_0\BasicTypes.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\BusinessScope.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\DocumentIdentification.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\EPCglobal-epcis-2_0.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\EPCglobal-epcis-masterdata-2_0.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\EPCglobal-epcis-query-2_0.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\EPCglobal.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\Manifest.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\Partner.xsd" />
-    <EmbeddedResource Include="Schemas\v2_0\StandardBusinessDocumentHeader.xsd" />
+    <EmbeddedResource Include="Schemas\**\*.*" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="FasTnT.Tests" />

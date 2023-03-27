@@ -86,9 +86,9 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
             : throw new FormatException("Authorization header must contain 2 values separated by ':'");
     }
 
-    private AuthenticateResult Authenticated(string username, string password, IEnumerable<string> requiredClaims)
+    private static AuthenticateResult Authenticated(string username, string password, IEnumerable<string> requiredClaims)
     {
-        var userHash = Hash(username, password);
+        var userHash = Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(string.Join('#', username, password))));
         var claims = new List<Claim>
         {
             new Claim(nameof(ICurrentUser.UserName), username),
@@ -97,17 +97,6 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
         };
         claims.AddRange(requiredClaims.Select(x => new Claim(x, x)));
 
-        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Basic));
-
-        Request.HttpContext.User = principal;
-
-        return AuthenticateResult.Success(new AuthenticationTicket(principal, Basic));
-    }
-
-    private static string Hash(string username, string password)
-    {
-        var hash = MD5.HashData(Encoding.UTF8.GetBytes(string.Join('#', username, password)));
-
-        return string.Concat(hash.Select(x => x.ToString("X2")));
+        return AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(claims, Basic)), Basic));
     }
 }
