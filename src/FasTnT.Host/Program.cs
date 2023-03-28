@@ -28,7 +28,6 @@ builder.Services.AddHttpLogging(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddEpcisSubscriptionServices();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
 builder.Services.AddHostedService<SubscriptionBackgroundService>();
@@ -47,7 +46,6 @@ app.UseHttpLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health").AllowAnonymous();
-app.UseWebSockets();
 
 app.UseEpcis12Endpoints();
 app.UseEpcis20Endpoints();

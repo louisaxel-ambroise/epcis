@@ -4,16 +4,18 @@ namespace FasTnT.Host.Features.v2_0;
 
 public static class Epcis2_0Configuration
 {
-    public static IEndpointRouteBuilder UseEpcis20Endpoints(this IEndpointRouteBuilder endpoints)
+    public static WebApplication UseEpcis20Endpoints(this WebApplication app)
     {
-        CaptureEndpoints.AddRoutes(endpoints);
-        EventsEndpoints.AddRoutes(endpoints);
-        QueriesEndpoints.AddRoutes(endpoints);
-        TopLevelEndpoints.AddRoutes(endpoints);
-        SubscriptionEndpoints.AddRoutes(endpoints);
-        DiscoveryEndpoints.AddRoutes(endpoints);
+        app.UseWebSockets();
 
-        return endpoints;
+        CaptureEndpoints.AddRoutes(app);
+        EventsEndpoints.AddRoutes(app);
+        QueriesEndpoints.AddRoutes(app);
+        TopLevelEndpoints.AddRoutes(app);
+        SubscriptionEndpoints.AddRoutes(app);
+        DiscoveryEndpoints.AddRoutes(app);
+
+        return app;
     }
 
     internal static RouteHandlerBuilder Get(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)

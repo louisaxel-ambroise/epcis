@@ -5,19 +5,19 @@ namespace FasTnT.Host.Features.v1_2;
 
 public static class Epcis1_2Configuration
 {
-    public static IEndpointRouteBuilder UseEpcis12Endpoints(this IEndpointRouteBuilder endpoints)
+    public static WebApplication UseEpcis12Endpoints(this WebApplication app)
     {
-        CaptureEndpoints.AddRoutes(endpoints);
-        QueryEndpoints.AddRoutes(endpoints);
-        SubscriptionEndpoints.AddRoutes(endpoints);
+        CaptureEndpoints.AddRoutes(app);
+        QueryEndpoints.AddRoutes(app);
+        SubscriptionEndpoints.AddRoutes(app);
 
-        endpoints.MapSoap("v1_2/query.svc", action =>
+        app.MapSoap("v1_2/query.svc", action =>
         {
             QueryEndpoints.AddSoapActions(action);
             SubscriptionEndpoints.AddSoapActions(action);
         }).RequireAuthorization("query");
 
-        return endpoints;
+        return app;
     }
 
     internal static RouteHandlerBuilder TryMapPost(this IEndpointRouteBuilder endpoints, string pattern, Delegate handler)

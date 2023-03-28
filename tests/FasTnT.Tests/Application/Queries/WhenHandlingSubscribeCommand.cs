@@ -43,7 +43,7 @@ public class WhenHandlingSubscribeCommand
             Trigger = "test"
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
-        var result = handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None).Result;
+        var result = handler.RegisterSubscriptionAsync(subscription, CancellationToken.None).Result;
 
         Assert.IsInstanceOfType<Subscription>(result);
     }
@@ -61,7 +61,7 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
@@ -77,7 +77,7 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
@@ -92,7 +92,7 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
@@ -106,7 +106,7 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
@@ -120,6 +120,6 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, new TestResultSender(), CancellationToken.None));
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 }

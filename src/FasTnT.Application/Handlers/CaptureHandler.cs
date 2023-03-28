@@ -4,7 +4,6 @@ using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Domain.Validators;
 using FasTnT.Application.Services.Events;
 using FasTnT.Application.Services.Storage;
-using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -79,7 +78,7 @@ public class CaptureHandler
         _context.Add(request);
 
         await _context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.Instance.NotifyCapture(request);
+        EpcisEvents.RequestCaptured(request);
 
         return request;
     }

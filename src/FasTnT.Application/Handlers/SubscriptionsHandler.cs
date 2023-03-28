@@ -2,7 +2,6 @@
 using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Domain.Validators;
 using FasTnT.Application.Services.Storage;
-using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +30,7 @@ public class SubscriptionsHandler
 
         _context.Remove(subscription);
         await _context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.Instance.Remove(subscription.Name);
+        EpcisEvents.SubscriptionRemoved(subscription);
 
         return subscription;
     }
@@ -59,7 +58,7 @@ public class SubscriptionsHandler
         return subscription;
     }
 
-    public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, IResultSender resultSender, CancellationToken cancellationToken)
+    public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
     {
         if (!SubscriptionValidator.IsValid(subscription))
         {
@@ -75,7 +74,7 @@ public class SubscriptionsHandler
         _context.Add(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.Instance.Register(new PersistentSubscriptionContext(subscription, resultSender));
+        EpcisEvents.SubscriptionRegistered(subscription);
 
         return subscription;
     }
