@@ -2,7 +2,7 @@
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
-using FasTnT.Host.Features.v1_2.Subscriptions;
+using FasTnT.Host.Services.Subscriptions.Formatters;
 
 namespace FasTnT.Host.Features.v1_2.Communication.Parsers;
 

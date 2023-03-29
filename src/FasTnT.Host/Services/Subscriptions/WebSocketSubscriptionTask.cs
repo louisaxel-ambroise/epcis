@@ -33,7 +33,7 @@ public class WebSocketSubscriptionTask
         var monitor = new object();
         var pendingRequests = new List<int>(); 
         var registerRequest = (Request request) => EnqueueRequest(request, pendingRequests, monitor);
-        var websocketRunning = Task.Run(() => WaitForWebSocketClose(_webSocket, cancellationToken), cancellationToken).ContinueWith(_ =>
+        _ = Task.Run(() => WaitForWebSocketClose(_webSocket, cancellationToken), cancellationToken).ContinueWith(_ =>
         {
             lock (monitor)
             {
@@ -145,6 +145,6 @@ public class WebSocketSubscriptionTask
             {
                 break;
             }
-        };
+        }
     }
 }
