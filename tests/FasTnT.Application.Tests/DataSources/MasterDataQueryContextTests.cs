@@ -13,7 +13,6 @@ public class MasterDataQueryContextTests
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(MasterDataQueryContextTests));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static TestSubscriptionListener SubscriptionListener = new();
 
     [ClassCleanup]
     public static void Cleanup()

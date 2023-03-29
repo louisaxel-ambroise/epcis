@@ -2,7 +2,7 @@
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 
-namespace FasTnT.Application.Services.Subscriptions;
+namespace FasTnT.Host.Services.Subscriptions.Formatters;
 
 public interface IResultSender
 {

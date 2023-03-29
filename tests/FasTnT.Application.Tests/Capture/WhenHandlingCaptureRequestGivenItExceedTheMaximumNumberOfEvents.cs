@@ -15,7 +15,7 @@ public class WhenHandlingCaptureRequestGivenItExceedTheMaximumNumberOfEvents
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenItExceedTheMaximumNumberOfEvents));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static TestSubscriptionListener SubscriptionListener = new();
+    readonly static List<Request> CapturedRequests = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -24,22 +24,24 @@ public class WhenHandlingCaptureRequestGivenItExceedTheMaximumNumberOfEvents
         {
             Context.Database.EnsureDeleted();
         }
+        EpcisEvents.OnRequestCaptured -= CapturedRequests.Add;
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
         Constants.Instance = new Constants() { MaxEventsCapturePerCall = 1 };
+        EpcisEvents.OnRequestCaptured += CapturedRequests.Add;
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener);
+        var handler = new CaptureHandler(Context, UserContext);
         var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.ObjectEvent }, new Event { Type = EventType.ObjectEvent } } };
         
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
-        Assert.IsFalse(SubscriptionListener.IsTriggered("stream"));
+        Assert.AreEqual(0, CapturedRequests.Count);
     }
 }

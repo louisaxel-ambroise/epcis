@@ -2,13 +2,12 @@
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v1_2.Communication.Formatters;
-using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
-using FasTnT.Host.Services.Subscriptions.Formatters;
+using FasTnT.Host.Features.v1_2.Communication.Utils;
 using System.Net;
 using System.Text;
 using System.Xml;
 
-namespace FasTnT.Host.Features.v1_2.Subscriptions;
+namespace FasTnT.Host.Services.Subscriptions.Formatters;
 
 public class XmlResultSender : IResultSender
 {
@@ -20,21 +19,35 @@ public class XmlResultSender : IResultSender
 
     public async Task<bool> SendResultAsync(Subscription context, QueryResponse response, CancellationToken cancellationToken)
     {
-        var formattedResponse = XmlResponseFormatter.FormatPoll(new PollResult(response.QueryName, response.SubscriptionId, response.EventList));
+        var formattedResponse = new XElement(XName.Get("QueryResults", Namespaces.Query),
+            new XElement("queryName", response.QueryName),
+            new XElement("subscriptionID", context.Name),
+            new XElement("resultsBody", new XElement("EventList", XmlEventFormatter.FormatList(response.EventList)))
+        );
 
         using var client = GetHttpClient(context.Destination);
         using var stream = await GetResponseStream(formattedResponse, cancellationToken);
 
-        return await SendRequestAsync(client, stream, cancellationToken).ConfigureAwait(false);
+        return await SendRequestAsync(client, stream, cancellationToken);
     }
 
     public async Task<bool> SendErrorAsync(Subscription context, EpcisException error, CancellationToken cancellationToken)
     {
-        var formattedResponse = XmlResponseFormatter.FormatError(error);
+        var formattedResponse = FormatSubscriptionError(error, context);
         using var client = GetHttpClient(context.Destination);
         using var stream = await GetResponseStream(formattedResponse, cancellationToken);
 
-        return await SendRequestAsync(client, stream, cancellationToken).ConfigureAwait(false);
+        return await SendRequestAsync(client, stream, cancellationToken);
+    }
+
+    private XElement FormatSubscriptionError(EpcisException error, Subscription context)
+    {
+        var reason = new XElement("reason", error.Message);
+        var severity = new XElement("severity", error.Severity.ToString());
+        var queryName = new XElement("queryName", context.QueryName);
+        var subscriptionId = new XElement("subscriptionID", context.Name);
+
+        return new(XName.Get(error.ExceptionType.ToString(), Namespaces.Query), reason, severity, queryName, subscriptionId);
     }
 
     private static async Task<bool> SendRequestAsync(HttpClient request, Stream stream, CancellationToken cancellationToken)

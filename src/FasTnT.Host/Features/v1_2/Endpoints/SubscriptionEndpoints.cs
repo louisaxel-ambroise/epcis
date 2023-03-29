@@ -3,6 +3,7 @@ using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Extensions;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Application.Handlers;
+using FasTnT.Application;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 
@@ -34,7 +35,7 @@ public static class SubscriptionEndpoints
             throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query does not allow subscription: {request.Subscription.QueryName}");
         }
 
-        await handler.RegisterSubscriptionAsync(request.Subscription, XmlResultSender.Instance, cancellationToken);
+        await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
 
         return new();
     }
@@ -46,14 +47,14 @@ public static class SubscriptionEndpoints
         return new();
     }
 
-    private static async Task<IResult> TriggerSubscription(string triggers, SubscriptionsHandler handler, CancellationToken cancellationToken)
+    private static IResult TriggerSubscription(string triggers)
     {
         if (string.IsNullOrWhiteSpace(triggers))
         {
             return Results.BadRequest();
         }
 
-        await handler.TriggerSubscriptionAsync(triggers.Split(';'), cancellationToken);
+        EpcisEvents.SubscriptionTriggered(triggers.Split(';', StringSplitOptions.RemoveEmptyEntries));
 
         return Results.NoContent();
     }

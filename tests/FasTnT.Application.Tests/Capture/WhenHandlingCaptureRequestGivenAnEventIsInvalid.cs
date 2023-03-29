@@ -14,7 +14,7 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenAnEventIsInvalid));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static TestSubscriptionListener SubscriptionListener = new();
+    readonly static List<Request> CapturedRequests = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -23,16 +23,23 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
         {
             Context.Database.EnsureDeleted();
         }
+        EpcisEvents.OnRequestCaptured -= CapturedRequests.Add;
+    }
+
+    [ClassInitialize]
+    public static void Initialize(TestContext _)
+    {
+        EpcisEvents.OnRequestCaptured += CapturedRequests.Add;
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener);
+        var handler = new CaptureHandler(Context, UserContext);
         var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.AggregationEvent, Action = EventAction.Add } } }; // Does not have parent -> invalid event
         
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
-        Assert.IsFalse(SubscriptionListener.IsTriggered("stream"));
+        Assert.AreEqual(0, CapturedRequests.Count);
     }
 }

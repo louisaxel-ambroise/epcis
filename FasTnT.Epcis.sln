@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Host", "src\FasTnT.Host\FasTnT.Host.csproj", "{245E5EE4-2C00-4C62-ABCD-1775BFE8EAC2}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Application", "src\FasTnT.Application\FasTnT.Application.csproj", "{69116A3C-F1E7-4411-99D1-CE89C79E1114}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Domain", "src\FasTnT.Domain\FasTnT.Domain.csproj", "{BD0FD839-B1D0-4CD1-A0EE-8192E8460532}"
@@ -10,8 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0D9E736D-BF92-400A-964E-FB0E708ED015}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Application.Tests", "tests\FasTnT.Application.Tests\FasTnT.Application.Tests.csproj", "{A57CDC30-C080-4671-A575-7954A219BB5F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FasTnT.Host", "src\FasTnT.Host\FasTnT.Host.csproj", "{245E5EE4-2C00-4C62-ABCD-1775BFE8EAC2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{AEDA07AE-4296-487B-85F9-3BF23FD21AC9}"
 EndProject
