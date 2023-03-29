@@ -9,7 +9,6 @@ engines:
       - "src/Providers/**.cs"
 exclude_paths:
   - "tests/**"
-  - "src/FasTnT.Application/EpcsiEvents.cs"
   - "src/FasTnT.Application/Domain/**.cs"
   - "src/FasTnT.Application/Database/**.cs"
   - "src/Providers/**.cs"
