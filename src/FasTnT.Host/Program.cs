@@ -29,7 +29,6 @@ builder.Services.AddHttpLogging(options =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddEpcisSubscriptionServices();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
 builder.Services.AddHostedService<SubscriptionBackgroundService>();

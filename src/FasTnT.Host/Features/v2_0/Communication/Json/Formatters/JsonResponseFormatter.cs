@@ -2,6 +2,7 @@
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Host.Features.v2_0.Communication.Json.Utils;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -133,7 +134,7 @@ public static class JsonResponseFormatter
 
     private static string FormatQueryResult(QueryResponse result)
     {
-        var context = BuildContext(result.EventList.SelectMany(x => x.Fields).Select(x => x.Namespace).Where(x => !string.IsNullOrEmpty(x)).Distinct());
+        var context = result.EventList.SelectMany(x => x.Fields).Select(x => x.Namespace).BuildContext();
         var document = new Dictionary<string, object>
         {
             ["@context"] = context.Select(x => (object)new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
@@ -157,9 +158,4 @@ public static class JsonResponseFormatter
 
         return JsonSerializer.Serialize(document, Options);
     }
-
-    // Builds a context for JSON format.
-    // key=namespace, value=prefix
-    // The prefixes are incremental (ext1, ext2, ext...)
-    private static IDictionary<string, string> BuildContext(IEnumerable<string> namespaces, int counter = 0) => namespaces.ToDictionary(x => x, x => $"ext{counter++}");
 }
