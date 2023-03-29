@@ -1,0 +1,12 @@
+---
+engines:
+  duplication:
+    minTokenMatch: 100
+    exclude_paths:
+      - "tests/**"
+      - "src/FasTnT.Application/Database/**.cs"
+      - "src/Providers/**.cs"
+exclude_paths:
+  - "tests/**"
+  - "**/*Extensions.cs"
+  - "src/Providers/**.cs"

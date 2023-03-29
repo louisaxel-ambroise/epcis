@@ -47,14 +47,14 @@ public static class SubscriptionEndpoints
         return new();
     }
 
-    private static IResult TriggerSubscription(string triggers, SubscriptionsHandler handler, CancellationToken cancellationToken)
+    private static IResult TriggerSubscription(string triggers)
     {
         if (string.IsNullOrWhiteSpace(triggers))
         {
             return Results.BadRequest();
         }
 
-        EpcisEvents.SubscriptionTriggered(triggers.Split(';'));
+        EpcisEvents.SubscriptionTriggered(triggers.Split(';', StringSplitOptions.RemoveEmptyEntries));
 
         return Results.NoContent();
     }
