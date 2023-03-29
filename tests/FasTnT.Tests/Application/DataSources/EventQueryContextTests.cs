@@ -1,7 +1,8 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.DataSources;
+namespace FasTnT.Tests.Application.DataSources;
 
 [TestClass]
 public class EventQueryContextTests

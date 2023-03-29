@@ -1,8 +1,8 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Application.Domain.Format.v2_0.Formatters;
-using FasTnT.Application.Domain.Format.v2_0.Utils;
 using FasTnT.Application.Domain.Model.Queries;
+using FasTnT.Host.Features.v2_0.Communication.Formatters;
+using FasTnT.Host.Features.v2_0.Communication.Utils;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 
 namespace FasTnT.Host.Features.v2_0.Communication;

@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 
-namespace FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
+namespace FasTnT.Host.Features.v2_0.Communication;
 
 public class XmlDocumentParser
 {

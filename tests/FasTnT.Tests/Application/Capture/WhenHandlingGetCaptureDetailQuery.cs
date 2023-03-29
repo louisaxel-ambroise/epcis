@@ -1,8 +1,9 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Model.Events;
 using FasTnT.Application.Domain.Enumerations;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.Capture;
+namespace FasTnT.Tests.Application.Capture;
 
 [TestClass]
 public class WhenHandlingGetCaptureDetailQuery

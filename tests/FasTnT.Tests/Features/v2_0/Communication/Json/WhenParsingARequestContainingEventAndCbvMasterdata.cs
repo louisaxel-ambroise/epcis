@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.Domain.Format.v2_0.Parsers;
+﻿using FasTnT.Host.Features.v2_0.Communication.Parsers;
 
 namespace FasTnT.Tests.Features.v2_0.Communication.Json;
 

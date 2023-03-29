@@ -3,7 +3,7 @@ using FasTnT.Application.Domain.Exceptions;
 using Json.Schema;
 using System.Text.Json;
 
-namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
+namespace FasTnT.Host.Features.v2_0.Communication;
 
 public class JsonDocumentParser
 {

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace FasTnT.IntegrationTests.v2_0.Interfaces
+namespace FasTnT.Tests.Integration.v2_0.Interfaces
 {
     public class QueryResult
     {

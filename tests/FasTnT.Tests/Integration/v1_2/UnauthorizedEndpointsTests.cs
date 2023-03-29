@@ -2,7 +2,7 @@
 using System.Net;
 using System.Text;
 
-namespace FasTnT.IntegrationTests.v1_2;
+namespace FasTnT.Tests.Integration.v1_2;
 
 [TestClass]
 public class UnauthorizedEndpointsTests

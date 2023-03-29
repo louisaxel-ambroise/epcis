@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Handlers;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.Discovery;
+namespace FasTnT.Tests.Application.Discovery;
 
 [TestClass]
 public class WhenHandlingListEventTypesRequest

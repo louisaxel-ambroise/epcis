@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Handlers;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.Queries;
+namespace FasTnT.Tests.Application.Queries;
 
 [TestClass]
 public class WhenHandlingStoreQuery
@@ -50,7 +51,7 @@ public class WhenHandlingStoreQuery
     public void ItShouldThrowAnExceptionIfAQueryWithSameNameAlreadyExists()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreQueryAsync(new StoredQuery { Name = "QueryOne" }, CancellationToken.None));
     }
 }

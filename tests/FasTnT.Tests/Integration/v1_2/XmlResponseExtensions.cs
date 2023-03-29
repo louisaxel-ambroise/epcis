@@ -2,7 +2,7 @@
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace FasTnT.IntegrationTests.v1_2;
+namespace FasTnT.Tests.Integration.v1_2;
 
 public class XmlResponseExtensions
 {
@@ -15,7 +15,7 @@ public class XmlResponseExtensions
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(element.ToString()));
         stream.Seek(0, SeekOrigin.Begin);
 
-        var result = (T) new XmlSerializer(typeof(T)).Deserialize(stream);
+        var result = (T)new XmlSerializer(typeof(T)).Deserialize(stream);
 
         return result;
     }

@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Application.Domain.Format.v1_2.Parsers;
 using FasTnT.Application.Domain.Model;
+using FasTnT.Host.Features.v1_2.Communication;
 using FasTnT.Host.Features.v1_2.Communication.Parsers;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints.Interfaces;

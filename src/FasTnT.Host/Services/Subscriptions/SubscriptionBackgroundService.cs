@@ -1,10 +1,9 @@
 ﻿using FasTnT.Application;
 using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Application.Domain.Format.v1_2.Subscriptions;
-using FasTnT.Application.Domain.Format.v2_0.Subscriptions;
 using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Services.Storage;
+using FasTnT.Host.Services.Subscriptions.Formatters;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 
@@ -204,9 +203,9 @@ public class SubscriptionBackgroundService : BackgroundService
 
     private void Initialize()
     {
-        EpcisEvents.OnSubscriptionRegistered += (_, subscription) => Register(subscription);
-        EpcisEvents.OnSubscriptionRemoved += (_, subscription) => Remove(subscription);
-        EpcisEvents.OnSubscriptionTriggered += (_, triggers) => Trigger(triggers);
+        EpcisEvents.OnSubscriptionRegistered += Register;
+        EpcisEvents.OnSubscriptionRemoved += Remove;
+        EpcisEvents.OnSubscriptionTriggered += Trigger;
 
         using var scope = _serviceProvider.CreateScope();
         using var context = scope.ServiceProvider.GetService<EpcisContext>();

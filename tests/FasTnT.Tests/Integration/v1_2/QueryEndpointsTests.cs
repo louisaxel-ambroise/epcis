@@ -1,10 +1,10 @@
-﻿using FasTnT.IntegrationTests.v1_2.Interfaces;
+﻿using FasTnT.Tests.Integration.v1_2.Interfaces;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace FasTnT.IntegrationTests.v1_2;
+namespace FasTnT.Tests.Integration.v1_2;
 
 [TestClass]
 public class QueryEndpointsTests

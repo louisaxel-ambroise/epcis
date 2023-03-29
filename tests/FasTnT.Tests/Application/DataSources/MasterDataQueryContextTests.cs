@@ -1,4 +1,6 @@
-﻿namespace FasTnT.Application.Tests.DataSources;
+﻿using FasTnT.Tests.Application.Context;
+
+namespace FasTnT.Tests.Application.DataSources;
 
 [TestClass]
 public class MasterDataQueryContextTests
@@ -9,7 +11,7 @@ public class MasterDataQueryContextTests
     [ClassCleanup]
     public static void Cleanup()
     {
-        if(Context != null)
+        if (Context != null)
         {
             Context.Database.EnsureDeleted();
         }

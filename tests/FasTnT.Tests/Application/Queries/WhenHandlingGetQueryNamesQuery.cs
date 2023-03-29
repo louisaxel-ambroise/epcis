@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Handlers;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.Queries;
+namespace FasTnT.Tests.Application.Queries;
 
 [TestClass]
 public class WhenHandlingListQueries

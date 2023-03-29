@@ -1,7 +1,8 @@
 ﻿using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Handlers;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.Queries;
+namespace FasTnT.Tests.Application.Queries;
 
 [TestClass]
 public class WhenHandlingDeleteQuery
@@ -67,7 +68,7 @@ public class WhenHandlingDeleteQuery
     public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("Unknown", CancellationToken.None));
     }
 
@@ -75,7 +76,7 @@ public class WhenHandlingDeleteQuery
     public void ItShouldThrowAnExceptionIfTheQueryHasSubscription()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("WithSubscription", CancellationToken.None));
         Assert.AreEqual(1, Context.Set<StoredQuery>().Count(x => x.Name == "WithSubscription"));
     }
@@ -84,7 +85,7 @@ public class WhenHandlingDeleteQuery
     public void ItShouldThrowAnExceptionIfTheQUeryWasCreatedByAnotherUser()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("FromOtherUser", CancellationToken.None));
         Assert.AreEqual(1, Context.Set<StoredQuery>().Count(x => x.Name == "FromOtherUser"));
     }

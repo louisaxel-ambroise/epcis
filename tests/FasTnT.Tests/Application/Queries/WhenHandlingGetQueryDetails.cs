@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Handlers;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.Queries;
+namespace FasTnT.Tests.Application.Queries;
 
 [TestClass]
 public class WhenHandlingGetQueryDetails
@@ -55,7 +56,7 @@ public class WhenHandlingGetQueryDetails
     public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetQueryDetailsAsync("Unknown", CancellationToken.None));
     }
 }

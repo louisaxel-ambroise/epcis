@@ -1,6 +1,6 @@
-﻿using FasTnT.Application.Domain.Format.v2_0.Subscriptions;
-using FasTnT.Application.Domain.Model.Queries;
+﻿using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Host.Services.Subscriptions.Formatters;
 using System.Text.Json;
 
 namespace FasTnT.Host.Features.v2_0.Communication

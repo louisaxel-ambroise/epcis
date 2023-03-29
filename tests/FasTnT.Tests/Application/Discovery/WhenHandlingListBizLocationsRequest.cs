@@ -1,7 +1,8 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.Discovery;
+namespace FasTnT.Tests.Application.Discovery;
 
 [TestClass]
 public class WhenHandlingListBizLocationsRequest
@@ -21,7 +22,7 @@ public class WhenHandlingListBizLocationsRequest
     [TestInitialize]
     public void Initialize()
     {
-        Context.Add(new Domain.Model.Request
+        Context.Add(new Request
         {
             CaptureTime = DateTime.Now,
             DocumentTime = DateTime.Now,

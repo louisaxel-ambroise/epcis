@@ -1,4 +1,4 @@
-﻿namespace FasTnT.Application.Tests.Context;
+﻿namespace FasTnT.Tests.Application.Context;
 
 public class TestCurrentUser : ICurrentUser
 {

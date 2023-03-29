@@ -1,7 +1,9 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Tests.Application.Context;
+using FasTnT.Application.Domain.Enumerations;
 
-namespace FasTnT.Application.Tests.Discovery;
+namespace FasTnT.Tests.Application.Discovery;
 
 [TestClass]
 public class WhenHandlingListEpcsRequest
@@ -21,7 +23,7 @@ public class WhenHandlingListEpcsRequest
     [TestInitialize]
     public void Initialize()
     {
-        Context.Add(new Domain.Model.Request
+        Context.Add(new Request
         {
             CaptureTime = DateTime.Now,
             DocumentTime = DateTime.Now,
@@ -32,9 +34,9 @@ public class WhenHandlingListEpcsRequest
                 new Event
                 {
                     Epcs = new List<Epc> {
-                        new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:1" },
-                        new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:2" },
-                        new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:3" }
+                        new Epc { Type = EpcType.List, Id = "test:epc:1" },
+                        new Epc { Type = EpcType.List, Id = "test:epc:2" },
+                        new Epc { Type = EpcType.List, Id = "test:epc:3" }
                     }
                 }
             }

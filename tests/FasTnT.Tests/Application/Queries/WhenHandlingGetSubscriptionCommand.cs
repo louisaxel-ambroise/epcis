@@ -1,7 +1,8 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Tests.Application.Context;
 
-namespace FasTnT.Application.Tests.Queries;
+namespace FasTnT.Tests.Application.Queries;
 
 [TestClass]
 public class WhenHandlingGetSubscriptionCommand

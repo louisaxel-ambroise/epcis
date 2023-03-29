@@ -1,7 +1,7 @@
 ﻿using FasTnT.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace FasTnT.Application.Tests.Context;
+namespace FasTnT.Tests.Application.Context;
 
 public static class EpcisTestContext
 {

@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Services.Subscriptions;
 
-namespace FasTnT.Application.Tests.Context;
+namespace FasTnT.Tests.Application.Context;
 
 public class TestResultSender : IResultSender
 {

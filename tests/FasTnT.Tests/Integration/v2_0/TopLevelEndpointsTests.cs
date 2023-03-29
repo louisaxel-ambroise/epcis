@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Headers;
 
-namespace FasTnT.IntegrationTests.v2_0;
+namespace FasTnT.Tests.Integration.v2_0;
 
 [TestClass]
 public class TopLevelEndpointsTests

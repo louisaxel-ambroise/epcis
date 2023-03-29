@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace FasTnT.IntegrationTests.v2_0;
+namespace FasTnT.Tests.Integration.v2_0;
 
 internal class FasTnTApplicationFactory : WebApplicationFactory<Program>
 {

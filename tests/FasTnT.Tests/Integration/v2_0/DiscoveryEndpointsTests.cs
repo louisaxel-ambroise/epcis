@@ -1,12 +1,12 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Model.Events;
-using FasTnT.IntegrationTests.v2_0.Interfaces;
+using FasTnT.Tests.Integration.v2_0.Interfaces;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace FasTnT.IntegrationTests.v2_0;
+namespace FasTnT.Tests.Integration.v2_0;
 
 [TestClass]
 public class DiscoveryEndpointsTests

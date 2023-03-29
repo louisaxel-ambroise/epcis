@@ -1,10 +1,10 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Application.Domain.Format.v2_0.Formatters;
-using FasTnT.Application.Domain.Format.v2_0.Utils;
 using FasTnT.Application.Domain.Model;
 using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Domain.Model.Subscriptions;
+using FasTnT.Host.Features.v2_0.Communication.Formatters;
+using FasTnT.Host.Features.v2_0.Communication.Utils;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
