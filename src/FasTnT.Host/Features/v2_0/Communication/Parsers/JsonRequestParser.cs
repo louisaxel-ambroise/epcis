@@ -3,7 +3,7 @@ using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Host.Services.Subscriptions.Formatters;
 using System.Text.Json;
 
-namespace FasTnT.Host.Features.v2_0.Communication
+namespace FasTnT.Host.Features.v2_0.Communication.Parsers
 {
     public static class JsonRequestParser
     {

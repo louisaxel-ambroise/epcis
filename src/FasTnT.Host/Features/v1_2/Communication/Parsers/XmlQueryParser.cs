@@ -1,11 +1,10 @@
-﻿using FasTnT.Application.Domain.Enumerations;
-using FasTnT.Application.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Services.Subscriptions.Formatters;
 
-namespace FasTnT.Host.Features.v1_2.Communication;
+namespace FasTnT.Host.Features.v1_2.Communication.Parsers;
 
 public static class XmlQueryParser
 {

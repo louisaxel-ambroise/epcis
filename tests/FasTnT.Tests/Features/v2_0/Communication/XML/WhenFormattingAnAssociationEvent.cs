@@ -1,7 +1,6 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Model.Events;
 using FasTnT.Host.Features.v2_0.Communication.Formatters;
-using FasTnT.Host.Features.v2_0.Communication.Utils;
 using System.Xml.Linq;
 
 namespace FasTnT.Tests.Features.v2_0.Communication.XML;

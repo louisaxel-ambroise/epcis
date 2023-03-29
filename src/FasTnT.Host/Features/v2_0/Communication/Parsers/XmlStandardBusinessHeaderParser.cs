@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Domain.Model;
-using FasTnT.Application.Domain.Model.Events;
+﻿using FasTnT.Application.Domain.Model.Events;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Parsers;
 

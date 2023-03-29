@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Application.Domain.Model;
 using FasTnT.Application.Domain.Model.Subscriptions;
 using System.Xml.XPath;
 

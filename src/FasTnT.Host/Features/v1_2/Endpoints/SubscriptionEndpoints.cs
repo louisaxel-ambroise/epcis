@@ -2,7 +2,6 @@
 using FasTnT.Host.Features.v1_2.Extensions;
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;

@@ -1,9 +1,8 @@
-﻿using FasTnT.Application.Domain.Enumerations;
-using FasTnT.Application.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using Json.Schema;
 using System.Text.Json;
 
-namespace FasTnT.Host.Features.v2_0.Communication;
+namespace FasTnT.Host.Features.v2_0.Communication.Parsers;
 
 public class JsonDocumentParser
 {

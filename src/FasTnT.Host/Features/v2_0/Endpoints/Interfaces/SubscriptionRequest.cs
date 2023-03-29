@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Domain.Model.Subscriptions;
-using FasTnT.Host.Features.v2_0.Communication;
+using FasTnT.Host.Features.v2_0.Communication.Parsers;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 

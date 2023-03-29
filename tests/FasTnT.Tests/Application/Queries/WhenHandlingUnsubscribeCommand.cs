@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Domain.Model.Subscriptions;
+﻿using FasTnT.Application;
+using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Handlers;
 using FasTnT.Tests.Application.Context;
 
@@ -8,6 +9,7 @@ namespace FasTnT.Tests.Application.Queries;
 public class WhenHandlingUnsubscribeCommand
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingUnsubscribeCommand));
+    readonly static List<Subscription> RemovedSubscriptions = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -16,6 +18,7 @@ public class WhenHandlingUnsubscribeCommand
         {
             Context.Database.EnsureDeleted();
         }
+        EpcisEvents.OnSubscriptionRemoved -= RemovedSubscriptions.Add;
     }
 
     [ClassInitialize]
@@ -31,6 +34,7 @@ public class WhenHandlingUnsubscribeCommand
 
         Context.SaveChanges();
         Context.ChangeTracker.Clear();
+        EpcisEvents.OnSubscriptionRemoved += RemovedSubscriptions.Add;
     }
 
     [TestMethod]
@@ -41,7 +45,7 @@ public class WhenHandlingUnsubscribeCommand
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
 
         Assert.AreEqual(0, Context.Set<Subscription>().Count());
-        // TODO: Assert.IsTrue(Listener.IsRemoved(subscription));
+        Assert.AreEqual(1, RemovedSubscriptions.Count);
     }
 
     [TestMethod]

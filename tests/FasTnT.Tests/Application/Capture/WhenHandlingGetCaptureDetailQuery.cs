@@ -8,7 +8,7 @@ namespace FasTnT.Tests.Application.Capture;
 [TestClass]
 public class WhenHandlingGetCaptureDetailQuery
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListCaptureQuery));
+    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetCaptureDetailQuery));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
@@ -19,7 +19,6 @@ public class WhenHandlingGetCaptureDetailQuery
             Context.Database.EnsureDeleted();
         }
     }
-
 
     [ClassInitialize]
     public static void Initialize(TestContext _)

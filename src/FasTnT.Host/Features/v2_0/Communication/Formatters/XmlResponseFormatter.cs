@@ -1,11 +1,9 @@
-﻿using FasTnT.Application.Domain.Enumerations;
-using FasTnT.Application.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using FasTnT.Application.Domain.Model.Queries;
-using FasTnT.Host.Features.v2_0.Communication.Formatters;
 using FasTnT.Host.Features.v2_0.Communication.Utils;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 
-namespace FasTnT.Host.Features.v2_0.Communication;
+namespace FasTnT.Host.Features.v2_0.Communication.Formatters;
 
 public static class XmlResponseFormatter
 {

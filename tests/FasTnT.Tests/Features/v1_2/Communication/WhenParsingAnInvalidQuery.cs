@@ -1,4 +1,4 @@
-﻿using FasTnT.Host.Features.v1_2.Communication;
+﻿using FasTnT.Host.Features.v1_2.Communication.Parsers;
 
 namespace FasTnT.Tests.Features.v1_2.Communication;
 

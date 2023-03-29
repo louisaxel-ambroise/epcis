@@ -1,11 +1,10 @@
 ﻿using FasTnT.Application;
 using FasTnT.Application.Domain.Exceptions;
-using FasTnT.Application.Domain.Model;
 using FasTnT.Application.Domain.Model.Events;
 using FasTnT.Application.Domain.Model.Queries;
 using FasTnT.Application.Domain.Model.Subscriptions;
 using FasTnT.Application.Services.Storage;
-using FasTnT.Host.Features.v2_0.Communication;
+using FasTnT.Host.Features.v2_0.Communication.Formatters;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Net.WebSockets;
 using System.Text;
@@ -33,7 +32,7 @@ public class WebSocketSubscriptionTask
         var monitor = new object();
         var pendingRequests = new List<int>(); 
         var registerRequest = (Request request) => EnqueueRequest(request, pendingRequests, monitor);
-        var websocketRunning = Task.Run(() => WaitForWebSocketClose(_webSocket, cancellationToken), cancellationToken).ContinueWith(_ =>
+        _ = Task.Run(() => WaitForWebSocketClose(_webSocket, cancellationToken), cancellationToken).ContinueWith(_ =>
         {
             lock (monitor)
             {
@@ -145,6 +144,6 @@ public class WebSocketSubscriptionTask
             {
                 break;
             }
-        };
+        }
     }
 }

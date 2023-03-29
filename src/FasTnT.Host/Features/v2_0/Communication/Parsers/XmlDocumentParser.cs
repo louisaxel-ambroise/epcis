@@ -1,10 +1,9 @@
-﻿using FasTnT.Application.Domain.Enumerations;
-using FasTnT.Application.Domain.Exceptions;
+﻿using FasTnT.Application.Domain.Exceptions;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 
-namespace FasTnT.Host.Features.v2_0.Communication;
+namespace FasTnT.Host.Features.v2_0.Communication.Parsers;
 
 public class XmlDocumentParser
 {

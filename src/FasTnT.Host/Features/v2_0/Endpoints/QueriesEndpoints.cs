@@ -2,7 +2,6 @@
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
 using FasTnT.Host.Features.v2_0.Extensions;
-using FasTnT.Host.Services.Subscriptions;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints;
 

@@ -1,4 +1,4 @@
-﻿using FasTnT.Host.Features.v2_0.Communication;
+﻿using FasTnT.Host.Features.v2_0.Communication.Formatters;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 
 namespace FasTnT.Tests.Features.v2_0.Communication.XML;

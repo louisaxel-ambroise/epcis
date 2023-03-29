@@ -1,5 +1,5 @@
 ﻿using FasTnT.Application.Domain.Enumerations;
-using FasTnT.Host.Features.v1_2.Communication;
+using FasTnT.Host.Features.v1_2.Communication.Formatters;
 using System.Xml.Linq;
 
 namespace FasTnT.Tests.Features.v1_2.Communication;

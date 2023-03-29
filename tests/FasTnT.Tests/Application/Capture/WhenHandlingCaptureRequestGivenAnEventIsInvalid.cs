@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Domain.Enumerations;
 using FasTnT.Application.Domain.Model.Events;
+using FasTnT.Application;
 using FasTnT.Tests.Application.Context;
 
 namespace FasTnT.Tests.Application.Capture;
@@ -10,6 +11,7 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenAnEventIsInvalid));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
+    readonly static List<Request> RequestCaptured = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -18,6 +20,13 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
         {
             Context.Database.EnsureDeleted();
         }
+        EpcisEvents.OnRequestCaptured -= RequestCaptured.Add;
+    }
+
+    [ClassInitialize]
+    public static void Initialize(TestContext _)
+    {
+        EpcisEvents.OnRequestCaptured += RequestCaptured.Add;
     }
 
     [TestMethod]
@@ -28,6 +37,6 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
-        // TODO: Assert.IsFalse(SubscriptionListener.IsTriggered("stream"));
+        Assert.AreEqual(0, RequestCaptured.Count);
     }
 }
