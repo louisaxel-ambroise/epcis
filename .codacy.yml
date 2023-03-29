@@ -8,5 +8,9 @@ engines:
       - "src/Providers/**.cs"
 exclude_paths:
   - "tests/**"
+  - "src/FasTnT.Application/EpcisEvents.cs"
+  - "src/FasTnT.Domain/**"
   - "**/*Extensions.cs"
-  - "src/Providers/**.cs"
+  - "src/Providers/**"
+  - "README.md"
+  - "Dockerfile"
