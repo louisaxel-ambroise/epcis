@@ -1,6 +1,7 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
+using FasTnT.Host.Features.v2_0.Extensions;
 using FasTnT.Host.Services.Subscriptions;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints;
@@ -33,12 +34,10 @@ public static class QueriesEndpoints
     private static async Task<IResult> GetQueryEvents(string queryName, QueryContext context, QueriesHandler queryHandler, DataRetrieverHandler dataHandler, HttpContext httpContext)
     {
         var query = await queryHandler.GetQueryDetailsAsync(queryName, httpContext.RequestAborted);
-        
+
         if (httpContext.WebSockets.IsWebSocketRequest)
         {
-            var backgroundTask = await WebSocketSubscriptionTask.CreateAsync(httpContext);
-            
-            return backgroundTask.Run(queryName, query.Parameters);
+            return await httpContext.HandleWebsocketAsync(queryName, query.Parameters);
         }
         else
         {
