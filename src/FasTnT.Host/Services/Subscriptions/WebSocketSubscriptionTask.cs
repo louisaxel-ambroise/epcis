@@ -7,13 +7,15 @@ using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
+using FasTnT.Host.Features.v2_0.Extensions;
+using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
-using System.Text;
 
 namespace FasTnT.Host.Services.Subscriptions;
 
 public class WebSocketSubscriptionTask
 {
+    private readonly object _monitor = new();
     private readonly WebSocket _webSocket;
     private readonly string _queryName;
     private readonly IEnumerable<QueryParameter> _parameters;
@@ -27,123 +29,95 @@ public class WebSocketSubscriptionTask
         _schedule = schedule;
     }
 
-    public void Run(EpcisContext context, CancellationToken cancellationToken)
+    public async Task Run(EpcisContext context, CancellationToken cancellationToken)
     {
         var running = true;
-        var monitor = new object();
-        var pendingRequests = new List<int>(); 
-        var registerRequest = (Request request) => EnqueueRequest(request, pendingRequests, monitor);
-        _ = Task.Run(() => WaitForWebSocketClose(_webSocket, cancellationToken), cancellationToken).ContinueWith(_ =>
-        {
-            lock (monitor)
-            {
-                running = false;
-                Monitor.Pulse(monitor);
-            }
-        }, CancellationToken.None);
+        var lastCaptureTime = DateTime.UtcNow;
+        var lastCaptureIds = Array.Empty<int>();
+        var nextExecutionTime = DateTime.UtcNow;
+        var handleRequest = (Request _) => Pulse(() => { });
+        _ = Task.Run(() => _webSocket.WaitForCompletion(() => Pulse(() => running = false), cancellationToken), CancellationToken.None);
 
-        EpcisEvents.OnRequestCaptured += registerRequest;
+        EpcisEvents.OnRequestCaptured += handleRequest;
 
         try
         {
             while (running)
             {
-                lock (pendingRequests)
+                if (_schedule is null || nextExecutionTime <= DateTime.UtcNow)
                 {
-                    if (pendingRequests.Any())
+                    var eventIds = await context
+                        .QueryEvents(_parameters)
+                        .Where(x => x.Request.CaptureTime >= lastCaptureTime && !lastCaptureIds.Contains(x.Id))
+                        .Select(x => x.Id)
+                        .ToListAsync(cancellationToken);
+
+                    if (eventIds.Any())
                     {
-                        var queryData = context
-                            .QueryEvents(_parameters)
-                            .Where(x => pendingRequests.Contains(x.Request.Id))
+                        var events = context.Set<Event>()
+                            .Where(x => eventIds.Contains(x.Id))
+                            .AsEnumerable()
+                            .OrderBy(x => eventIds.IndexOf(x.Id))
                             .ToList();
 
-                        SendQueryData(queryData, cancellationToken);
-                    }
+                        // Use the min capture time of the retrieved events as lastCaptureTime
+                        // reduces the risk of missing concurrent requests.
+                        lastCaptureTime = events.Min(e => e.CaptureTime);
+                        lastCaptureIds = eventIds.ToArray();
 
-                    pendingRequests.Clear();
+                        await SendQueryDataAsync(events, cancellationToken);
+                    }
+                    nextExecutionTime = GetNextExecutionTime(_schedule, DateTime.UtcNow);
                 }
 
-                lock (monitor)
+                lock (_monitor)
                 {
-                    _ = _schedule is null
-                        ? Monitor.Wait(monitor)
-                        : Monitor.Wait(monitor, SubscriptionSchedule.GetNextOccurence(_schedule, DateTime.UtcNow) - DateTime.UtcNow);
+                    var waitTimeout = Math.Min(5000, (nextExecutionTime - DateTime.UtcNow).TotalMilliseconds);
+                    Monitor.Wait(_monitor, TimeSpan.FromMilliseconds(waitTimeout));
                 }
             }
         }
         finally
         {
-            EpcisEvents.OnRequestCaptured -= registerRequest;
+            EpcisEvents.OnRequestCaptured -= handleRequest;
         }
     }
 
-    private void EnqueueRequest(Request request, List<int> pendingRequests, object monitor)
+    private void Pulse(Action action)
     {
-        lock (pendingRequests)
+        lock (_monitor)
         {
-            pendingRequests.Add(request.Id);
-        }
-
-        if (_schedule is null)
-        {
-            lock (monitor)
-            {
-                Monitor.Pulse(monitor);
-            }
+            action();
+            Monitor.Pulse(_monitor);
         }
     }
 
-    private void SendQueryData(List<Event> queryData, CancellationToken cancellationToken)
+    private static DateTime GetNextExecutionTime(SubscriptionSchedule schedule, DateTime startDate)
     {
-        if (!queryData.Any())
-        {
-            return;
-        }
-
-        try
-        {
-            var response = new QueryResponse(_queryName, "websocket-subscription", queryData);
-            var formattedResponse = JsonResponseFormatter.Format(new QueryResult(response));
-
-            Send(_webSocket, formattedResponse, cancellationToken).Wait(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            var epcisError = ex as EpcisException ?? EpcisException.Default;
-            var formattedError = JsonResponseFormatter.FormatError(epcisError);
-
-            Send(_webSocket, formattedError, cancellationToken).Wait(cancellationToken);
-        }
+        return schedule is null
+            ? DateTime.MaxValue
+            : SubscriptionSchedule.GetNextOccurence(schedule, startDate);
     }
 
-    private static Task Send(WebSocket webSocket, string content, CancellationToken cancellationToken)
+    private async Task SendQueryDataAsync(List<Event> queryData, CancellationToken cancellationToken)
     {
-        var responseByteArray = Encoding.UTF8.GetBytes(content);
-
-        return webSocket.State == WebSocketState.Open
-            ? webSocket.SendAsync(responseByteArray, WebSocketMessageType.Text, true, cancellationToken)
-            : Task.CompletedTask;
-    }
-
-    private static async Task WaitForWebSocketClose(WebSocket webSocket, CancellationToken cancellationToken)
-    {
-        var arraySegment = new ArraySegment<byte>(new byte[8 * 1024]);
-
-        while (!cancellationToken.IsCancellationRequested && webSocket.State == WebSocketState.Open)
+        // Send the events by batch to avoid long processing on server side
+        for (var i = 0; i < queryData.Count; i+=50)
         {
+            var data = queryData.Skip(i).Take(50).ToList();
             try
             {
-                await webSocket.ReceiveAsync(arraySegment, cancellationToken);
+                var response = new QueryResponse(_queryName, "websocket-subscription", data);
+                var formattedResponse = JsonResponseFormatter.Format(new QueryResult(response));
 
-                if (webSocket.State == WebSocketState.CloseReceived)
-                {
-                    await webSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, cancellationToken);
-                    break;
-                }
+                await _webSocket.SendAsync(formattedResponse, cancellationToken);
             }
-            catch
+            catch (Exception ex)
             {
-                break;
+                var epcisError = ex as EpcisException ?? EpcisException.Default;
+                var formattedError = JsonResponseFormatter.FormatError(epcisError);
+
+                await _webSocket.SendAsync(formattedError, cancellationToken);
             }
         }
     }
