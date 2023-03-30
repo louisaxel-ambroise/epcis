@@ -30,7 +30,7 @@ public static class DatabaseConfiguration
         return services;
     }
 
-    public static IApplicationBuilder ApplyMigrations(this IApplicationBuilder application, bool applyMigrations)
+    public static IApplicationBuilder MigrateDatabase(this IApplicationBuilder application, bool applyMigrations)
     {
         if (applyMigrations)
         {

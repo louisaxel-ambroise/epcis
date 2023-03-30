@@ -25,7 +25,7 @@ Constants.Instance = builder.Configuration.GetSection(nameof(Constants)).Get<Con
 var applyMigrations = builder.Configuration.GetValue("FasTnT.Database.ApplyMigrations", false);
 var app = builder.Build();
 
-app.ApplyMigrations(applyMigrations);
+app.MigrateDatabase(applyMigrations);
 app.UseDefaultFiles().UseStaticFiles();
 app.UseRouting();
 app.UseHttpLogging();
