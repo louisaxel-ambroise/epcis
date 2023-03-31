@@ -75,7 +75,6 @@ public class CaptureHandler
                 evt.EventId = EventHash.Compute(evt);
             }
         });
-
         _context.Add(request);
 
         await _context.SaveChangesAsync(cancellationToken);

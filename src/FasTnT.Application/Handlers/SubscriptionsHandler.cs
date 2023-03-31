@@ -28,6 +28,7 @@ public class SubscriptionsHandler
         }
 
         _context.Remove(subscription);
+
         await _context.SaveChangesAsync(cancellationToken);
         EpcisEvents.SubscriptionRemoved(subscription);
 
@@ -37,7 +38,6 @@ public class SubscriptionsHandler
     public async Task<IEnumerable<Subscription>> ListSubscriptionsAsync(string queryName, CancellationToken cancellationToken)
     {
         var subscriptions = await _context.Set<Subscription>()
-            .AsNoTracking()
             .Where(x => x.QueryName == queryName)
             .ToListAsync(cancellationToken);
 
@@ -47,7 +47,6 @@ public class SubscriptionsHandler
     public async Task<Subscription> GetSubscriptionDetailsAsync(string name, CancellationToken cancellationToken)
     {
         var subscription = await _context.Set<Subscription>()
-            .AsNoTracking()
             .Where(x => x.Name == name)
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
