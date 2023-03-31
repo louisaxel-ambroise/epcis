@@ -36,20 +36,20 @@ public class DataRetrieverHandler
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 
+        if (!eventIds.Any())
+        {
+            return new List<Event>();
+        }
         if (eventIds.Count >= (maxEventCount ?? Constants.Instance.MaxEventsReturnedInQuery))
         {
             throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results");
         }
-        else if (!eventIds.Any())
-        {
-            return new List<Event>();
-        }
 
-        return _context.Set<Event>()
-                .Where(x => eventIds.Contains(x.Id))
-                .AsEnumerable()
-                .OrderBy(x => eventIds.IndexOf(x.Id))
-                .ToList();
+        var events = await _context.Set<Event>()
+            .Where(x => eventIds.Contains(x.Id))
+            .ToListAsync(cancellationToken);
+
+        return events.OrderBy(e => eventIds.IndexOf(e.Id)).ToList();
     }
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)

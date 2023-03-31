@@ -43,7 +43,7 @@ internal class EventQueryContext
             case "nextPageToken":
                 _skip = Math.Max(_skip ?? 0, param.AsInt()); break;
             case "eventCountLimit" or "perPage" or "maxEventCount":
-                _take = Math.Max(_take ?? 0, param.AsInt()); break;
+                _take = Math.Min(_take ?? int.MaxValue, param.AsInt()); break;
             // Simple filters
             case "eventType":
                 Filter(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)); break;

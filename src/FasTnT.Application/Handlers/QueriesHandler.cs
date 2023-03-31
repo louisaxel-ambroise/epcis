@@ -21,7 +21,6 @@ public class QueriesHandler
     public async Task<IEnumerable<StoredQuery>> ListQueriesAsync(Pagination pagination, CancellationToken cancellationToken)
     {
         var queries = await _context.Set<StoredQuery>()
-            .AsNoTracking()
             .OrderBy(x => x.Id)
             .Skip(pagination.StartFrom).Take(pagination.PerPage)
             .ToListAsync(cancellationToken);
@@ -32,7 +31,6 @@ public class QueriesHandler
     public async Task<StoredQuery> GetQueryDetailsAsync(string name, CancellationToken cancellationToken)
     {
         var query = await _context.Set<StoredQuery>()
-            .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
         if (query is null)
