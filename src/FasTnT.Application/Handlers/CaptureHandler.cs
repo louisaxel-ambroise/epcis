@@ -1,5 +1,6 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Events;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain;
@@ -14,11 +15,13 @@ public class CaptureHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _user;
+    private readonly INotificationSender _notifier;
 
-    public CaptureHandler(EpcisContext context, ICurrentUser user)
+    public CaptureHandler(EpcisContext context, ICurrentUser user, INotificationSender notifier)
     {
         _context = context;
         _user = user;
+        _notifier = notifier;
     }
 
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
@@ -59,26 +62,23 @@ public class CaptureHandler
         {
             throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }
-        if(!HeaderValidator.IsValid(request.StandardBusinessHeader))
+        if (!HeaderValidator.IsValid(request.StandardBusinessHeader))
         {
             throw new EpcisException(ExceptionType.ValidationException, "Standard Business Header in EPCIS request is not valid");
         }
 
-        request.CaptureTime = DateTime.UtcNow;
         request.UserId = _user.UserId;
-        request.Events.ForEach(evt =>
+        request.Events.ForEach(evt => evt.EventId ??= EventHash.Compute(evt));
+
+        await _context.ExecuteTransactionAsync(() =>
         {
-            evt.CaptureTime = request.CaptureTime;
+            _context.Add(request);
+            _context.SaveChanges();
 
-            if (string.IsNullOrEmpty(evt.EventId))
-            {
-                evt.EventId = EventHash.Compute(evt);
-            }
-        });
-        _context.Add(request);
-
-        await _context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.RequestCaptured(request);
+            request.RecordTime = DateTime.UtcNow;
+            _context.SaveChanges();
+        }, cancellationToken);
+        await _notifier.RequestCapturedAsync(request, cancellationToken);
 
         return request;
     }

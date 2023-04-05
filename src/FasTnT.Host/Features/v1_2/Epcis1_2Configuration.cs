@@ -9,7 +9,6 @@ public static class Epcis1_2Configuration
     {
         CaptureEndpoints.AddRoutes(endpoints);
         QueryEndpoints.AddRoutes(endpoints);
-        SubscriptionEndpoints.AddRoutes(endpoints);
 
         endpoints.MapSoap("v1_2/query.svc", action =>
         {

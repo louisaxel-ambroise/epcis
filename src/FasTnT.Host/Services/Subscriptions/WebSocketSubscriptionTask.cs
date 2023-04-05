@@ -1,13 +1,10 @@
-﻿using FasTnT.Application;
-using FasTnT.Application.Database;
-using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
-using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Extensions;
+using FasTnT.Host.Services.Subscriptions.Formatters;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
 
@@ -19,67 +16,77 @@ public class WebSocketSubscriptionTask
     private readonly WebSocket _webSocket;
     private readonly string _queryName;
     private readonly IEnumerable<QueryParameter> _parameters;
-    private readonly SubscriptionSchedule _schedule;
+    private readonly ISubscriptionScheduler _scheduler;
 
-    public WebSocketSubscriptionTask(WebSocket webSocket, string queryName, IEnumerable<QueryParameter> parameters, SubscriptionSchedule schedule)
+    public WebSocketSubscriptionTask(WebSocket webSocket, string queryName, IEnumerable<QueryParameter> parameters, ISubscriptionScheduler scheduler)
     {
         _webSocket = webSocket;
         _queryName = queryName;
         _parameters = parameters;
-        _schedule = schedule;
+        _scheduler = scheduler;
     }
 
-    public async Task Run(EpcisContext context, CancellationToken cancellationToken)
+    public async Task Run(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var running = true;
-        var lastCaptureTime = DateTime.UtcNow;
-        var lastCaptureIds = Array.Empty<int>();
+        var bufferRequestIds = Array.Empty<int>();
         var nextExecutionTime = DateTime.UtcNow;
+        var minRecordDate = DateTime.UtcNow;
         var handleRequest = (Request _) => Pulse(() => { });
         _ = Task.Run(() => _webSocket.WaitForCompletion(() => Pulse(() => running = false), cancellationToken), CancellationToken.None);
 
-        EpcisEvents.OnRequestCaptured += handleRequest;
+        var notifier = serviceProvider.GetService<INotificationReceiver>();
+        notifier.OnRequestCaptured += handleRequest;
 
         try
         {
             while (running)
             {
-                if (_schedule is null || nextExecutionTime <= DateTime.UtcNow)
+                var executionDate = DateTime.UtcNow;
+
+                // TODO: check for stream websockets
+                if (nextExecutionTime <= executionDate)
                 {
-                    var eventIds = await context
-                        .QueryEvents(_parameters)
-                        .Where(x => x.Request.CaptureTime >= lastCaptureTime && !lastCaptureIds.Contains(x.Id))
-                        .Select(x => x.Id)
+                    var parameters = _parameters.Union(new[]
+                    {
+                        QueryParameter.Create("GE_recordTime", minRecordDate.Subtract(TimeSpan.FromSeconds(10)).ToString())
+                    });
+
+                    using var scope = serviceProvider.CreateScope();
+                    using var context = scope.ServiceProvider.GetService<EpcisContext>();
+
+                    var pendingEvents = await context.QueryEvents(parameters)
+                        .Select(x => new { x.Id, RequestId = x.Request.Id })
                         .ToListAsync(cancellationToken);
+                    var eventIds = pendingEvents.Where(x => !bufferRequestIds.Contains(x.RequestId)).Select(x => x.Id);
 
                     if (eventIds.Any())
                     {
-                        var events = context.Set<Event>()
+                        var events = await context.Set<Event>()
                             .Where(x => eventIds.Contains(x.Id))
-                            .AsEnumerable()
-                            .OrderBy(x => eventIds.IndexOf(x.Id))
-                            .ToList();
-
-                        // Use the min capture time of the retrieved events as lastCaptureTime
-                        // reduces the risk of missing concurrent requests.
-                        lastCaptureTime = events.Min(e => e.CaptureTime);
-                        lastCaptureIds = eventIds.ToArray();
+                            .ToListAsync(cancellationToken);
 
                         await SendQueryDataAsync(events, cancellationToken);
                     }
-                    nextExecutionTime = GetNextExecutionTime(_schedule, DateTime.UtcNow);
+
+                    bufferRequestIds = pendingEvents.Select(x => x.RequestId).Distinct().ToArray();
+                    minRecordDate = executionDate;
+                    nextExecutionTime = _scheduler.GetNextExecution(executionDate);
                 }
 
                 lock (_monitor)
                 {
-                    var waitTimeout = Math.Min(5000, (nextExecutionTime - DateTime.UtcNow).TotalMilliseconds);
-                    Monitor.Wait(_monitor, TimeSpan.FromMilliseconds(waitTimeout));
+                    var delay = nextExecutionTime - DateTime.UtcNow >= TimeSpan.FromHours(1)
+                        ? TimeSpan.FromHours(1)
+                        : nextExecutionTime - DateTime.UtcNow;
+
+                    Monitor.Wait(_monitor, delay);
                 }
             }
         }
-        finally
+        catch
         {
-            EpcisEvents.OnRequestCaptured -= handleRequest;
+            notifier.OnRequestCaptured -= handleRequest;
         }
     }
 
@@ -92,33 +99,11 @@ public class WebSocketSubscriptionTask
         }
     }
 
-    private static DateTime GetNextExecutionTime(SubscriptionSchedule schedule, DateTime startDate)
-    {
-        return schedule is null
-            ? DateTime.MaxValue
-            : SubscriptionSchedule.GetNextOccurence(schedule, startDate);
-    }
-
     private async Task SendQueryDataAsync(List<Event> queryData, CancellationToken cancellationToken)
     {
-        // Send the events by batch to avoid long processing on server side
-        for (var i = 0; i < queryData.Count; i+=50)
-        {
-            var data = queryData.Skip(i).Take(50).ToList();
-            try
-            {
-                var response = new QueryResponse(_queryName, "websocket-subscription", data);
-                var formattedResponse = JsonResponseFormatter.Format(new QueryResult(response));
+        var response = new QueryResponse(_queryName, queryData);
+        var formattedResponse = JsonSubscriptionFormatter.Instance.FormatResult("ws-subscription", response);
 
-                await _webSocket.SendAsync(formattedResponse, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                var epcisError = ex as EpcisException ?? EpcisException.Default;
-                var formattedError = JsonResponseFormatter.FormatError(epcisError);
-
-                await _webSocket.SendAsync(formattedError, cancellationToken);
-            }
-        }
+        await _webSocket.SendAsync(formattedResponse, cancellationToken);
     }
 }

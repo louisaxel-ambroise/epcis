@@ -124,7 +124,7 @@ public static class JsonResponseFormatter
         {
             ["captureID"] = request.CaptureId,
             ["createdAt"] = request.DocumentTime,
-            ["finishedAt"] = request.CaptureTime,
+            ["finishedAt"] = request.RecordTime,
             ["running"] = false,
             ["success"] = true,
             ["captureErrorBehaviour"] = "rollback",
@@ -147,7 +147,6 @@ public static class JsonResponseFormatter
                 queryResults = new
                 {
                     queryName = result.QueryName,
-                    subscriptionID = result.SubscriptionId,
                     resultsBody = new
                     {
                         eventList = result.EventList.Select(x => JsonEventFormatter.FormatEvent(x, context))

@@ -7,6 +7,7 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
+using FasTnT.Application.Services.Notifications;
 
 namespace FasTnT.Application.Tests.Capture;
 

@@ -28,7 +28,7 @@ namespace FasTnT.Host.Features.v2_0.Communication.Json.Parsers
             return new()
             {
                 Destination = document.RootElement.GetProperty("dest").GetString(),
-                FormatterName = JsonResultSender.Instance.Name,
+                FormatterName = nameof(JsonSubscriptionFormatter),
                 ReportIfEmpty = document.RootElement.GetProperty("reportIfEmpty").GetBoolean(),
                 SignatureToken = document.RootElement.TryGetProperty("signatureToken", out var token) ? token.GetString() : default,
                 Schedule = ParseSubscriptionSchedule(document.RootElement.TryGetProperty("schedule", out var schedule) ? schedule : default),

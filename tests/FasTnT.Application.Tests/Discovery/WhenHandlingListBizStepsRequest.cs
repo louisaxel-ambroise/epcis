@@ -27,7 +27,7 @@ public class WhenHandlingListBizStepsRequest
     {
         Context.Add(new Domain.Model.Request
         {
-            CaptureTime = DateTime.Now,
+            RecordTime = DateTime.Now,
             DocumentTime = DateTime.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",

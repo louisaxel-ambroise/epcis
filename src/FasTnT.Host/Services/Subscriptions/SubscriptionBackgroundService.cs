@@ -1,23 +1,24 @@
-﻿using FasTnT.Application;
-using FasTnT.Application.Database;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Services.Subscriptions.Formatters;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace FasTnT.Host.Services.Subscriptions;
 
 public class SubscriptionBackgroundService : BackgroundService
 {
-    private static readonly object _monitor = new();
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<SubscriptionBackgroundService> _logger;
-
-    private readonly ConcurrentDictionary<Subscription, DateTime> _scheduledExecutions = new();
-    private readonly ConcurrentDictionary<string, List<Subscription>> _triggeredSubscriptions = new();
-    private readonly ConcurrentQueue<string> _triggeredValues = new();
+    private readonly List<Subscription> _subscriptions = new();
+    private readonly Dictionary<int, ISubscriptionScheduler> _schedulers = new();
 
     public SubscriptionBackgroundService(IServiceProvider serviceProvider, ILogger<SubscriptionBackgroundService> logger)
     {
@@ -27,68 +28,140 @@ public class SubscriptionBackgroundService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        return Task.Run(() => Run(stoppingToken), stoppingToken);
+        LoadSubscriptions();
+
+        var listener = _serviceProvider.GetService<INotificationReceiver>();
+        listener.OnRequestCaptured += TriggerExecution;
+        listener.OnSubscriptionRegistered += RegisterSubscription;
+        listener.OnSubscriptionRemoved += RemoveSubscription;
+
+        stoppingToken.Register(() => { lock (_subscriptions) { Monitor.Pulse(_subscriptions); } });
+
+        return Task.Run(async () =>
+        {
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await Run(stoppingToken).ContinueWith(_ => WaitForNextExecution());
+            }
+        }, stoppingToken);
+    }
+
+    private void WaitForNextExecution()
+    {
+        lock (_subscriptions)
+        {
+            var nextExecution = _subscriptions.Any()
+                ? _subscriptions.Min(x => x.NextExecutionTime)
+                : DateTime.UtcNow.AddSeconds(30);
+
+            var delay = nextExecution - DateTime.UtcNow >= TimeSpan.FromHours(1)
+                ? TimeSpan.FromHours(1)
+                : nextExecution - DateTime.UtcNow;
+
+            if (delay > TimeSpan.Zero)
+            {
+                _logger.LogInformation("Subscription task waiting for {delay} or until next trigger", delay);
+                Monitor.Wait(_subscriptions, delay);
+            }
+        }
+    }
+
+    private void LoadSubscriptions()
+    {
+        using var scope = _serviceProvider.CreateScope();
+        using var context = scope.ServiceProvider.GetService<EpcisContext>();
+
+        context.Set<Subscription>().ToList().ForEach(RegisterSubscription);
+    }
+
+    private void TriggerExecution(Request _)
+    {
+        lock (_subscriptions)
+        {
+            Monitor.Pulse(_subscriptions);
+        }
+    }
+
+    private void RegisterSubscription(Subscription subscription)
+    {
+        lock (_subscriptions)
+        {
+            _subscriptions.Add(subscription);
+            _schedulers.Add(subscription.Id, ISubscriptionScheduler.Get(subscription.Schedule));
+
+            Monitor.Pulse(_subscriptions);
+        }
+    }
+
+    private void RemoveSubscription(Subscription subscription)
+    {
+        lock (_subscriptions) 
+        {
+            var entry = _subscriptions.Single(x => x.Name == subscription.Name);
+            _subscriptions.Remove(entry);
+            _schedulers.Remove(entry.Id);
+
+            Monitor.Pulse(_subscriptions);
+        }
     }
 
     public async Task Run(CancellationToken cancellationToken)
     {
-        Initialize();
-        cancellationToken.Register(() => Pulse(() => { })); // Stop background process on cancellation.
-
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            try
-            {
-                await ExecuteAsync(DateTime.UtcNow, cancellationToken);
-            }
-            finally
-            {
-                WaitUntilNextExecution();
-            }
-        }
-    }
-
-    public async Task ExecuteAsync(DateTime executionDate, CancellationToken cancellationToken)
-    {
-        var triggeredSubscriptions = GetScheduledSubscriptions(executionDate).Union(GetTriggeredSubscriptions());
-
-        await RunSubscriptionsAsync(triggeredSubscriptions.ToArray(), cancellationToken);
-    }
-
-    private IEnumerable<Subscription> GetTriggeredSubscriptions()
-    {
-        var subscriptions = new List<Subscription>();
-
-        while (_triggeredValues.TryDequeue(out string trigger))
-        {
-            subscriptions.AddRange(_triggeredSubscriptions.TryGetValue(trigger, out var sub) ? sub : Array.Empty<Subscription>());
-        }
-
-        return subscriptions;
-    }
-
-    private IEnumerable<Subscription> GetScheduledSubscriptions(DateTime executionDate)
-    {
-        var plannedExecutions = _scheduledExecutions.Where(x => x.Value <= executionDate).ToArray();
-
-        foreach (var plannedExecution in plannedExecutions)
-        {
-            var nextOccurence = GetNextOccurence(plannedExecution.Key, plannedExecution.Value);
-
-            _scheduledExecutions.TryUpdate(plannedExecution.Key, nextOccurence, plannedExecution.Value);
-        }
-
-        return plannedExecutions.Select(x => x.Key);
-    }
-
-    private async Task RunSubscriptionsAsync(Subscription[] subscriptions, CancellationToken cancellationToken)
-    {
         var executionTime = DateTime.UtcNow;
-        var subscriptionTasks = subscriptions.Select(subscription => RunSubscriptionAsync(subscription, executionTime, cancellationToken));
+        var triggeredSubscriptions = default(IEnumerable<Subscription>);
+
+        lock (_subscriptions)
+        {
+            // TODO: check for stream subscriptions
+            triggeredSubscriptions = _subscriptions.Where(x => x.NextExecutionTime <= executionTime).ToList();
+        }
 
         try
         {
-            await Task.WhenAll(subscriptionTasks);
+            var tasks = triggeredSubscriptions.Select(subscription => Task.Run(async () =>
+            {
+                var minRecordTime = subscription.LastExecutedTime.Subtract(TimeSpan.FromSeconds(10));
+
+                var parameters = subscription.Parameters.Union(new[]
+                {
+                    QueryParameter.Create("GE_recordTime", minRecordTime.ToString()),
+                });
+
+                try
+                {
+                    using var scope = _serviceProvider.CreateScope();
+                    using var context = scope.ServiceProvider.GetService<EpcisContext>();
+
+                    var pendingEvents = await context.QueryEvents(parameters)
+                        .Select(x => new { x.Id, RequestId = x.Request.Id })
+                        .ToListAsync(cancellationToken);
+                    var eventIds = pendingEvents
+                        .Where(x => !subscription.BufferRequestIds.Contains(x.RequestId))
+                        .Select(x => x.Id);
+                    var events = await context.Set<Event>()
+                        .Where(x => eventIds.Contains(x.Id))
+                        .ToListAsync(cancellationToken);
+
+                    if (events.Any() || subscription.ReportIfEmpty)
+                    {
+                        await SendResults(subscription, events, cancellationToken);
+                    }
+
+                    context.Attach(subscription);
+
+                    subscription.NextExecutionTime = _schedulers[subscription.Id].GetNextExecution(executionTime);
+                    subscription.BufferRequestIds = pendingEvents.Select(e => e.RequestId).Distinct().ToArray();
+                    subscription.LastExecutedTime = executionTime;
+
+                    await context.SaveChangesAsync(cancellationToken);
+                }
+                catch (EpcisException ex)
+                {
+                    await SendError(subscription, ex, cancellationToken);
+                }
+            }, cancellationToken));
+
+            await Task.WhenAll(tasks);
         }
         catch (Exception ex)
         {
@@ -97,156 +170,51 @@ public class SubscriptionBackgroundService : BackgroundService
         }
     }
 
-    private async Task RunSubscriptionAsync(Subscription subscription, DateTime executionTime, CancellationToken cancellationToken)
+    private Task SendResults(Subscription subscription, List<Event> events, CancellationToken cancellationToken)
     {
-        var resultSender = subscription.FormatterName == XmlResultSender.Instance.Name
-            ? XmlResultSender.Instance
-            : JsonResultSender.Instance;
+        var formatter = GetFormatter(subscription.FormatterName);
+        var formatted = formatter.FormatResult(subscription.Name, new(subscription.QueryName, events));
 
-        using var scope = _serviceProvider.CreateScope();
-        using var context = scope.ServiceProvider.GetService<EpcisContext>();
-
-        var resultsSent = false;
-        var executionRecord = new SubscriptionExecutionRecord { ExecutionTime = executionTime, ResultsSent = true, Successful = true, SubscriptionId = subscription.Id };
-        var pendingRequests = await context.Set<PendingRequest>()
-            .Where(x => x.SubscriptionId == subscription.Id)
-            .OrderBy(x => x.RequestId)
-            .Take(100)
-            .ToListAsync(cancellationToken);
-
-        try
-        {
-            var response = new QueryResponse(subscription.QueryName, subscription.Name, QueryData.Empty);
-
-            if (pendingRequests.Any())
-            {
-                var queryData = await context
-                    .QueryEvents(subscription.Parameters)
-                    .Where(x => pendingRequests.Select(x => x.RequestId).Contains(x.Request.Id))
-                    .ToListAsync(cancellationToken);
-
-                response = new QueryResponse(subscription.QueryName, subscription.Name, queryData);
-            }
-
-            if (response.EventList.Count > 0 || subscription.ReportIfEmpty)
-            {
-                resultsSent = await resultSender.SendResultAsync(subscription, response, cancellationToken);
-            }
-        }
-        catch (EpcisException ex)
-        {
-            resultsSent = await resultSender.SendErrorAsync(subscription, ex, cancellationToken);
-        }
-
-        if (resultsSent)
-        {
-            context.RemoveRange(pendingRequests);
-        }
-        else
-        {
-            executionRecord.Successful = false;
-            executionRecord.Reason = "Failed to send subscription result";
-        }
-
-        context.Add(executionRecord);
-        await context.SaveChangesAsync(cancellationToken);
+        return SendWebhook(subscription, formatted, formatter.ContentType, cancellationToken);
     }
 
-    public void Register(Subscription subscription)
+    private Task SendError(Subscription subscription, EpcisException ex, CancellationToken cancellationToken)
     {
-        Pulse(() =>
-        {
-            if (subscription.Trigger is null)
-            {
-                _scheduledExecutions[subscription] = GetNextOccurence(subscription, DateTime.UtcNow);
-            }
-            else
-            {
-                if (!_triggeredSubscriptions.ContainsKey(subscription.Trigger))
-                {
-                    _triggeredSubscriptions[subscription.Trigger] = new();
-                }
+        var formatter = GetFormatter(subscription.FormatterName);
+        var formatted = formatter.FormatError(subscription.Name, subscription.QueryName, ex);
 
-                _triggeredSubscriptions[subscription.Trigger].Add(subscription);
-            }
-        });
+        return SendWebhook(subscription, formatted, formatter.ContentType, cancellationToken);
     }
 
-    public void Remove(Subscription subscription)
+    private static Task SendWebhook(Subscription subscription, string formatted, string contentType, CancellationToken cancellationToken)
     {
-        Pulse(() =>
+        var client = new HttpClient { BaseAddress = new Uri(subscription.Destination) };
+
+        if (!string.IsNullOrEmpty(client.BaseAddress.UserInfo))
         {
-            if (_scheduledExecutions.Any(x => x.Key.Name == subscription.Name))
-            {
-                _scheduledExecutions.TryRemove(_scheduledExecutions.Single(x => x.Key.Name == subscription.Name).Key, out DateTime value);
-            }
-            else
-            {
-                foreach (var triggered in _triggeredSubscriptions)
-                {
-                    triggered.Value.Remove(triggered.Value.SingleOrDefault(s => s.Name == subscription.Name));
-                }
-            }
-        });
-    }
-
-    public void Trigger(IEnumerable<string> triggers)
-    {
-        Pulse(() =>
-        {
-            foreach (var trigger in triggers)
-            {
-                _triggeredValues.Enqueue(trigger);
-            }
-        });
-    }
-
-    private void Initialize()
-    {
-        EpcisEvents.OnSubscriptionRegistered += Register;
-        EpcisEvents.OnSubscriptionRemoved += Remove;
-        EpcisEvents.OnSubscriptionTriggered += Trigger;
-
-        using var scope = _serviceProvider.CreateScope();
-        using var context = scope.ServiceProvider.GetService<EpcisContext>();
-
-        foreach (var subscription in context.Set<Subscription>().ToList())
-        {
-            Register(subscription);
-        }
-    }
-
-    private static void Pulse(Action action)
-    {
-        lock (_monitor)
-        {
-            action();
-            Monitor.Pulse(_monitor);
-        }
-    }
-
-    private void WaitUntilNextExecution()
-    {
-        lock (_monitor)
-        {
-            _ = _scheduledExecutions.Any()
-                ? Monitor.Wait(_monitor, GetNextExecutionDelay(_scheduledExecutions.Values.Min()))
-                : Monitor.Wait(_monitor);
-        }
-    }
-
-    private DateTime GetNextOccurence(Subscription subscription, DateTime executionTime)
-    {
-        if (subscription.Schedule.IsEmpty())
-        {
-            throw new Exception("Triggered subscription can't compute next occurence");
+            var token = Convert.ToBase64String(Encoding.UTF8.GetBytes(WebUtility.UrlDecode(client.BaseAddress.UserInfo)));
+            client.DefaultRequestHeaders.Add("Authorization", $"Basic {token}");
         }
 
-        return SubscriptionSchedule.GetNextOccurence(subscription.Schedule, executionTime);
+        var message = new HttpRequestMessage(HttpMethod.Post, string.Empty);
+        message.Content = new StringContent(formatted, Encoding.UTF8, contentType);
+
+        if (!string.IsNullOrEmpty(subscription.SignatureToken))
+        {
+            var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(subscription.SignatureToken));
+            var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(formatted));
+
+            message.Headers.Add("GS1-Signature", Convert.ToBase64String(hash));
+        }
+
+        
+        return client.SendAsync(message, cancellationToken);
     }
 
-    private static TimeSpan GetNextExecutionDelay(DateTime executionTime)
+    private ISubscriptionFormatter GetFormatter(string formatterName)
     {
-        return executionTime < DateTime.UtcNow ? TimeSpan.Zero : executionTime - DateTime.UtcNow;
+        return formatterName == nameof(XmlSubscriptionFormatter)
+            ? XmlSubscriptionFormatter.Instance
+            : JsonSubscriptionFormatter.Instance;
     }
 }

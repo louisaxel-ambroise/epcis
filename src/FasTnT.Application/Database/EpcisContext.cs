@@ -11,9 +11,7 @@ public class EpcisContext : DbContext
 {
     public EpcisContext(DbContextOptions<EpcisContext> options) : base(options)
     {
-        ChangeTracker.AutoDetectChangesEnabled = false; 
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-        SavedChanges += (_, _) => ChangeTracker.Clear();
     }
 
     public IQueryable<Event> QueryEvents(IEnumerable<QueryParameter> parameters)
@@ -28,6 +26,22 @@ public class EpcisContext : DbContext
         var masterdataContext = new MasterDataQueryContext(this, parameters);
 
         return masterdataContext.ApplyTo(Set<MasterData>());
+    }
+
+    public async Task ExecuteTransactionAsync(Action transactionAction, CancellationToken cancellationToken = default)
+    {
+        using var transaction = await Database.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            transactionAction();
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            transaction?.RollbackAsync(cancellationToken);
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

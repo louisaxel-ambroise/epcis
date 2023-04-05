@@ -15,6 +15,10 @@ public static class SubscriptionValidator
         {
             return false;
         }
+        if (request.Trigger is not null && !IsValid(request.Trigger))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -22,6 +26,13 @@ public static class SubscriptionValidator
     private static bool OnlyOneSubscriptionMethodIsDefined(Subscription request)
     {
         return string.IsNullOrEmpty(request.Trigger) != request.Schedule is null;
+    }
+
+    private static bool IsValid(string trigger)
+    {
+        var allowedValues = new[] { "hourly", "daily", "weekly", "stream" };
+
+        return allowedValues.Contains(trigger);
     }
 
     private static bool IsValid(SubscriptionSchedule schedule)
