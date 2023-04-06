@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FasTnT.SqlServer.Migrations
+namespace FasTnT.Sqlite.Migrations
 {
     /// <inheritdoc />
     public partial class UpdateSubscriptions : Migration
@@ -10,8 +11,8 @@ namespace FasTnT.SqlServer.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"DROP TRIGGER [Subscriptions].[SubscriptionInitialRequests];");
-            migrationBuilder.Sql(@"DROP TRIGGER [Epcis].[InsertPendingRequests];");
+            migrationBuilder.Sql(@"DROP TRIGGER [SubscriptionInitialRequests];");
+            migrationBuilder.Sql(@"DROP TRIGGER [InsertPendingRequests];");
 
             migrationBuilder.DropTable(
                 name: "PendingRequest",
@@ -36,33 +37,25 @@ namespace FasTnT.SqlServer.Migrations
                 name: "InitialRecordTime",
                 schema: "Subscriptions",
                 table: "Subscription",
-                type: "datetime2",
+                type: "TEXT",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2",
+                oldType: "TEXT",
                 oldNullable: true);
 
             migrationBuilder.AddColumn<string>(
                 name: "BufferRequestIds",
                 schema: "Subscriptions",
                 table: "Subscription",
-                type: "nvarchar(max)",
+                type: "TEXT",
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "LastExecutedTime",
                 schema: "Subscriptions",
                 table: "Subscription",
-                type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
-
-            migrationBuilder.AddColumn<DateTime>(
-                name: "NextExecutionTime",
-                schema: "Subscriptions",
-                table: "Subscription",
-                type: "datetime2",
+                type: "TEXT",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
         }
@@ -80,11 +73,6 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Subscriptions",
                 table: "Subscription");
 
-            migrationBuilder.DropColumn(
-                name: "NextExecutionTime",
-                schema: "Subscriptions",
-                table: "Subscription");
-
             migrationBuilder.RenameColumn(
                 name: "RecordTime",
                 schema: "Epcis",
@@ -95,16 +83,16 @@ namespace FasTnT.SqlServer.Migrations
                 name: "InitialRecordTime",
                 schema: "Subscriptions",
                 table: "Subscription",
-                type: "datetime2",
+                type: "TEXT",
                 nullable: true,
                 oldClrType: typeof(DateTime),
-                oldType: "datetime2");
+                oldType: "TEXT");
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "CaptureTime",
                 schema: "Epcis",
                 table: "Event",
-                type: "datetime2",
+                type: "TEXT",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
@@ -113,8 +101,8 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    RequestId = table.Column<int>(type: "int", nullable: false)
+                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    RequestId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -126,11 +114,11 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    ExecutionTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ResultsSent = table.Column<bool>(type: "bit", nullable: false),
-                    Successful = table.Column<bool>(type: "bit", nullable: false)
+                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ExecutionTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Reason = table.Column<string>(type: "TEXT", nullable: true),
+                    ResultsSent = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Successful = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {

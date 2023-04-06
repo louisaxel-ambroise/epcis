@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain.Exceptions;
@@ -12,13 +11,11 @@ public class SubscriptionsHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
-    private readonly INotificationSender _notifier;
 
-    public SubscriptionsHandler(EpcisContext context, ICurrentUser currentUser, INotificationSender notifier)
+    public SubscriptionsHandler(EpcisContext context, ICurrentUser currentUser)
     {
         _context = context;
         _currentUser = currentUser;
-        _notifier = notifier;
     }
 
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
@@ -33,7 +30,7 @@ public class SubscriptionsHandler
         _context.Remove(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await _notifier.SubscriptionRemovedAsync(subscription, cancellationToken);
+        EpcisEvents.SubscriptionRemoved(subscription);
 
         return subscription;
     }
@@ -77,7 +74,7 @@ public class SubscriptionsHandler
         _context.Add(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await _notifier.SubscriptionRegisteredAsync(subscription, cancellationToken);
+        EpcisEvents.SubscriptionRegistered(subscription);
 
         return subscription;
     }

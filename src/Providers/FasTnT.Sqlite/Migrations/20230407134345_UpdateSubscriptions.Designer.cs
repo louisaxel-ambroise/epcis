@@ -3,85 +3,78 @@ using System;
 using FasTnT.Application.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FasTnT.SqlServer.Migrations
+namespace FasTnT.Sqlite.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20230405124118_UpdateSubscriptions")]
+    [Migration("20230407134345_UpdateSubscriptions")]
     partial class UpdateSubscriptions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<short>("Action")
-                        .HasColumnType("smallint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("BusinessLocation")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("BusinessStep")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("CertificationInfo")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("CorrectiveDeclarationTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("CorrectiveReason")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Disposition")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("EventId")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("EventTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<short>("EventTimeZoneOffset")
-                        .HasColumnType("smallint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("ReadPoint")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("RequestId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("TransformationId")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<short>("Type")
-                        .HasColumnType("smallint");
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -93,15 +86,15 @@ namespace FasTnT.SqlServer.Migrations
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterData", b =>
                 {
                     b.Property<int>("RequestId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Type")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Id")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("RequestId", "Type", "Id");
 
@@ -118,15 +111,15 @@ namespace FasTnT.SqlServer.Migrations
                 {
                     b.Property<string>("Id")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Root")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.ToTable((string)null);
 
@@ -141,18 +134,16 @@ namespace FasTnT.SqlServer.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -166,70 +157,65 @@ namespace FasTnT.SqlServer.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("CaptureId")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("DocumentTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("RecordTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("SchemaVersion")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Request", "Epcis", t =>
-                        {
-                            t.HasTrigger("SubscriptionPendingRequests");
-                        });
+                    b.ToTable("Request", "Epcis");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.StandardBusinessHeader", b =>
                 {
                     b.Property<int>("RequestId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("CreationDateTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("InstanceIdentifier")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Standard")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("TypeVersion")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("RequestId");
 
@@ -240,80 +226,72 @@ namespace FasTnT.SqlServer.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("BufferRequestIds")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Destination")
                         .IsRequired()
                         .HasMaxLength(2048)
-                        .HasColumnType("nvarchar(2048)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FormatterName")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("InitialRecordTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastExecutedTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime>("NextExecutionTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("QueryName")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("ReportIfEmpty")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("SignatureToken")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Trigger")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Subscription", "Subscriptions", t =>
-                        {
-                            t.HasTrigger("SubscriptionInitialRequests");
-                        });
+                    b.ToTable("Subscription", "Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>
                 {
                     b.Property<int>("RequestId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<short>("CallbackType")
-                        .HasColumnType("smallint");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("SubscriptionId")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("SubscriptionId");
 
                     b.HasKey("RequestId");
@@ -359,15 +337,15 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.BusinessTransaction", "Transactions", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -380,11 +358,11 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.CorrectiveEventId", "CorrectiveEventIds", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("CorrectiveId")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("EventId", "CorrectiveId");
 
@@ -397,15 +375,15 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.Destination", "Destinations", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -418,21 +396,21 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.Epc", "Epcs", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<short>("Type")
-                                .HasColumnType("smallint");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<float?>("Quantity")
-                                .HasColumnType("real");
+                                .HasColumnType("REAL");
 
                             b1.Property<string>("UnitOfMeasure")
                                 .HasMaxLength(10)
-                                .HasColumnType("nvarchar(10)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -445,38 +423,38 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.Field", "Fields", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<int>("Index")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<DateTime?>("DateValue")
-                                .HasColumnType("datetime2");
+                                .HasColumnType("TEXT");
 
                             b1.Property<int?>("EntityIndex")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Name")
                                 .IsRequired()
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Namespace")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<double?>("NumericValue")
-                                .HasColumnType("float");
+                                .HasColumnType("REAL");
 
                             b1.Property<int?>("ParentIndex")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("TextValue")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<short>("Type")
-                                .HasColumnType("smallint");
+                                .HasColumnType("INTEGER");
 
                             b1.HasKey("EventId", "Index");
 
@@ -489,14 +467,14 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.PersistentDisposition", "PersistentDispositions", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<short>("Type")
-                                .HasColumnType("smallint");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -509,39 +487,39 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.SensorElement", "SensorElements", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<int>("Index")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("BizRules")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("DataProcessingMethod")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("DeviceId")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("DeviceMetadata")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<DateTime?>("EndTime")
-                                .HasColumnType("datetime2");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("RawData")
                                 .HasMaxLength(2048)
-                                .HasColumnType("nvarchar(2048)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<DateTime?>("StartTime")
-                                .HasColumnType("datetime2");
+                                .HasColumnType("TEXT");
 
                             b1.Property<DateTime?>("Time")
-                                .HasColumnType("datetime2");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("EventId", "Index");
 
@@ -554,92 +532,92 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.SensorReport", "Reports", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<int>("Index")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<bool>("BooleanValue")
-                                .HasColumnType("bit");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("ChemicalSubstance")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Component")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("CoordinateReferenceSystem")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("DataProcessingMethod")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("DeviceId")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("DeviceMetadata")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("HexBinaryValue")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<float?>("MaxValue")
-                                .HasColumnType("real");
+                                .HasColumnType("REAL");
 
                             b1.Property<float?>("MeanValue")
-                                .HasColumnType("real");
+                                .HasColumnType("REAL");
 
                             b1.Property<string>("Microorganism")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<float?>("MinValue")
-                                .HasColumnType("real");
+                                .HasColumnType("REAL");
 
                             b1.Property<float?>("PercRank")
-                                .HasColumnType("real");
+                                .HasColumnType("REAL");
 
                             b1.Property<float?>("PercValue")
-                                .HasColumnType("real");
+                                .HasColumnType("REAL");
 
                             b1.Property<string>("RawData")
                                 .HasMaxLength(2048)
-                                .HasColumnType("nvarchar(2048)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<float?>("SDev")
-                                .HasColumnType("real");
+                                .HasColumnType("REAL");
 
                             b1.Property<int>("SensorIndex")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("StringValue")
                                 .HasMaxLength(2048)
-                                .HasColumnType("nvarchar(2048)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<DateTime?>("Time")
-                                .HasColumnType("datetime2");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("UnitOfMeasure")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("UriValue")
                                 .HasMaxLength(2048)
-                                .HasColumnType("nvarchar(2048)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<float?>("Value")
-                                .HasColumnType("real");
+                                .HasColumnType("REAL");
 
                             b1.HasKey("EventId", "Index");
 
@@ -652,15 +630,15 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.Source", "Sources", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -702,17 +680,17 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataChildren", "Children", b1 =>
                         {
                             b1.Property<int>("MasterDataRequestId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("MasterDataType")
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("MasterDataId")
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("ChildrenId")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
 
@@ -727,24 +705,24 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataAttribute", "Attributes", b1 =>
                         {
                             b1.Property<int>("RequestId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("MasterdataType")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("MasterdataId")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("RequestId", "MasterdataType", "MasterdataId", "Id");
 
@@ -756,39 +734,39 @@ namespace FasTnT.SqlServer.Migrations
                             b1.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataField", "Fields", b2 =>
                                 {
                                     b2.Property<int>("RequestId")
-                                        .HasColumnType("int");
+                                        .HasColumnType("INTEGER");
 
                                     b2.Property<string>("MasterdataType")
                                         .HasMaxLength(256)
-                                        .HasColumnType("nvarchar(256)");
+                                        .HasColumnType("TEXT");
 
                                     b2.Property<string>("MasterdataId")
                                         .HasMaxLength(256)
-                                        .HasColumnType("nvarchar(256)");
+                                        .HasColumnType("TEXT");
 
                                     b2.Property<string>("AttributeId")
                                         .HasMaxLength(256)
-                                        .HasColumnType("nvarchar(256)");
+                                        .HasColumnType("TEXT");
 
                                     b2.Property<string>("Namespace")
                                         .HasMaxLength(256)
-                                        .HasColumnType("nvarchar(256)");
+                                        .HasColumnType("TEXT");
 
                                     b2.Property<string>("Name")
                                         .HasMaxLength(256)
-                                        .HasColumnType("nvarchar(256)");
+                                        .HasColumnType("TEXT");
 
                                     b2.Property<string>("ParentName")
                                         .HasMaxLength(256)
-                                        .HasColumnType("nvarchar(256)");
+                                        .HasColumnType("TEXT");
 
                                     b2.Property<string>("ParentNamespace")
                                         .HasMaxLength(256)
-                                        .HasColumnType("nvarchar(256)");
+                                        .HasColumnType("TEXT");
 
                                     b2.Property<string>("Value")
                                         .HasMaxLength(256)
-                                        .HasColumnType("nvarchar(256)");
+                                        .HasColumnType("TEXT");
 
                                     b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", "Namespace", "Name");
 
@@ -817,14 +795,14 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Queries.QueryParameter", "Parameters", b1 =>
                         {
                             b1.Property<int>("QueryId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Name")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Values")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("QueryId", "Name");
 
@@ -848,35 +826,35 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.ContactInformation", "ContactInformations", b1 =>
                         {
                             b1.Property<int>("RequestId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<short>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("smallint");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Identifier")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Contact")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("ContactTypeIdentifier")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("EmailAddress")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("FaxNumber")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("TelephoneNumber")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("RequestId", "Type", "Identifier");
 
@@ -894,14 +872,14 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Queries.QueryParameter", "Parameters", b1 =>
                         {
                             b1.Property<int>("SubscriptionId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("Name")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Values")
-                                .HasColumnType("nvarchar(max)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("SubscriptionId", "Name");
 
@@ -914,31 +892,31 @@ namespace FasTnT.SqlServer.Migrations
                     b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule", b1 =>
                         {
                             b1.Property<int>("SubscriptionId")
-                                .HasColumnType("int");
+                                .HasColumnType("INTEGER");
 
                             b1.Property<string>("DayOfMonth")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("DayOfWeek")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Hour")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Minute")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Month")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.Property<string>("Second")
                                 .HasMaxLength(256)
-                                .HasColumnType("nvarchar(256)");
+                                .HasColumnType("TEXT");
 
                             b1.HasKey("SubscriptionId");
 

@@ -3,7 +3,7 @@ using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v1_2.Communication.Formatters;
 using FasTnT.Host.Features.v1_2.Communication.Utils;
 
-namespace FasTnT.Host.Services.Subscriptions.Formatters;
+namespace FasTnT.Host.Subscriptions.Formatters;
 
 public class XmlSubscriptionFormatter : ISubscriptionFormatter
 {

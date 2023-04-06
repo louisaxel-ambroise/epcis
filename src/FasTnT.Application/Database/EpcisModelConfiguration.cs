@@ -24,7 +24,7 @@ public static class EpcisModelConfiguration
     public static void Apply(ModelBuilder modelBuilder)
     {
         var request = modelBuilder.Entity<Request>();
-        request.ToTable(nameof(Request), Epcis, builder => builder.HasTrigger("SubscriptionPendingRequests"));
+        request.ToTable(nameof(Request), Epcis);
         request.HasKey(x => x.Id);
         request.Property(x => x.Id).ValueGeneratedOnAdd();
         request.Property(x => x.UserId).HasMaxLength(50);
@@ -257,16 +257,16 @@ public static class EpcisModelConfiguration
         var subscription = modelBuilder.Entity<Subscription>();
         subscription.HasKey(x => x.Id);
         subscription.Property(x => x.Id).ValueGeneratedOnAdd();
-        subscription.ToTable(nameof(Subscription), Subscriptions, builder => builder.HasTrigger("SubscriptionInitialRequests"));
+        subscription.ToTable(nameof(Subscription), Subscriptions);
         subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.Destination).IsRequired(true).HasMaxLength(2048);
-        subscription.Property(x => x.InitialRecordTime);
+        subscription.Property(x => x.InitialRecordTime).IsRequired(true);
+        subscription.Property(x => x.LastExecutedTime).IsRequired(true);
         subscription.Property(x => x.ReportIfEmpty).IsRequired(true);
         subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.SignatureToken).IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.FormatterName).IsRequired(true).HasMaxLength(30);
-        subscription.Property(x => x.LastExecutedTime).IsRequired();
         subscription.Property(x => x.BufferRequestIds).HasJsonArrayConversion();
         subscription.OwnsOne(x => x.Schedule, c =>
         {

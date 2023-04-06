@@ -1,6 +1,5 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Events;
-using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain;
@@ -15,13 +14,11 @@ public class CaptureHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _user;
-    private readonly INotificationSender _notifier;
 
-    public CaptureHandler(EpcisContext context, ICurrentUser user, INotificationSender notifier)
+    public CaptureHandler(EpcisContext context, ICurrentUser user)
     {
         _context = context;
         _user = user;
-        _notifier = notifier;
     }
 
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
@@ -70,16 +67,18 @@ public class CaptureHandler
         request.UserId = _user.UserId;
         request.Events.ForEach(evt => evt.EventId ??= EventHash.Compute(evt));
 
-        await _context.ExecuteTransactionAsync(() =>
-        {
-            _context.Add(request);
-            _context.SaveChanges();
-
-            request.RecordTime = DateTime.UtcNow;
-            _context.SaveChanges();
-        }, cancellationToken);
-        await _notifier.RequestCapturedAsync(request, cancellationToken);
+        await _context.ExecuteTransactionAsync(() => StoreRequest(request), cancellationToken);
+        EpcisEvents.RequestCaptured(request);
 
         return request;
+    }
+
+    private void StoreRequest(Request request)
+    {
+        _context.Add(request);
+        _context.SaveChanges();
+
+        request.RecordTime = DateTime.UtcNow;
+        _context.SaveChanges();
     }
 }

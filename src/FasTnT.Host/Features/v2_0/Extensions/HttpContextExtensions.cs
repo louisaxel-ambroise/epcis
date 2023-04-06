@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Host.Services.Subscriptions;
+using FasTnT.Host.Subscriptions.Jobs;
+using FasTnT.Host.Subscriptions.Schedulers;
 using System.Web;
 
 namespace FasTnT.Host.Features.v2_0.Extensions;
@@ -27,29 +28,31 @@ public static class HttpContextExtensions
 
     public static async Task<IResult> HandleWebsocketAsync(this HttpContext context, string queryName, IEnumerable<QueryParameter> parameters)
     {
-        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+        var webSocket = await context.WebSockets.AcceptWebSocketAsync(new WebSocketAcceptContext() { KeepAliveInterval = TimeSpan.FromSeconds(10) });
         var scheduler = ParseSchedule(context);
-        var subscriptionTask = new WebSocketSubscriptionTask(webSocket, queryName, parameters, scheduler);
+        var subscriptionTask = new WebSocketSubscriptionJob(webSocket, queryName, parameters, scheduler);
         var applicationLifetime = context.RequestServices.GetService<IHostApplicationLifetime>();
 
         try
         {
-            await subscriptionTask.Run(context.RequestServices, applicationLifetime.ApplicationStopping);
+            webSocket.WaitForCompletion(scheduler.Stop, applicationLifetime.ApplicationStopping);
+            await subscriptionTask.RunAsync(context.RequestServices, applicationLifetime.ApplicationStopping);
         }
         catch (Exception ex)
         {
             // A failure in the WebSocket exception can't be thrown further
             context.RequestServices
-                .GetService<ILogger<WebSocketSubscriptionTask>>()
+                .GetService<ILogger<WebSocketSubscriptionJob>>()
                 .LogError(ex, "An exception happened during websocket processing");
         }
 
         return Results.Empty;
     }
 
-    public static ISubscriptionScheduler ParseSchedule(HttpContext context)
+    public static SubscriptionScheduler ParseSchedule(HttpContext context)
     {
         var queryString = HttpUtility.ParseQueryString(context.Request.QueryString.ToString());
+        var trigger = queryString.Get("stream") == "true" ? "stream" : null;
         var schedule = new SubscriptionSchedule
         {
             Second = queryString.Get("second"),
@@ -60,6 +63,6 @@ public static class HttpContextExtensions
             DayOfMonth = queryString.Get("dayOfMonth")
         };
 
-        return ISubscriptionScheduler.Get(schedule);
+        return SubscriptionScheduler.Create(trigger, schedule);
     }
 }

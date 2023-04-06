@@ -5,7 +5,7 @@ using FasTnT.Host.Features.v2_0.Communication.Json.Utils;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace FasTnT.Host.Services.Subscriptions.Formatters;
+namespace FasTnT.Host.Subscriptions.Formatters;
 
 public class JsonSubscriptionFormatter : ISubscriptionFormatter
 {
