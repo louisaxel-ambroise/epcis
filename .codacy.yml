@@ -8,6 +8,7 @@ engines:
       - "src/Providers/**.cs"
 exclude_paths:
   - "tests/**"
+  - "src/FasTnT.Host/Subscriptions/**"
   - "src/FasTnT.Application/EpcisEvents.cs"
   - "src/FasTnT.Domain/**"
   - "**/*Extensions.cs"

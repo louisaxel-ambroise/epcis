@@ -189,10 +189,7 @@ namespace FasTnT.SqlServer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Request", "Epcis", t =>
-                        {
-                            t.HasTrigger("SubscriptionPendingRequests");
-                        });
+                    b.ToTable("Request", "Epcis");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.StandardBusinessHeader", b =>
@@ -265,9 +262,6 @@ namespace FasTnT.SqlServer.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<DateTime>("NextExecutionTime")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("QueryName")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -289,10 +283,7 @@ namespace FasTnT.SqlServer.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Subscription", "Subscriptions", t =>
-                        {
-                            t.HasTrigger("SubscriptionInitialRequests");
-                        });
+                    b.ToTable("Subscription", "Subscriptions");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>

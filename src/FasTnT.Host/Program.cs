@@ -1,12 +1,10 @@
 using FasTnT.Application;
-using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Host.Features.v1_2;
 using FasTnT.Host.Features.v2_0;
 using FasTnT.Host.Services.Database;
-using FasTnT.Host.Services.Notifications;
-using FasTnT.Host.Services.Subscriptions;
+using FasTnT.Host.Subscriptions;
 using FasTnT.Host.Services.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -19,14 +17,12 @@ builder.Services.AddHttpLogging(LoggingOptions);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
-builder.Services.AddHostedService<SubscriptionBackgroundService>();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 
-// Change this to another notification scheme if you intend to have multiple servers running.
-// A queue-based notification pattern is probably recommended in that case.
-// Also move the subscriptions handling in an other singletong process in that case.
-builder.Services.AddSingleton<INotificationSender>(InMemoryNotificationManager.Instance);
-builder.Services.AddSingleton<INotificationReceiver>(InMemoryNotificationManager.Instance);
+// Handle persistent subscriptions in-memory.
+// This will be enough for a single server deployment, but for a
+// multi-instance setup it's better to externalize this process.
+builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
 Constants.Instance = builder.Configuration.GetSection(nameof(Constants)).Get<Constants>();
 

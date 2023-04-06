@@ -53,6 +53,7 @@ public class WhenHandlingDeleteQuery
         });
 
         Context.SaveChanges();
+        Context.ChangeTracker.Clear();
     }
 
     [TestMethod]

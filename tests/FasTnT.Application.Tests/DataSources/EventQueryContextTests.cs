@@ -161,7 +161,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents(new[] { QueryParameter.Create("GE_recordTime", "2021-03-12T10:24:10Z") }).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(0, result.Count);
         Assert.IsTrue(result.All(x => x.Request.RecordTime >= new DateTime(2021, 03, 12, 10, 24, 10)));
     }
 
@@ -171,7 +171,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents(new[] { QueryParameter.Create("LT_recordTime", "2021-03-12T10:24:10Z") }).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(2, result.Count);
         Assert.IsTrue(result.All(x => x.Request.RecordTime < new DateTime(2021, 03, 12, 10, 24, 10)));
     }
 

@@ -17,7 +17,7 @@ public static class WebSocketExtensions
 
     public static async Task WaitForCompletion(this WebSocket webSocket, Action callback, CancellationToken cancellationToken)
     {
-        var arraySegment = new ArraySegment<byte>(new byte[8 * 1024]);
+        var arraySegment = new ArraySegment<byte>(new byte[2 * 1024]);
 
         while (!cancellationToken.IsCancellationRequested && webSocket.State == WebSocketState.Open)
         {

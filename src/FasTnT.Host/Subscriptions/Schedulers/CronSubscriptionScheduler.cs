@@ -1,19 +1,13 @@
 ﻿using FasTnT.Domain.Model.Subscriptions;
 
-namespace FasTnT.Host.Services.Subscriptions;
+namespace FasTnT.Host.Subscriptions.Schedulers;
 
-public interface ISubscriptionScheduler
-{
-    DateTime GetNextExecution(DateTime startDate);
-
-    public static ISubscriptionScheduler Get(SubscriptionSchedule schedule) => new CronScheduler(schedule);
-}
-
-public class CronScheduler : ISubscriptionScheduler
+public class CronSubscriptionScheduler : SubscriptionScheduler
 {
     internal readonly ScheduleEntry Seconds, Minutes, Hours, DayOfMonth, Month, DayOfWeek;
 
-    internal CronScheduler(SubscriptionSchedule schedule)
+
+    public CronSubscriptionScheduler(SubscriptionSchedule schedule)
     {
         Seconds = ScheduleEntry.Parse(schedule.Second, 0, 60);
         Minutes = ScheduleEntry.Parse(schedule.Minute, 0, 59);
@@ -23,17 +17,17 @@ public class CronScheduler : ISubscriptionScheduler
         DayOfWeek = ScheduleEntry.Parse(schedule.DayOfWeek, 1, 7);
     }
 
-    public DateTime GetNextExecution(DateTime startDate)
+    public override void ComputeNextExecution(DateTime startDate)
     {
-        var methods = new[] { SetSeconds, SetMinutes, SetHours, SetDayOfMonth, SetMonth }; 
+        var methods = new[] { SetSeconds, SetMinutes, SetHours, SetDayOfMonth, SetMonth };
         var tentative = methods.Aggregate(startDate.AddSeconds(1), (date, function) => function(date));
 
         if (!DayOfWeek.HasValue(1 + (int)tentative.DayOfWeek))
         {
-            return GetNextExecution(new DateTime(tentative.Year, tentative.Month, tentative.Day, 23, 59, 59));
+            ComputeNextExecution(new DateTime(tentative.Year, tentative.Month, tentative.Day, 23, 59, 59));
         }
 
-        return tentative;
+        NextComputedExecution = tentative;
     }
 
     private DateTime SetMinutes(DateTime tentative)
@@ -81,7 +75,7 @@ public class CronScheduler : ISubscriptionScheduler
         return GetNextTentative(tentative, x => x.Second, x => x.AddSeconds(1), Seconds);
     }
 
-    private DateTime GetNextTentative(DateTime tentative, Func<DateTime, int> selector, Func<DateTime, DateTime> increment, ScheduleEntry entry)
+    private static DateTime GetNextTentative(DateTime tentative, Func<DateTime, int> selector, Func<DateTime, DateTime> increment, ScheduleEntry entry)
     {
         while (!entry.HasValue(selector(tentative)))
         {

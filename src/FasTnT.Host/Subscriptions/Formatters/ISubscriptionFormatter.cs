@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 
-namespace FasTnT.Host.Services.Subscriptions.Formatters;
+namespace FasTnT.Host.Subscriptions.Formatters;
 
 public interface ISubscriptionFormatter
 {

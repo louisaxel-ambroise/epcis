@@ -24,7 +24,6 @@ public class WhenHandlingGetCaptureDetailQuery
         }
     }
 
-
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
