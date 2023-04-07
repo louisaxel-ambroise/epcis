@@ -2,7 +2,7 @@
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
-using FasTnT.Host.Services.Subscriptions.Formatters;
+using FasTnT.Host.Subscriptions.Formatters;
 
 namespace FasTnT.Host.Features.v1_2.Communication.Parsers;
 
@@ -48,13 +48,14 @@ public static class XmlQueryParser
             Name = element.Element("subscriptionID").Value,
             QueryName = element.Element("queryName").Value,
             Destination = element.Element("dest").Value,
-            FormatterName = XmlResultSender.Instance.Name,
+            FormatterName = nameof(XmlSubscriptionFormatter),
             Trigger = element.Element("controls")?.Element("trigger")?.Value,
             ReportIfEmpty = bool.Parse(element.Element("controls").Element("reportIfEmpty").Value),
-            InitialRecordTime = DateTime.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, null, DateTimeStyles.AdjustToUniversal, out DateTime date) ? date : default(DateTime?),
+            InitialRecordTime = DateTime.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, null, DateTimeStyles.AdjustToUniversal, out DateTime date) ? date : DateTime.UtcNow,
             Parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToList(),
             Schedule = ParseQuerySchedule(element.Element("controls")?.Element("schedule"))
         };
+        subscription.LastExecutedTime = subscription.InitialRecordTime;
 
         return new(subscription);
     }

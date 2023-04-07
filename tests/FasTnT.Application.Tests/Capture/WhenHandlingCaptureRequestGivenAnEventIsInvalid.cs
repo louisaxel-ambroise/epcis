@@ -14,7 +14,7 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenAnEventIsInvalid));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static List<Request> CapturedRequests = new();
+    readonly static List<int> CapturedRequests = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -37,7 +37,7 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
     {
         var handler = new CaptureHandler(Context, UserContext);
         var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.AggregationEvent, Action = EventAction.Add } } }; // Does not have parent -> invalid event
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
         Assert.AreEqual(0, CapturedRequests.Count);

@@ -32,6 +32,7 @@ public class WhenHandlingSubscribeCommand
         });
 
         Context.SaveChanges();
+        Context.ChangeTracker.Clear();
     }
 
     [TestMethod]
@@ -43,7 +44,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "https://test.com/",
             FormatterName = string.Empty,
             QueryName = "SimpleEventQuery",
-            Trigger = "test"
+            Trigger = "daily"
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
         var result = handler.RegisterSubscriptionAsync(subscription, CancellationToken.None).Result;
@@ -60,7 +61,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "https://test.com/",
             FormatterName = string.Empty,
             QueryName = "SimpleEventQuery",
-            Trigger = "test"
+            Trigger = "daily"
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
 
@@ -76,7 +77,23 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             FormatterName = string.Empty,
             QueryName = "SimpleEventQuery",
-            Trigger = "test"
+            Trigger = "daily"
+        };
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
+
+        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+    }
+
+    [TestMethod]
+    public void ItShouldThrowAnExceptionIfTheTriggerIsInvalid()
+    {
+        var subscription = new Subscription
+        {
+            Name = "TestSubscription",
+            Destination = "",
+            FormatterName = string.Empty,
+            QueryName = "SimpleEventQuery",
+            Trigger = "unknown"
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
 

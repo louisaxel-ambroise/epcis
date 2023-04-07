@@ -24,7 +24,6 @@ public class WhenHandlingGetCaptureDetailQuery
         }
     }
 
-
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
@@ -35,7 +34,7 @@ public class WhenHandlingGetCaptureDetailQuery
                 UserId = UserContext.UserId,
                 CaptureId = "001",
                 SchemaVersion = "2.0",
-                CaptureTime = DateTime.UtcNow,
+                RecordTime = DateTime.UtcNow,
                 DocumentTime = DateTime.UtcNow,
                 Events = new List<Event>{ new Event { Type = EventType.ObjectEvent } }
             },
@@ -45,7 +44,7 @@ public class WhenHandlingGetCaptureDetailQuery
                 UserId = UserContext.UserId,
                 CaptureId = "002",
                 SchemaVersion = "2.0",
-                CaptureTime = DateTime.UtcNow,
+                RecordTime = DateTime.UtcNow,
                 DocumentTime = DateTime.UtcNow,
                 Events = new List<Event>{ new Event { Type = EventType.ObjectEvent } }
             }

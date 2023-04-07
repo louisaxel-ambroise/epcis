@@ -52,9 +52,9 @@ internal class EventQueryContext
             case "LT_eventTime":
                 Filter(x => x.EventTime < param.AsDate()); break;
             case "GE_recordTime":
-                Filter(x => x.CaptureTime >= param.AsDate()); break;
+                Filter(x => x.Request.RecordTime >= param.AsDate()); break;
             case "LT_recordTime":
-                Filter(x => x.CaptureTime < param.AsDate()); break;
+                Filter(x => x.Request.RecordTime < param.AsDate()); break;
             case "EQ_action":
                 Filter(x => param.Values.Select(x => Enum.Parse<EventAction>(x, true)).Contains(x.Action)); break;
             case "EQ_bizLocation":
@@ -234,7 +234,7 @@ internal class EventQueryContext
             case "eventTime":
                 _filters.Add(x => _ascending ? x.OrderBy(x => x.EventTime) : x.OrderByDescending(x => x.EventTime)); break;
             case "recordTime":
-                _filters.Add(x => _ascending ? x.OrderBy(x => x.CaptureTime) : x.OrderByDescending(x => x.CaptureTime)); break;
+                _filters.Add(x => _ascending ? x.OrderBy(x => x.Request.RecordTime) : x.OrderByDescending(x => x.Request.RecordTime)); break;
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid order field: {param.AsString()}");
         }

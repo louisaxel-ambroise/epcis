@@ -2,7 +2,6 @@
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
-using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application.Tests.Queries;
@@ -11,7 +10,7 @@ namespace FasTnT.Application.Tests.Queries;
 public class WhenHandlingUnsubscribeCommand
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingUnsubscribeCommand));
-    readonly static List<Subscription> RemovedSubscriptions = new();
+    readonly static List<int> RemovedSubscriptions = new();
 
     [ClassCleanup]
     public static void Cleanup()

@@ -29,7 +29,7 @@ public class EventQueryEndpointsTests
 
             dbContext.Add(new Request
             {
-                CaptureTime = DateTime.Now,
+                RecordTime = DateTime.Now,
                 DocumentTime = DateTime.Now,
                 SchemaVersion = "2.0",
                 UserId = "431257CC4ADAF410486CDD3D6DC22F08",
@@ -53,7 +53,7 @@ public class EventQueryEndpointsTests
 
             dbContext.Add(new Request
             {
-                CaptureTime = DateTime.Now,
+                RecordTime = DateTime.Now,
                 DocumentTime = DateTime.Now,
                 SchemaVersion = "2.0",
                 UserId = "ANOTHERUSER",

@@ -1,49 +1,10 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Host.Services.Subscriptions;
-using System.Net.WebSockets;
-using System.Text;
+using FasTnT.Host.Subscriptions.Jobs;
+using FasTnT.Host.Subscriptions.Schedulers;
 using System.Web;
 
 namespace FasTnT.Host.Features.v2_0.Extensions;
-
-public static class WebSocketExtensions
-{
-    public static async Task SendAsync(this WebSocket webSocket, string content, CancellationToken cancellationToken)
-    {
-        var responseByteArray = Encoding.UTF8.GetBytes(content);
-
-        if (webSocket.State == WebSocketState.Open) 
-        {
-            await webSocket.SendAsync(responseByteArray, WebSocketMessageType.Text, true, cancellationToken);
-        }
-    }
-
-    public static async Task WaitForCompletion(this WebSocket webSocket, Action callback, CancellationToken cancellationToken)
-    {
-        var arraySegment = new ArraySegment<byte>(new byte[8 * 1024]);
-
-        while (!cancellationToken.IsCancellationRequested && webSocket.State == WebSocketState.Open)
-        {
-            try
-            {
-                await webSocket.ReceiveAsync(arraySegment, cancellationToken);
-
-                if (webSocket.State == WebSocketState.CloseReceived)
-                {
-                    await webSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, cancellationToken);
-                }
-            }
-            catch
-            {
-                // The loop will stop if the server is shutdown or socket closed
-            }
-        }
-
-        callback();
-    }
-}
 
 public static class HttpContextExtensions
 {
@@ -67,43 +28,41 @@ public static class HttpContextExtensions
 
     public static async Task<IResult> HandleWebsocketAsync(this HttpContext context, string queryName, IEnumerable<QueryParameter> parameters)
     {
-        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-        var schedule = ParseSchedule(context);
-        var subscriptionTask = new WebSocketSubscriptionTask(webSocket, queryName, parameters, schedule);
-
-        using var scope = context.RequestServices.CreateScope();
-        using var epcisContext = scope.ServiceProvider.GetService<EpcisContext>();
-
-        var applicationLifetime = scope.ServiceProvider.GetService<IHostApplicationLifetime>();
+        var webSocket = await context.WebSockets.AcceptWebSocketAsync(new WebSocketAcceptContext() { KeepAliveInterval = TimeSpan.FromSeconds(10) });
+        var scheduler = ParseSchedule(context);
+        var subscriptionTask = new WebSocketSubscriptionJob(webSocket, queryName, parameters, scheduler);
+        var applicationLifetime = context.RequestServices.GetService<IHostApplicationLifetime>();
 
         try
         {
-            await subscriptionTask.Run(epcisContext, applicationLifetime.ApplicationStopping);
+            _ = webSocket.WaitForCompletion(scheduler.Stop, applicationLifetime.ApplicationStopping);
+            await subscriptionTask.RunAsync(context.RequestServices, applicationLifetime.ApplicationStopping);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             // A failure in the WebSocket exception can't be thrown further
-            scope.ServiceProvider
-                .GetService<ILogger<WebSocketSubscriptionTask>>()
+            context.RequestServices
+                .GetService<ILogger<WebSocketSubscriptionJob>>()
                 .LogError(ex, "An exception happened during websocket processing");
         }
 
         return Results.Empty;
     }
 
-    public static SubscriptionSchedule ParseSchedule(HttpContext context)
+    public static SubscriptionScheduler ParseSchedule(HttpContext context)
     {
         var queryString = HttpUtility.ParseQueryString(context.Request.QueryString.ToString());
+        var trigger = queryString.Get("stream") == "true" ? "stream" : null;
         var schedule = new SubscriptionSchedule
         {
-            Second = queryString.Get("second") ?? string.Empty,
-            Minute = queryString.Get("minute") ?? string.Empty,
-            Hour = queryString.Get("hour") ?? string.Empty,
-            Month = queryString.Get("month") ?? string.Empty,
-            DayOfWeek = queryString.Get("dayOfWeek") ?? string.Empty,
-            DayOfMonth = queryString.Get("dayOfMonth") ?? string.Empty
+            Second = queryString.Get("second"),
+            Minute = queryString.Get("minute"),
+            Hour = queryString.Get("hour"),
+            Month = queryString.Get("month"),
+            DayOfWeek = queryString.Get("dayOfWeek"),
+            DayOfMonth = queryString.Get("dayOfMonth")
         };
 
-        return schedule.IsEmpty() ? default : schedule;
+        return SubscriptionScheduler.Create(trigger, schedule);
     }
 }

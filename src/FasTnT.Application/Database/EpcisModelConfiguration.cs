@@ -24,50 +24,50 @@ public static class EpcisModelConfiguration
     public static void Apply(ModelBuilder modelBuilder)
     {
         var request = modelBuilder.Entity<Request>();
-        request.ToTable(nameof(Request), Epcis, builder => builder.HasTrigger("SubscriptionPendingRequests"));
+        request.ToTable(nameof(Request), Epcis);
         request.HasKey(x => x.Id);
         request.Property(x => x.Id).ValueGeneratedOnAdd();
         request.Property(x => x.UserId).HasMaxLength(50);
         request.Property(x => x.DocumentTime).IsRequired();
-        request.Property(x => x.CaptureTime).IsRequired();
+        request.Property(x => x.RecordTime).IsRequired();
         request.Property(x => x.CaptureId).IsRequired().HasMaxLength(256);
         request.Property(x => x.SchemaVersion).IsRequired(true).HasMaxLength(10);
         request.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
         request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
-        request.OwnsOne(x => x.StandardBusinessHeader, c =>
+        request.HasOne(x => x.StandardBusinessHeader).WithOne().HasForeignKey<StandardBusinessHeader>("RequestId");
+        request.HasOne(x => x.SubscriptionCallback).WithOne().HasForeignKey<SubscriptionCallback>("RequestId");
+
+        var subscriptionCallback = modelBuilder.Entity<SubscriptionCallback>();
+        subscriptionCallback.ToTable(nameof(SubscriptionCallback), Epcis);
+        subscriptionCallback.Property<int>("RequestId");
+        subscriptionCallback.HasKey("RequestId");
+        subscriptionCallback.HasOne(x => x.Request).WithOne(x => x.SubscriptionCallback).HasForeignKey<SubscriptionCallback>("RequestId");
+        subscriptionCallback.Property(x => x.CallbackType).IsRequired(true).HasConversion<short>();
+        subscriptionCallback.Property(x => x.Reason).IsRequired(false).HasMaxLength(256);
+        subscriptionCallback.Property(x => x.SubscriptionId).HasColumnName("SubscriptionId").IsRequired(true).HasMaxLength(256);
+
+        var sbdh = modelBuilder.Entity<StandardBusinessHeader>();
+        sbdh.ToTable(nameof(StandardBusinessHeader), Sbdh);
+        sbdh.HasKey("RequestId");
+        sbdh.Property<int>("RequestId");
+        sbdh.Property(x => x.Version).HasMaxLength(256).IsRequired(true);
+        sbdh.Property(x => x.Standard).HasMaxLength(256).IsRequired(true);
+        sbdh.Property(x => x.TypeVersion).HasMaxLength(256).IsRequired(true);
+        sbdh.Property(x => x.InstanceIdentifier).HasMaxLength(256).IsRequired(true);
+        sbdh.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
+        sbdh.Property(x => x.CreationDateTime).IsRequired(false);
+        sbdh.OwnsMany(x => x.ContactInformations, c =>
         {
-            c.ToTable(nameof(StandardBusinessHeader), Sbdh);
-            c.HasKey("RequestId");
+            c.ToTable(nameof(ContactInformation), Sbdh);
             c.Property<int>("RequestId");
-            c.Property(x => x.Version).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.Standard).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.TypeVersion).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.InstanceIdentifier).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.CreationDateTime).IsRequired(false);
-            c.OwnsMany(x => x.ContactInformations, c =>
-            {
-                c.ToTable(nameof(ContactInformation), Sbdh);
-                c.Property<int>("RequestId");
-                c.HasKey("RequestId", nameof(ContactInformation.Type), nameof(ContactInformation.Identifier));
-                c.Property(x => x.Type).HasMaxLength(256).HasConversion<short>().IsRequired(true);
-                c.Property(x => x.Identifier).HasMaxLength(256).IsRequired(true);
-                c.Property(x => x.Contact).HasMaxLength(256).IsRequired(false);
-                c.Property(x => x.EmailAddress).HasMaxLength(256).IsRequired(false);
-                c.Property(x => x.FaxNumber).HasMaxLength(256).IsRequired(false);
-                c.Property(x => x.TelephoneNumber).HasMaxLength(256).IsRequired(false);
-                c.Property(x => x.ContactTypeIdentifier).HasMaxLength(256).IsRequired(false);
-            });
-        });
-        request.OwnsOne(x => x.SubscriptionCallback, c =>
-        {
-            c.ToTable(nameof(SubscriptionCallback), Epcis);
-            c.Property<int>("RequestId");
-            c.HasKey("RequestId");
-            c.HasOne(x => x.Request).WithOne(x => x.SubscriptionCallback).HasForeignKey<SubscriptionCallback>("RequestId");
-            c.Property(x => x.CallbackType).IsRequired(true).HasConversion<short>();
-            c.Property(x => x.Reason).IsRequired(false).HasMaxLength(256);
-            c.Property(x => x.SubscriptionId).IsRequired(true).HasMaxLength(256);
+            c.HasKey("RequestId", nameof(ContactInformation.Type), nameof(ContactInformation.Identifier));
+            c.Property(x => x.Type).HasMaxLength(256).HasConversion<short>().IsRequired(true);
+            c.Property(x => x.Identifier).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Contact).HasMaxLength(256).IsRequired(false);
+            c.Property(x => x.EmailAddress).HasMaxLength(256).IsRequired(false);
+            c.Property(x => x.FaxNumber).HasMaxLength(256).IsRequired(false);
+            c.Property(x => x.TelephoneNumber).HasMaxLength(256).IsRequired(false);
+            c.Property(x => x.ContactTypeIdentifier).HasMaxLength(256).IsRequired(false);
         });
 
         var masterData = modelBuilder.Entity<MasterData>();
@@ -132,7 +132,6 @@ public static class EpcisModelConfiguration
         evt.Property(x => x.Id).ValueGeneratedOnAdd();
         evt.Property(x => x.Type).IsRequired(true).HasConversion<short>();
         evt.Property(x => x.EventTime).IsRequired(true);
-        evt.Property(x => x.CaptureTime).IsRequired(true);
         evt.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => x);
         evt.Property(x => x.Action).IsRequired(true).HasConversion<short>();
         evt.Property(x => x.CertificationInfo).HasMaxLength(256).IsRequired(false);
@@ -145,6 +144,7 @@ public static class EpcisModelConfiguration
         evt.Property(x => x.CorrectiveDeclarationTime).IsRequired(false);
         evt.Property(x => x.CorrectiveReason).HasMaxLength(256).IsRequired(false);
         evt.HasOne(x => x.Request).WithMany(x => x.Events).HasForeignKey("RequestId");
+        evt.Navigation(e => e.Request).AutoInclude();
         evt.OwnsMany(x => x.Epcs, c =>
         {
             c.ToTable(nameof(Epc), Epcis);
@@ -257,15 +257,17 @@ public static class EpcisModelConfiguration
         var subscription = modelBuilder.Entity<Subscription>();
         subscription.HasKey(x => x.Id);
         subscription.Property(x => x.Id).ValueGeneratedOnAdd();
-        subscription.ToTable(nameof(Subscription), Subscriptions, builder => builder.HasTrigger("SubscriptionInitialRequests"));
+        subscription.ToTable(nameof(Subscription), Subscriptions);
         subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
         subscription.Property(x => x.Destination).IsRequired(true).HasMaxLength(2048);
-        subscription.Property(x => x.InitialRecordTime);
+        subscription.Property(x => x.InitialRecordTime).IsRequired(true);
+        subscription.Property(x => x.LastExecutedTime).IsRequired(true);
         subscription.Property(x => x.ReportIfEmpty).IsRequired(true);
         subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.SignatureToken).IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.FormatterName).IsRequired(true).HasMaxLength(30);
+        subscription.Property(x => x.BufferRequestIds).HasJsonArrayConversion();
         subscription.OwnsOne(x => x.Schedule, c =>
         {
             c.ToTable(nameof(SubscriptionSchedule), Subscriptions);
@@ -287,21 +289,6 @@ public static class EpcisModelConfiguration
             c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
         });
         subscription.HasIndex(x => x.Name).IsUnique();
-
-        var executionRecord = modelBuilder.Entity<SubscriptionExecutionRecord>();
-        executionRecord.ToTable(nameof(SubscriptionExecutionRecord), Subscriptions);
-        executionRecord.HasKey("SubscriptionId", "ExecutionTime");
-        executionRecord.Property(x => x.SubscriptionId).IsRequired(true);
-        executionRecord.Property(x => x.ExecutionTime).IsRequired(true);
-        executionRecord.Property(x => x.ResultsSent).IsRequired(true);
-        executionRecord.Property(x => x.Successful).IsRequired(true);
-        executionRecord.Property(x => x.Reason).IsRequired(false);
-
-        var pendingRequests = modelBuilder.Entity<PendingRequest>();
-        pendingRequests.ToTable(nameof(PendingRequest), Subscriptions);
-        pendingRequests.Property(x => x.SubscriptionId).IsRequired();
-        pendingRequests.Property(x => x.RequestId).IsRequired();
-        pendingRequests.HasKey("SubscriptionId", "RequestId");
 
         var storedQuery = modelBuilder.Entity<StoredQuery>();
         storedQuery.ToTable(nameof(StoredQuery), Queries);

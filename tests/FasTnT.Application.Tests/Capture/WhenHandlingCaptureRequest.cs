@@ -13,7 +13,7 @@ public class WhenHandlingCaptureRequest
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static List<Request> CapturedRequests = new();
+    readonly static List<int> CapturedRequests = new();
 
     [ClassCleanup]
     public static void Cleanup()

@@ -2,17 +2,11 @@
 using FasTnT.Host.Features.v1_2.Extensions;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Application.Handlers;
-using FasTnT.Application;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 
 public static class SubscriptionEndpoints
 {
-    public static void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapGet("v1_2/Trigger", TriggerSubscription).RequireAuthorization("query");
-    }
-
     public static void AddSoapActions(SoapActionBuilder action)
     {
         action.On<GetSubscriptionIDs>(GetSubscriptionIds);
@@ -52,8 +46,6 @@ public static class SubscriptionEndpoints
         {
             return Results.BadRequest();
         }
-
-        EpcisEvents.SubscriptionTriggered(triggers.Split(';', StringSplitOptions.RemoveEmptyEntries));
 
         return Results.NoContent();
     }

@@ -28,7 +28,8 @@ public class WhenFormattingATransactionEvent
             Sources = new List<Source> { new Source { Id = "Party", Type = "PartyType" } },
             Destinations = new List<Destination> { new Destination { Id = "Dest", Type = "PartyType" } },
             Epcs = new List<Epc> { new Epc { Type = EpcType.List, Id = "test:epc" } },
-            Transactions = new List<BusinessTransaction> { new BusinessTransaction { Id = "tx", Type = "txtype" } }
+            Transactions = new List<BusinessTransaction> { new BusinessTransaction { Id = "tx", Type = "txtype" } },
+            Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
         Formatted = XmlEventFormatter.FormatList(new List<Event> { TransactionEvent }).FirstOrDefault();

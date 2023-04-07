@@ -14,7 +14,7 @@ public class WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static List<Request> CapturedRequests = new();
+    readonly static List<int> CapturedRequests = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -36,13 +36,13 @@ public class WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid
     public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
         var handler = new CaptureHandler(Context, UserContext);
-        var request = new Request 
-        { 
-            SchemaVersion = "1.0", 
+        var request = new Request
+        {
+            SchemaVersion = "1.0",
             StandardBusinessHeader = new StandardBusinessHeader(),
-            Events = new() { new Event { Type = EventType.ObjectEvent } } 
+            Events = new() { new Event { Type = EventType.ObjectEvent } }
         };
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
         Assert.AreEqual(0, CapturedRequests.Count);

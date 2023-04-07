@@ -59,27 +59,26 @@ public class CaptureHandler
         {
             throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }
-        if(!HeaderValidator.IsValid(request.StandardBusinessHeader))
+        if (!HeaderValidator.IsValid(request.StandardBusinessHeader))
         {
             throw new EpcisException(ExceptionType.ValidationException, "Standard Business Header in EPCIS request is not valid");
         }
 
-        request.CaptureTime = DateTime.UtcNow;
         request.UserId = _user.UserId;
-        request.Events.ForEach(evt =>
-        {
-            evt.CaptureTime = request.CaptureTime;
+        request.Events.ForEach(evt => evt.EventId ??= EventHash.Compute(evt));
 
-            if (string.IsNullOrEmpty(evt.EventId))
-            {
-                evt.EventId = EventHash.Compute(evt);
-            }
-        });
-        _context.Add(request);
-
-        await _context.SaveChangesAsync(cancellationToken);
+        await _context.ExecuteTransactionAsync((token) => StoreRequestAsync(request, token), cancellationToken);
         EpcisEvents.RequestCaptured(request);
 
         return request;
+    }
+
+    private async Task StoreRequestAsync(Request request, CancellationToken cancellationToken)
+    {
+        _context.Add(request);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        request.RecordTime = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

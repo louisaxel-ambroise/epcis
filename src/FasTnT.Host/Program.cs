@@ -4,7 +4,7 @@ using FasTnT.Domain;
 using FasTnT.Host.Features.v1_2;
 using FasTnT.Host.Features.v2_0;
 using FasTnT.Host.Services.Database;
-using FasTnT.Host.Services.Subscriptions;
+using FasTnT.Host.Subscriptions;
 using FasTnT.Host.Services.User;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -17,8 +17,12 @@ builder.Services.AddHttpLogging(LoggingOptions);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
-builder.Services.AddHostedService<SubscriptionBackgroundService>();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
+
+// Handle persistent subscriptions in-memory.
+// This will be enough for a single server deployment, but for a
+// multi-instance setup it's better to externalize this process.
+builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
 Constants.Instance = builder.Configuration.GetSection(nameof(Constants)).Get<Constants>();
 

@@ -8,7 +8,7 @@ namespace FasTnT.Host.Tests.Features.v2_0.Communication;
 [TestClass]
 public class WhenFormattingAnEmptySubscriptionResult
 {
-    public QueryResponse Result = new("ExampleQueryName", "ASubscription", QueryData.Empty);
+    public QueryResponse Result = new("ExampleQueryName", QueryData.Empty);
     public string Formatted { get; set; }
 
     [TestInitialize]
@@ -29,9 +29,8 @@ public class WhenFormattingAnEmptySubscriptionResult
         var element = XElement.Parse(Formatted);
 
         Assert.IsTrue(element.Name == XName.Get("QueryResults", "urn:epcglobal:epcis-query:xsd:1"));
-        Assert.AreEqual(3, element.Elements().Count());
+        Assert.AreEqual(2, element.Elements().Count());
         Assert.AreEqual(Result.QueryName, element.Element("queryName").Value);
-        Assert.AreEqual(Result.SubscriptionId, element.Element("subscriptionID").Value);
         Assert.IsNotNull(element.Element("resultsBody"));
     }
 }

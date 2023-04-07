@@ -28,7 +28,7 @@ public class JsonEventFormatter
         {
             ["type"] = _evt.Type.ToString(),
             ["eventTime"] = _evt.EventTime,
-            ["recordTime"] = _evt.CaptureTime,
+            ["recordTime"] = _evt.Request.RecordTime,
             ["eventTimeZoneOffset"] = _evt.EventTimeZoneOffset.Representation,
             ["eventID"] = _evt.EventId
         };
