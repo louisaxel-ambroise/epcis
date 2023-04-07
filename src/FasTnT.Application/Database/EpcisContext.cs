@@ -28,20 +28,12 @@ public class EpcisContext : DbContext
         return masterdataContext.ApplyTo(Set<MasterData>());
     }
 
-    public async Task ExecuteTransactionAsync(Action transactionAction, CancellationToken cancellationToken)
+    public async Task ExecuteTransactionAsync(Func<CancellationToken, Task> transactionAction, CancellationToken cancellationToken)
     {
         using var transaction = await Database.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            transactionAction();
-
-            await transaction.CommitAsync(cancellationToken);
-        }
-        catch
-        {
-            transaction?.RollbackAsync(cancellationToken);
-        }
+        await transactionAction(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
