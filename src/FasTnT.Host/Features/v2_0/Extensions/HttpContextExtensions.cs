@@ -28,7 +28,7 @@ public static class HttpContextExtensions
 
     public static async Task<IResult> HandleWebsocketAsync(this HttpContext context, string queryName, IEnumerable<QueryParameter> parameters)
     {
-        var webSocket = await context.WebSockets.AcceptWebSocketAsync(new WebSocketAcceptContext() { KeepAliveInterval = TimeSpan.FromSeconds(10) });
+        var webSocket = await context.WebSockets.AcceptWebSocketAsync();
         var scheduler = ParseSchedule(context);
         var subscriptionTask = new WebSocketSubscriptionJob(webSocket, queryName, parameters, scheduler);
         var applicationLifetime = context.RequestServices.GetService<IHostApplicationLifetime>();
