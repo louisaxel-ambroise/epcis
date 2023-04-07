@@ -49,19 +49,20 @@ public class WebSocketSubscriptionJob
                         });
 
                         using var scope = serviceProvider.CreateScope();
+                        
                         var runner = scope.ServiceProvider.GetService<SubscriptionRunner>();
                         var result = await runner.ExecuteAsync(new(parameters, bufferRequestIds), cancellationToken);
 
                         if (result.Successful)
                         {
                             if (result.Events.Any())
-                        {
+                            {
                                 await SendQueryDataAsync(result.Events, cancellationToken);
-                        }
+                            }
 
                             bufferRequestIds = result.RequestIds.ToArray();
-                        minRecordDate = executionDate;
-                    }
+                            minRecordDate = executionDate;
+                        }
                     }
                     finally
                     {

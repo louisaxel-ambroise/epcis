@@ -28,7 +28,7 @@ public class EpcisContext : DbContext
         return masterdataContext.ApplyTo(Set<MasterData>());
     }
 
-    public async Task ExecuteTransactionAsync(Action transactionAction, CancellationToken cancellationToken = default)
+    public async Task ExecuteTransactionAsync(Action transactionAction, CancellationToken cancellationToken)
     {
         using var transaction = await Database.BeginTransactionAsync(cancellationToken);
 

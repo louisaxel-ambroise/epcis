@@ -1,7 +1,6 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Services.Subscriptions;
@@ -36,10 +35,5 @@ public sealed class SubscriptionRunner
         {
             return SubscriptionResult.Failed(ex);
         }
-    }
-
-    public async Task UpdateSubscription(Subscription subscription)
-    {
-
     }
 }
