@@ -55,13 +55,13 @@ public class WebSocketSubscriptionJob
                         if (result.Successful)
                         {
                             if (result.Events.Any())
-                            {
+                        {
                                 await SendQueryDataAsync(result.Events, cancellationToken);
-                            }
+                        }
 
                             bufferRequestIds = result.RequestIds.ToArray();
-                            minRecordDate = executionDate;
-                        }
+                        minRecordDate = executionDate;
+                    }
                     }
                     finally
                     {

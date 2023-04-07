@@ -58,6 +58,7 @@ public class PersistentSubscriptionJob
                     try
                     {
                         using var scope = serviceProvider.CreateScope();
+                        using var context = scope.ServiceProvider.GetService<EpcisContext>();
 
                         var runner = scope.ServiceProvider.GetService<SubscriptionRunner>();
                         var result = await runner.ExecuteAsync(new(parameters, _subscription.BufferRequestIds), cancellationToken);
@@ -65,21 +66,21 @@ public class PersistentSubscriptionJob
                         if (result.Successful)
                         {
                             if (result.Events.Any() || _subscription.ReportIfEmpty)
-                            {
+                        {
                                 await SendResults(result.Events, cancellationToken);
-                            }
+                        }
 
                             using var context = scope.ServiceProvider.GetService<EpcisContext>();
 
-                            context.Attach(_subscription);
+                        context.Attach(_subscription);
 
                             _subscription.BufferRequestIds = result.RequestIds.ToArray();
-                            _subscription.LastExecutedTime = executionDate;
+                        _subscription.LastExecutedTime = executionDate;
 
-                            await context.SaveChangesAsync(cancellationToken);
-                        }
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
                         else
-                        {
+                    {
                             await SendError(result.Exception, cancellationToken);
                         }
                     }
