@@ -8,7 +8,6 @@ using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Subscriptions.Formatters;
 using FasTnT.Host.Subscriptions.Schedulers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;

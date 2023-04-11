@@ -5,6 +5,11 @@ namespace FasTnT.Host.Subscriptions.Schedulers;
 
 public abstract class SubscriptionScheduler
 {
+    public static readonly SubscriptionSchedule HourlySchedule = new() { Second = "0", Minute = "0" };
+    public static readonly SubscriptionSchedule DailySchedule = new() { Second = "0", Minute = "0", Hour = "0" };
+    public static readonly SubscriptionSchedule WeeklySchedule = new() { Second = "0", Minute = "0", Hour = "0", DayOfWeek = "1" };
+    public static readonly SubscriptionSchedule MonthlySchedule = new() { Second = "0", Minute = "0", Hour = "0", DayOfWeek = "1", DayOfMonth = "1" };
+
     public bool Stopped { get; private set; }
 
     protected DateTime NextComputedExecution;
@@ -13,18 +18,16 @@ public abstract class SubscriptionScheduler
     public static SubscriptionScheduler Create(Subscription subscription) => Create(subscription.Trigger, subscription.Schedule);
     public static SubscriptionScheduler Create(string trigger, SubscriptionSchedule schedule)
     {
-        if (!string.IsNullOrEmpty(trigger))
+        return (trigger, schedule) switch
         {
-            return TriggeredSubscriptionScheduler.Create(trigger);
-        }
-        else if (!IsEmpty(schedule))
-        {
-            return new CronSubscriptionScheduler(schedule);
-        }
-        else
-        {
-            throw new EpcisException(ExceptionType.SubscriptionControlsException, "Subscription trigger and/or schedule is invalid");
-        }
+            var _ when trigger == "hourly" => new CronSubscriptionScheduler(HourlySchedule),
+            var _ when trigger == "daily" => new CronSubscriptionScheduler(DailySchedule),
+            var _ when trigger == "weekly" => new CronSubscriptionScheduler(WeeklySchedule),
+            var _ when trigger == "monthly" => new CronSubscriptionScheduler(MonthlySchedule),
+            var _ when trigger == "stream" => new TriggeredSubscriptionScheduler(),
+            var _ when !IsEmpty(schedule) => new CronSubscriptionScheduler(schedule),
+            _ => throw new EpcisException(ExceptionType.SubscriptionControlsException, "Subscription trigger and/or schedule is invalid")
+        };
     }
 
     private static bool IsEmpty(SubscriptionSchedule schedule)

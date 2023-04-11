@@ -23,7 +23,7 @@ public sealed class SubscriptionRunner
                 .Select(x => new { x.Id, RequestId = x.Request.Id })
                 .ToListAsync(cancellationToken);
             var eventIds = pendingEvents
-                .Where(x => !executionContext.ExcludedRequestIds.Contains(x.RequestId))
+                .ExceptBy(executionContext.ExcludedRequestIds, x => x.RequestId)
                 .Select(x => x.Id);
             var events = await _context.Set<Event>()
                 .Where(x => eventIds.Contains(x.Id))

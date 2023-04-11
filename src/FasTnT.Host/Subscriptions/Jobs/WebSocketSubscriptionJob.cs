@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application;
-using FasTnT.Application.Database;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
