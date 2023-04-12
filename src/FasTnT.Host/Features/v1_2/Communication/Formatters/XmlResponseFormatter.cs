@@ -36,6 +36,16 @@ public static class XmlResponseFormatter
             new XElement("resultsBody", new XElement(resultName, resultList))
         );
 
+        if (response.EventList?.Count > 0)
+        {
+            var customNamespaces = response.EventList.SelectMany(x => x.Fields.Select(x => x.Namespace)).Where(IsCustomNamespace).Distinct().ToArray();
+
+            for (var i = 0; i < customNamespaces.Length; i++)
+            {
+                queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i}", customNamespaces[i]));
+            }
+        }
+
         return queryResults;
     }
 
@@ -93,5 +103,10 @@ public static class XmlResponseFormatter
     public static XElement FormatSubscribeResponse()
     {
         return new(XName.Get("SubscribeResult", Namespaces.Query));
+    }
+
+    private static bool IsCustomNamespace(string value)
+    {
+        return !string.IsNullOrWhiteSpace(value) && XNamespace.Xmlns != value;
     }
 }
