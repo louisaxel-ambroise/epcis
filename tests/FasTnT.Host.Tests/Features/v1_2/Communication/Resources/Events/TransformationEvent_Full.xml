@@ -2,6 +2,7 @@
 <extension>
 	<TransformationEvent xmlns:example="http://ns.example.com/epcis">
 		<eventTime>2013-10-31T14:58:56.591Z</eventTime>
+		<recordTime>2013-10-31T15:00:00.000Z</recordTime>
 		<eventTimeZoneOffset>-02:00</eventTimeZoneOffset>
 		<inputEPCList>
 			<epc>urn:epc:id:sgtin:4012345.011122.25</epc>

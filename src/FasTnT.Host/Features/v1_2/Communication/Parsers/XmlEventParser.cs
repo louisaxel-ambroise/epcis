@@ -56,16 +56,17 @@ public class XmlEventParser
     {
         var eventElement = element.Elements().First();
 
-        switch (element.Name.LocalName)
+        if (eventElement.Name.LocalName == "AssociationEvent")
         {
-            case "AssociationEvent":
-                parser.ParseEvent(eventElement, EventType.AssociationEvent); break;
-            default:
-                throw new ArgumentException($"Element '{element.Name.LocalName}' not expected in this context");
+            parser.ParseEvent(eventElement, EventType.AssociationEvent);
+        }
+        else
+        {
+            throw new ArgumentException($"Element '{eventElement.Name.LocalName}' not expected in this context");
         }
     }
 
-    private Event ParseQuantityEvent(XElement element)
+    private void ParseQuantityEvent(XElement element)
     {
         ParseEvent(element, EventType.QuantityEvent);
 
@@ -75,8 +76,6 @@ public class XmlEventParser
             Quantity = float.TryParse(element.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out var quantity) ? quantity : default,
             Type = EpcType.Quantity
         });
-
-        return _evt;
     }
 
     private void ParseEvent(XElement element, EventType eventType)
@@ -140,7 +139,7 @@ public class XmlEventParser
                     case "destinationList":
                         _evt.Destinations.AddRange(ParseDestinations(field)); break;
                     case "ilmd":
-                        ParseIlmd(field); break;
+                        ParseFields(field, FieldType.Ilmd); break;
                     case "extension":
                         ParseEventExtension(field); break;
                     default:
@@ -181,7 +180,7 @@ public class XmlEventParser
                 case "destinationList":
                     _evt.Destinations.AddRange(ParseDestinations(field)); break;
                 case "ilmd":
-                    ParseIlmd(field); break;
+                    ParseFields(field, FieldType.Ilmd); break;
                 case "persistentDisposition":
                     _evt.PersistentDispositions.AddRange(ParsePersistentDisposition(field)); break;
                 case "sensorElementList":
@@ -207,7 +206,7 @@ public class XmlEventParser
                     case "errorDeclaration":
                         ParseErrorDeclaration(field); break;
                     case "extension":
-                        ParseCustomFields(field, FieldType.BaseExtension, null, null); break;
+                        ParseFields(field, FieldType.BaseExtension); break;
                     default:
                         throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }
@@ -230,7 +229,7 @@ public class XmlEventParser
                     case "id":
                         _evt.ReadPoint = field.Value; break;
                     case "extension":
-                        ParseCustomFields(field, FieldType.ReadPointExtension, null, null); break;
+                        ParseFields(field, FieldType.ReadPointExtension); break;
                     default:
                         throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }
@@ -253,7 +252,7 @@ public class XmlEventParser
                     case "id":
                         _evt.BusinessLocation = field.Value; break;
                     case "extension":
-                        ParseCustomFields(field, FieldType.BusinessLocationExtension, null, null); break;
+                        ParseFields(field, FieldType.BusinessLocationExtension); break;
                     default:
                         throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }
@@ -296,7 +295,7 @@ public class XmlEventParser
                     case "correctiveEventIDs":
                         _evt.CorrectiveEventIds.AddRange(field.Elements("correctiveEventID").Select(x => new CorrectiveEventId { CorrectiveId = x.Value })); break;
                     case "extension":
-                        ParseCustomFields(field, FieldType.ErrorDeclarationExtension, null, null); break;
+                        ParseFields(field, FieldType.ErrorDeclarationExtension); break;
                     default:
                         throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }
@@ -481,11 +480,11 @@ public class XmlEventParser
         }
     }
 
-    private void ParseIlmd(XElement element)
+    private void ParseFields(XElement element, FieldType fieldType)
     {
         foreach (var field in element.Elements())
         {
-            ParseCustomFields(field, FieldType.Ilmd, null, null);
+            ParseCustomFields(field, fieldType, null, null);
         }
     }
 

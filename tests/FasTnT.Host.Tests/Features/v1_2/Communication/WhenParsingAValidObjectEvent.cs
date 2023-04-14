@@ -99,4 +99,19 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     {
         Assert.AreEqual(1, Event.Fields.Count(x => x.Type == FieldType.Ilmd));
     }
+
+    [TestMethod]
+    public void ErrorDeclarationShouldBeParsed()
+    {
+        Assert.IsNotNull(Event.CorrectiveDeclarationTime);
+        Assert.IsNotNull(Event.CorrectiveReason);
+        Assert.AreEqual(2, Event.CorrectiveEventIds.Count);
+    }
+
+    [TestMethod]
+    public void ItShouldParseSourceAndDestination()
+    {
+        Assert.AreEqual(1, Event.Sources.Count);
+        Assert.AreEqual(2, Event.Destinations.Count);
+    }
 }
