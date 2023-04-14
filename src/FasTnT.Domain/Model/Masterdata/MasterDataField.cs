@@ -8,5 +8,4 @@ public class MasterDataField
     public string Name { get; set; }
     public string Namespace { get; set; }
     public string Value { get; set; }
-    public int Index { get; set; }
 }

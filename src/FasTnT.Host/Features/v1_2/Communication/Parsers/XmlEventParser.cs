@@ -11,7 +11,7 @@ public class XmlEventParser
 
     public static IEnumerable<Event> ParseEvents(XElement root)
     {
-        return root.Elements().AsParallel().Select(ParseEvent);
+        return root.Elements().Select(ParseEvent);
     }
 
     public static Event ParseEvent(XElement element)
@@ -65,9 +65,24 @@ public class XmlEventParser
         }
     }
 
+    public Event ParseQuantityEvent(XElement element)
+    {
+        ParseEvent(element, EventType.QuantityEvent);
+
+        _evt.Epcs.Add(new Epc
+        {
+            Id = element.Element("epcClass").Value,
+            Quantity = float.TryParse(element.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out var quantity) ? quantity : default,
+            Type = EpcType.Quantity
+        });
+
+        return _evt;
+    }
+
     private void ParseEvent(XElement element, EventType eventType)
     {
         _evt = new Event { Type = eventType };
+
         foreach (var field in element.Elements())
         {
             if (string.IsNullOrEmpty(field.Name.NamespaceName))
@@ -77,10 +92,9 @@ public class XmlEventParser
                     case "action":
                         _evt.Action = Enum.Parse<EventAction>(field.Value, true); break;
                     case "recordTime": // Discard - this will be overridden
-                        break;
-                    case "epcClass":
+                    case "epcClass": // These fields are reserved for the (deprecated) Quantity event. Ignore them.
                     case "quantity":
-                        break; // These fields are reserved for the (deprecated) Quantity event. Ignore them.
+                        break;
                     case "eventTime":
                         _evt.EventTime = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
                     case "certificationInfo":
@@ -172,10 +186,10 @@ public class XmlEventParser
                     _evt.PersistentDispositions.AddRange(ParsePersistentDisposition(field)); break;
                 case "sensorElementList":
                     _evt.SensorElements.AddRange(ParseSensorList(field)); break;
-                default:
-                    ParseCustomFields(field, FieldType.Extension, null, null); break;
                 case "extension":
                     ParseEventExtension(field); break;
+                default:
+                    ParseCustomFields(field, FieldType.Extension, null, null); break;
             }
         }
     }
@@ -203,20 +217,6 @@ public class XmlEventParser
                 ParseCustomFields(field, FieldType.BaseExtension, null, null);
             }
         }
-    }
-
-    public Event ParseQuantityEvent(XElement element)
-    {
-        ParseEvent(element, EventType.QuantityEvent);
-
-        _evt.Epcs.Add(new Epc
-        {
-            Id = element.Element("epcClass").Value,
-            Quantity = float.TryParse(element.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out var quantity) ? quantity : default,
-            Type = EpcType.Quantity
-        });
-
-        return _evt;
     }
 
     private void ParseReadPoint(XElement readPoint)
@@ -310,10 +310,10 @@ public class XmlEventParser
 
     internal static IEnumerable<Source> ParseSources(XElement element)
     {
-        return element.Elements("source").Select(x => new Source 
-        { 
-            Type = x.Attribute("type").Value, 
-            Id = x.Value 
+        return element.Elements("source").Select(x => new Source
+        {
+            Type = x.Attribute("type").Value,
+            Id = x.Value
         });
     }
 
@@ -334,7 +334,7 @@ public class XmlEventParser
             Type = x.Attribute("type")?.Value ?? string.Empty
         });
     }
-    
+
     public static IEnumerable<PersistentDisposition> ParsePersistentDisposition(XElement field)
     {
         return field.Elements().Select(x => new PersistentDisposition
@@ -443,7 +443,7 @@ public class XmlEventParser
             }
         }
 
-       return report;
+        return report;
     }
 
     private void ParseSensorMetadata(SensorElement sensorElement, XElement metadata)

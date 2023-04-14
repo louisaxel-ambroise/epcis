@@ -206,9 +206,9 @@ internal class EventQueryContext
         switch (field)
         {
             case "bizLocation":
-                Filter(e => _context.Set<MasterData>().Any(p => p.Type == "urn:epcglobal:epcis:vtype:BusinessLocation" && p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName))); break;
+                Filter(e => _context.Set<BizLocation>().Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName))); break;
             case "readPoint":
-                Filter(e => _context.Set<MasterData>().Any(p => p.Type == "urn:epcglobal:epcis:vtype:ReadPoint" && p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName))); break;
+                Filter(e => _context.Set<ReadPoint>().Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName))); break;
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
         }
@@ -219,9 +219,9 @@ internal class EventQueryContext
         switch (field)
         {
             case "bizLocation":
-                Filter(e => _context.Set<MasterData>().Any(p => p.Type == "urn:epcglobal:epcis:vtype:BusinessLocation" && p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
+                Filter(e => _context.Set<BizLocation>().Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
             case "readPoint":
-                Filter(e => _context.Set<MasterData>().Any(p => p.Type == "urn:epcglobal:epcis:vtype:ReadPoint" && p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
+                Filter(e => _context.Set<ReadPoint>().Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
         }
@@ -275,9 +275,8 @@ internal class EventQueryContext
         var epcType = param.GetMatchEpcTypes();
         var values = param.Values.Select(p => p.Replace("*", "%"));
         var typePredicate = (Expression<Func<Epc, bool>>)(e => epcType.Contains(e.Type));
-        var likePredicate = (Expression<Func<Epc, bool>>)(e => false);
-        
-        likePredicate = values.Aggregate(likePredicate, (expr, value) => OrElse(expr, e => EF.Functions.Like(e.Id, value)));
+        var likePredicate = values.Aggregate((Expression<Func<Epc, bool>>)(e => false), (expr, value) => OrElse(expr, e => EF.Functions.Like(e.Id, value)));
+
         Filter(x => x.Epcs.AsQueryable().Any(AndAlso(typePredicate, likePredicate)));
     }
 

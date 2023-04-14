@@ -17,7 +17,7 @@ namespace FasTnT.SqlServer.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -105,6 +105,10 @@ namespace FasTnT.SqlServer.Migrations
                     b.ToTable("MasterData", "Cbv");
 
                     b.ToView("CurrentMasterdata", "Cbv");
+
+                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterData");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy", b =>
@@ -303,6 +307,20 @@ namespace FasTnT.SqlServer.Migrations
                     b.HasKey("RequestId");
 
                     b.ToTable("SubscriptionCallback", "Epcis");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocation", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPoint", b =>
+                {
+                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
+
+                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocationHierarchy", b =>
@@ -699,11 +717,7 @@ namespace FasTnT.SqlServer.Migrations
                             b1.Property<int>("RequestId")
                                 .HasColumnType("int");
 
-                            b1.Property<int>("Index")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Id")
-                                .IsRequired()
+                            b1.Property<string>("MasterdataType")
                                 .HasMaxLength(256)
                                 .HasColumnType("nvarchar(256)");
 
@@ -711,7 +725,7 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("nvarchar(256)");
 
-                            b1.Property<string>("MasterdataType")
+                            b1.Property<string>("Id")
                                 .HasMaxLength(256)
                                 .HasColumnType("nvarchar(256)");
 
@@ -720,9 +734,7 @@ namespace FasTnT.SqlServer.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("nvarchar(256)");
 
-                            b1.HasKey("RequestId", "Index");
-
-                            b1.HasIndex("RequestId", "MasterdataType", "MasterdataId");
+                            b1.HasKey("RequestId", "MasterdataType", "MasterdataId", "Id");
 
                             b1.ToTable("MasterDataAttribute", "Cbv");
 
@@ -734,19 +746,23 @@ namespace FasTnT.SqlServer.Migrations
                                     b2.Property<int>("RequestId")
                                         .HasColumnType("int");
 
-                                    b2.Property<int>("Index")
-                                        .HasColumnType("int");
+                                    b2.Property<string>("MasterdataType")
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
-                                    b2.Property<int>("AttributeIndex")
-                                        .HasColumnType("int");
+                                    b2.Property<string>("MasterdataId")
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
 
-                                    b2.Property<string>("Name")
-                                        .IsRequired()
+                                    b2.Property<string>("AttributeId")
                                         .HasMaxLength(256)
                                         .HasColumnType("nvarchar(256)");
 
                                     b2.Property<string>("Namespace")
-                                        .IsRequired()
+                                        .HasMaxLength(256)
+                                        .HasColumnType("nvarchar(256)");
+
+                                    b2.Property<string>("Name")
                                         .HasMaxLength(256)
                                         .HasColumnType("nvarchar(256)");
 
@@ -762,14 +778,12 @@ namespace FasTnT.SqlServer.Migrations
                                         .HasMaxLength(256)
                                         .HasColumnType("nvarchar(256)");
 
-                                    b2.HasKey("RequestId", "Index");
-
-                                    b2.HasIndex("RequestId", "AttributeIndex");
+                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", "Namespace", "Name");
 
                                     b2.ToTable("MasterDataField", "Cbv");
 
                                     b2.WithOwner("Attribute")
-                                        .HasForeignKey("RequestId", "AttributeIndex");
+                                        .HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
 
                                     b2.Navigation("Attribute");
                                 });

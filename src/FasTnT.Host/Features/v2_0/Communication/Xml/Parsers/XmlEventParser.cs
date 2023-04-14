@@ -2,7 +2,7 @@
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 
-namespace FasTnT.Host.Features.v1_2.Communication.Parsers;
+namespace FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
 
 public class XmlEventParser
 {
@@ -18,70 +18,15 @@ public class XmlEventParser
     {
         var parser = new XmlEventParser();
 
-        switch (element.Name.LocalName)
-        {
-            case "QuantityEvent":
-                parser.ParseQuantityEvent(element); break;
-            case "ObjectEvent":
-                parser.ParseEvent(element, EventType.ObjectEvent); break;
-            case "TransactionEvent":
-                parser.ParseEvent(element, EventType.TransactionEvent); break;
-            case "AggregationEvent":
-                parser.ParseEvent(element, EventType.AggregationEvent); break;
-            case "extension":
-                ParseEventListExtension(parser, element); break;
-            default:
-                throw new ArgumentException($"Element '{element.Name.LocalName}' not expected in this context");
-        }
-
-        return parser._evt;
+        return parser.Parse(element);
     }
 
-    private static void ParseEventListExtension(XmlEventParser parser, XElement element)
+    internal Event Parse(XElement element)
     {
-        var eventElement = element.Elements().First();
-
-        switch (element.Name.LocalName)
+        _evt = new Event
         {
-            case "TransformationEvent":
-                parser.ParseEvent(element, EventType.TransformationEvent); break;
-            case "extension":
-                ParseEventListSubExtension(parser, eventElement); break;
-            default:
-                throw new ArgumentException($"Element '{element.Name.LocalName}' not expected in this context");
-        }
-    }
-
-    private static void ParseEventListSubExtension(XmlEventParser parser, XElement element)
-    {
-        var eventElement = element.Elements().First();
-
-        switch (element.Name.LocalName)
-        {
-            case "AssociationEvent":
-                parser.ParseEvent(eventElement, EventType.AssociationEvent); break;
-            default:
-                throw new ArgumentException($"Element '{element.Name.LocalName}' not expected in this context");
-        }
-    }
-
-    public Event ParseQuantityEvent(XElement element)
-    {
-        ParseEvent(element, EventType.QuantityEvent);
-
-        _evt.Epcs.Add(new Epc
-        {
-            Id = element.Element("epcClass").Value,
-            Quantity = float.TryParse(element.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out var quantity) ? quantity : default,
-            Type = EpcType.Quantity
-        });
-
-        return _evt;
-    }
-
-    private void ParseEvent(XElement element, EventType eventType)
-    {
-        _evt = new Event { Type = eventType };
+            Type = Enum.Parse<EventType>(element.Name.LocalName)
+        };
 
         foreach (var field in element.Elements())
         {
@@ -92,8 +37,6 @@ public class XmlEventParser
                     case "action":
                         _evt.Action = Enum.Parse<EventAction>(field.Value, true); break;
                     case "recordTime": // Discard - this will be overridden
-                    case "epcClass": // These fields are reserved for the (deprecated) Quantity event. Ignore them.
-                    case "quantity":
                         break;
                     case "eventTime":
                         _evt.EventTime = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
@@ -110,11 +53,9 @@ public class XmlEventParser
                     case "readPoint":
                         ParseReadPoint(field); break;
                     case "bizLocation":
-                        ParseBusinessLocation(field); break;
+                        ParseBizLocation(field); break;
                     case "eventID":
                         _evt.EventId = field.Value; break;
-                    case "baseExtension":
-                        ParseBaseExtension(field); break;
                     case "parentID":
                         _evt.Epcs.Add(new Epc { Type = EpcType.ParentId, Id = field.Value }); break;
                     case "epcList":
@@ -126,23 +67,25 @@ public class XmlEventParser
                     case "outputEPCList":
                         _evt.Epcs.AddRange(ParseEpcList(field, EpcType.OutputEpc)); break;
                     case "quantityList":
-                        _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.Quantity)); break;
+                        _evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.Quantity)); break;
                     case "childQuantityList":
-                        _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.ChildQuantity)); break;
+                        _evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.ChildQuantity)); break;
                     case "inputQuantityList":
-                        _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.InputQuantity)); break;
+                        _evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.InputQuantity)); break;
                     case "outputQuantityList":
-                        _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.OutputQuantity)); break;
+                        _evt.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.OutputQuantity)); break;
                     case "bizTransactionList":
                         _evt.Transactions.AddRange(ParseTransactionList(field)); break;
                     case "sourceList":
-                        _evt.Sources.AddRange(ParseSources(field)); break;
+                        _evt.Sources.AddRange(ParseSourceList(field)); break;
                     case "destinationList":
-                        _evt.Destinations.AddRange(ParseDestinations(field)); break;
+                        _evt.Destinations.AddRange(ParseDestinationList(field)); break;
+                    case "persistentDisposition":
+                        _evt.PersistentDispositions.AddRange(ParsePersistentDisposition(field)); break;
+                    case "sensorElementList":
+                        _evt.SensorElements.AddRange(ParseSensorElements(field)); break;
                     case "ilmd":
-                        ParseCustomFields(field, FieldType.Ilmd, null, null); break;
-                    case "extension":
-                        ParseEventExtension(field); break;
+                        ParseIlmd(field); break;
                     default:
                         throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
                 }
@@ -152,190 +95,96 @@ public class XmlEventParser
                 ParseCustomFields(field, FieldType.CustomField, null, null);
             }
         }
+
+        return _evt;
     }
 
-    private void ParseEventExtension(XElement element)
+    private void ParseReadPoint(XElement element)
     {
         foreach (var field in element.Elements())
         {
-            switch (field.Name.LocalName)
+            if (field.Name.LocalName == "id")
             {
-                case "childEPCs":
-                    _evt.Epcs.AddRange(ParseEpcList(field, EpcType.ChildEpc)); break;
-                case "inputEPCList":
-                    _evt.Epcs.AddRange(ParseEpcList(field, EpcType.InputEpc)); break;
-                case "outputEPCList":
-                    _evt.Epcs.AddRange(ParseEpcList(field, EpcType.OutputEpc)); break;
-                case "quantityList":
-                    _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.Quantity)); break;
-                case "childQuantityList":
-                    _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.ChildQuantity)); break;
-                case "inputQuantityList":
-                    _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.InputQuantity)); break;
-                case "outputQuantityList":
-                    _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.OutputQuantity)); break;
-                case "bizTransactionList":
-                    _evt.Transactions.AddRange(ParseTransactionList(field)); break;
-                case "sourceList":
-                    _evt.Sources.AddRange(ParseSources(field)); break;
-                case "destinationList":
-                    _evt.Destinations.AddRange(ParseDestinations(field)); break;
-                case "ilmd":
-                    ParseCustomFields(field, FieldType.Ilmd, null, null); break;
-                case "persistentDisposition":
-                    _evt.PersistentDispositions.AddRange(ParsePersistentDisposition(field)); break;
-                case "sensorElementList":
-                    _evt.SensorElements.AddRange(ParseSensorList(field)); break;
-                case "extension":
-                    ParseEventExtension(field); break;
-                default:
-                    ParseCustomFields(field, FieldType.Extension, null, null); break;
+                _evt.ReadPoint = field.Value;
+            }
+            else 
+            { 
+                ParseCustomFields(field, FieldType.ReadPointCustomField, null, null); break;
             }
         }
     }
 
-    private void ParseBaseExtension(XElement element)
+    private void ParseBizLocation(XElement element)
     {
         foreach (var field in element.Elements())
         {
-            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            if (field.Name.LocalName == "id")
             {
-                switch (field.Name.LocalName)
-                {
-                    case "eventID":
-                        _evt.EventId = field.Value; break;
-                    case "errorDeclaration":
-                        ParseErrorDeclaration(field); break;
-                    case "extension":
-                        ParseCustomFields(field, FieldType.BaseExtension, null, null); break;
-                    default:
-                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
-                }
+                _evt.BusinessLocation = field.Value;
             }
             else
             {
-                ParseCustomFields(field, FieldType.BaseExtension, null, null);
+                ParseCustomFields(field, FieldType.BusinessLocationCustomField, null, null); break;
             }
         }
     }
 
-    private void ParseReadPoint(XElement readPoint)
+    private void ParseIlmd(XElement element)
     {
-        foreach (var field in readPoint.Elements())
+        foreach (var field in element.Elements())
         {
-            if (string.IsNullOrEmpty(field.Name.NamespaceName))
-            {
-                switch (field.Name.LocalName)
-                {
-                    case "id":
-                        _evt.ReadPoint = field.Value; break;
-                    case "extension":
-                        ParseCustomFields(field, FieldType.ReadPointExtension, null, null); break;
-                    default:
-                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
-                }
-            }
-            else
-            {
-                ParseCustomFields(field, FieldType.ReadPointCustomField, null, null);
-            }
+            ParseCustomFields(field, FieldType.Ilmd, null, null);
         }
     }
 
-    private void ParseBusinessLocation(XElement bizLocation)
+    private static IEnumerable<Epc> ParseEpcList(XElement field, EpcType type)
     {
-        foreach (var field in bizLocation.Elements())
+        return field.Elements().Select(x => new Epc
         {
-            if (string.IsNullOrEmpty(field.Name.NamespaceName))
-            {
-                switch (field.Name.LocalName)
-                {
-                    case "id":
-                        _evt.BusinessLocation = field.Value; break;
-                    case "extension":
-                        ParseCustomFields(field, FieldType.BusinessLocationExtension, null, null); break;
-                    default:
-                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
-                }
-            }
-            else
-            {
-                ParseCustomFields(field, FieldType.BusinessLocationCustomField, null, null);
-            }
-        }
-    }
-
-    private static IEnumerable<Epc> ParseEpcList(XElement element, EpcType type)
-    {
-        return element.Elements("epc").Select(x => new Epc { Id = x.Value, Type = type });
-    }
-
-    private static IEnumerable<Epc> ParseEpcQuantityList(XElement element, EpcType type)
-    {
-        return element.Elements("quantityElement").Select(x => new Epc
-        {
-            Id = x.Element("epcClass").Value,
-            Quantity = float.TryParse(x.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float quantity) ? quantity : default(float?),
-            UnitOfMeasure = x.Element("uom")?.Value,
+            Id = x.Value,
             Type = type
         });
     }
 
-    private void ParseErrorDeclaration(XElement element)
+    private static IEnumerable<Epc> ParseQuantityEpcList(XElement field, EpcType type)
     {
-        foreach (var field in element.Elements())
+        return field.Elements().Select(x => new Epc
         {
-            if (string.IsNullOrEmpty(field.Name.NamespaceName))
-            {
-                switch (field.Name.LocalName)
-                {
-                    case "declarationTime":
-                        _evt.CorrectiveDeclarationTime = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
-                    case "reason":
-                        _evt.CorrectiveReason = field.Value; break;
-                    case "correctiveEventIDs":
-                        _evt.CorrectiveEventIds.AddRange(field.Elements("correctiveEventID").Select(x => new CorrectiveEventId { CorrectiveId = x.Value })); break;
-                    case "extension":
-                        ParseCustomFields(field, FieldType.ErrorDeclarationExtension, null, null); break;
-                    default:
-                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
-                }
-            }
-            else
-            {
-                ParseCustomFields(field, FieldType.ErrorDeclarationCustomField, null, null);
-            }
-        }
-    }
-
-    internal static IEnumerable<Source> ParseSources(XElement element)
-    {
-        return element.Elements("source").Select(x => new Source
-        {
-            Type = x.Attribute("type").Value,
-            Id = x.Value
+            Id = x.Element("epcClass").Value,
+            Quantity = float.TryParse(x.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float quantity) ? quantity : default(float?),
+            UnitOfMeasure = x.Element("uom")?.Value,
+            Type = type,
         });
     }
 
-    internal static IEnumerable<Destination> ParseDestinations(XElement element)
+    private static IEnumerable<BusinessTransaction> ParseTransactionList(XElement field)
     {
-        return element.Elements("destination").Select(x => new Destination
-        {
-            Type = x.Attribute("type").Value,
-            Id = x.Value
-        });
-    }
-
-    internal static IEnumerable<BusinessTransaction> ParseTransactionList(XElement element)
-    {
-        return element.Elements("bizTransaction").Select(x => new BusinessTransaction
+        return field.Elements().Select(x => new BusinessTransaction
         {
             Id = x.Value,
             Type = x.Attribute("type")?.Value ?? string.Empty
         });
     }
 
-    public static IEnumerable<PersistentDisposition> ParsePersistentDisposition(XElement field)
+    private static IEnumerable<Source> ParseSourceList(XElement field)
+    {
+        return field.Elements().Select(x => new Source
+        {
+            Id = x.Value,
+            Type = x.Attribute("type").Value
+        });
+    }
+
+    private static IEnumerable<Destination> ParseDestinationList(XElement field)
+    {
+        return field.Elements().Select(x => new Destination
+        {
+            Id = x.Value,
+            Type = x.Attribute("type").Value
+        });
+    }
+
+    private static IEnumerable<PersistentDisposition> ParsePersistentDisposition(XElement field)
     {
         return field.Elements().Select(x => new PersistentDisposition
         {
@@ -344,14 +193,14 @@ public class XmlEventParser
         });
     }
 
-    public IEnumerable<SensorElement> ParseSensorList(XElement field)
+    public IEnumerable<SensorElement> ParseSensorElements(XElement field)
     {
         return field.Elements().Select(ParseSensorElement);
     }
 
     private SensorElement ParseSensorElement(XElement element)
     {
-        var sensorElement = new SensorElement();
+        var sensorElement = new SensorElement { Index = ++_index };
 
         foreach (var field in element.Elements())
         {
@@ -363,19 +212,19 @@ public class XmlEventParser
                 }
                 else if (field.Name.LocalName == "sensorReport")
                 {
-                    _evt.Reports.Add(ParseSensorReport(sensorElement, field)); break;
+                    ParseSensorReport(sensorElement, field); break;
                 }
             }
             else
             {
-                ParseCustomFields(field, FieldType.Sensor, null, null);
+                ParseCustomFields(field, FieldType.Sensor, null, sensorElement.Index);
             }
         }
 
         return sensorElement;
     }
 
-    private SensorReport ParseSensorReport(SensorElement sensorElement, XElement element)
+    private void ParseSensorReport(SensorElement sensorElement, XElement element)
     {
         var report = new SensorReport
         {
@@ -439,11 +288,11 @@ public class XmlEventParser
             }
             else
             {
-                ParseCustomFields(field, FieldType.SensorReport, null, null);
+                ParseCustomFields(field, FieldType.SensorReport, null, report.Index);
             }
         }
 
-        return report;
+        _evt.Reports.Add(report);
     }
 
     private void ParseSensorMetadata(SensorElement sensorElement, XElement metadata)
@@ -476,12 +325,12 @@ public class XmlEventParser
             }
             else
             {
-                ParseCustomFields(field, FieldType.SensorMetadata, null, null);
+                ParseCustomFields(field, FieldType.SensorMetadata, null, sensorElement.Index);
             }
         }
     }
 
-    private void ParseCustomFields(XElement element, FieldType fieldType, int? parentIndex, int? entityIndex)
+    public void ParseCustomFields(XElement element, FieldType fieldType, int? parentIndex, int? entityIndex)
     {
         var field = new Field
         {
@@ -508,7 +357,7 @@ public class XmlEventParser
         _evt.Fields.Add(field);
     }
 
-    private void ParseCustomFields(XAttribute element, FieldType fieldType, int? parentIndex, int? entityIndex)
+    public void ParseCustomFields(XAttribute element, FieldType fieldType, int? parentIndex, int? entityIndex)
     {
         _evt.Fields.Add(new()
         {
@@ -524,7 +373,7 @@ public class XmlEventParser
         });
     }
 
-    private void ParseAttribute(XAttribute element, int? parentIndex, int? entityIndex)
+    public void ParseAttribute(XAttribute element, int? parentIndex, int? entityIndex)
     {
         _evt.Fields.Add(new()
         {
