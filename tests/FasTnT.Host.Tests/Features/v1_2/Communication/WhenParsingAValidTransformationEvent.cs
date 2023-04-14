@@ -14,7 +14,7 @@ public class WhenParsingAValidTransformationEvent : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Event = new XmlEventParser().ParseTransformationEvent(ParseResource(ResourceName).Root);
+        Event = XmlEventParser.ParseEvent(ParseResource(ResourceName).Root);
     }
 
     [TestMethod]
