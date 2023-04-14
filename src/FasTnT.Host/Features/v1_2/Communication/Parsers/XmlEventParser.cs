@@ -41,14 +41,14 @@ public class XmlEventParser
     {
         var eventElement = element.Elements().First();
 
-        switch (element.Name.LocalName)
+        switch (eventElement.Name.LocalName)
         {
             case "TransformationEvent":
-                parser.ParseEvent(element, EventType.TransformationEvent); break;
+                parser.ParseEvent(eventElement, EventType.TransformationEvent); break;
             case "extension":
                 ParseEventListSubExtension(parser, eventElement); break;
             default:
-                throw new ArgumentException($"Element '{element.Name.LocalName}' not expected in this context");
+                throw new ArgumentException($"Element '{eventElement.Name.LocalName}' not expected in this context");
         }
     }
 
@@ -65,7 +65,7 @@ public class XmlEventParser
         }
     }
 
-    public Event ParseQuantityEvent(XElement element)
+    private Event ParseQuantityEvent(XElement element)
     {
         ParseEvent(element, EventType.QuantityEvent);
 
@@ -140,7 +140,7 @@ public class XmlEventParser
                     case "destinationList":
                         _evt.Destinations.AddRange(ParseDestinations(field)); break;
                     case "ilmd":
-                        ParseCustomFields(field, FieldType.Ilmd, null, null); break;
+                        ParseIlmd(field); break;
                     case "extension":
                         ParseEventExtension(field); break;
                     default:
@@ -181,7 +181,7 @@ public class XmlEventParser
                 case "destinationList":
                     _evt.Destinations.AddRange(ParseDestinations(field)); break;
                 case "ilmd":
-                    ParseCustomFields(field, FieldType.Ilmd, null, null); break;
+                    ParseIlmd(field); break;
                 case "persistentDisposition":
                     _evt.PersistentDispositions.AddRange(ParsePersistentDisposition(field)); break;
                 case "sensorElementList":
@@ -478,6 +478,14 @@ public class XmlEventParser
             {
                 ParseCustomFields(field, FieldType.SensorMetadata, null, null);
             }
+        }
+    }
+
+    private void ParseIlmd(XElement element)
+    {
+        foreach (var field in element.Elements())
+        {
+            ParseCustomFields(field, FieldType.Ilmd, null, null);
         }
     }
 

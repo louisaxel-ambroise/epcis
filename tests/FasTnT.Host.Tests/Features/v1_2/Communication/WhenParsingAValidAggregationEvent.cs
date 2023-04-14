@@ -14,7 +14,7 @@ public class WhenParsingAValidAggregationEvent : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Event = new XmlEventParser().ParseAggregationEvent(ParseResource(ResourceName).Root);
+        Event = XmlEventParser.ParseEvent(ParseResource(ResourceName).Root);
     }
 
     [TestMethod]
