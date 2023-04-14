@@ -2,14 +2,18 @@
 
 namespace FasTnT.Host.Features.v1_2.Communication.Parsers;
 
-public static class XmlMasterdataParser
+public class XmlMasterdataParser
 {
+    private int _index;
+
     public static IEnumerable<MasterData> ParseMasterdata(XElement root)
     {
-        return root.Elements("Vocabulary").SelectMany(ParseVocabulary);
+        var parser = new XmlMasterdataParser();
+
+        return root.Elements("Vocabulary").SelectMany(parser.ParseVocabulary);
     }
 
-    private static IEnumerable<MasterData> ParseVocabulary(XElement element)
+    private IEnumerable<MasterData> ParseVocabulary(XElement element)
     {
         var type = element.Attribute("type").Value;
 
@@ -19,7 +23,7 @@ public static class XmlMasterdataParser
             ?.Select(x => ParseVocabularyElement(x, type));
     }
 
-    private static MasterData ParseVocabularyElement(XElement element, string type)
+    private MasterData ParseVocabularyElement(XElement element, string type)
     {
         return new()
         {
@@ -30,28 +34,30 @@ public static class XmlMasterdataParser
         };
     }
 
-    private static List<MasterDataChildren> ParseChildren(XElement element)
+    private List<MasterDataChildren> ParseChildren(XElement element)
     {
         return element?.Elements("id")?.Select(x => new MasterDataChildren { ChildrenId = x.Value })?.ToList() ?? new();
     }
 
-    private static MasterDataAttribute ParseVocabularyAttribute(XElement element)
+    private MasterDataAttribute ParseVocabularyAttribute(XElement element)
     {
         return new()
         {
             Id = element.Attribute("id").Value,
+            Index = ++_index,
             Value = element.HasElements ? string.Empty : element.Value,
             Fields = element.Elements().SelectMany(x => ParseField(x)).ToList()
         };
     }
 
-    private static IEnumerable<MasterDataField> ParseField(XElement element, XName parentName = default)
+    private IEnumerable<MasterDataField> ParseField(XElement element, XName parentName = default)
     {
         var result = new List<MasterDataField>
         {
             new()
             {
                 Value = element.HasElements ? null : element.Value,
+                Index = ++_index,
                 Name = element.Name.LocalName,
                 Namespace = element.Name.NamespaceName,
                 ParentName = parentName?.LocalName,
