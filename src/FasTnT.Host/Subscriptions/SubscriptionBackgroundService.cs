@@ -58,16 +58,15 @@ public class SubscriptionBackgroundService : BackgroundService
         if (_runningSubscriptions.TryAdd(subscription.Id, cancellationSource))
         {
             _stoppingToken.Register(cancellationSource.Cancel);
-            _ = backgroundTask.RunAsync(_serviceProvider, cancellationSource.Token);
+            _ = Task.Run(() => backgroundTask.RunAsync(_serviceProvider, cancellationSource.Token), _stoppingToken);
         }
     }
 
     private void RemoveSubscription(int subscriptionId)
     {
-        if (_runningSubscriptions.TryGetValue(subscriptionId, out var cancellationSource))
+        if (_runningSubscriptions.Remove(subscriptionId, out var cancellationSource))
         {
             cancellationSource.Cancel();
-            _runningSubscriptions.Remove(subscriptionId, out var _);
         }
     }
 }
