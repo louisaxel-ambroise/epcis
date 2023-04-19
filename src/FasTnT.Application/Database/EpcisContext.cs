@@ -36,6 +36,9 @@ public class EpcisContext : DbContext
         await transaction.CommitAsync(cancellationToken);
     }
 
+    internal IQueryable<MasterData> BizLocations => Set<MasterData>().Where(x => x.Type == "urn:epcglobal:epcis:vtype:BusinessLocation");
+    internal IQueryable<MasterData> ReadPoints => Set<MasterData>().Where(x => x.Type == "urn:epcglobal:epcis:vtype:ReadPoint");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         EpcisModelConfiguration.Apply(modelBuilder);
