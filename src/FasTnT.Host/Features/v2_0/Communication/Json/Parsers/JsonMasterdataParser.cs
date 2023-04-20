@@ -8,7 +8,7 @@ public class JsonMasterdataParser
 {
     private readonly JsonElement _element;
     private readonly Namespaces _extensions;
-    private int _index = 0;
+    private int _index;
 
     private JsonMasterdataParser(JsonElement element, Namespaces extensions)
     {

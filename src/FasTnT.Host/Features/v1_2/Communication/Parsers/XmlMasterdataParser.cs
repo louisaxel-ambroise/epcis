@@ -4,7 +4,7 @@ namespace FasTnT.Host.Features.v1_2.Communication.Parsers;
 
 public class XmlMasterdataParser
 {
-    private int _index = 0;
+    private int _index;
 
     public static IEnumerable<MasterData> ParseMasterdata(XElement root)
     {
