@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace FasTnT.Sqlite.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialV2_5_0 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,23 +21,10 @@ namespace FasTnT.Sqlite.Migrations
                 name: "Cbv");
 
             migrationBuilder.EnsureSchema(
-                name: "Subscriptions");
-
-            migrationBuilder.EnsureSchema(
                 name: "Queries");
 
-            migrationBuilder.CreateTable(
-                name: "PendingRequest",
-                schema: "Subscriptions",
-                columns: table => new
-                {
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    RequestId = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PendingRequest", x => new { x.SubscriptionId, x.RequestId });
-                });
+            migrationBuilder.EnsureSchema(
+                name: "Subscriptions");
 
             migrationBuilder.CreateTable(
                 name: "Request",
@@ -46,8 +34,8 @@ namespace FasTnT.Sqlite.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     CaptureId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    RecordTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
-                    CaptureTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     DocumentTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     SchemaVersion = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false)
                 },
@@ -85,27 +73,13 @@ namespace FasTnT.Sqlite.Migrations
                     Trigger = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     ReportIfEmpty = table.Column<bool>(type: "INTEGER", nullable: false),
                     Destination = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: false),
-                    InitialRecordTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    InitialRecordTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    LastExecutedTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    BufferRequestIds = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Subscription", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SubscriptionExecutionRecord",
-                schema: "Subscriptions",
-                columns: table => new
-                {
-                    SubscriptionId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ExecutionTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Successful = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ResultsSent = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Reason = table.Column<string>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubscriptionExecutionRecord", x => new { x.SubscriptionId, x.ExecutionTime });
                 });
 
             migrationBuilder.CreateTable(
@@ -117,7 +91,6 @@ namespace FasTnT.Sqlite.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     RequestId = table.Column<int>(type: "INTEGER", nullable: true),
                     EventTime = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    CaptureTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     EventTimeZoneOffset = table.Column<short>(type: "INTEGER", nullable: false),
                     Type = table.Column<short>(type: "INTEGER", nullable: false),
                     Action = table.Column<short>(type: "INTEGER", nullable: false),
@@ -441,6 +414,49 @@ namespace FasTnT.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SensorReport",
+                schema: "Epcis",
+                columns: table => new
+                {
+                    Index = table.Column<int>(type: "INTEGER", nullable: false),
+                    EventId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SensorIndex = table.Column<int>(type: "INTEGER", nullable: false),
+                    Type = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    DeviceId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    RawData = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                    DataProcessingMethod = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    CoordinateReferenceSystem = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Time = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Microorganism = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    ChemicalSubstance = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    Value = table.Column<float>(type: "REAL", nullable: true),
+                    Component = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    StringValue = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                    BooleanValue = table.Column<bool>(type: "INTEGER", nullable: false),
+                    HexBinaryValue = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    UriValue = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
+                    MinValue = table.Column<float>(type: "REAL", nullable: true),
+                    MaxValue = table.Column<float>(type: "REAL", nullable: true),
+                    MeanValue = table.Column<float>(type: "REAL", nullable: true),
+                    PercRank = table.Column<float>(type: "REAL", nullable: true),
+                    PercValue = table.Column<float>(type: "REAL", nullable: true),
+                    UnitOfMeasure = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    SDev = table.Column<float>(type: "REAL", nullable: true),
+                    DeviceMetadata = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SensorReport", x => new { x.EventId, x.Index });
+                    table.ForeignKey(
+                        name: "FK_SensorReport_Event_EventId",
+                        column: x => x.EventId,
+                        principalSchema: "Epcis",
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Source",
                 schema: "Epcis",
                 columns: table => new
@@ -466,15 +482,16 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Cbv",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Index = table.Column<int>(type: "INTEGER", maxLength: 256, nullable: false),
                     RequestId = table.Column<int>(type: "INTEGER", nullable: false),
                     MasterdataType = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     MasterdataId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     Value = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MasterDataAttribute", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.Id });
+                    table.PrimaryKey("PK_MasterDataAttribute", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.Index });
                     table.ForeignKey(
                         name: "FK_MasterDataAttribute_MasterData_RequestId_MasterdataType_MasterdataId",
                         columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId },
@@ -533,71 +550,29 @@ namespace FasTnT.Sqlite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SensorReport",
-                schema: "Epcis",
-                columns: table => new
-                {
-                    Index = table.Column<int>(type: "INTEGER", nullable: false),
-                    EventId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SensorIndex = table.Column<int>(type: "INTEGER", nullable: false),
-                    Type = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    DeviceId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    RawData = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    DataProcessingMethod = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Time = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    Microorganism = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ChemicalSubstance = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Value = table.Column<float>(type: "REAL", nullable: true),
-                    Component = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    StringValue = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    BooleanValue = table.Column<bool>(type: "INTEGER", nullable: false),
-                    HexBinaryValue = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    UriValue = table.Column<string>(type: "TEXT", maxLength: 2048, nullable: true),
-                    MinValue = table.Column<float>(type: "REAL", nullable: true),
-                    MaxValue = table.Column<float>(type: "REAL", nullable: true),
-                    MeanValue = table.Column<float>(type: "REAL", nullable: true),
-                    PercRank = table.Column<float>(type: "REAL", nullable: true),
-                    PercValue = table.Column<float>(type: "REAL", nullable: true),
-                    UnitOfMeasure = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    SDev = table.Column<float>(type: "REAL", nullable: true),
-                    DeviceMetadata = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SensorReport", x => new { x.EventId, x.SensorIndex, x.Index });
-                    table.ForeignKey(
-                        name: "FK_SensorReport_SensorElement_EventId_SensorIndex",
-                        columns: x => new { x.EventId, x.SensorIndex },
-                        principalSchema: "Epcis",
-                        principalTable: "SensorElement",
-                        principalColumns: new[] { "EventId", "Index" },
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MasterDataField",
                 schema: "Cbv",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    Namespace = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Index = table.Column<int>(type: "INTEGER", maxLength: 256, nullable: false),
                     RequestId = table.Column<int>(type: "INTEGER", nullable: false),
                     MasterdataType = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     MasterdataId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    AttributeId = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
-                    ParentName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    ParentNamespace = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
-                    Value = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true)
+                    ParentIndex = table.Column<int>(type: "INTEGER", maxLength: 256, nullable: true),
+                    Name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Namespace = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    Value = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
+                    AttributeIndex = table.Column<int>(type: "INTEGER", maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MasterDataField", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeId, x.Namespace, x.Name });
+                    table.PrimaryKey("PK_MasterDataField", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.Index });
                     table.ForeignKey(
-                        name: "FK_MasterDataField_MasterDataAttribute_RequestId_MasterdataType_MasterdataId_AttributeId",
-                        columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeId },
+                        name: "FK_MasterDataField_MasterDataAttribute_RequestId_MasterdataType_MasterdataId_AttributeIndex",
+                        columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeIndex },
                         principalSchema: "Cbv",
                         principalTable: "MasterDataAttribute",
-                        principalColumns: new[] { "RequestId", "MasterdataType", "MasterdataId", "Id" },
+                        principalColumns: new[] { "RequestId", "MasterdataType", "MasterdataId", "Index" },
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -606,6 +581,12 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis",
                 table: "Event",
                 column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MasterDataField_RequestId_MasterdataType_MasterdataId_AttributeIndex",
+                schema: "Cbv",
+                table: "MasterDataField",
+                columns: new[] { "RequestId", "MasterdataType", "MasterdataId", "AttributeIndex" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_StoredQuery_Name",
@@ -620,6 +601,24 @@ namespace FasTnT.Sqlite.Migrations
                 table: "Subscription",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.Sql(@"CREATE VIEW [CurrentMasterdata]
+AS
+SELECT MAX([RequestId]) AS [RequestId], [Type], [Id] FROM [MasterData] GROUP BY [Type], [Id];");
+
+            migrationBuilder.Sql(@"CREATE VIEW [MasterdataHierarchy] AS
+WITH hierarchy([root], [type], [id])
+AS (
+	SELECT [id], [type], [id]
+	FROM [CurrentMasterdata]
+	UNION ALL
+	SELECT [hierarchy].[Id], [MasterDataType], [ChildrenId]
+	FROM [MasterdataChildren] children
+	JOIN [CurrentMasterdata] cur ON cur.[Type] = children.[MasterDataType] AND cur.[Id] = [ChildrenId] 
+	JOIN hierarchy ON [MasterDataType] = hierarchy.[type] AND [MasterDataId] = hierarchy.[id]
+)
+SELECT [root], [type], [id] 
+FROM [hierarchy];");
         }
 
         /// <inheritdoc />
@@ -658,11 +657,11 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Cbv");
 
             migrationBuilder.DropTable(
-                name: "PendingRequest",
-                schema: "Subscriptions");
+                name: "PersistentDisposition",
+                schema: "Epcis");
 
             migrationBuilder.DropTable(
-                name: "PersistentDisposition",
+                name: "SensorElement",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
@@ -682,10 +681,6 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
-                name: "SubscriptionExecutionRecord",
-                schema: "Subscriptions");
-
-            migrationBuilder.DropTable(
                 name: "SubscriptionParameter",
                 schema: "Subscriptions");
 
@@ -702,7 +697,7 @@ namespace FasTnT.Sqlite.Migrations
                 schema: "Cbv");
 
             migrationBuilder.DropTable(
-                name: "SensorElement",
+                name: "Event",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
@@ -716,10 +711,6 @@ namespace FasTnT.Sqlite.Migrations
             migrationBuilder.DropTable(
                 name: "MasterData",
                 schema: "Cbv");
-
-            migrationBuilder.DropTable(
-                name: "Event",
-                schema: "Epcis");
 
             migrationBuilder.DropTable(
                 name: "Request",

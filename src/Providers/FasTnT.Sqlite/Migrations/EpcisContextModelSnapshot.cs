@@ -728,11 +728,11 @@ namespace FasTnT.Sqlite.Migrations
                                         .HasMaxLength(256)
                                         .HasColumnType("TEXT");
 
-                                    b2.Property<int>("AttributeIndex")
+                                    b2.Property<int>("Index")
                                         .HasMaxLength(256)
                                         .HasColumnType("INTEGER");
 
-                                    b2.Property<int>("Index")
+                                    b2.Property<int>("AttributeIndex")
                                         .HasMaxLength(256)
                                         .HasColumnType("INTEGER");
 
@@ -754,7 +754,9 @@ namespace FasTnT.Sqlite.Migrations
                                         .HasMaxLength(256)
                                         .HasColumnType("TEXT");
 
-                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex", "Index");
+                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
+
+                                    b2.HasIndex("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
 
                                     b2.ToTable("MasterDataField", "Cbv");
 

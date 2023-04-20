@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FasTnT.SqlServer.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20230419153453_UpdateMasterDataAttributes")]
-    partial class UpdateMasterDataAttributes
+    [Migration("20230420074033_InitialV2_5_0")]
+    partial class InitialV2_5_0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

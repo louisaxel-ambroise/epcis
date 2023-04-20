@@ -12,43 +12,18 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FasTnT.Postgres.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20221222184109_Initial")]
-    partial class Initial
+    [Migration("20230420131144_InitialV2_5_0")]
+    partial class InitialV2_5_0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.1")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("UserId")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("StoredQuery", "Queries");
-                });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
@@ -68,9 +43,6 @@ namespace FasTnT.Postgres.Migrations
                     b.Property<string>("BusinessStep")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime>("CaptureTime")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CertificationInfo")
                         .HasMaxLength(256)
@@ -136,10 +108,6 @@ namespace FasTnT.Postgres.Migrations
                     b.ToTable("MasterData", "Cbv");
 
                     b.ToView("CurrentMasterdata", "Cbv");
-
-                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterData");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy", b =>
@@ -159,10 +127,31 @@ namespace FasTnT.Postgres.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("MasterDataHierarchy", "Cbv");
+                });
 
-                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterDataHierarchy");
+            modelBuilder.Entity("FasTnT.Domain.Model.Queries.StoredQuery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                    b.UseTphMappingStrategy();
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("StoredQuery", "Queries");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
@@ -178,10 +167,10 @@ namespace FasTnT.Postgres.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<DateTime>("CaptureTime")
+                    b.Property<DateTime>("DocumentTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DocumentTime")
+                    b.Property<DateTime>("RecordTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SchemaVersion")
@@ -195,23 +184,45 @@ namespace FasTnT.Postgres.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Request", "Epcis", t =>
-                        {
-                            t.HasTrigger("SubscriptionPendingRequests");
-                        });
+                    b.ToTable("Request", "Epcis");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.PendingRequest", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.StandardBusinessHeader", b =>
                 {
-                    b.Property<int>("SubscriptionId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("RequestId")
                         .HasColumnType("integer");
 
-                    b.HasKey("SubscriptionId", "RequestId");
+                    b.Property<DateTime?>("CreationDateTime")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.ToTable("PendingRequest", "Subscriptions");
+                    b.Property<string>("InstanceIdentifier")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Standard")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("TypeVersion")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("RequestId");
+
+                    b.ToTable("StandardBusinessHeader", "Sbdh");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
@@ -221,6 +232,9 @@ namespace FasTnT.Postgres.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BufferRequestIds")
+                        .HasColumnType("text");
 
                     b.Property<string>("Destination")
                         .IsRequired()
@@ -232,7 +246,10 @@ namespace FasTnT.Postgres.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
 
-                    b.Property<DateTime?>("InitialRecordTime")
+                    b.Property<DateTime>("InitialRecordTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("LastExecutedTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -261,94 +278,38 @@ namespace FasTnT.Postgres.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Subscription", "Subscriptions", t =>
-                        {
-                            t.HasTrigger("SubscriptionInitialRequests");
-                        });
+                    b.ToTable("Subscription", "Subscriptions");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionExecutionRecord", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>
                 {
-                    b.Property<int>("SubscriptionId")
+                    b.Property<int>("RequestId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("ExecutionTime")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<short>("CallbackType")
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Reason")
-                        .HasColumnType("text");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
-                    b.Property<bool>("ResultsSent")
-                        .HasColumnType("boolean");
+                    b.Property<string>("SubscriptionId")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("SubscriptionId");
 
-                    b.Property<bool>("Successful")
-                        .HasColumnType("boolean");
+                    b.HasKey("RequestId");
 
-                    b.HasKey("SubscriptionId", "ExecutionTime");
-
-                    b.ToTable("SubscriptionExecutionRecord", "Subscriptions");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocation", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPoint", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocationHierarchy", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPointHierarchy", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.CustomQueries.StoredQuery", b =>
-                {
-                    b.OwnsMany("FasTnT.Domain.Model.CustomQueries.StoredQueryParameter", "Parameters", b1 =>
-                        {
-                            b1.Property<int>("QueryId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("Name")
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
-
-                            b1.Property<string>("Values")
-                                .HasColumnType("text");
-
-                            b1.HasKey("QueryId", "Name");
-
-                            b1.ToTable("StoredQueryParameter", "Queries");
-
-                            b1.WithOwner("Query")
-                                .HasForeignKey("QueryId");
-
-                            b1.Navigation("Query");
-                        });
-
-                    b.Navigation("Parameters");
+                    b.ToTable("SubscriptionCallback", "Epcis");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
                     b.HasOne("FasTnT.Domain.Model.Request", "Request")
                         .WithMany("Events")
-                        .HasForeignKey("RequestId");
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.BusinessTransaction", "Transactions", b1 =>
                         {
@@ -367,10 +328,8 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.ToTable("BusinessTransaction", "Epcis");
 
-                            b1.WithOwner("Event")
+                            b1.WithOwner()
                                 .HasForeignKey("EventId");
-
-                            b1.Navigation("Event");
                         });
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.CorrectiveEventId", "CorrectiveEventIds", b1 =>
@@ -386,10 +345,8 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.ToTable("CorrectiveEventId", "Epcis");
 
-                            b1.WithOwner("Event")
+                            b1.WithOwner()
                                 .HasForeignKey("EventId");
-
-                            b1.Navigation("Event");
                         });
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.Destination", "Destinations", b1 =>
@@ -409,10 +366,8 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.ToTable("Destination", "Epcis");
 
-                            b1.WithOwner("Event")
+                            b1.WithOwner()
                                 .HasForeignKey("EventId");
-
-                            b1.Navigation("Event");
                         });
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.Epc", "Epcs", b1 =>
@@ -438,10 +393,8 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.ToTable("Epc", "Epcis");
 
-                            b1.WithOwner("Event")
+                            b1.WithOwner()
                                 .HasForeignKey("EventId");
-
-                            b1.Navigation("Event");
                         });
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.Field", "Fields", b1 =>
@@ -484,10 +437,8 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.ToTable("Field", "Epcis");
 
-                            b1.WithOwner("Event")
+                            b1.WithOwner()
                                 .HasForeignKey("EventId");
-
-                            b1.Navigation("Event");
                         });
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.PersistentDisposition", "PersistentDispositions", b1 =>
@@ -506,10 +457,8 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.ToTable("PersistentDisposition", "Epcis");
 
-                            b1.WithOwner("Event")
+                            b1.WithOwner()
                                 .HasForeignKey("EventId");
-
-                            b1.Navigation("Event");
                         });
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.SensorElement", "SensorElements", b1 =>
@@ -553,108 +502,106 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.ToTable("SensorElement", "Epcis");
 
-                            b1.WithOwner("Event")
+                            b1.WithOwner()
                                 .HasForeignKey("EventId");
+                        });
 
-                            b1.OwnsMany("FasTnT.Domain.Model.Events.SensorReport", "Reports", b2 =>
-                                {
-                                    b2.Property<int>("EventId")
-                                        .HasColumnType("integer");
+                    b.OwnsMany("FasTnT.Domain.Model.Events.SensorReport", "Reports", b1 =>
+                        {
+                            b1.Property<int>("EventId")
+                                .HasColumnType("integer");
 
-                                    b2.Property<int>("SensorIndex")
-                                        .HasColumnType("integer");
+                            b1.Property<int>("Index")
+                                .HasColumnType("integer");
 
-                                    b2.Property<int>("Index")
-                                        .HasColumnType("integer");
+                            b1.Property<bool>("BooleanValue")
+                                .HasColumnType("boolean");
 
-                                    b2.Property<bool>("BooleanValue")
-                                        .HasColumnType("boolean");
+                            b1.Property<string>("ChemicalSubstance")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("ChemicalSubstance")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<string>("Component")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("Component")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<string>("CoordinateReferenceSystem")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("DataProcessingMethod")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<string>("DataProcessingMethod")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("DeviceId")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<string>("DeviceId")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("DeviceMetadata")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<string>("DeviceMetadata")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("HexBinaryValue")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<string>("HexBinaryValue")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<float?>("MaxValue")
-                                        .HasColumnType("real");
+                            b1.Property<float?>("MaxValue")
+                                .HasColumnType("real");
 
-                                    b2.Property<float?>("MeanValue")
-                                        .HasColumnType("real");
+                            b1.Property<float?>("MeanValue")
+                                .HasColumnType("real");
 
-                                    b2.Property<string>("Microorganism")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<string>("Microorganism")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<float?>("MinValue")
-                                        .HasColumnType("real");
+                            b1.Property<float?>("MinValue")
+                                .HasColumnType("real");
 
-                                    b2.Property<float?>("PercRank")
-                                        .HasColumnType("real");
+                            b1.Property<float?>("PercRank")
+                                .HasColumnType("real");
 
-                                    b2.Property<float?>("PercValue")
-                                        .HasColumnType("real");
+                            b1.Property<float?>("PercValue")
+                                .HasColumnType("real");
 
-                                    b2.Property<string>("RawData")
-                                        .HasMaxLength(2048)
-                                        .HasColumnType("character varying(2048)");
+                            b1.Property<string>("RawData")
+                                .HasMaxLength(2048)
+                                .HasColumnType("character varying(2048)");
 
-                                    b2.Property<float?>("SDev")
-                                        .HasColumnType("real");
+                            b1.Property<float?>("SDev")
+                                .HasColumnType("real");
 
-                                    b2.Property<string>("StringValue")
-                                        .HasMaxLength(2048)
-                                        .HasColumnType("character varying(2048)");
+                            b1.Property<int>("SensorIndex")
+                                .HasColumnType("integer");
 
-                                    b2.Property<DateTime?>("Time")
-                                        .HasColumnType("timestamp with time zone");
+                            b1.Property<string>("StringValue")
+                                .HasMaxLength(2048)
+                                .HasColumnType("character varying(2048)");
 
-                                    b2.Property<string>("Type")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<DateTime?>("Time")
+                                .HasColumnType("timestamp with time zone");
 
-                                    b2.Property<string>("UnitOfMeasure")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                            b1.Property<string>("Type")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("UriValue")
-                                        .HasMaxLength(2048)
-                                        .HasColumnType("character varying(2048)");
+                            b1.Property<string>("UnitOfMeasure")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                                    b2.Property<float?>("Value")
-                                        .HasColumnType("real");
+                            b1.Property<string>("UriValue")
+                                .HasMaxLength(2048)
+                                .HasColumnType("character varying(2048)");
 
-                                    b2.HasKey("EventId", "SensorIndex", "Index");
+                            b1.Property<float?>("Value")
+                                .HasColumnType("real");
 
-                                    b2.ToTable("SensorReport", "Epcis");
+                            b1.HasKey("EventId", "Index");
 
-                                    b2.WithOwner("SensorElement")
-                                        .HasForeignKey("EventId", "SensorIndex");
+                            b1.ToTable("SensorReport", "Epcis");
 
-                                    b2.Navigation("SensorElement");
-                                });
-
-                            b1.Navigation("Event");
-
-                            b1.Navigation("Reports");
+                            b1.WithOwner()
+                                .HasForeignKey("EventId");
                         });
 
                     b.OwnsMany("FasTnT.Domain.Model.Events.Source", "Sources", b1 =>
@@ -674,10 +621,8 @@ namespace FasTnT.Postgres.Migrations
 
                             b1.ToTable("Source", "Epcis");
 
-                            b1.WithOwner("Event")
+                            b1.WithOwner()
                                 .HasForeignKey("EventId");
-
-                            b1.Navigation("Event");
                         });
 
                     b.Navigation("CorrectiveEventIds");
@@ -689,6 +634,8 @@ namespace FasTnT.Postgres.Migrations
                     b.Navigation("Fields");
 
                     b.Navigation("PersistentDispositions");
+
+                    b.Navigation("Reports");
 
                     b.Navigation("Request");
 
@@ -745,7 +692,12 @@ namespace FasTnT.Postgres.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
+                            b1.Property<int>("Index")
+                                .HasMaxLength(256)
+                                .HasColumnType("integer");
+
                             b1.Property<string>("Id")
+                                .IsRequired()
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
@@ -754,11 +706,11 @@ namespace FasTnT.Postgres.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
-                            b1.HasKey("RequestId", "MasterdataType", "MasterdataId", "Id");
+                            b1.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
 
                             b1.ToTable("MasterDataAttribute", "Cbv");
 
-                            b1.WithOwner("MasterData")
+                            b1.WithOwner()
                                 .HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
 
                             b1.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataField", "Fields", b2 =>
@@ -774,43 +726,43 @@ namespace FasTnT.Postgres.Migrations
                                         .HasMaxLength(256)
                                         .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("AttributeId")
+                                    b2.Property<int>("Index")
+                                        .HasMaxLength(256)
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("AttributeIndex")
+                                        .HasMaxLength(256)
+                                        .HasColumnType("integer");
+
+                                    b2.Property<string>("Name")
+                                        .IsRequired()
                                         .HasMaxLength(256)
                                         .HasColumnType("character varying(256)");
 
                                     b2.Property<string>("Namespace")
+                                        .IsRequired()
                                         .HasMaxLength(256)
                                         .HasColumnType("character varying(256)");
 
-                                    b2.Property<string>("Name")
+                                    b2.Property<int?>("ParentIndex")
                                         .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<string>("ParentName")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<string>("ParentNamespace")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
+                                        .HasColumnType("integer");
 
                                     b2.Property<string>("Value")
                                         .HasMaxLength(256)
                                         .HasColumnType("character varying(256)");
 
-                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", "Namespace", "Name");
+                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
+
+                                    b2.HasIndex("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
 
                                     b2.ToTable("MasterDataField", "Cbv");
 
-                                    b2.WithOwner("Attribute")
-                                        .HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
-
-                                    b2.Navigation("Attribute");
+                                    b2.WithOwner()
+                                        .HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
                                 });
 
                             b1.Navigation("Fields");
-
-                            b1.Navigation("MasterData");
                         });
 
                     b.Navigation("Attributes");
@@ -820,126 +772,81 @@ namespace FasTnT.Postgres.Migrations
                     b.Navigation("Request");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Queries.StoredQuery", b =>
                 {
-                    b.OwnsOne("FasTnT.Domain.Model.StandardBusinessHeader", "StandardBusinessHeader", b1 =>
+                    b.OwnsMany("FasTnT.Domain.Model.Queries.QueryParameter", "Parameters", b1 =>
                         {
-                            b1.Property<int>("RequestId")
+                            b1.Property<int>("QueryId")
                                 .HasColumnType("integer");
 
-                            b1.Property<DateTime?>("CreationDateTime")
-                                .HasColumnType("timestamp with time zone");
-
-                            b1.Property<string>("InstanceIdentifier")
-                                .IsRequired()
+                            b1.Property<string>("Name")
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
-                            b1.Property<string>("Standard")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
+                            b1.Property<string>("Values")
+                                .HasColumnType("text");
 
-                            b1.Property<string>("Type")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
+                            b1.HasKey("QueryId", "Name");
 
-                            b1.Property<string>("TypeVersion")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
+                            b1.ToTable("StoredQueryParameter", "Queries");
 
-                            b1.Property<string>("Version")
-                                .IsRequired()
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
-
-                            b1.HasKey("RequestId");
-
-                            b1.ToTable("StandardBusinessHeader", "Sbdh");
-
-                            b1.WithOwner("Request")
-                                .HasForeignKey("RequestId");
-
-                            b1.OwnsMany("FasTnT.Domain.Model.Events.ContactInformation", "ContactInformations", b2 =>
-                                {
-                                    b2.Property<int>("RequestId")
-                                        .HasColumnType("integer");
-
-                                    b2.Property<short>("Type")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("smallint");
-
-                                    b2.Property<string>("Identifier")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<string>("Contact")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<string>("ContactTypeIdentifier")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<string>("EmailAddress")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<string>("FaxNumber")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<string>("TelephoneNumber")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.HasKey("RequestId", "Type", "Identifier");
-
-                                    b2.ToTable("ContactInformation", "Sbdh");
-
-                                    b2.WithOwner("Header")
-                                        .HasForeignKey("RequestId");
-
-                                    b2.Navigation("Header");
-                                });
-
-                            b1.Navigation("ContactInformations");
-
-                            b1.Navigation("Request");
+                            b1.WithOwner()
+                                .HasForeignKey("QueryId");
                         });
 
-                    b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", "SubscriptionCallback", b1 =>
+                    b.Navigation("Parameters");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.StandardBusinessHeader", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Request", null)
+                        .WithOne("StandardBusinessHeader")
+                        .HasForeignKey("FasTnT.Domain.Model.StandardBusinessHeader", "RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("FasTnT.Domain.Model.Events.ContactInformation", "ContactInformations", b1 =>
                         {
                             b1.Property<int>("RequestId")
                                 .HasColumnType("integer");
 
-                            b1.Property<short>("CallbackType")
+                            b1.Property<short>("Type")
+                                .HasMaxLength(256)
                                 .HasColumnType("smallint");
 
-                            b1.Property<string>("Reason")
+                            b1.Property<string>("Identifier")
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
-                            b1.Property<string>("SubscriptionId")
-                                .IsRequired()
+                            b1.Property<string>("Contact")
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
-                            b1.HasKey("RequestId");
+                            b1.Property<string>("ContactTypeIdentifier")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                            b1.ToTable("SubscriptionCallback", "Epcis");
+                            b1.Property<string>("EmailAddress")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
 
-                            b1.WithOwner("Request")
+                            b1.Property<string>("FaxNumber")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
+
+                            b1.Property<string>("TelephoneNumber")
+                                .HasMaxLength(256)
+                                .HasColumnType("character varying(256)");
+
+                            b1.HasKey("RequestId", "Type", "Identifier");
+
+                            b1.ToTable("ContactInformation", "Sbdh");
+
+                            b1.WithOwner()
                                 .HasForeignKey("RequestId");
-
-                            b1.Navigation("Request");
                         });
 
-                    b.Navigation("StandardBusinessHeader");
-
-                    b.Navigation("SubscriptionCallback");
+                    b.Navigation("ContactInformations");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.Subscription", b =>
@@ -1006,11 +913,26 @@ namespace FasTnT.Postgres.Migrations
                     b.Navigation("Schedule");
                 });
 
+            modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Request", "Request")
+                        .WithOne("SubscriptionCallback")
+                        .HasForeignKey("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", "RequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Request");
+                });
+
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>
                 {
                     b.Navigation("Events");
 
                     b.Navigation("Masterdata");
+
+                    b.Navigation("StandardBusinessHeader");
+
+                    b.Navigation("SubscriptionCallback");
                 });
 #pragma warning restore 612, 618
         }

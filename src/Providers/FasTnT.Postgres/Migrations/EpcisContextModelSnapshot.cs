@@ -124,10 +124,6 @@ namespace FasTnT.Postgres.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("MasterDataHierarchy", "Cbv");
-
-                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterDataHierarchy");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Queries.StoredQuery", b =>
@@ -303,20 +299,6 @@ namespace FasTnT.Postgres.Migrations
                     b.HasKey("RequestId");
 
                     b.ToTable("SubscriptionCallback", "Epcis");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocationHierarchy", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPointHierarchy", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
@@ -741,11 +723,11 @@ namespace FasTnT.Postgres.Migrations
                                         .HasMaxLength(256)
                                         .HasColumnType("character varying(256)");
 
-                                    b2.Property<int>("AttributeIndex")
+                                    b2.Property<int>("Index")
                                         .HasMaxLength(256)
                                         .HasColumnType("integer");
 
-                                    b2.Property<int>("Index")
+                                    b2.Property<int>("AttributeIndex")
                                         .HasMaxLength(256)
                                         .HasColumnType("integer");
 
@@ -767,7 +749,9 @@ namespace FasTnT.Postgres.Migrations
                                         .HasMaxLength(256)
                                         .HasColumnType("character varying(256)");
 
-                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex", "Index");
+                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
+
+                                    b2.HasIndex("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
 
                                     b2.ToTable("MasterDataField", "Cbv");
 

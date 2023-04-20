@@ -75,6 +75,8 @@ public class CaptureHandler
 
     private async Task StoreRequestAsync(Request request, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(_context.Database.CurrentTransaction);
+        
         _context.Add(request);
         await _context.SaveChangesAsync(cancellationToken);
 

@@ -94,8 +94,8 @@ public static class EpcisModelConfiguration
                 c.Property<int>("RequestId");
                 c.Property<string>("MasterdataType").HasMaxLength(256);
                 c.Property<string>("MasterdataId").HasMaxLength(256);
-                c.Property<int>("AttributeIndex").HasMaxLength(256);
-                c.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex", nameof(MasterDataField.Index));
+                c.Property<int>("AttributeIndex").HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+                c.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataField.Index));
                 c.Property(x => x.Index).HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
                 c.Property(x => x.ParentIndex).HasMaxLength(256).IsRequired(false).ValueGeneratedNever();
                 c.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
@@ -118,10 +118,6 @@ public static class EpcisModelConfiguration
         mdHierarchy.Property(x => x.Root).IsRequired(true);
         mdHierarchy.Property(x => x.Id).IsRequired(true);
         mdHierarchy.Property(x => x.Type).IsRequired(true);
-        mdHierarchy.HasDiscriminator(x => x.Type)
-            .HasValue<BizLocationHierarchy>("urn:epcglobal:epcis:vtype:BusinessLocation")
-            .HasValue<ReadPointHierarchy>("urn:epcglobal:epcis:vtype:ReadPoint")
-            .IsComplete(false);
 
         var evt = modelBuilder.Entity<Event>();
         evt.ToTable(nameof(Event), Epcis);
