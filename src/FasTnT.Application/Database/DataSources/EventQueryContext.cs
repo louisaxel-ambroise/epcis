@@ -206,9 +206,9 @@ internal class EventQueryContext
         switch (field)
         {
             case "bizLocation":
-                Filter(e => _context.Set<BizLocation>().Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName))); break;
+                Filter(e => _context.BizLocations.Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName))); break;
             case "readPoint":
-                Filter(e => _context.Set<ReadPoint>().Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName))); break;
+                Filter(e => _context.ReadPoints.Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName))); break;
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
         }
@@ -219,9 +219,9 @@ internal class EventQueryContext
         switch (field)
         {
             case "bizLocation":
-                Filter(e => _context.Set<BizLocation>().Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
+                Filter(e => _context.BizLocations.Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
             case "readPoint":
-                Filter(e => _context.Set<ReadPoint>().Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
+                Filter(e => _context.ReadPoints.Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
         }

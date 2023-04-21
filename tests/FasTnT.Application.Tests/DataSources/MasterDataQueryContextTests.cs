@@ -42,11 +42,13 @@ public class MasterDataQueryContextTests
                         {
                             new MasterDataAttribute
                             {
+                                Index = 1,
                                 Id = "MD1AT1",
                                 Value = "5"
                             },
                             new MasterDataAttribute
                             {
+                                Index = 2,
                                 Id = "COMMON",
                                 Value = "5"
                             }
@@ -60,6 +62,7 @@ public class MasterDataQueryContextTests
                         {
                             new MasterDataAttribute
                             {
+                                Index = 1,
                                 Id = "MD3AT1",
                                 Value = "INNER"
                             }
@@ -80,11 +83,13 @@ public class MasterDataQueryContextTests
                         {
                             new MasterDataAttribute
                             {
+                                Index = 1,
                                 Id = "MD2AT1",
                                 Value = "VALUE"
                             },
                             new MasterDataAttribute
                             {
+                                Index = 2,
                                 Id = "COMMON",
                                 Value = "10"
                             }

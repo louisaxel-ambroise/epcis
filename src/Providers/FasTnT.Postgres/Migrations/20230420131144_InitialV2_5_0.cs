@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace FasTnT.SqlServer.Migrations
+namespace FasTnT.Postgres.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialV2_5_0 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,36 +22,23 @@ namespace FasTnT.SqlServer.Migrations
                 name: "Cbv");
 
             migrationBuilder.EnsureSchema(
-                name: "Subscriptions");
-
-            migrationBuilder.EnsureSchema(
                 name: "Queries");
 
-            migrationBuilder.CreateTable(
-                name: "PendingRequest",
-                schema: "Subscriptions",
-                columns: table => new
-                {
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    RequestId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PendingRequest", x => new { x.SubscriptionId, x.RequestId });
-                });
+            migrationBuilder.EnsureSchema(
+                name: "Subscriptions");
 
             migrationBuilder.CreateTable(
                 name: "Request",
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CaptureId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
-                    CaptureTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DocumentTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SchemaVersion = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CaptureId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    RecordTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    DocumentTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SchemaVersion = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -61,10 +50,10 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Queries",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -76,16 +65,18 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    SignatureToken = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    QueryName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    FormatterName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    Trigger = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ReportIfEmpty = table.Column<bool>(type: "bit", nullable: false),
-                    Destination = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: false),
-                    InitialRecordTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    SignatureToken = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    QueryName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    FormatterName = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Trigger = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ReportIfEmpty = table.Column<bool>(type: "boolean", nullable: false),
+                    Destination = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: false),
+                    InitialRecordTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LastExecutedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    BufferRequestIds = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -93,43 +84,26 @@ namespace FasTnT.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SubscriptionExecutionRecord",
-                schema: "Subscriptions",
-                columns: table => new
-                {
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    ExecutionTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Successful = table.Column<bool>(type: "bit", nullable: false),
-                    ResultsSent = table.Column<bool>(type: "bit", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SubscriptionExecutionRecord", x => new { x.SubscriptionId, x.ExecutionTime });
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Event",
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RequestId = table.Column<int>(type: "int", nullable: true),
-                    EventTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CaptureTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RequestId = table.Column<int>(type: "integer", nullable: true),
+                    EventTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     EventTimeZoneOffset = table.Column<short>(type: "smallint", nullable: false),
                     Type = table.Column<short>(type: "smallint", nullable: false),
                     Action = table.Column<short>(type: "smallint", nullable: false),
-                    EventId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    CertificationInfo = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ReadPoint = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    BusinessLocation = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    BusinessStep = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Disposition = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    TransformationId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    CorrectiveDeclarationTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CorrectiveReason = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                    EventId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    CertificationInfo = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ReadPoint = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    BusinessLocation = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    BusinessStep = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Disposition = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    TransformationId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    CorrectiveDeclarationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CorrectiveReason = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -148,9 +122,9 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Cbv",
                 columns: table => new
                 {
-                    Type = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    RequestId = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -169,13 +143,13 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Sbdh",
                 columns: table => new
                 {
-                    RequestId = table.Column<int>(type: "int", nullable: false),
-                    Version = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Standard = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    TypeVersion = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    InstanceIdentifier = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    CreationDateTime = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    Version = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Standard = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    TypeVersion = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    InstanceIdentifier = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    CreationDateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -194,10 +168,10 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    RequestId = table.Column<int>(type: "int", nullable: false),
-                    SubscriptionId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    SubscriptionId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     CallbackType = table.Column<short>(type: "smallint", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                    Reason = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -216,9 +190,9 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Queries",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    QueryId = table.Column<int>(type: "int", nullable: false),
-                    Values = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    QueryId = table.Column<int>(type: "integer", nullable: false),
+                    Values = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -237,9 +211,9 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    Values = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    Values = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -258,13 +232,13 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Subscriptions",
                 columns: table => new
                 {
-                    SubscriptionId = table.Column<int>(type: "int", nullable: false),
-                    Second = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Minute = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Hour = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    DayOfMonth = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Month = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    DayOfWeek = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                    SubscriptionId = table.Column<int>(type: "integer", nullable: false),
+                    Second = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Minute = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Hour = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DayOfMonth = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Month = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DayOfWeek = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -283,9 +257,9 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -304,8 +278,8 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    CorrectiveId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false)
+                    CorrectiveId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -324,9 +298,9 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -346,10 +320,10 @@ namespace FasTnT.SqlServer.Migrations
                 columns: table => new
                 {
                     Type = table.Column<short>(type: "smallint", nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
                     Quantity = table.Column<float>(type: "real", nullable: true),
-                    UnitOfMeasure = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true)
+                    UnitOfMeasure = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -368,16 +342,16 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Index = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false),
+                    Index = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
                     Type = table.Column<short>(type: "smallint", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Namespace = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    TextValue = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NumericValue = table.Column<double>(type: "float", nullable: true),
-                    DateValue = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EntityIndex = table.Column<int>(type: "int", nullable: true),
-                    ParentIndex = table.Column<int>(type: "int", nullable: true)
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Namespace = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    TextValue = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NumericValue = table.Column<double>(type: "double precision", nullable: true),
+                    DateValue = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EntityIndex = table.Column<int>(type: "integer", nullable: true),
+                    ParentIndex = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -397,8 +371,8 @@ namespace FasTnT.SqlServer.Migrations
                 columns: table => new
                 {
                     Type = table.Column<short>(type: "smallint", nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -417,16 +391,16 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Index = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeviceId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    DeviceMetadata = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    RawData = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
-                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DataProcessingMethod = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    BizRules = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                    Index = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    Time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeviceId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DeviceMetadata = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    RawData = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DataProcessingMethod = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    BizRules = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -441,13 +415,56 @@ namespace FasTnT.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SensorReport",
+                schema: "Epcis",
+                columns: table => new
+                {
+                    Index = table.Column<int>(type: "integer", nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false),
+                    SensorIndex = table.Column<int>(type: "integer", nullable: false),
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    DeviceId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    RawData = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    DataProcessingMethod = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    CoordinateReferenceSystem = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Time = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Microorganism = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ChemicalSubstance = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Value = table.Column<float>(type: "real", nullable: true),
+                    Component = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    StringValue = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    BooleanValue = table.Column<bool>(type: "boolean", nullable: false),
+                    HexBinaryValue = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    UriValue = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
+                    MinValue = table.Column<float>(type: "real", nullable: true),
+                    MaxValue = table.Column<float>(type: "real", nullable: true),
+                    MeanValue = table.Column<float>(type: "real", nullable: true),
+                    PercRank = table.Column<float>(type: "real", nullable: true),
+                    PercValue = table.Column<float>(type: "real", nullable: true),
+                    UnitOfMeasure = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    SDev = table.Column<float>(type: "real", nullable: true),
+                    DeviceMetadata = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SensorReport", x => new { x.EventId, x.Index });
+                    table.ForeignKey(
+                        name: "FK_SensorReport_Event_EventId",
+                        column: x => x.EventId,
+                        principalSchema: "Epcis",
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Source",
                 schema: "Epcis",
                 columns: table => new
                 {
-                    Type = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    EventId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -466,17 +483,18 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Cbv",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    RequestId = table.Column<int>(type: "int", nullable: false),
-                    MasterdataType = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    MasterdataId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
+                    Index = table.Column<int>(type: "integer", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    MasterdataType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    MasterdataId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Id = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Value = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MasterDataAttribute", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.Id });
+                    table.PrimaryKey("PK_MasterDataAttribute", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.Index });
                     table.ForeignKey(
-                        name: "FK_MasterDataAttribute_MasterData_RequestId_MasterdataType_MasterdataId",
+                        name: "FK_MasterDataAttribute_MasterData_RequestId_MasterdataType_Mas~",
                         columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId },
                         principalSchema: "Cbv",
                         principalTable: "MasterData",
@@ -489,16 +507,16 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Cbv",
                 columns: table => new
                 {
-                    ChildrenId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    MasterDataRequestId = table.Column<int>(type: "int", nullable: false),
-                    MasterDataType = table.Column<string>(type: "nvarchar(256)", nullable: false),
-                    MasterDataId = table.Column<string>(type: "nvarchar(256)", nullable: false)
+                    ChildrenId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    MasterDataRequestId = table.Column<int>(type: "integer", nullable: false),
+                    MasterDataType = table.Column<string>(type: "character varying(256)", nullable: false),
+                    MasterDataId = table.Column<string>(type: "character varying(256)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MasterDataChildren", x => new { x.MasterDataRequestId, x.MasterDataType, x.MasterDataId, x.ChildrenId });
                     table.ForeignKey(
-                        name: "FK_MasterDataChildren_MasterData_MasterDataRequestId_MasterDataType_MasterDataId",
+                        name: "FK_MasterDataChildren_MasterData_MasterDataRequestId_MasterDat~",
                         columns: x => new { x.MasterDataRequestId, x.MasterDataType, x.MasterDataId },
                         principalSchema: "Cbv",
                         principalTable: "MasterData",
@@ -512,13 +530,13 @@ namespace FasTnT.SqlServer.Migrations
                 columns: table => new
                 {
                     Type = table.Column<short>(type: "smallint", maxLength: 256, nullable: false),
-                    Identifier = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    RequestId = table.Column<int>(type: "int", nullable: false),
-                    Contact = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailAddress = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    FaxNumber = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    TelephoneNumber = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ContactTypeIdentifier = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                    Identifier = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    Contact = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailAddress = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    FaxNumber = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    TelephoneNumber = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ContactTypeIdentifier = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -533,71 +551,29 @@ namespace FasTnT.SqlServer.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SensorReport",
-                schema: "Epcis",
-                columns: table => new
-                {
-                    Index = table.Column<int>(type: "int", nullable: false),
-                    EventId = table.Column<int>(type: "int", nullable: false),
-                    SensorIndex = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    DeviceId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    RawData = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
-                    DataProcessingMethod = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Time = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Microorganism = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ChemicalSubstance = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Value = table.Column<float>(type: "real", nullable: true),
-                    Component = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    StringValue = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
-                    BooleanValue = table.Column<bool>(type: "bit", nullable: false),
-                    HexBinaryValue = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    UriValue = table.Column<string>(type: "nvarchar(2048)", maxLength: 2048, nullable: true),
-                    MinValue = table.Column<float>(type: "real", nullable: true),
-                    MaxValue = table.Column<float>(type: "real", nullable: true),
-                    MeanValue = table.Column<float>(type: "real", nullable: true),
-                    PercRank = table.Column<float>(type: "real", nullable: true),
-                    PercValue = table.Column<float>(type: "real", nullable: true),
-                    UnitOfMeasure = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    SDev = table.Column<float>(type: "real", nullable: true),
-                    DeviceMetadata = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SensorReport", x => new { x.EventId, x.SensorIndex, x.Index });
-                    table.ForeignKey(
-                        name: "FK_SensorReport_SensorElement_EventId_SensorIndex",
-                        columns: x => new { x.EventId, x.SensorIndex },
-                        principalSchema: "Epcis",
-                        principalTable: "SensorElement",
-                        principalColumns: new[] { "EventId", "Index" },
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MasterDataField",
                 schema: "Cbv",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Namespace = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    RequestId = table.Column<int>(type: "int", nullable: false),
-                    MasterdataType = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    MasterdataId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    AttributeId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    ParentName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ParentNamespace = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Value = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                    Index = table.Column<int>(type: "integer", maxLength: 256, nullable: false),
+                    RequestId = table.Column<int>(type: "integer", nullable: false),
+                    MasterdataType = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    MasterdataId = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    ParentIndex = table.Column<int>(type: "integer", maxLength: 256, nullable: true),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Namespace = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
+                    Value = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    AttributeIndex = table.Column<int>(type: "integer", maxLength: 256, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MasterDataField", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeId, x.Namespace, x.Name });
+                    table.PrimaryKey("PK_MasterDataField", x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.Index });
                     table.ForeignKey(
-                        name: "FK_MasterDataField_MasterDataAttribute_RequestId_MasterdataType_MasterdataId_AttributeId",
-                        columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeId },
+                        name: "FK_MasterDataField_MasterDataAttribute_RequestId_MasterdataTyp~",
+                        columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeIndex },
                         principalSchema: "Cbv",
                         principalTable: "MasterDataAttribute",
-                        principalColumns: new[] { "RequestId", "MasterdataType", "MasterdataId", "Id" },
+                        principalColumns: new[] { "RequestId", "MasterdataType", "MasterdataId", "Index" },
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -606,6 +582,12 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Epcis",
                 table: "Event",
                 column: "RequestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MasterDataField_RequestId_MasterdataType_MasterdataId_Attri~",
+                schema: "Cbv",
+                table: "MasterDataField",
+                columns: new[] { "RequestId", "MasterdataType", "MasterdataId", "AttributeIndex" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_StoredQuery_Name",
@@ -620,6 +602,24 @@ namespace FasTnT.SqlServer.Migrations
                 table: "Subscription",
                 column: "Name",
                 unique: true);
+
+            migrationBuilder.Sql(@"CREATE VIEW ""Cbv"".""CurrentMasterdata""
+AS
+SELECT MAX(""RequestId"") AS ""RequestId"", ""Type"", ""Id"" FROM ""Cbv"".""MasterData"" GROUP BY ""Type"", ""Id"";");
+
+            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION ""Subscriptions"".""SubscriptionInitialRequests""()
+    RETURNS trigger
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE NOT LEAKPROOF 
+AS $BODY$
+    BEGIN
+        INSERT INTO ""Subscriptions"".""PendingRequest"" SELECT ""Id"" AS ""RequestId"", NEW.""Id"" AS ""SubscriptionId"" FROM ""Rpcis"".""Request"" WHERE ""CaptureTime"" >= NEW.""InitialRecordTime"";
+        RETURN NULL;
+    END;
+$BODY$;
+CREATE TRIGGER ""SubscriptionInitialRequests"" AFTER INSERT ON ""Subscriptions"".""Subscription""
+FOR EACH ROW EXECUTE PROCEDURE ""Subscriptions"".""SubscriptionInitialRequests""();");
         }
 
         /// <inheritdoc />
@@ -658,11 +658,11 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Cbv");
 
             migrationBuilder.DropTable(
-                name: "PendingRequest",
-                schema: "Subscriptions");
+                name: "PersistentDisposition",
+                schema: "Epcis");
 
             migrationBuilder.DropTable(
-                name: "PersistentDisposition",
+                name: "SensorElement",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
@@ -682,10 +682,6 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
-                name: "SubscriptionExecutionRecord",
-                schema: "Subscriptions");
-
-            migrationBuilder.DropTable(
                 name: "SubscriptionParameter",
                 schema: "Subscriptions");
 
@@ -702,7 +698,7 @@ namespace FasTnT.SqlServer.Migrations
                 schema: "Cbv");
 
             migrationBuilder.DropTable(
-                name: "SensorElement",
+                name: "Event",
                 schema: "Epcis");
 
             migrationBuilder.DropTable(
@@ -716,10 +712,6 @@ namespace FasTnT.SqlServer.Migrations
             migrationBuilder.DropTable(
                 name: "MasterData",
                 schema: "Cbv");
-
-            migrationBuilder.DropTable(
-                name: "Event",
-                schema: "Epcis");
 
             migrationBuilder.DropTable(
                 name: "Request",

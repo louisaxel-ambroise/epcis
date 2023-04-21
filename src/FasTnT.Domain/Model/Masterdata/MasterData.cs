@@ -9,6 +9,3 @@ public class MasterData
     public List<MasterDataAttribute> Attributes { get; set; } = new();
     public List<MasterDataChildren> Children { get; set; } = new();
 }
-
-public class BizLocation : MasterData { }
-public class ReadPoint : MasterData { }

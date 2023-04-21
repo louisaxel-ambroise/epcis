@@ -8,6 +8,7 @@ public class JsonMasterdataParser
 {
     private readonly JsonElement _element;
     private readonly Namespaces _extensions;
+    private int _index;
 
     private JsonMasterdataParser(JsonElement element, Namespaces extensions)
     {
@@ -60,11 +61,11 @@ public class JsonMasterdataParser
         {
             Id = element.GetProperty("id").GetString(),
             Value = element.GetProperty("attribute").ValueKind == JsonValueKind.Object ? string.Empty : element.GetProperty("attribute").GetString(),
-            Fields = ParseFields(element.GetProperty("attribute"), null, null),
+            Fields = ParseFields(element.GetProperty("attribute")),
         };
     }
 
-    private List<MasterDataField> ParseFields(JsonElement element, string parentName, string parentNamespace)
+    private List<MasterDataField> ParseFields(JsonElement element, int? parentIndex = null)
     {
         if (element.ValueKind != JsonValueKind.Object)
         {
@@ -77,15 +78,16 @@ public class JsonMasterdataParser
         {
             var (ns, name) = _extensions.ParseName(property.Name);
 
-            result.AddRange(ParseFields(property.Value, name, ns));
             result.Add(new MasterDataField
             {
+                Index = ++_index,
                 Value = property.Value.ValueKind == JsonValueKind.Object ? null : property.Value.GetString(),
                 Name = name,
                 Namespace = ns,
-                ParentName = parentName,
-                ParentNamespace = parentNamespace,
+                ParentIndex = parentIndex
+
             });
+            result.AddRange(ParseFields(property.Value, _index));
         }
 
         return result;

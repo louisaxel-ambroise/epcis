@@ -83,24 +83,25 @@ public static class EpcisModelConfiguration
             c.Property<int>("RequestId");
             c.Property<string>("MasterdataType").HasMaxLength(256);
             c.Property<string>("MasterdataId").HasMaxLength(256);
-            c.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataAttribute.Id));
+            c.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataAttribute.Index));
             c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
             c.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
-            c.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
+            c.Property(x => x.Index).HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+            c.WithOwner().HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
             c.OwnsMany(x => x.Fields, c =>
             {
                 c.ToTable(nameof(MasterDataField), Cbv);
                 c.Property<int>("RequestId");
                 c.Property<string>("MasterdataType").HasMaxLength(256);
                 c.Property<string>("MasterdataId").HasMaxLength(256);
-                c.Property<string>("AttributeId").HasMaxLength(256);
-                c.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", nameof(MasterDataField.Namespace), nameof(MasterDataField.Name));
-                c.Property(x => x.ParentName).HasMaxLength(256).IsRequired(false);
-                c.Property(x => x.ParentNamespace).HasMaxLength(256).IsRequired(false);
+                c.Property<int>("AttributeIndex").HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+                c.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataField.Index));
+                c.Property(x => x.Index).HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+                c.Property(x => x.ParentIndex).HasMaxLength(256).IsRequired(false).ValueGeneratedNever();
                 c.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
                 c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
                 c.Property(x => x.Value).HasMaxLength(256).IsRequired(false);
-                c.HasOne(x => x.Attribute).WithMany(x => x.Fields).HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
+                c.WithOwner().HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
             });
         });
         masterData.OwnsMany(x => x.Children, c =>
@@ -110,10 +111,6 @@ public static class EpcisModelConfiguration
             c.HasOne(x => x.MasterData).WithMany(x => x.Children);
             c.Property(x => x.ChildrenId).HasMaxLength(256);
         });
-        masterData.HasDiscriminator(x => x.Type)
-            .HasValue<BizLocation>("urn:epcglobal:epcis:vtype:BusinessLocation")
-            .HasValue<ReadPoint>("urn:epcglobal:epcis:vtype:ReadPoint")
-            .IsComplete(false);
 
         var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
         mdHierarchy.ToView(nameof(MasterDataHierarchy), Cbv);
@@ -121,10 +118,6 @@ public static class EpcisModelConfiguration
         mdHierarchy.Property(x => x.Root).IsRequired(true);
         mdHierarchy.Property(x => x.Id).IsRequired(true);
         mdHierarchy.Property(x => x.Type).IsRequired(true);
-        mdHierarchy.HasDiscriminator(x => x.Type)
-            .HasValue<BizLocationHierarchy>("urn:epcglobal:epcis:vtype:BusinessLocation")
-            .HasValue<ReadPointHierarchy>("urn:epcglobal:epcis:vtype:ReadPoint")
-            .IsComplete(false);
 
         var evt = modelBuilder.Entity<Event>();
         evt.ToTable(nameof(Event), Epcis);

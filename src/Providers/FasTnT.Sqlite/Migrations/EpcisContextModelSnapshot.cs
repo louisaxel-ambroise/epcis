@@ -15,7 +15,7 @@ namespace FasTnT.Sqlite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.4");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
@@ -98,10 +98,6 @@ namespace FasTnT.Sqlite.Migrations
                     b.ToTable("MasterData", "Cbv");
 
                     b.ToView("CurrentMasterdata", "Cbv");
-
-                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterData");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy", b =>
@@ -294,20 +290,6 @@ namespace FasTnT.Sqlite.Migrations
                     b.HasKey("RequestId");
 
                     b.ToTable("SubscriptionCallback", "Epcis");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocation", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPoint", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterData");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocationHierarchy", b =>
@@ -712,7 +694,12 @@ namespace FasTnT.Sqlite.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("TEXT");
 
+                            b1.Property<int>("Index")
+                                .HasMaxLength(256)
+                                .HasColumnType("INTEGER");
+
                             b1.Property<string>("Id")
+                                .IsRequired()
                                 .HasMaxLength(256)
                                 .HasColumnType("TEXT");
 
@@ -721,11 +708,11 @@ namespace FasTnT.Sqlite.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("TEXT");
 
-                            b1.HasKey("RequestId", "MasterdataType", "MasterdataId", "Id");
+                            b1.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
 
                             b1.ToTable("MasterDataAttribute", "Cbv");
 
-                            b1.WithOwner("MasterData")
+                            b1.WithOwner()
                                 .HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
 
                             b1.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataField", "Fields", b2 =>
@@ -741,43 +728,43 @@ namespace FasTnT.Sqlite.Migrations
                                         .HasMaxLength(256)
                                         .HasColumnType("TEXT");
 
-                                    b2.Property<string>("AttributeId")
+                                    b2.Property<int>("Index")
+                                        .HasMaxLength(256)
+                                        .HasColumnType("INTEGER");
+
+                                    b2.Property<int>("AttributeIndex")
+                                        .HasMaxLength(256)
+                                        .HasColumnType("INTEGER");
+
+                                    b2.Property<string>("Name")
+                                        .IsRequired()
                                         .HasMaxLength(256)
                                         .HasColumnType("TEXT");
 
                                     b2.Property<string>("Namespace")
+                                        .IsRequired()
                                         .HasMaxLength(256)
                                         .HasColumnType("TEXT");
 
-                                    b2.Property<string>("Name")
+                                    b2.Property<int?>("ParentIndex")
                                         .HasMaxLength(256)
-                                        .HasColumnType("TEXT");
-
-                                    b2.Property<string>("ParentName")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("TEXT");
-
-                                    b2.Property<string>("ParentNamespace")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("TEXT");
+                                        .HasColumnType("INTEGER");
 
                                     b2.Property<string>("Value")
                                         .HasMaxLength(256)
                                         .HasColumnType("TEXT");
 
-                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId", "Namespace", "Name");
+                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
+
+                                    b2.HasIndex("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
 
                                     b2.ToTable("MasterDataField", "Cbv");
 
-                                    b2.WithOwner("Attribute")
-                                        .HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeId");
-
-                                    b2.Navigation("Attribute");
+                                    b2.WithOwner()
+                                        .HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
                                 });
 
                             b1.Navigation("Fields");
-
-                            b1.Navigation("MasterData");
                         });
 
                     b.Navigation("Attributes");
