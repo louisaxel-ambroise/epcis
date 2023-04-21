@@ -8,6 +8,20 @@
 		<epc>urn:epc:id:sscc:4001356.5900000822</epc>
 	</epcList>
 	<action>OBSERVE</action>
+  <baseExtension>
+    <eventID>object:test:event</eventID>
+    <errorDeclaration>
+      <declarationTime>2021-02-15T14:00:00+00:00</declarationTime>
+      <reason>Test reason</reason>
+      <correctiveEventIDs>
+        <correctiveEventID>1234</correctiveEventID>
+        <correctiveEventID>5678</correctiveEventID>
+      </correctiveEventIDs>
+    </errorDeclaration>
+    <extension>
+      <testExt>value</testExt>
+    </extension>
+  </baseExtension>
 	<bizStep>urn:epcglobal:cbv:bizstep:inspecting</bizStep>
 	<disposition>urn:epcglobal:cbv:disp:active</disposition>
 	<readPoint>
@@ -28,6 +42,13 @@
 				<uom>KGM</uom>
 			</quantityElement>
 		</quantityList>
+    <sourceList>
+      <source type="testSource">src</source>
+    </sourceList>
+    <destinationList>
+      <destination type="testDest">src</destination>
+      <destination type="testDest2">src2</destination>
+    </destinationList>
     <ilmd>
       <lotnumber xmlns="https://fastnt.net/epcis">230501</lotnumber>
     </ilmd>
