@@ -4,7 +4,7 @@
 
 # [FasTnT EPCIS repository](https://louisaxel-ambroise.github.io/epcis/)
 
-FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and 2.0 repository written in C# using .NET7 and backed using EntityFramework Core.
+FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and EPCIS 2.0 repository written in C# using .NET7 and backed using EntityFramework Core.
 
 The repository fully supports the following databases:
  - SqlServer *(provider: SqlServer)*
@@ -74,7 +74,7 @@ This is the list of implemented 1.2 features in the repository:
   
 ### EPCIS 2.0 endpoints:
 
-A subset of EPCIS 2.0 specification is currently implemented in FasT&T repository. The endpoints are:
+The repository also implements the EPCIS 2.0 specification. The endpoints are:
 
 - Capture: `POST /v2_0/Capture`
 - Query : `GET /v2_0/events`
@@ -85,7 +85,7 @@ A subset of EPCIS 2.0 specification is currently implemented in FasT&T repositor
 
 The subscriptions will always receive the results in JSON format.
 
-The OpenApi definition of the v2.0 endpoints is available at the URL `/v2_0/openapi.json`. See the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki) for more details.
+The OpenApi definition of the EPCIS 2.0 endpoints is available at the URL `/v2_0/openapi.json`. See the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki) for more details.
 
 #### Implemented Features
 
@@ -98,7 +98,7 @@ This is the list of planned and implemented 2.0 features in the repository:
 - Queries:
   - [x] List events
   - [x] Event pagination
-  - [x] Create a named query
+  - [x] Create/Delete a named query
   - [x] Execute a named query
 - Subscriptions:
   - [x] Subscribe to an EPCIS request (webhook)
