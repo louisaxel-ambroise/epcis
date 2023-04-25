@@ -71,46 +71,45 @@ public static class EpcisModelConfiguration
         });
 
         var masterData = modelBuilder.Entity<MasterData>();
-        masterData.ToView("CurrentMasterdata", Cbv);
         masterData.ToTable(nameof(MasterData), Cbv);
         masterData.Property<int>("RequestId");
         masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
         masterData.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
         masterData.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-        masterData.OwnsMany(x => x.Attributes, c =>
+        masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData);
+        masterData.HasMany(x => x.Children).WithOne(x => x.MasterData);
+
+        var mdAttribute = modelBuilder.Entity<MasterDataAttribute>();
+        mdAttribute.ToTable(nameof(MasterDataAttribute), Cbv);
+        mdAttribute.Property<int>("RequestId");
+        mdAttribute.Property<string>("MasterdataType").HasMaxLength(256);
+        mdAttribute.Property<string>("MasterdataId").HasMaxLength(256);
+        mdAttribute.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataAttribute.Index));
+        mdAttribute.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+        mdAttribute.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
+        mdAttribute.Property(x => x.Index).HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+        mdAttribute.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
+        mdAttribute.OwnsMany(x => x.Fields, c =>
         {
-            c.ToTable(nameof(MasterDataAttribute), Cbv);
+            c.ToTable(nameof(MasterDataField), Cbv);
             c.Property<int>("RequestId");
             c.Property<string>("MasterdataType").HasMaxLength(256);
             c.Property<string>("MasterdataId").HasMaxLength(256);
-            c.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataAttribute.Index));
-            c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
+            c.Property<int>("AttributeIndex").HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+            c.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataField.Index));
             c.Property(x => x.Index).HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
-            c.WithOwner().HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
-            c.OwnsMany(x => x.Fields, c =>
-            {
-                c.ToTable(nameof(MasterDataField), Cbv);
-                c.Property<int>("RequestId");
-                c.Property<string>("MasterdataType").HasMaxLength(256);
-                c.Property<string>("MasterdataId").HasMaxLength(256);
-                c.Property<int>("AttributeIndex").HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
-                c.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataField.Index));
-                c.Property(x => x.Index).HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
-                c.Property(x => x.ParentIndex).HasMaxLength(256).IsRequired(false).ValueGeneratedNever();
-                c.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
-                c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
-                c.Property(x => x.Value).HasMaxLength(256).IsRequired(false);
-                c.WithOwner().HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
-            });
+            c.Property(x => x.ParentIndex).HasMaxLength(256).IsRequired(false).ValueGeneratedNever();
+            c.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Value).HasMaxLength(256).IsRequired(false);
+            c.WithOwner().HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
         });
-        masterData.OwnsMany(x => x.Children, c =>
-        {
-            c.ToTable(nameof(MasterDataChildren), Cbv);
-            c.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
-            c.HasOne(x => x.MasterData).WithMany(x => x.Children);
-            c.Property(x => x.ChildrenId).HasMaxLength(256);
-        });
+
+        var mdChildren = modelBuilder.Entity<MasterDataChildren>();
+        mdChildren.ToTable(nameof(MasterDataChildren), Cbv);
+        mdChildren.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
+        mdChildren.HasOne(x => x.MasterData).WithMany(x => x.Children).HasForeignKey("MasterDataRequestId", "MasterdataType", "MasterdataId");
+        mdChildren.Property(x => x.ChildrenId).HasMaxLength(256);
 
         var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
         mdHierarchy.ToView(nameof(MasterDataHierarchy), Cbv);

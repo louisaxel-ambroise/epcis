@@ -22,7 +22,7 @@ public static class DatabaseConfiguration
 
         if (!Providers.TryGetValue(provider, out var configureAction))
         {
-            throw new ArgumentException("Provider is not registered for EPCIS repository", "FasTnT.Database.Provider");
+            throw new ArgumentOutOfRangeException("FasTnT.Database.Provider", "Provider is not registered for EPCIS repository");
         }
         
         configureAction(services, connectionString, commandTimeout);
