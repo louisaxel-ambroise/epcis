@@ -76,8 +76,8 @@ public static class EpcisModelConfiguration
         masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
         masterData.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
         masterData.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-        masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData);
-        masterData.HasMany(x => x.Children).WithOne(x => x.MasterData);
+        masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
+        masterData.HasMany(x => x.Children).WithOne(x => x.MasterData).HasForeignKey("MasterDataRequestId", "MasterdataType", "MasterdataId");
 
         var mdAttribute = modelBuilder.Entity<MasterDataAttribute>();
         mdAttribute.ToTable(nameof(MasterDataAttribute), Cbv);
@@ -107,8 +107,11 @@ public static class EpcisModelConfiguration
 
         var mdChildren = modelBuilder.Entity<MasterDataChildren>();
         mdChildren.ToTable(nameof(MasterDataChildren), Cbv);
+        mdChildren.Property<int>("MasterDataRequestId").HasMaxLength(256);
+        mdChildren.Property<string>("MasterDataType").HasMaxLength(256);
+        mdChildren.Property<string>("MasterDataId").HasMaxLength(256);
         mdChildren.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
-        mdChildren.HasOne(x => x.MasterData).WithMany(x => x.Children).HasForeignKey("MasterDataRequestId", "MasterdataType", "MasterdataId");
+        mdChildren.HasOne(x => x.MasterData).WithMany(x => x.Children).HasForeignKey("MasterDataRequestId", "MasterDataType", "MasterDataId");
         mdChildren.Property(x => x.ChildrenId).HasMaxLength(256);
 
         var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
