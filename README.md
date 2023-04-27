@@ -89,7 +89,7 @@ The OpenApi definition of the EPCIS 2.0 endpoints is available at the URL `/v2_0
 
 #### Implemented Features
 
-This is the list of planned and implemented 2.0 features in the repository:
+This is the list of implemented 2.0 features in the repository:
 
 - Capture
   - [x] Capture list of Events
@@ -110,6 +110,11 @@ This is the list of planned and implemented 2.0 features in the repository:
    - [x] Business Locations discovery endpoint
    - [x] Read Points discovery endpoint
    - [x] Dispositions discovery endpoint
+   
+#### Restrictions
+
+- Only `rollback` value is accepted for `GS1-Capture-Error-Behaviour` header
+- Only `Never_Translates` value is accepted for `GS1-EPC-Format` header
 
 # Authors
 
