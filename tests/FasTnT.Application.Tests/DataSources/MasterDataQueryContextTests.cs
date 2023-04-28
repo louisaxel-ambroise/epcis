@@ -13,7 +13,6 @@ public class MasterDataQueryContextTests
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(MasterDataQueryContextTests));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static TestSubscriptionListener SubscriptionListener = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -43,11 +42,13 @@ public class MasterDataQueryContextTests
                         {
                             new MasterDataAttribute
                             {
+                                Index = 1,
                                 Id = "MD1AT1",
                                 Value = "5"
                             },
                             new MasterDataAttribute
                             {
+                                Index = 2,
                                 Id = "COMMON",
                                 Value = "5"
                             }
@@ -61,6 +62,7 @@ public class MasterDataQueryContextTests
                         {
                             new MasterDataAttribute
                             {
+                                Index = 1,
                                 Id = "MD3AT1",
                                 Value = "INNER"
                             }
@@ -81,11 +83,13 @@ public class MasterDataQueryContextTests
                         {
                             new MasterDataAttribute
                             {
+                                Index = 1,
                                 Id = "MD2AT1",
                                 Value = "VALUE"
                             },
                             new MasterDataAttribute
                             {
+                                Index = 2,
                                 Id = "COMMON",
                                 Value = "10"
                             }
@@ -168,23 +172,25 @@ public class MasterDataQueryContextTests
     }
 
     [TestMethod]
-    [DataRow("UNKNOWN", true)]
-    [DataRow("includeAttributes", false)]
-    [DataRow("includeChildren", false)]
-    [DataRow("EQ_userID", false)]
-    [DataRow("WD_name", false)]
-    [DataRow("attributeNames", false)]
-    [DataRow("EQATTRS", true)]
-    [DataRow("TEST", true)]
-    public void ItShouldThrowAnExceptionIfTheParameterIsUnknown(string paramName, bool throws)
+    [DataRow("UNKNOWN", "value", true)]
+    [DataRow("includeAttributes", "true", false)]
+    [DataRow("includeChildren", "true", false)]
+    [DataRow("includeAttributes", "false", false)]
+    [DataRow("includeChildren", "false", false)]
+    [DataRow("EQ_userID", "value", false)]
+    [DataRow("WD_name", "value", false)]
+    [DataRow("attributeNames", "value", false)]
+    [DataRow("EQATTRS", "value", true)]
+    [DataRow("TEST", "value", true)]
+    public void ItShouldThrowAnExceptionIfTheParameterIsUnknown(string paramName, string paramValue, bool throws)
     {
         if (throws)
         {
-            Assert.ThrowsException<EpcisException>(() => Context.QueryMasterData(new[] { new QueryParameter { Name = paramName, Values = new[] { "value" } } }).ToList());
+            Assert.ThrowsException<EpcisException>(() => Context.QueryMasterData(new[] { new QueryParameter { Name = paramName, Values = new[] { paramValue } } }).ToList());
         }
         else
         {
-            var result = Context.QueryMasterData(new[] { new QueryParameter { Name = paramName, Values = new[] { "value" } } }).ToList();
+            var result = Context.QueryMasterData(new[] { new QueryParameter { Name = paramName, Values = new[] { paramValue } } }).ToList();
 
             Assert.IsNotNull(result);
         }

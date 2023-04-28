@@ -1,8 +1,9 @@
-﻿using FasTnT.Application.DataSources;
+﻿using FasTnT.Application.Database.DataSources;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FasTnT.Application.Database;
 
@@ -10,25 +11,33 @@ public class EpcisContext : DbContext
 {
     public EpcisContext(DbContextOptions<EpcisContext> options) : base(options)
     {
-        ChangeTracker.AutoDetectChangesEnabled = false;
-        SavedChanges += (_, _) => ChangeTracker.Clear();
+        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
     public IQueryable<Event> QueryEvents(IEnumerable<QueryParameter> parameters)
     {
         var eventContext = new EventQueryContext(this, parameters);
-        var dataset = Set<Event>().AsNoTracking();
-
-        return eventContext.ApplyTo(dataset);
+        
+        return eventContext.ApplyTo(Set<Event>());
     }
 
     public IQueryable<MasterData> QueryMasterData(IEnumerable<QueryParameter> parameters)
     {
         var masterdataContext = new MasterDataQueryContext(this, parameters);
-        var dataset = Set<MasterData>().AsNoTracking();
 
-        return masterdataContext.ApplyTo(dataset);
+        return masterdataContext.ApplyTo(Set<MasterData>());
     }
+
+    public async Task ExecuteTransactionAsync(Func<CancellationToken, Task> transactionAction, CancellationToken cancellationToken)
+    {
+        using var transaction = await Database.BeginTransactionAsync(cancellationToken);
+
+        await transactionAction(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
+    }
+
+    internal IQueryable<MasterData> BizLocations => Set<MasterData>().Where(x => x.Type == "urn:epcglobal:epcis:vtype:BusinessLocation");
+    internal IQueryable<MasterData> ReadPoints => Set<MasterData>().Where(x => x.Type == "urn:epcglobal:epcis:vtype:ReadPoint");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

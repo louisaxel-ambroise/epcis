@@ -11,7 +11,7 @@ public static class SqlServerProvider
         services.AddDbContextPool<EpcisContext>(o => o.UseSqlServer(connectionString, x =>
         {
             x.MigrationsAssembly(typeof(SqlServerProvider).Assembly.FullName);
-            x.EnableRetryOnFailure().CommandTimeout(commandTimeout);
+            x.CommandTimeout(commandTimeout);
             x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
         }));
     }

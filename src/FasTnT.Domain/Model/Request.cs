@@ -8,9 +8,9 @@ public class Request
 {
     public int Id { get; set; }
     public string CaptureId { get; set; } = Guid.NewGuid().ToString();
+    public DateTime RecordTime { get; set; }
     public string UserId { get; set; }
     public StandardBusinessHeader StandardBusinessHeader { get; set; }
-    public DateTime CaptureTime { get; set; } = DateTime.UtcNow;
     public DateTime DocumentTime { get; set; }
     public string SchemaVersion { get; set; }
     public SubscriptionCallback SubscriptionCallback { get; set; }

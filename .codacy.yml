@@ -1,0 +1,17 @@
+---
+engines:
+  duplication:
+    minTokenMatch: 100
+    exclude_paths:
+      - "tests/**"
+      - "src/FasTnT.Application/Database/**.cs"
+      - "src/Providers/**.cs"
+exclude_paths:
+  - "tests/**"
+  - "src/FasTnT.Host/Subscriptions/**"
+  - "src/FasTnT.Application/EpcisEvents.cs"
+  - "src/FasTnT.Domain/**"
+  - "**/*Extensions.cs"
+  - "src/Providers/**"
+  - "README.md"
+  - "Dockerfile"

@@ -1,5 +1,4 @@
-﻿using FasTnT.Host.Features.v1_2.Subscriptions;
-using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
+﻿using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Extensions;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Application.Handlers;
@@ -8,11 +7,6 @@ namespace FasTnT.Host.Features.v1_2.Endpoints;
 
 public static class SubscriptionEndpoints
 {
-    public static void AddRoutes(IEndpointRouteBuilder app)
-    {
-        app.MapGet("v1_2/Trigger", TriggerSubscription).RequireAuthorization("query");
-    }
-
     public static void AddSoapActions(SoapActionBuilder action)
     {
         action.On<GetSubscriptionIDs>(GetSubscriptionIds);
@@ -34,7 +28,7 @@ public static class SubscriptionEndpoints
             throw new EpcisException(ExceptionType.SubscribeNotPermittedException, $"Query does not allow subscription: {request.Subscription.QueryName}");
         }
 
-        await handler.RegisterSubscriptionAsync(request.Subscription, XmlResultSender.Instance, cancellationToken);
+        await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
 
         return new();
     }
@@ -46,14 +40,12 @@ public static class SubscriptionEndpoints
         return new();
     }
 
-    private static async Task<IResult> TriggerSubscription(string triggers, SubscriptionsHandler handler, CancellationToken cancellationToken)
+    private static IResult TriggerSubscription(string triggers)
     {
         if (string.IsNullOrWhiteSpace(triggers))
         {
             return Results.BadRequest();
         }
-
-        await handler.TriggerSubscriptionAsync(triggers.Split(';'), cancellationToken);
 
         return Results.NoContent();
     }

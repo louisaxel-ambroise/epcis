@@ -14,7 +14,6 @@ public class EventQueryContextTests
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(EventQueryContextTests));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static TestSubscriptionListener SubscriptionListener = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -33,6 +32,7 @@ public class EventQueryContextTests
             new Request
             {
                 CaptureId = "capture_id_test",
+                RecordTime =  new DateTime(2020, 03, 15, 21, 14, 10),
                 Id = 1,
                 SchemaVersion = "2.0",
                 Events = new List<Event> {
@@ -46,7 +46,6 @@ public class EventQueryContextTests
                         CorrectiveEventIds = new List<CorrectiveEventId>{{ new CorrectiveEventId { CorrectiveId = "ni://test2" } }},
                         BusinessStep = "step",
                         EventId = "ni://test",
-                        CaptureTime =  new DateTime(2020, 03, 15, 21, 14, 10),
                         EventTime =  new DateTime(2020, 02, 15, 21, 14, 10),
                         EventTimeZoneOffset = "+02:00",
                         Epcs = new List<Epc>{ new Epc { Id = "epc1", Type = EpcType.List } }
@@ -59,7 +58,6 @@ public class EventQueryContextTests
                         TransformationId = "transformationIdEvent",
                         ReadPoint = "rp_test",
                         Disposition = "disposition",
-                        CaptureTime = new DateTime(2021, 03, 15, 21, 14, 10),
                         EventTime = new DateTime(2021, 02, 15, 21, 14, 10),
                         EventTimeZoneOffset = "+01:00",
                         Epcs = new List<Epc>{ new Epc { Id = "epc2", Type = EpcType.List }, new Epc { Id = "epc.value.1", Type = EpcType.List } },
@@ -95,7 +93,7 @@ public class EventQueryContextTests
                     }
                 }
             }
-        }); ;
+        });
 
         Context.SaveChanges();
     }
@@ -163,8 +161,8 @@ public class EventQueryContextTests
         var result = Context.QueryEvents(new[] { QueryParameter.Create("GE_recordTime", "2021-03-12T10:24:10Z") }).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
-        Assert.IsTrue(result.All(x => x.CaptureTime >= new DateTime(2021, 03, 12, 10, 24, 10)));
+        Assert.AreEqual(0, result.Count);
+        Assert.IsTrue(result.All(x => x.Request.RecordTime >= new DateTime(2021, 03, 12, 10, 24, 10)));
     }
 
     [TestMethod]
@@ -173,8 +171,8 @@ public class EventQueryContextTests
         var result = Context.QueryEvents(new[] { QueryParameter.Create("LT_recordTime", "2021-03-12T10:24:10Z") }).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
-        Assert.IsTrue(result.All(x => x.CaptureTime < new DateTime(2021, 03, 12, 10, 24, 10)));
+        Assert.AreEqual(2, result.Count);
+        Assert.IsTrue(result.All(x => x.Request.RecordTime < new DateTime(2021, 03, 12, 10, 24, 10)));
     }
 
     [TestMethod]

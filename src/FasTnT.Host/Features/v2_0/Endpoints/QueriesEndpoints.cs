@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Handlers;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
-using FasTnT.Host.Features.v2_0.Subscriptions;
+using FasTnT.Host.Features.v2_0.Extensions;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints;
 
@@ -36,9 +36,7 @@ public static class QueriesEndpoints
         
         if (httpContext.WebSockets.IsWebSocketRequest)
         {
-            await WebSocketSubscription.SubscribeAsync(httpContext, queryName, query.Parameters);
-
-            return Results.Empty;
+            return await httpContext.HandleWebsocketAsync(queryName, query.Parameters);
         }
         else
         {

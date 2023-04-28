@@ -269,7 +269,7 @@ public static class XmlEventFormatter
     private static void AddCommonEventFields(Event evt, XElement xmlEvent)
     {
         xmlEvent.Add(new XElement("eventTime", evt.EventTime.ToString("yyyy-MM-ddTHH:mm:ssZ")));
-        xmlEvent.Add(new XElement("recordTime", evt.CaptureTime.ToString("yyyy-MM-ddTHH:mm:ssZ")));
+        xmlEvent.Add(new XElement("recordTime", evt.Request.RecordTime.ToString("yyyy-MM-ddTHH:mm:ssZ")));
         xmlEvent.Add(new XElement("eventTimeZoneOffset", evt.EventTimeZoneOffset.Representation));
         xmlEvent.AddIfNotNull(CreateBaseExtension(evt));
     }

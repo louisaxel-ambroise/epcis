@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Application.Handlers;
@@ -15,7 +14,6 @@ public class WhenHandlingListCaptureQuery
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListCaptureQuery));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static ISubscriptionListener SubscriptionListener = new TestSubscriptionListener();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -37,7 +35,7 @@ public class WhenHandlingListCaptureQuery
                 UserId = UserContext.UserId,
                 CaptureId = "001",
                 SchemaVersion = "2.0",
-                CaptureTime = DateTime.UtcNow,
+                RecordTime = DateTime.UtcNow,
                 DocumentTime = DateTime.UtcNow,
                 Events = new List<Event>{ new Event { Type = EventType.ObjectEvent } }
             },
@@ -47,7 +45,7 @@ public class WhenHandlingListCaptureQuery
                 UserId = UserContext.UserId,
                 CaptureId = "002",
                 SchemaVersion = "2.0",
-                CaptureTime = DateTime.UtcNow,
+                RecordTime = DateTime.UtcNow,
                 DocumentTime = DateTime.UtcNow,
                 Events = new List<Event>{ new Event { Type = EventType.ObjectEvent } }
             }
@@ -59,7 +57,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldReturnTheRequests()
     {
-        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener);
+        var handler = new CaptureHandler(Context, UserContext);
         var result = handler.ListCapturesAsync(Pagination.Max, default).Result;
 
         Assert.IsNotNull(result);
@@ -69,7 +67,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldApplyThePaginationPerPageFilter()
     {
-        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener);
+        var handler = new CaptureHandler(Context, UserContext);
         var result = handler.ListCapturesAsync(new Pagination(1, 0), default).Result;
 
         Assert.IsNotNull(result);
@@ -80,7 +78,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldApplyThePaginationStartFromFilter()
     {
-        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener);
+        var handler = new CaptureHandler(Context, UserContext);
         var result = handler.ListCapturesAsync(new Pagination(int.MaxValue, 1), default).Result;
 
         Assert.IsNotNull(result);

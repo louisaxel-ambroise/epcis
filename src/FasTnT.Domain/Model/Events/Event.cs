@@ -5,7 +5,6 @@ public class Event
     public int Id { get; set; }
     public Request Request { get; set; }
     public DateTime EventTime { get; set; }
-    public DateTime CaptureTime { get; set; }
     public TimeZoneOffset EventTimeZoneOffset { get; set; } = new();
     public EventType Type { get; set; }
     public EventAction Action { get; set; }

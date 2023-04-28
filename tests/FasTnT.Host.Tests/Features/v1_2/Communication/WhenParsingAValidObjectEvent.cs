@@ -14,7 +14,7 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Event = new XmlEventParser().ParseObjectEvent(ParseResource(ResourceName).Root);
+        Event = XmlEventParser.ParseEvent(ParseResource(ResourceName).Root);
     }
 
     [TestMethod]
@@ -73,7 +73,7 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     [TestMethod]
     public void ExtensionFieldsShouldBeParsedCorrectly()
     {
-        Assert.AreEqual(1, Event.Fields.Where(x => x.Type == FieldType.Extension).Count());
+        Assert.AreEqual(1, Event.Fields.Count(x => x.Type == FieldType.Extension));
 
         Assert.AreEqual(3, Event.Fields.Count(x => x.ParentIndex.HasValue), "children fields should be parsed");
     }
@@ -98,5 +98,20 @@ public class WhenParsingAValidObjectEvent : XmlParsingTestCase
     public void IlmdShouldBeParsedCorrectly()
     {
         Assert.AreEqual(1, Event.Fields.Count(x => x.Type == FieldType.Ilmd));
+    }
+
+    [TestMethod]
+    public void ErrorDeclarationShouldBeParsed()
+    {
+        Assert.IsNotNull(Event.CorrectiveDeclarationTime);
+        Assert.IsNotNull(Event.CorrectiveReason);
+        Assert.AreEqual(2, Event.CorrectiveEventIds.Count);
+    }
+
+    [TestMethod]
+    public void ItShouldParseSourceAndDestination()
+    {
+        Assert.AreEqual(1, Event.Sources.Count);
+        Assert.AreEqual(2, Event.Destinations.Count);
     }
 }

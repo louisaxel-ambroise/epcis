@@ -30,7 +30,6 @@ public static class XmlResponseFormatter
             new XAttribute(XNamespace.Xmlns + "xsd", Namespaces.XSD),
             new XAttribute(XNamespace.Xmlns + "xsi", Namespaces.XSI),
             new XElement("queryName", response.QueryName),
-            !string.IsNullOrEmpty(response.SubscriptionId) ? new XElement("subscriptionID", response.SubscriptionId) : null,
             new XElement("resultsBody", new XElement(resultName, resultList))
         );
 

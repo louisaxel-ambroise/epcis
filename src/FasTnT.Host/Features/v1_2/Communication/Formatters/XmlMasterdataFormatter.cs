@@ -37,14 +37,14 @@ public static class XmlMasterdataFormatter
         return new XElement("attribute", new XAttribute("id", attribute.Id), value);
     }
 
-    private static object FormatFields(List<MasterDataField> fields, string parentName = null, string parentNamespace = null)
+    private static object FormatFields(List<MasterDataField> fields, int? parentIndex = null)
     {
         var formatted = new List<XElement>();
 
-        foreach (var field in fields.Where(x => x.ParentName == parentName && x.ParentNamespace == parentNamespace))
+        foreach (var field in fields.Where(x => x.ParentIndex == parentIndex))
         {
-            var value = fields.Any(f => f.ParentName == field.Name && f.ParentNamespace == field.Namespace)
-                ? FormatFields(fields, field.Name, field.Namespace)
+            var value = fields.Any(f => f.ParentIndex == field.Index)
+                ? FormatFields(fields, field.Index)
                 : field.Value;
 
             formatted.Add(new XElement(XName.Get(field.Name, field.Namespace), value));

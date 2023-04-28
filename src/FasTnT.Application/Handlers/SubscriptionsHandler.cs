@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain.Exceptions;
@@ -12,13 +11,11 @@ public class SubscriptionsHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _currentUser;
-    private readonly ISubscriptionListener _listener;
 
-    public SubscriptionsHandler(EpcisContext context, ICurrentUser currentUser, ISubscriptionListener listener)
+    public SubscriptionsHandler(EpcisContext context, ICurrentUser currentUser)
     {
         _context = context;
         _currentUser = currentUser;
-        _listener = listener;
     }
 
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
@@ -31,8 +28,9 @@ public class SubscriptionsHandler
         }
 
         _context.Remove(subscription);
+
         await _context.SaveChangesAsync(cancellationToken);
-        await _listener.RemoveAsync(subscription.Name, cancellationToken);
+        EpcisEvents.SubscriptionRemoved(subscription);
 
         return subscription;
     }
@@ -40,7 +38,6 @@ public class SubscriptionsHandler
     public async Task<IEnumerable<Subscription>> ListSubscriptionsAsync(string queryName, CancellationToken cancellationToken)
     {
         var subscriptions = await _context.Set<Subscription>()
-            .AsNoTracking()
             .Where(x => x.QueryName == queryName)
             .ToListAsync(cancellationToken);
 
@@ -50,7 +47,6 @@ public class SubscriptionsHandler
     public async Task<Subscription> GetSubscriptionDetailsAsync(string name, CancellationToken cancellationToken)
     {
         var subscription = await _context.Set<Subscription>()
-            .AsNoTracking()
             .Where(x => x.Name == name)
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
@@ -62,12 +58,7 @@ public class SubscriptionsHandler
         return subscription;
     }
 
-    public async Task TriggerSubscriptionAsync(string[] triggers, CancellationToken cancellationToken)
-    {
-        await _listener.TriggerAsync(triggers, cancellationToken);
-    }
-
-    public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, IResultSender resultSender, CancellationToken cancellationToken)
+    public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
     {
         if (!SubscriptionValidator.IsValid(subscription))
         {
@@ -83,7 +74,7 @@ public class SubscriptionsHandler
         _context.Add(subscription);
 
         await _context.SaveChangesAsync(cancellationToken);
-        await _listener.RegisterAsync(new(subscription, resultSender), cancellationToken);
+        EpcisEvents.SubscriptionRegistered(subscription);
 
         return subscription;
     }

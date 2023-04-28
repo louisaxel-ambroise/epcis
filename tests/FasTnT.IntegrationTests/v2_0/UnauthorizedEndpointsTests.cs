@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
-using System.Net.Http.Json;
-using System.Text;
 
 namespace FasTnT.IntegrationTests.v2_0;
 

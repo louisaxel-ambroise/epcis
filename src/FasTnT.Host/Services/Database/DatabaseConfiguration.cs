@@ -14,7 +14,7 @@ public static class DatabaseConfiguration
         { nameof(Sqlite), SqliteProvider.Configure }
     };
 
-    public static IServiceCollection AddEpcisStorage(this IServiceCollection services, ConfigurationManager configuration)
+    public static IServiceCollection AddEpcisStorage(this IServiceCollection services, IConfigurationRoot configuration)
     {
         var connectionString = configuration.GetConnectionString("FasTnT.Database");
         var commandTimeout = configuration.GetValue("FasTnT.Database.CommandTimeout", 30);
@@ -22,7 +22,7 @@ public static class DatabaseConfiguration
 
         if (!Providers.TryGetValue(provider, out var configureAction))
         {
-            throw new ArgumentException("Provider is not registered for EPCIS repository", "FasTnT.Database.Provider");
+            throw new ArgumentOutOfRangeException("FasTnT.Database.Provider", "Provider is not registered for EPCIS repository");
         }
         
         configureAction(services, connectionString, commandTimeout);
@@ -30,12 +30,15 @@ public static class DatabaseConfiguration
         return services;
     }
 
-    public static IApplicationBuilder ApplyMigrations(this IApplicationBuilder application)
+    public static IApplicationBuilder MigrateDatabase(this IApplicationBuilder application, bool applyMigrations)
     {
-        using var scope = application.ApplicationServices.CreateScope();
-        using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
+        if (applyMigrations)
+        {
+            using var scope = application.ApplicationServices.CreateScope();
+            using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
 
-        context.Database.Migrate();
+            context.Database.Migrate();
+        }
 
         return application;
     }

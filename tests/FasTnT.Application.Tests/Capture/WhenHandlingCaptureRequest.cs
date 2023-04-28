@@ -13,7 +13,7 @@ public class WhenHandlingCaptureRequest
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static TestSubscriptionListener SubscriptionListener = new();
+    readonly static List<int> CapturedRequests = new();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -22,17 +22,24 @@ public class WhenHandlingCaptureRequest
         {
             Context.Database.EnsureDeleted();
         }
+        EpcisEvents.OnRequestCaptured -= CapturedRequests.Add;
+    }
+
+    [ClassInitialize]
+    public static void Initialize(TestContext _)
+    {
+        EpcisEvents.OnRequestCaptured += CapturedRequests.Add;
     }
 
     [TestMethod]
     public void ItShouldReturnACaptureResultAndStoreTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext, SubscriptionListener);
+        var handler = new CaptureHandler(Context, UserContext);
         var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.ObjectEvent } } };
         var result = handler.StoreAsync(request, default).Result;
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, Context.Set<Request>().Count());
-        Assert.IsTrue(SubscriptionListener.IsTriggered("stream"));
+        Assert.AreEqual(1, CapturedRequests.Count);
     }
 }

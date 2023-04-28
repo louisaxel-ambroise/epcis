@@ -2,6 +2,7 @@
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Host.Features.v2_0.Communication.Json.Utils;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -123,7 +124,7 @@ public static class JsonResponseFormatter
         {
             ["captureID"] = request.CaptureId,
             ["createdAt"] = request.DocumentTime,
-            ["finishedAt"] = request.CaptureTime,
+            ["finishedAt"] = request.RecordTime,
             ["running"] = false,
             ["success"] = true,
             ["captureErrorBehaviour"] = "rollback",
@@ -133,7 +134,7 @@ public static class JsonResponseFormatter
 
     private static string FormatQueryResult(QueryResponse result)
     {
-        var context = BuildContext(result.EventList.SelectMany(x => x.Fields).Select(x => x.Namespace).Where(x => !string.IsNullOrEmpty(x)).Distinct());
+        var context = result.EventList.SelectMany(x => x.Fields).Select(x => x.Namespace).BuildContext();
         var document = new Dictionary<string, object>
         {
             ["@context"] = context.Select(x => (object)new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
@@ -146,7 +147,6 @@ public static class JsonResponseFormatter
                 queryResults = new
                 {
                     queryName = result.QueryName,
-                    subscriptionID = result.SubscriptionId,
                     resultsBody = new
                     {
                         eventList = result.EventList.Select(x => JsonEventFormatter.FormatEvent(x, context))
