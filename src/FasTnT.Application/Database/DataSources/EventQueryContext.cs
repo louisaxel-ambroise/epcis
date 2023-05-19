@@ -267,7 +267,7 @@ internal class EventQueryContext
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
         });
 
-        Filter(x => x.Fields.AsQueryable().Any(AndAlso(customFieldPredicate, fieldValuePredicate)));
+        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.AndAlso(fieldValuePredicate)));
     }
 
     private void ApplyMatchParameter(QueryParameter param)
@@ -275,9 +275,9 @@ internal class EventQueryContext
         var epcType = param.GetMatchEpcTypes();
         var values = param.Values.Select(p => p.Replace("*", "%"));
         var typePredicate = (Expression<Func<Epc, bool>>)(e => epcType.Contains(e.Type));
-        var likePredicate = values.Aggregate((Expression<Func<Epc, bool>>)(e => false), (expr, value) => OrElse(expr, e => EF.Functions.Like(e.Id, value)));
+        var likePredicate = values.Aggregate((Expression<Func<Epc, bool>>)(e => false), (expr, value) => expr.OrElse(e => EF.Functions.Like(e.Id, value)));
 
-        Filter(x => x.Epcs.AsQueryable().Any(AndAlso(typePredicate, likePredicate)));
+        Filter(x => x.Epcs.AsQueryable().Any(typePredicate.AndAlso(likePredicate)));
     }
 
     private void ApplyPersistenDispositionFilter(QueryParameter param, PersistentDispositionType type)
@@ -285,9 +285,9 @@ internal class EventQueryContext
         var typePredicate = (Expression<Func<PersistentDisposition, bool>>)(x => x.Type == type);
         var anyPredicate = (Expression<Func<PersistentDisposition, bool>>)(x => false);
 
-        Array.ForEach(param.Values, value => OrElse(anyPredicate, e => e.Id == value));
+        Array.ForEach(param.Values, value => anyPredicate.OrElse(e => e.Id == value));
 
-        Filter(x => x.PersistentDispositions.AsQueryable().Any(AndAlso(typePredicate, anyPredicate)));
+        Filter(x => x.PersistentDispositions.AsQueryable().Any(typePredicate.AndAlso(anyPredicate)));
     }
 
     private void ApplyUomComparison(QueryParameter param)
@@ -302,21 +302,11 @@ internal class EventQueryContext
             _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
         });
 
-        Filter(x => x.Reports.AsQueryable().Any(AndAlso(customFieldPredicate, fieldValuePredicate)));
+        Filter(x => x.Reports.AsQueryable().Any(customFieldPredicate.AndAlso(fieldValuePredicate)));
     }
 
     private void Filter(Expression<Func<Event, bool>> expression)
     {
         _filters.Add(evt => evt.Where(expression));
-    }
-
-    public static Expression<Func<T, bool>> AndAlso<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
-    {
-        return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
-    }
-
-    public static Expression<Func<T, bool>> OrElse<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
-    {
-        return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
     }
 }
