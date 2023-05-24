@@ -39,16 +39,16 @@ public static class XmlResponseFormatter
 
             for (var i = 0; i < customNamespaces.Length; i++)
             {
-                queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i}", customNamespaces[i]));
+                queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i+1}", customNamespaces[i]));
             }
         }
 
         return queryResults;
     }
 
-    private static bool IsCustomNamespace(string value)
+    private static bool IsCustomNamespace(string uri)
     {
-        return !string.IsNullOrWhiteSpace(value) && XNamespace.Xmlns != value;
+        return !string.IsNullOrWhiteSpace(uri) && !Namespaces.ContainsUri(uri);
     }
 
     public static XElement FormatError(EpcisException exception)

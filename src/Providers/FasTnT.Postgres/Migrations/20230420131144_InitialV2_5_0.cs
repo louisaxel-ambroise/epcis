@@ -606,20 +606,6 @@ namespace FasTnT.Postgres.Migrations
             migrationBuilder.Sql(@"CREATE VIEW ""Cbv"".""CurrentMasterdata""
 AS
 SELECT MAX(""RequestId"") AS ""RequestId"", ""Type"", ""Id"" FROM ""Cbv"".""MasterData"" GROUP BY ""Type"", ""Id"";");
-
-            migrationBuilder.Sql(@"CREATE OR REPLACE FUNCTION ""Subscriptions"".""SubscriptionInitialRequests""()
-    RETURNS trigger
-    LANGUAGE 'plpgsql'
-    COST 100
-    VOLATILE NOT LEAKPROOF 
-AS $BODY$
-    BEGIN
-        INSERT INTO ""Subscriptions"".""PendingRequest"" SELECT ""Id"" AS ""RequestId"", NEW.""Id"" AS ""SubscriptionId"" FROM ""Rpcis"".""Request"" WHERE ""CaptureTime"" >= NEW.""InitialRecordTime"";
-        RETURN NULL;
-    END;
-$BODY$;
-CREATE TRIGGER ""SubscriptionInitialRequests"" AFTER INSERT ON ""Subscriptions"".""Subscription""
-FOR EACH ROW EXECUTE PROCEDURE ""Subscriptions"".""SubscriptionInitialRequests""();");
         }
 
         /// <inheritdoc />

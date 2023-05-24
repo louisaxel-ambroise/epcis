@@ -39,10 +39,10 @@ public static class XmlResponseFormatter
         if (response.EventList?.Count > 0)
         {
             var customNamespaces = response.EventList.SelectMany(x => x.Fields.Select(x => x.Namespace)).Where(IsCustomNamespace).Distinct().ToArray();
-
+            
             for (var i = 0; i < customNamespaces.Length; i++)
             {
-                queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i}", customNamespaces[i]));
+                queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i+1}", customNamespaces[i]));
             }
         }
 
@@ -105,8 +105,10 @@ public static class XmlResponseFormatter
         return new(XName.Get("SubscribeResult", Namespaces.Query));
     }
 
-    private static bool IsCustomNamespace(string value)
+    private static bool IsCustomNamespace(string uri)
     {
-        return !string.IsNullOrWhiteSpace(value) && XNamespace.Xmlns != value;
+        return !string.IsNullOrWhiteSpace(uri) 
+            && XNamespace.Xmlns != uri
+            && !Namespaces.ContainsUri(uri);
     }
 }

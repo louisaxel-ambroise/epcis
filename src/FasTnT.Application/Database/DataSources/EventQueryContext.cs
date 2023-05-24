@@ -78,9 +78,9 @@ internal class EventQueryContext
             case "EQ_correctiveEventID":
                 Filter(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))); break;
             case "WD_readPoint":
-                Filter(x => _context.Set<ReadPointHierarchy>().Any(h => h.Root == x.ReadPoint && param.Values.Contains(h.Id))); break;
+                Filter(x => _context.Set<MasterDataHierarchy>().Any(h => h.Type == MasterData.ReadPoint && h.Root == x.ReadPoint && param.Values.Contains(h.Id))); break;
             case "WD_bizLocation":
-                Filter(x => _context.Set<BizLocationHierarchy>().Any(h => h.Root == x.BusinessLocation && param.Values.Contains(h.Id))); break;
+                Filter(x => _context.Set<MasterDataHierarchy>().Any(h => h.Type == MasterData.Location && h.Root == x.BusinessLocation && param.Values.Contains(h.Id))); break;
             case "EQ_requestID":
                 Filter(x => param.Values.Select(int.Parse).Contains(x.Request.Id)); break;
             case "EQ_captureID":
