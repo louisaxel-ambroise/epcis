@@ -9,6 +9,7 @@ public record SubscriptionResult(bool Successful, List<Event> Events, List<int> 
     {
         return new(true, events, requestIds, null);
     }
+
     public static SubscriptionResult Failed(EpcisException error)
     {
         return new(false, null, null, error);

@@ -13,6 +13,7 @@ public static class PostgresProvider
             x.MigrationsAssembly(typeof(PostgresProvider).Assembly.FullName);
             x.CommandTimeout(commandTimeout);
             x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            x.UseRelationalNulls(true);
         }));
     }
 }

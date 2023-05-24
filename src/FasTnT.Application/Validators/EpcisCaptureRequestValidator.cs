@@ -1,6 +1,4 @@
-﻿using FasTnT.Domain.Enumerations;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Events;
+﻿using FasTnT.Domain.Model;
 
 namespace FasTnT.Application.Validators;
 
@@ -8,23 +6,17 @@ public static class RequestValidator
 {
     public static bool IsValid(Request request)
     {
-        return HasEventOrMasterdataOrBeACallback(request)
-            && request.Events.All(evt => !IsAddOrDeleteAggregation(evt) || HasParentIdEpc(evt));
+        return (ContainsData(request) || IsSubscriptionResult(request)) 
+            && request.Events.All(EventValidator.IsValid);
     }
 
-    private static bool HasEventOrMasterdataOrBeACallback(Request request)
+    private static bool ContainsData(Request request)
     {
-        return request.Events.Count + request.Masterdata.Count > 0
-            || request.SubscriptionCallback != null;
+        return request.Events.Count + request.Masterdata.Count > 0;
     }
 
-    private static bool IsAddOrDeleteAggregation(Event evt)
+    private static bool IsSubscriptionResult(Request request)
     {
-        return evt.Type == EventType.AggregationEvent && (evt.Action == EventAction.Add || evt.Action == EventAction.Delete);
-    }
-
-    private static bool HasParentIdEpc(Event evt)
-    {
-        return evt.Epcs.Any(epc => epc.Type == EpcType.ParentId);
+        return request.SubscriptionCallback is not null;
     }
 }

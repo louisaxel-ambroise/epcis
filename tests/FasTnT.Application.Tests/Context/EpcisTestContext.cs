@@ -11,7 +11,7 @@ public static class EpcisTestContext
         var context = new EpcisContext(new DbContextOptionsBuilder<EpcisContext>().UseSqlite($"Data Source={databaseName}", x =>
         {
             x.MigrationsAssembly(typeof(SqliteProvider).Assembly.FullName);
-            x.CommandTimeout(30);
+            x.CommandTimeout(5);
             x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
         }).Options);
 

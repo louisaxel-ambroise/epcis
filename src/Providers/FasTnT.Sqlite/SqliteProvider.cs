@@ -15,6 +15,7 @@ public static class SqliteProvider
                 x.MigrationsAssembly(typeof(SqliteProvider).Assembly.FullName);
                 x.CommandTimeout(commandTimeout);
                 x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                x.UseRelationalNulls(true);
             })
             .ConfigureWarnings(w => w.Ignore(SqliteEventId.SchemaConfiguredWarning))
         );

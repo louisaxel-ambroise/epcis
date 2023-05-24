@@ -261,7 +261,8 @@ public class JsonEventFormatter
         {
             if (group.Count() > 1)
             {
-                extension.Add(_context[group.Key.Namespace] + ":" + group.Key.Name, BuildArrayElement(group));
+                var value = BuildArrayElement(group, fields);
+                extension.Add(_context[group.Key.Namespace] + ":" + group.Key.Name, value);
             }
             else
             {
@@ -289,9 +290,8 @@ public class JsonEventFormatter
         {
             if (group.Count() > 1)
             {
-                var name = string.IsNullOrEmpty(group.Key.Namespace) ? group.Key.Name : _context[group.Key.Namespace] + ":" + group.Key.Name;
-
-                element.Add(name, BuildArrayElement(group));
+                var value = BuildArrayElement(group, fields);
+                element.Add(_context[group.Key.Namespace] + ":" + group.Key.Name, value);
             }
             else
             {
@@ -312,28 +312,24 @@ public class JsonEventFormatter
         return element;
     }
 
-    private List<object> BuildArrayElement(IEnumerable<Field> fields)
+    private object BuildArrayElement(IEnumerable<Field> arrayGroup, IEnumerable<Field> fields)
     {
         var array = new List<object>();
 
-        foreach (var field in fields)
+        foreach(var item in arrayGroup)
         {
-            var children = fields.Where(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index);
+            var children = fields.Where(x => x.ParentIndex == item.Index);
 
-            if (children.Count() > 1 && children.All(x => x.Name == field.Name && x.Namespace == field.Namespace))
+            if (children.Any())
             {
-                array.Add(BuildArrayElement(children));
-            }
-            else if (children.Any())
-            {
-                array.Add(BuildElement(children));
+                array.Add(BuildElement(fields, item.Index));
             }
             else
             {
-                array.Add(field.TextValue);
+                array.Add(item.TextValue);
             }
         }
-
+        
         return array;
     }
 }

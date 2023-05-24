@@ -67,20 +67,18 @@ public class CaptureHandler
         request.UserId = _user.UserId;
         request.Events.ForEach(evt => evt.EventId ??= EventHash.Compute(evt));
 
-        await _context.ExecuteTransactionAsync((token) => StoreRequestAsync(request, token), cancellationToken);
+        using (var transaction = await _context.Database.BeginTransactionAsync(cancellationToken))
+        {
+            _context.Add(request);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            request.RecordTime = DateTime.UtcNow;
+            await _context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+
         EpcisEvents.RequestCaptured(request);
 
         return request;
-    }
-
-    private async Task StoreRequestAsync(Request request, CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(_context.Database.CurrentTransaction);
-        
-        _context.Add(request);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        request.RecordTime = DateTime.UtcNow;
-        await _context.SaveChangesAsync(cancellationToken);
     }
 }

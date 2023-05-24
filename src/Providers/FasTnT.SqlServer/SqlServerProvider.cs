@@ -13,6 +13,7 @@ public static class SqlServerProvider
             x.MigrationsAssembly(typeof(SqlServerProvider).Assembly.FullName);
             x.CommandTimeout(commandTimeout);
             x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+            x.UseRelationalNulls(true);
         }));
     }
 }
