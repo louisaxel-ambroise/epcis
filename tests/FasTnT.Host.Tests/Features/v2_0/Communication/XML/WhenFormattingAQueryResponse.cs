@@ -56,6 +56,6 @@ public class WhenFormattingAQueryResponse
     {
         var element = XElement.Parse(Formatted);
 
-        Assert.IsNotNull(element.Attribute(XName.Get("ext0", XNamespace.Xmlns.NamespaceName)));
+        Assert.IsNotNull(element.Attribute(XName.Get("ext1", XNamespace.Xmlns.NamespaceName)));
     }
 }
