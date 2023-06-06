@@ -1,6 +1,8 @@
 ﻿using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
+using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
+using System.Xml;
 
 namespace FasTnT.Host.Features.v2_0;
 
@@ -26,10 +28,22 @@ public static class DelegateFactory
             {
                 var error = ex is EpcisException epcisException ? epcisException : EpcisException.Default;
 
-                context.Response.ContentType = "application/problem+json";
-                context.Response.StatusCode = JsonResponseFormatter.GetHttpStatusCode(error);
+                if (context.Request.Headers.Accept.Any(x => x.Contains("+xml") || x.Contains("/xml")))
+                {
+                    context.Response.ContentType = "application/problem+xml";
+                    context.Response.StatusCode = XmlResponseFormatter.GetHttpStatusCode(error);
 
-                await context.Response.WriteAsync(JsonResponseFormatter.FormatError(error));
+                    var formatted = XmlResponseFormatter.FormatError(error);
+
+                    await context.Response.WriteAsync(formatted.ToString(), context.RequestAborted);
+                }
+                else
+                {
+                    context.Response.ContentType = "application/problem+json";
+                    context.Response.StatusCode = JsonResponseFormatter.GetHttpStatusCode(error);
+
+                    await context.Response.WriteAsync(JsonResponseFormatter.FormatError(error), context.RequestAborted);
+                }
             }
         };
     }
