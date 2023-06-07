@@ -2,7 +2,6 @@
 using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
-using System.Xml;
 
 namespace FasTnT.Host.Features.v2_0;
 
@@ -61,6 +60,11 @@ public static class DelegateFactory
         response.Headers.Add("GS1-EPC-Format", "Never_Translates");
         response.Headers.Add("GS1-EPCIS-Capture-Limit", Constants.Instance.MaxEventsCapturePerCall.ToString());
         response.Headers.Add("GS1-Vendor-Version", Constants.Instance.VendorVersion.ToString());
+
+        if (Constants.Instance.CaptureSizeLimit > 0)
+        {
+            response.Headers.Add("GS1-EPCIS-Capture-File-SizeLimit", Constants.Instance.CaptureSizeLimit.ToString());
+        }
     }
 
     private static void ValidateHeaders(IDictionary<string, string> epcisHeaders)

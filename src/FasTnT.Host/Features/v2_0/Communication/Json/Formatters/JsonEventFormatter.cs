@@ -120,7 +120,7 @@ public class JsonEventFormatter
             return;
         }
 
-        element["sensorElements"] = sensorElements.Select(MapSensorElement);
+        element["sensorElementList"] = sensorElements.Select(MapSensorElement);
     }
 
     private object MapSensorElement(SensorElement sensor)

@@ -1,4 +1,6 @@
-﻿using FasTnT.Domain.Model;
+﻿using FasTnT.Domain;
+using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Model;
 using FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
 
@@ -8,7 +10,13 @@ public record CaptureDocumentRequest(Request Request)
 {
     public static async ValueTask<CaptureDocumentRequest> BindAsync(HttpContext context)
     {
+        if(Constants.Instance.CaptureSizeLimit > 0 && context.Request.ContentLength > Constants.Instance.MaxEventsReturnedInQuery)
+        {
+            throw new EpcisException(ExceptionType.CaptureLimitExceededException, $"Payload must be shorter than {Constants.Instance.CaptureSizeLimit} bytes");
+        }
+
         Request request;
+
         if (context.Request.ContentType.Contains("xml", StringComparison.OrdinalIgnoreCase))
         {
             request = await XmlCaptureRequestParser.ParseAsync(context.Request.Body, context.RequestAborted);

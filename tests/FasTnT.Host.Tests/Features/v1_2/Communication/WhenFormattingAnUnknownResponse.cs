@@ -39,10 +39,10 @@ public class ErrorResponseStatusCodesTests
         Assert.AreEqual(413, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.QueryTooComplexException, null)));
         Assert.AreEqual(500, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.ImplementationException, null)));
         Assert.AreEqual(400, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.ValidationException, null)));
-        Assert.AreEqual(400, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.CaptureLimitExceededException, null)));
+        Assert.AreEqual(413, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.CaptureLimitExceededException, null)));
         Assert.AreEqual(400, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.DuplicateSubscriptionException, null)));
         Assert.AreEqual(400, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.InvalidURIException, null)));
-        Assert.AreEqual(400, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.QueryTooLargeException, null)));
+        Assert.AreEqual(413, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.QueryTooLargeException, null)));
         Assert.AreEqual(400, XmlResponseFormatter.GetHttpStatusCode(new EpcisException(ExceptionType.SubscriptionControlsException, null)));
     }
 }
