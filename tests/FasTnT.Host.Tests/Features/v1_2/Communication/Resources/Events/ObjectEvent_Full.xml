@@ -1,6 +1,7 @@
 ﻿<ObjectEvent
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:ext1="https://fastnt.io/epcis">
 	<eventTime>2021-02-15T14:00:00+00:00</eventTime>
 	<eventTimeZoneOffset>+01:00</eventTimeZoneOffset>
 	<epcList>
@@ -62,7 +63,7 @@
 					</furtherSensorData>
 				</sensorElement>
 			</sensorElementList>
-			<testField id="4" />
+			<ext1:testField id="4" />
 		</extension>
 	</extension>
 </ObjectEvent>
