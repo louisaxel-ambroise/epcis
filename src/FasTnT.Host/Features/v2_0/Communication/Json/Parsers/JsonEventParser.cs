@@ -395,8 +395,8 @@ public class JsonEventParser
         }
         else
         {
-            field.TextValue = element.GetString();
-            field.NumericValue = float.TryParse(field.TextValue, out float numericValue) ? numericValue : default(float?);
+            field.TextValue = element.GetRawText().Trim('\\', '"');
+            field.NumericValue = float.TryParse(field.TextValue, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float numericValue) ? numericValue : default(float?);
             field.DateValue = DateTime.TryParse(field.TextValue, null, DateTimeStyles.AdjustToUniversal, out DateTime dateValue) ? dateValue : default(DateTime?);
         }
 

@@ -69,6 +69,8 @@ public static class XmlResponseFormatter
             ExceptionType.NoSuchNameException => 404,
             ExceptionType.NoSuchSubscriptionException => 404,
             ExceptionType.QueryTooComplexException => 413,
+            ExceptionType.QueryTooLargeException => 413,
+            ExceptionType.CaptureLimitExceededException => 413,
             ExceptionType.ImplementationException => 500,
             _ => 400
         };
