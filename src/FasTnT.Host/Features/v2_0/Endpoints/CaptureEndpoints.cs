@@ -32,7 +32,7 @@ public static class CaptureEndpoints
     {
         var response = await handler.StoreAsync(request.Request, cancellationToken);
 
-        return Results.Created($"v2_0/capture/ {response.CaptureId}", null);
+        return Results.Created($"v2_0/capture/{response.CaptureId}", null);
     }
 
     private static async Task<IResult> CaptureSingleEventRequest(CaptureEventRequest request, CaptureHandler handler, CancellationToken cancellationToken)
