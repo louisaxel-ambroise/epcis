@@ -7,6 +7,7 @@ using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Handlers;
 
@@ -14,22 +15,24 @@ public class DataRetrieverHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _user;
-    private static readonly IEnumerable<QueryParameter> DefaultEventParameters = new[]
-    {
-        new QueryParameter { Name = "orderBy", Values = new[]{ "eventTime" } },
-        new QueryParameter { Name = "perPage", Values = new[]{ Constants.Instance.MaxEventsReturnedInQuery.ToString() } },
-        new QueryParameter { Name = "nextPageToken", Values = new[]{ "0" } }
-    };
+    private readonly Constants _constants;
 
-    public DataRetrieverHandler(EpcisContext context, ICurrentUser user)
+    public DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
     {
         _context = context;
         _user = user;
+        _constants = constants.Value;
     }
 
     public async Task<List<Event>> QueryEventsAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var userParameters = _user.DefaultQueryParameters.Union(DefaultEventParameters);
+        var userParameters = _user.DefaultQueryParameters.Union(new []
+        {
+            new QueryParameter { Name = "orderBy", Values = new[]{ "eventTime" } },
+            new QueryParameter { Name = "perPage", Values = new[]{ _constants.MaxEventsReturnedInQuery.ToString() } },
+            new QueryParameter { Name = "nextPageToken", Values = new[]{ "0" } }
+        });
+
         var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsInt();
         var eventIds = await _context
             .QueryEvents(userParameters.Union(parameters))
@@ -40,7 +43,7 @@ public class DataRetrieverHandler
         {
             return new List<Event>();
         }
-        if (eventIds.Count >= (maxEventCount ?? Constants.Instance.MaxEventsReturnedInQuery))
+        if (eventIds.Count >= (maxEventCount ?? _constants.MaxEventsReturnedInQuery))
         {
             throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results");
         }

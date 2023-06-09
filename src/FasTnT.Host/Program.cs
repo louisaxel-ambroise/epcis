@@ -18,18 +18,20 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
+builder.Services.Configure<Constants>(builder.Configuration.GetSection(nameof(Constants)));
 
 // Handle persistent subscriptions in-memory.
 // This will be enough for a single server deployment, but for a
 // multi-instance setup it's better to externalize this process.
 builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
-Constants.Instance = builder.Configuration.GetSection(nameof(Constants)).Get<Constants>();
-
-var applyMigrations = builder.Configuration.GetValue("FasTnT.Database.ApplyMigrations", false);
 var app = builder.Build();
 
-app.MigrateDatabase(applyMigrations);
+if (builder.Environment.IsDevelopment())
+{
+    app.MigrateDatabase();
+}
+
 app.UseDefaultFiles().UseStaticFiles();
 app.UseRouting();
 app.UseHttpLogging();
