@@ -2,6 +2,7 @@
 using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Host.Features.v2_0;
 
@@ -54,16 +55,18 @@ public static class DelegateFactory
 
     private static void SetResponseHeaders(HttpResponse response)
     {
+        var constants = response.HttpContext.RequestServices.GetService<IOptions<Constants>>().Value;
+
         response.Headers.Add("GS1-EPCIS-Version", "2.0");
         response.Headers.Add("GS1-EPCIS-Min", "2.0");
         response.Headers.Add("GS1-EPCIS-Max", "2.0");
         response.Headers.Add("GS1-EPC-Format", "Never_Translates");
-        response.Headers.Add("GS1-EPCIS-Capture-Limit", Constants.Instance.MaxEventsCapturePerCall.ToString());
-        response.Headers.Add("GS1-Vendor-Version", Constants.Instance.VendorVersion.ToString());
+        response.Headers.Add("GS1-EPCIS-Capture-Limit", constants.MaxEventsCapturePerCall.ToString());
+        response.Headers.Add("GS1-Vendor-Version", constants.VendorVersion.ToString());
 
-        if (Constants.Instance.CaptureSizeLimit > 0)
+        if (constants.CaptureSizeLimit > 0)
         {
-            response.Headers.Add("GS1-EPCIS-Capture-File-SizeLimit", Constants.Instance.CaptureSizeLimit.ToString());
+            response.Headers.Add("GS1-EPCIS-Capture-File-SizeLimit", constants.CaptureSizeLimit.ToString());
         }
     }
 

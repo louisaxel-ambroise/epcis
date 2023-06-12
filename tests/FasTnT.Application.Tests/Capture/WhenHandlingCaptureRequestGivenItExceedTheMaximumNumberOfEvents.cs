@@ -7,6 +7,7 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -16,6 +17,7 @@ public class WhenHandlingCaptureRequestGivenItExceedTheMaximumNumberOfEvents
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenItExceedTheMaximumNumberOfEvents));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
     readonly static List<int> CapturedRequests = new();
+    static Constants Constants = new Constants();
 
     [ClassCleanup]
     public static void Cleanup()
@@ -30,14 +32,14 @@ public class WhenHandlingCaptureRequestGivenItExceedTheMaximumNumberOfEvents
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Constants.Instance = new Constants() { MaxEventsCapturePerCall = 1 };
+        Constants = new Constants() { MaxEventsCapturePerCall = 1 };
         EpcisEvents.OnRequestCaptured += CapturedRequests.Add;
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext);
+        var handler = new CaptureHandler(Context, UserContext, Options.Create(Constants));
         var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.ObjectEvent }, new Event { Type = EventType.ObjectEvent } } };
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));

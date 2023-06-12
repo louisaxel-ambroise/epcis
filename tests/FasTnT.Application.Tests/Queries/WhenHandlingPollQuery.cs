@@ -2,7 +2,9 @@
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
+using FasTnT.Domain;
 using FasTnT.Domain.Model.Queries;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -24,7 +26,7 @@ public class WhenHandlingPollQuery
     [TestMethod]
     public void ItShouldReturnAPollResponse()
     {
-        var handler = new DataRetrieverHandler(Context, UserContext);
+        var handler = new DataRetrieverHandler(Context, UserContext, Options.Create(new Constants()));
         var result = handler.QueryEventsAsync(new List<QueryParameter>(), CancellationToken.None).Result;
 
         Assert.IsNotNull(result);

@@ -7,6 +7,7 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Handlers;
 
@@ -14,11 +15,13 @@ public class CaptureHandler
 {
     private readonly EpcisContext _context;
     private readonly ICurrentUser _user;
+    private readonly Constants _constants;
 
-    public CaptureHandler(EpcisContext context, ICurrentUser user)
+    public CaptureHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
     {
         _context = context;
         _user = user;
+        _constants = constants.Value;
     }
 
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
@@ -55,7 +58,7 @@ public class CaptureHandler
         {
             throw new EpcisException(ExceptionType.ValidationException, "EPCIS request is not valid");
         }
-        if (request.Events.Count >= Constants.Instance.MaxEventsCapturePerCall)
+        if (request.Events.Count >= _constants.MaxEventsCapturePerCall)
         {
             throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }

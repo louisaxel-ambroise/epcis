@@ -89,11 +89,12 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
     private AuthenticateResult Authenticated(string username, string password, IEnumerable<string> requiredClaims)
     {
         var userHash = Hash(username, password);
+        var tenantParameter = new { Name = "EQ_userID", Values = new[] { userHash } };
         var claims = new List<Claim>
         {
             new Claim(nameof(ICurrentUser.UserName), username),
             new Claim(nameof(ICurrentUser.UserId), userHash),
-            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(new[]{ new { Name = "EQ_userID", Values = new[] { userHash } } }))
+            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(new[]{ tenantParameter }))
         };
         claims.AddRange(requiredClaims.Select(x => new Claim(x, x)));
 

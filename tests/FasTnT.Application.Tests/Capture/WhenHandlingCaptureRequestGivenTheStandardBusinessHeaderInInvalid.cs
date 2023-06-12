@@ -6,6 +6,8 @@ using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Exceptions;
+using Microsoft.Extensions.Options;
+using FasTnT.Domain;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -35,7 +37,7 @@ public class WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid
     [TestMethod]
     public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext);
+        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
         var request = new Request
         {
             SchemaVersion = "1.0",

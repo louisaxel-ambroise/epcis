@@ -6,6 +6,8 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Enumerations;
+using Microsoft.Extensions.Options;
+using FasTnT.Domain;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -57,7 +59,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldReturnTheRequests()
     {
-        var handler = new CaptureHandler(Context, UserContext);
+        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
         var result = handler.ListCapturesAsync(Pagination.Max, default).Result;
 
         Assert.IsNotNull(result);
@@ -67,7 +69,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldApplyThePaginationPerPageFilter()
     {
-        var handler = new CaptureHandler(Context, UserContext);
+        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
         var result = handler.ListCapturesAsync(new Pagination(1, 0), default).Result;
 
         Assert.IsNotNull(result);
@@ -78,7 +80,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldApplyThePaginationStartFromFilter()
     {
-        var handler = new CaptureHandler(Context, UserContext);
+        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
         var result = handler.ListCapturesAsync(new Pagination(int.MaxValue, 1), default).Result;
 
         Assert.IsNotNull(result);

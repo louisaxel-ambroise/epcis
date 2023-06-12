@@ -3,6 +3,7 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 
@@ -10,9 +11,11 @@ public record CaptureDocumentRequest(Request Request)
 {
     public static async ValueTask<CaptureDocumentRequest> BindAsync(HttpContext context)
     {
-        if(Constants.Instance.CaptureSizeLimit > 0 && context.Request.ContentLength > Constants.Instance.MaxEventsReturnedInQuery)
+        var constants = context.RequestServices.GetService<IOptions<Constants>>().Value;
+
+        if(constants.CaptureSizeLimit > 0 && context.Request.ContentLength > constants.MaxEventsReturnedInQuery)
         {
-            throw new EpcisException(ExceptionType.CaptureLimitExceededException, $"Payload must be shorter than {Constants.Instance.CaptureSizeLimit} bytes");
+            throw new EpcisException(ExceptionType.CaptureLimitExceededException, $"Payload must be shorter than {constants.CaptureSizeLimit} bytes");
         }
 
         Request request;
