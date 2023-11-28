@@ -42,7 +42,7 @@ public record RestResponse<T>(T Response) : IResult
             var originalToken = int.Parse(queryString.Get("nextPageToken") ?? "0");
 
             queryString.Set("nextPageToken", (originalToken + perPage).ToString());
-            context.Response.Headers.Add("link", $"<{context.BuildNextLink(queryString)}>;rel=next");
+            context.Response.Headers.Append("link", $"<{context.BuildNextLink(queryString)}>;rel=next");
         }
     }
 }

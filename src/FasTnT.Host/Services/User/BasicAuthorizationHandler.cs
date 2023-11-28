@@ -44,7 +44,7 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
             {
                 var (username, password) = ParseAuthenticationHeader(authValue);
 
-                return Authenticated(username, password, new[] { "fastnt.query", "fastnt.capture" });
+                return Authenticated(username, password, ["fastnt.query", "fastnt.capture"]);
             }
         }
         catch (Exception ex)

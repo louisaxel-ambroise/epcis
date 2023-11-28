@@ -159,4 +159,9 @@ public static class JsonResponseFormatter
 
         return JsonSerializer.Serialize(document, Options);
     }
+
+    // Builds a context for JSON format.
+    // key=namespace, value=prefix
+    // The prefixes are incremental (ext1, ext2, ext...)
+    private static Dictionary<string, string> BuildContext(IEnumerable<string> namespaces, int counter = 0) => namespaces.ToDictionary(x => x, x => $"ext{counter++}");
 }

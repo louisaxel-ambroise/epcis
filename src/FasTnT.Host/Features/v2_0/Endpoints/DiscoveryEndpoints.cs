@@ -21,7 +21,7 @@ public static class DiscoveryEndpoints
     {
         return (HttpContext ctx) =>
         {
-            ctx.Response.Headers.Add("Accept", methods.ToArray());
+            ctx.Response.Headers.Append("Accept", methods.ToArray());
 
             return Results.NoContent();
         };
