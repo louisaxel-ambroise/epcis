@@ -25,10 +25,11 @@ public class WhenFormattingAnErrorResponseWithSubscriptionId
     [TestMethod]
     public void TheXmlShouldBeCorrectlyFormatted()
     {
-        Assert.IsTrue(Formatted.Name == XName.Get("NoSuchNameException", "urn:epcglobal:epcis-query:xsd:1"));
-        Assert.AreEqual(2, Formatted.Elements().Count());
-        Assert.AreEqual(Result.Message, Formatted.Element("reason").Value);
-        Assert.AreEqual(Result.SubscriptionId, Formatted.Element("subscriptionID").Value);
+        Assert.IsTrue(Formatted.Name == XName.Get("problem", "urn:ietf:rfc:7807"));
+        Assert.AreEqual(3, Formatted.Elements().Count());
+        Assert.AreEqual("epcisException:NoSuchNameException", Formatted.Element(XName.Get("type", "urn:ietf:rfc:7807")).Value);
+        Assert.AreEqual(Result.Message, Formatted.Element(XName.Get("title", "urn:ietf:rfc:7807")).Value);
+        Assert.AreEqual("404", Formatted.Element(XName.Get("status", "urn:ietf:rfc:7807")).Value);
     }
     [TestMethod]
     public void ThereShouldNotBeAQueryNameField()

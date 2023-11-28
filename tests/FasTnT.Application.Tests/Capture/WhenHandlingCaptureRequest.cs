@@ -5,6 +5,8 @@ using FasTnT.Application.Handlers;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
+using FasTnT.Domain;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -34,7 +36,7 @@ public class WhenHandlingCaptureRequest
     [TestMethod]
     public void ItShouldReturnACaptureResultAndStoreTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext);
+        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
         var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.ObjectEvent } } };
         var result = handler.StoreAsync(request, default).Result;
 

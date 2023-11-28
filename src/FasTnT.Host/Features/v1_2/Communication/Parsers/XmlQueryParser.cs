@@ -71,7 +71,7 @@ public static class XmlQueryParser
                 ? element.Element("value").Elements().Select(x => x.Value)
                 : new[] { element.Element("value").Value };
 
-            yield return new() { Name = name, Values = values.ToArray() };
+            yield return QueryParameter.Create(name, values.ToArray());
         }
     }
 

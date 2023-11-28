@@ -21,19 +21,19 @@ public static class DiscoveryEndpoints
     {
         return (HttpContext ctx) =>
         {
-            ctx.Response.Headers.Add("Accept", methods.ToArray());
+            ctx.Response.Headers.Append("Accept", methods.ToArray());
 
             return Results.NoContent();
         };
     }
 
-    private static Task<IResult> TopLevelResources()
+    private static IResult TopLevelResources()
     {
         var resources = Endpoints
             .Select(x => x.Path.Split('/').FirstOrDefault(x => x != "v2_0"))
             .Where(x => !string.IsNullOrEmpty(x))
             .Distinct();
 
-        return Task.FromResult(EpcisResults.Ok(new CollectionResult(resources)));
+        return EpcisResults.Ok(new CollectionResult(resources));
     }
 }

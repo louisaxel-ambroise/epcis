@@ -25,9 +25,11 @@ public class WhenFormattingAnErrorResponseWithQueryName
     [TestMethod]
     public void TheXmlShouldBeCorrectlyFormatted()
     {
-        Assert.IsTrue(Formatted.Name == XName.Get("NoSuchNameException", "urn:epcglobal:epcis-query:xsd:1"));
-        Assert.AreEqual(1, Formatted.Elements().Count());
-        Assert.AreEqual(Result.QueryName, Formatted.Element("queryName").Value);
+        Assert.IsTrue(Formatted.Name == XName.Get("problem", "urn:ietf:rfc:7807"));
+        Assert.AreEqual(3, Formatted.Elements().Count());
+        Assert.AreEqual("epcisException:NoSuchNameException", Formatted.Element(XName.Get("type", "urn:ietf:rfc:7807")).Value);
+        Assert.AreEqual(Result.Message, Formatted.Element(XName.Get("title", "urn:ietf:rfc:7807")).Value);
+        Assert.AreEqual("404", Formatted.Element(XName.Get("status", "urn:ietf:rfc:7807")).Value);
     }
 
     [TestMethod]

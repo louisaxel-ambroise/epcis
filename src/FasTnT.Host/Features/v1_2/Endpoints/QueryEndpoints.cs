@@ -3,6 +3,7 @@ using FasTnT.Domain;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using FasTnT.Host.Features.v1_2.Extensions;
 using FasTnT.Application.Handlers;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Host.Features.v1_2.Endpoints;
 
@@ -50,9 +51,9 @@ public static class QueryEndpoints
         return Task.FromResult(new GetStandardVersionResult("1.2"));
     }
 
-    private static Task<GetVendorVersionResult> GetVendorVersionQuery()
+    private static Task<GetVendorVersionResult> GetVendorVersionQuery(IOptions<Constants> constants)
     {
-        return Task.FromResult(new GetVendorVersionResult(Constants.Instance.VendorVersion.ToString()));
+        return Task.FromResult(new GetVendorVersionResult(constants.Value.VendorVersion.ToString()));
     }
 
     private static async Task GetWsdl(HttpResponse response, CancellationToken cancellationToken)

@@ -39,14 +39,4 @@ public static class SubscriptionEndpoints
 
         return new();
     }
-
-    private static IResult TriggerSubscription(string triggers)
-    {
-        if (string.IsNullOrWhiteSpace(triggers))
-        {
-            return Results.BadRequest();
-        }
-
-        return Results.NoContent();
-    }
 }

@@ -2,6 +2,8 @@
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Utils;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
+using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
 
@@ -39,25 +41,38 @@ public static class XmlResponseFormatter
 
             for (var i = 0; i < customNamespaces.Length; i++)
             {
-                queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i}", customNamespaces[i]));
+                queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i+1}", customNamespaces[i]));
             }
         }
 
         return queryResults;
     }
 
-    private static bool IsCustomNamespace(string value)
+    private static bool IsCustomNamespace(string uri)
     {
-        return !string.IsNullOrWhiteSpace(value) && XNamespace.Xmlns != value;
+        return !string.IsNullOrWhiteSpace(uri) && !Namespaces.ContainsUri(uri);
     }
 
-    public static XElement FormatError(EpcisException exception)
+    public static XElement FormatError(EpcisException error)
     {
-        var reason = !string.IsNullOrEmpty(exception.Message) ? new XElement("reason", exception.Message) : default;
-        var severity = exception.Severity != ExceptionSeverity.None ? new XElement("severity", exception.Severity.ToString()) : default;
-        var queryName = !string.IsNullOrEmpty(exception.QueryName) ? new XElement("queryName", exception.QueryName) : default;
-        var subscriptionId = !string.IsNullOrEmpty(exception.SubscriptionId) ? new XElement("subscriptionID", exception.SubscriptionId) : default;
+        var type = new XElement(XName.Get("type", "urn:ietf:rfc:7807"), $"epcisException:{error.ExceptionType}");
+        var title = new XElement(XName.Get("title", "urn:ietf:rfc:7807"), error.Message);
+        var status = new XElement(XName.Get("status", "urn:ietf:rfc:7807"), GetHttpStatusCode(error));
 
-        return new(XName.Get(exception.ExceptionType.ToString(), Namespaces.Query), reason, severity, queryName, subscriptionId);
+        return new(XName.Get("problem", "urn:ietf:rfc:7807"), type, title, status);
+    }
+
+    public static int GetHttpStatusCode(EpcisException error)
+    {
+        return error.ExceptionType switch
+        {
+            ExceptionType.NoSuchNameException => 404,
+            ExceptionType.NoSuchSubscriptionException => 404,
+            ExceptionType.QueryTooComplexException => 413,
+            ExceptionType.QueryTooLargeException => 413,
+            ExceptionType.CaptureLimitExceededException => 413,
+            ExceptionType.ImplementationException => 500,
+            _ => 400
+        };
     }
 }

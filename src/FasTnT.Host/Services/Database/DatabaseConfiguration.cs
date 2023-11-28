@@ -30,15 +30,12 @@ public static class DatabaseConfiguration
         return services;
     }
 
-    public static IApplicationBuilder MigrateDatabase(this IApplicationBuilder application, bool applyMigrations)
+    public static IApplicationBuilder MigrateDatabase(this IApplicationBuilder application)
     {
-        if (applyMigrations)
-        {
-            using var scope = application.ApplicationServices.CreateScope();
-            using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
+        using var scope = application.ApplicationServices.CreateScope();
+        using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
 
-            context.Database.Migrate();
-        }
+        context.Database.Migrate();
 
         return application;
     }

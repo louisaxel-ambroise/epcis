@@ -157,38 +157,45 @@ public class XmlEventParser
     {
         foreach (var field in element.Elements())
         {
-            switch (field.Name.LocalName)
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
             {
-                case "childEPCs":
-                    _evt.Epcs.AddRange(ParseEpcList(field, EpcType.ChildEpc)); break;
-                case "inputEPCList":
-                    _evt.Epcs.AddRange(ParseEpcList(field, EpcType.InputEpc)); break;
-                case "outputEPCList":
-                    _evt.Epcs.AddRange(ParseEpcList(field, EpcType.OutputEpc)); break;
-                case "quantityList":
-                    _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.Quantity)); break;
-                case "childQuantityList":
-                    _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.ChildQuantity)); break;
-                case "inputQuantityList":
-                    _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.InputQuantity)); break;
-                case "outputQuantityList":
-                    _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.OutputQuantity)); break;
-                case "bizTransactionList":
-                    _evt.Transactions.AddRange(ParseTransactionList(field)); break;
-                case "sourceList":
-                    _evt.Sources.AddRange(ParseSources(field)); break;
-                case "destinationList":
-                    _evt.Destinations.AddRange(ParseDestinations(field)); break;
-                case "ilmd":
-                    ParseFields(field, FieldType.Ilmd); break;
-                case "persistentDisposition":
-                    _evt.PersistentDispositions.AddRange(ParsePersistentDisposition(field)); break;
-                case "sensorElementList":
-                    _evt.SensorElements.AddRange(ParseSensorList(field)); break;
-                case "extension":
-                    ParseEventExtension(field); break;
-                default:
-                    ParseCustomFields(field, FieldType.Extension, null, null); break;
+                switch (field.Name.LocalName)
+                {
+                    case "childEPCs":
+                        _evt.Epcs.AddRange(ParseEpcList(field, EpcType.ChildEpc)); break;
+                    case "inputEPCList":
+                        _evt.Epcs.AddRange(ParseEpcList(field, EpcType.InputEpc)); break;
+                    case "outputEPCList":
+                        _evt.Epcs.AddRange(ParseEpcList(field, EpcType.OutputEpc)); break;
+                    case "quantityList":
+                        _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.Quantity)); break;
+                    case "childQuantityList":
+                        _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.ChildQuantity)); break;
+                    case "inputQuantityList":
+                        _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.InputQuantity)); break;
+                    case "outputQuantityList":
+                        _evt.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.OutputQuantity)); break;
+                    case "bizTransactionList":
+                        _evt.Transactions.AddRange(ParseTransactionList(field)); break;
+                    case "sourceList":
+                        _evt.Sources.AddRange(ParseSources(field)); break;
+                    case "destinationList":
+                        _evt.Destinations.AddRange(ParseDestinations(field)); break;
+                    case "ilmd":
+                        ParseFields(field, FieldType.Ilmd); break;
+                    case "persistentDisposition":
+                        _evt.PersistentDispositions.AddRange(ParsePersistentDisposition(field)); break;
+                    case "sensorElementList":
+                        _evt.SensorElements.AddRange(ParseSensorList(field)); break;
+                    case "extension":
+                        ParseEventExtension(field); break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.Extension, null, null);
             }
         }
     }

@@ -28,7 +28,7 @@ public class WebSocketSubscriptionJob
     public async Task RunAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var bufferRequestIds = Array.Empty<int>();
-        var minRecordDate = DateTime.UtcNow;
+        var lastExecutionDate = DateTime.UtcNow;
 
         EpcisEvents.OnRequestCaptured += _scheduler.OnRequestCaptured;
 
@@ -42,9 +42,10 @@ public class WebSocketSubscriptionJob
                 {
                     try
                     {
+                        var minRecordDate = lastExecutionDate.Subtract(TimeSpan.FromSeconds(10));
                         var parameters = _parameters.Union(new[]
                         {
-                            QueryParameter.Create("GE_recordTime", minRecordDate.Subtract(TimeSpan.FromSeconds(10)).ToString())
+                            QueryParameter.Create("GE_recordTime", minRecordDate.ToString())
                         });
 
                         using var scope = serviceProvider.CreateScope();
@@ -60,7 +61,7 @@ public class WebSocketSubscriptionJob
                             }
 
                             bufferRequestIds = result.RequestIds.ToArray();
-                            minRecordDate = executionDate;
+                            lastExecutionDate = executionDate;
                         }
                     }
                     finally

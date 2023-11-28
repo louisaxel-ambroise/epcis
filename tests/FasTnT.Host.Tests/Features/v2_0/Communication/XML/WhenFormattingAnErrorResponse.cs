@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
 using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication;
 
@@ -25,9 +26,11 @@ public class WhenFormattingAnErrorResponse
     [TestMethod]
     public void TheXmlShouldBeCorrectlyFormatted()
     {
-        Assert.IsTrue(Formatted.Name == XName.Get("NoSuchNameException", "urn:epcglobal:epcis-query:xsd:1"));
-        Assert.AreEqual(1, Formatted.Elements().Count());
-        Assert.AreEqual(Result.Message, Formatted.Element("reason").Value);
+        Assert.IsTrue(Formatted.Name == XName.Get("problem", "urn:ietf:rfc:7807"));
+        Assert.AreEqual(3, Formatted.Elements().Count());
+        Assert.AreEqual("epcisException:NoSuchNameException", Formatted.Element(XName.Get("type", "urn:ietf:rfc:7807")).Value);
+        Assert.AreEqual(Result.Message, Formatted.Element(XName.Get("title", "urn:ietf:rfc:7807")).Value);
+        Assert.AreEqual("404", Formatted.Element(XName.Get("status", "urn:ietf:rfc:7807")).Value);
     }
 
     [TestMethod]

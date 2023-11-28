@@ -21,12 +21,14 @@ public sealed class SubscriptionRunner
             var pendingEvents = await _context
                 .QueryEvents(executionContext.Parameters)
                 .Select(x => new { x.Id, RequestId = x.Request.Id })
+                .OrderBy(x => x.Id)
                 .ToListAsync(cancellationToken);
             var eventIds = pendingEvents
                 .ExceptBy(executionContext.ExcludedRequestIds, x => x.RequestId)
                 .Select(x => x.Id);
             var events = await _context.Set<Event>()
                 .Where(x => eventIds.Contains(x.Id))
+                .OrderBy(x => x.Id)
                 .ToListAsync(cancellationToken);
 
             return SubscriptionResult.Success(events, pendingEvents.Select(x => x.RequestId).Distinct().ToList());
