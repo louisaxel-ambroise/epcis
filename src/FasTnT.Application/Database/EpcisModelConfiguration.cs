@@ -77,7 +77,7 @@ public static class EpcisModelConfiguration
         masterData.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
         masterData.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
         masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
-        masterData.HasMany(x => x.Children).WithOne(x => x.MasterData).HasForeignKey("MasterDataRequestId", "MasterdataType", "MasterdataId");
+        masterData.HasMany(x => x.Children).WithOne(x => x.MasterData).HasForeignKey("MasterDataRequestId", "MasterDataType", "MasterDataId");
 
         var mdAttribute = modelBuilder.Entity<MasterDataAttribute>();
         mdAttribute.ToTable(nameof(MasterDataAttribute), Cbv);
