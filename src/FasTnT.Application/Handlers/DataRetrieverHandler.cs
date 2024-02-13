@@ -11,44 +11,33 @@ using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Handlers;
 
-public class DataRetrieverHandler
+public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
 {
-    private readonly EpcisContext _context;
-    private readonly ICurrentUser _user;
-    private readonly Constants _constants;
-
-    public DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
-    {
-        _context = context;
-        _user = user;
-        _constants = constants.Value;
-    }
-
     public async Task<List<Event>> QueryEventsAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var userParameters = _user.DefaultQueryParameters.Union(new []
+        var userParameters = user.DefaultQueryParameters.Union(new []
         {
-            new QueryParameter { Name = "orderBy", Values = new[]{ "eventTime" } },
-            new QueryParameter { Name = "perPage", Values = new[]{ _constants.MaxEventsReturnedInQuery.ToString() } },
-            new QueryParameter { Name = "nextPageToken", Values = new[]{ "0" } }
+            new QueryParameter { Name = "orderBy", Values = ["eventTime"] },
+            new QueryParameter { Name = "perPage", Values = [constants.Value.MaxEventsReturnedInQuery.ToString()] },
+            new QueryParameter { Name = "nextPageToken", Values = ["0"] }
         });
 
         var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsInt();
-        var eventIds = await _context
+        var eventIds = await context
             .QueryEvents(userParameters.Union(parameters))
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 
         if (!eventIds.Any())
         {
-            return new List<Event>();
+            return [];
         }
-        if (eventIds.Count >= (maxEventCount ?? _constants.MaxEventsReturnedInQuery))
+        if (eventIds.Count >= (maxEventCount ?? constants.Value.MaxEventsReturnedInQuery))
         {
             throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results");
         }
 
-        var events = await _context.Set<Event>()
+        var events = await context.Set<Event>()
             .Where(x => eventIds.Contains(x.Id))
             .ToListAsync(cancellationToken);
 
@@ -57,7 +46,7 @@ public class DataRetrieverHandler
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        return await _context
+        return await context
             .QueryMasterData(parameters)
             .ToListAsync(cancellationToken);
     }

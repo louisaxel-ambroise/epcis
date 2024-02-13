@@ -23,11 +23,11 @@ public class WhenFormattingATransformationEvent
             BusinessLocation = "loc",
             CorrectiveDeclarationTime = DateTime.UtcNow,
             CorrectiveReason = "invalid events",
-            CorrectiveEventIds = new List<CorrectiveEventId> { new CorrectiveEventId { CorrectiveId = "ni://prev-evt" } },
+            CorrectiveEventIds = [new CorrectiveEventId { CorrectiveId = "ni://prev-evt" }],
             ReadPoint = "readPointTest",
             EventId = "ni://test",
-            Epcs = new List<Epc> { new Epc { Type = EpcType.List, Id = "test:epc" } },
-            Transactions = new List<BusinessTransaction> { new BusinessTransaction { Id = "tx", Type = "txtype" } },
+            Epcs = [new Epc { Type = EpcType.List, Id = "test:epc" }],
+            Transactions = [new BusinessTransaction { Id = "tx", Type = "txtype" }],
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 

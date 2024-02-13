@@ -5,10 +5,11 @@ namespace FasTnT.Host.Subscriptions.Schedulers;
 
 public abstract class SubscriptionScheduler
 {
-    public static readonly SubscriptionSchedule HourlySchedule = new() { Second = "0", Minute = "0" };
-    public static readonly SubscriptionSchedule DailySchedule = new() { Second = "0", Minute = "0", Hour = "0" };
-    public static readonly SubscriptionSchedule WeeklySchedule = new() { Second = "0", Minute = "0", Hour = "0", DayOfWeek = "1" };
-    public static readonly SubscriptionSchedule MonthlySchedule = new() { Second = "0", Minute = "0", Hour = "0", DayOfWeek = "1", DayOfMonth = "1" };
+    public static readonly SubscriptionSchedule 
+        HourlySchedule = new() { Second = "0", Minute = "0" },
+        DailySchedule = new() { Second = "0", Minute = "0", Hour = "0" },
+        WeeklySchedule = new() { Second = "0", Minute = "0", Hour = "0", DayOfWeek = "1" },
+        MonthlySchedule = new() { Second = "0", Minute = "0", Hour = "0", DayOfWeek = "1", DayOfMonth = "1" };
 
     public bool Stopped { get; private set; }
 

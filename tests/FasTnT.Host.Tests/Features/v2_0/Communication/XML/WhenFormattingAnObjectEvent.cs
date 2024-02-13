@@ -25,8 +25,8 @@ public class WhenFormattingAnObjectEvent
             ReadPoint = "readPointTest",
             EventId = "ni://test",
             Action = EventAction.Add,
-            Epcs = new List<Epc> { new Epc { Type = EpcType.List, Id = "test:epc" } },
-            Fields = new List<Field> { new Field { Type = FieldType.Ilmd, Name = "field", Namespace = "fastnt.ns", TextValue = "OK"} },
+            Epcs = [new Epc { Type = EpcType.List, Id = "test:epc" }],
+            Fields = [new Field { Type = FieldType.Ilmd, Name = "field", Namespace = "fastnt.ns", TextValue = "OK"}],
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 

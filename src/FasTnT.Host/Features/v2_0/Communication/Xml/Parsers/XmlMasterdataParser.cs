@@ -36,7 +36,7 @@ public class XmlMasterdataParser
 
     private static List<MasterDataChildren> ParseChildren(XElement element)
     {
-        return element?.Elements("id")?.Select(x => new MasterDataChildren { ChildrenId = x.Value })?.ToList() ?? new();
+        return element?.Elements("id")?.Select(x => new MasterDataChildren { ChildrenId = x.Value })?.ToList() ?? [];
     }
 
     private MasterDataAttribute ParseVocabularyAttribute(XElement element)

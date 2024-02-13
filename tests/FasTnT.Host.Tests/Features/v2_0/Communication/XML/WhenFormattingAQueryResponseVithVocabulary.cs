@@ -15,7 +15,7 @@ public class WhenFormattingAQueryResponseVithVocabulary
         {
             Id = "md0.1230",
             Type = "readPoint",
-            Attributes = new List<MasterDataAttribute>{ new MasterDataAttribute { Id = "test", Value = "xyz" } }
+            Attributes = [new MasterDataAttribute { Id = "test", Value = "xyz" }]
         }
     });
     public string Formatted { get; set; }

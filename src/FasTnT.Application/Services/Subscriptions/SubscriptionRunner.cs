@@ -5,20 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Services.Subscriptions;
 
-public sealed class SubscriptionRunner
+public sealed class SubscriptionRunner(EpcisContext context)
 {
-    private readonly EpcisContext _context;
-
-    public SubscriptionRunner(EpcisContext context)
-    {
-        _context = context;
-    }
-
     public async Task<SubscriptionResult> ExecuteAsync(SubscriptionContext executionContext, CancellationToken cancellationToken)
     {
         try
         {
-            var pendingEvents = await _context
+            var pendingEvents = await context
                 .QueryEvents(executionContext.Parameters)
                 .Select(x => new { x.Id, RequestId = x.Request.Id })
                 .OrderBy(x => x.Id)
@@ -26,7 +19,7 @@ public sealed class SubscriptionRunner
             var eventIds = pendingEvents
                 .ExceptBy(executionContext.ExcludedRequestIds, x => x.RequestId)
                 .Select(x => x.Id);
-            var events = await _context.Set<Event>()
+            var events = await context.Set<Event>()
                 .Where(x => eventIds.Contains(x.Id))
                 .OrderBy(x => x.Id)
                 .ToListAsync(cancellationToken);

@@ -14,7 +14,7 @@ public class WhenFormattingAQueryResponse
         new Event
         {
             Type = Domain.Enumerations.EventType.ObjectEvent,
-            Fields = new List<Field>{ new Field { Type = Domain.Enumerations.FieldType.Extension, Namespace = "customNamespace", Name = "test", TextValue = "value" } },
+            Fields = [new Field { Type = Domain.Enumerations.FieldType.Extension, Namespace = "customNamespace", Name = "test", TextValue = "value" }],
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         }
     });

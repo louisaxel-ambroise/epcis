@@ -25,10 +25,10 @@ public class WhenFormattingATransactionEvent
             ReadPoint = "readPointTest",
             EventId = "ni://test",
             Action = EventAction.Add,
-            Epcs = new List<Epc> { new Epc { Type = EpcType.List, Id = "test:epc" } },
-            Sources = new List<Source> { new Source { Id = "Party", Type = "PartyType" } },
-            Destinations = new List<Destination> { new Destination { Id = "Dest", Type = "PartyType" } },
-            Transactions = new List<BusinessTransaction> { new BusinessTransaction { Id = "tx", Type = "txtype" } },
+            Epcs = [new Epc { Type = EpcType.List, Id = "test:epc" }],
+            Sources = [new Source { Id = "Party", Type = "PartyType" }],
+            Destinations = [new Destination { Id = "Dest", Type = "PartyType" }],
+            Transactions = [new BusinessTransaction { Id = "tx", Type = "txtype" }],
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 

@@ -4,8 +4,8 @@ namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 
 public record QueryContext(IEnumerable<QueryParameter> Parameters)
 {
-    static readonly List<QueryParameter> Default = new() { QueryParameter.Create("perPage", "30") };
-    static readonly string[] ReservedKeywords = new[] { "auth", "stream" };
+    static readonly List<QueryParameter> Default = [QueryParameter.Create("perPage", "30")];
+    static readonly string[] ReservedKeywords = ["auth", "stream"];
 
     public static ValueTask<QueryContext> BindAsync(HttpContext context)
     {

@@ -25,7 +25,7 @@ public class WhenFormattingAnAggregationEvent
             ReadPoint = "readPointTest",
             EventId = "ni://test",
             Action = EventAction.Add,
-            Epcs = new List<Epc> { new Epc { Type = EpcType.ParentId, Id = "test:epc:parent" }, new Epc { Type = EpcType.ChildEpc, Id = "test:childepc" }, new Epc { Type = EpcType.Quantity, Id = "test:chqty" } },
+            Epcs = [new Epc { Type = EpcType.ParentId, Id = "test:epc:parent" }, new Epc { Type = EpcType.ChildEpc, Id = "test:childepc" }, new Epc { Type = EpcType.Quantity, Id = "test:chqty" }],
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 

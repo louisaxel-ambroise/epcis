@@ -14,7 +14,7 @@ internal class EventQueryContext
 {
     private bool _ascending;
     private int? _skip, _take;
-    private readonly List<Func<IQueryable<Event>, IQueryable<Event>>> _filters = new();
+    private readonly List<Func<IQueryable<Event>, IQueryable<Event>>> _filters = [];
     private readonly EpcisContext _context;
 
     internal EventQueryContext(EpcisContext context, IEnumerable<QueryParameter> parameters)

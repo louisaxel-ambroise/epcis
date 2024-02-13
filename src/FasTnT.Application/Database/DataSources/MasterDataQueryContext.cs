@@ -10,8 +10,8 @@ namespace FasTnT.Application.Database.DataSources;
 internal class MasterDataQueryContext
 {
     private int _take = int.MaxValue;
-    private readonly List<Func<IQueryable<MasterData>, IQueryable<MasterData>>> _filters = new();
-    private readonly List<string> _attributeNames = new();
+    private readonly List<Func<IQueryable<MasterData>, IQueryable<MasterData>>> _filters = [];
+    private readonly List<string> _attributeNames = [];
     private bool _includeAttributes, _includeChildren;
     private readonly EpcisContext _context;
 

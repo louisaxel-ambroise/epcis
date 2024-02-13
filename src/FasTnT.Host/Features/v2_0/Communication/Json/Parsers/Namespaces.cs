@@ -9,7 +9,7 @@ public class Namespaces
 
     public Namespaces(Dictionary<string, string> namespaces)
     {
-        _namespaces = namespaces ?? new();
+        _namespaces = namespaces ?? [];
     }
 
     public static Namespaces Parse(JsonElement? context)
