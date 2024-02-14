@@ -11,13 +11,8 @@ public class SubscriptionsHandler(EpcisContext context, ICurrentUser user)
 {
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
     {
-        var subscription = await context.Set<Subscription>().FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
-
-        if (subscription is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Subscription '{name}' does not exist");
-        }
-
+        var subscription = await context.Set<Subscription>().FirstOrDefaultAsync(x => x.Name == name, cancellationToken) ?? throw new EpcisException(ExceptionType.NoSuchNameException, $"Subscription '{name}' does not exist");
+        
         context.Remove(subscription);
 
         await context.SaveChangesAsync(cancellationToken);
@@ -41,12 +36,9 @@ public class SubscriptionsHandler(EpcisContext context, ICurrentUser user)
             .Where(x => x.Name == name)
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
-        if (subscription is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Subscription not found: '{name}'");
-        }
-
-        return subscription;
+        return subscription is null
+            ? throw new EpcisException(ExceptionType.NoSuchNameException, $"Subscription not found: '{name}'")
+            : subscription;
     }
 
     public async Task<Subscription> RegisterSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)

@@ -28,7 +28,7 @@ public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOpti
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 
-        if (!eventIds.Any())
+        if (eventIds.Count == 0)
         {
             return [];
         }
@@ -41,7 +41,7 @@ public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOpti
             .Where(x => eventIds.Contains(x.Id))
             .ToListAsync(cancellationToken);
 
-        return events.OrderBy(e => eventIds.IndexOf(e.Id)).ToList();
+        return [.. events.OrderBy(e => eventIds.IndexOf(e.Id))];
     }
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)

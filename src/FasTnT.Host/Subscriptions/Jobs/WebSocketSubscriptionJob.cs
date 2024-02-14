@@ -42,12 +42,12 @@ public class WebSocketSubscriptionJob(WebSocket webSocket, string queryName, IEn
 
                         if (result.Successful)
                         {
-                            if (result.Events.Any())
+                            if (result.Events.Count != 0)
                             {
                                 await SendQueryDataAsync(result.Events, cancellationToken);
                             }
 
-                            bufferRequestIds = result.RequestIds.ToArray();
+                            bufferRequestIds = [.. result.RequestIds];
                             lastExecutionDate = executionDate;
                         }
                     }

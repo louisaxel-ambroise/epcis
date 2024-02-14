@@ -33,12 +33,9 @@ public class CaptureHandler(EpcisContext context, ICurrentUser user, IOptions<Co
             .Select(x => x.Request)
             .FirstOrDefaultAsync(x => x.CaptureId == captureId, cancellationToken);
 
-        if (capture is null)
-        {
-            throw new EpcisException(ExceptionType.QueryParameterException, $"Capture not found: {captureId}");
-        }
-
-        return capture;
+        return capture is null
+            ? throw new EpcisException(ExceptionType.QueryParameterException, $"Capture not found: {captureId}")
+            : capture;
     }
 
     public async Task<Request> StoreAsync(Request request, CancellationToken cancellationToken)

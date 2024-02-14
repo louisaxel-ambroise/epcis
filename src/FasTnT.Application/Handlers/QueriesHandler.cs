@@ -24,12 +24,9 @@ public class QueriesHandler(EpcisContext context, ICurrentUser user)
         var query = await context.Set<StoredQuery>()
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
-        if (query is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{name}' not found.");
-        }
-
-        return query;
+        return query is null 
+            ? throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{name}' not found.") 
+            : query;
     }
 
     public async Task<StoredQuery> StoreQueryAsync(StoredQuery query, CancellationToken cancellationToken)
@@ -50,12 +47,8 @@ public class QueriesHandler(EpcisContext context, ICurrentUser user)
     public async Task<StoredQuery> DeleteQueryAsync(string queryName, CancellationToken cancellationToken)
     {
         var query = await context.Set<StoredQuery>()
-               .FirstOrDefaultAsync(x => x.Name == queryName, cancellationToken);
+               .FirstOrDefaultAsync(x => x.Name == queryName, cancellationToken) ?? throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
 
-        if (query is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
-        }
         if (query.UserId != user.UserId)
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' was stored by another user.");

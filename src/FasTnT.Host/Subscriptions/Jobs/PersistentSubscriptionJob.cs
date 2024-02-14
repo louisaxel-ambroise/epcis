@@ -63,7 +63,7 @@ public class PersistentSubscriptionJob
 
                         if (result.Successful)
                         {
-                            if (result.Events.Any() || _subscription.ReportIfEmpty)
+                            if (result.Events.Count != 0 || _subscription.ReportIfEmpty)
                             {
                                 await SendResults(result.Events, cancellationToken);
                             }
@@ -72,7 +72,7 @@ public class PersistentSubscriptionJob
 
                             context.Attach(_subscription);
 
-                            _subscription.BufferRequestIds = result.RequestIds.ToArray();
+                            _subscription.BufferRequestIds = [.. result.RequestIds];
                             _subscription.LastExecutedTime = executionDate;
 
                             await context.SaveChangesAsync(cancellationToken);
@@ -110,21 +110,21 @@ public class PersistentSubscriptionJob
         return client;
     }
 
-    private Task SendResults(List<Event> events, CancellationToken cancellationToken)
+    private Task<HttpResponseMessage> SendResults(List<Event> events, CancellationToken cancellationToken)
     {
         var formatted = _formatter.FormatResult(_subscription.Name, new(_subscription.QueryName, events));
 
         return SendWebhook(formatted, _formatter.ContentType, cancellationToken);
     }
 
-    private Task SendError(EpcisException ex, CancellationToken cancellationToken)
+    private Task<HttpResponseMessage> SendError(EpcisException ex, CancellationToken cancellationToken)
     {
         var formatted = _formatter.FormatError(_subscription.Name, _subscription.QueryName, ex);
 
         return SendWebhook(formatted, _formatter.ContentType, cancellationToken);
     }
 
-    private Task SendWebhook(string formatted, string contentType, CancellationToken cancellationToken)
+    private Task<HttpResponseMessage> SendWebhook(string formatted, string contentType, CancellationToken cancellationToken)
     {
         var message = new HttpRequestMessage(HttpMethod.Post, string.Empty)
         {

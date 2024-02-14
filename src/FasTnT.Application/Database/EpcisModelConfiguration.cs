@@ -305,7 +305,7 @@ public static class EpcisModelConfiguration
     private static PropertyBuilder<T[]> HasJsonArrayConversion<T>(this PropertyBuilder<T[]> builder, JsonSerializerOptions options = null)
     {
         var converter = new ValueConverter<T[], string>(v => Serialize(v, options), v => Deserialize<T[]>(v, options));
-        var comparer = new ValueComparer<T[]>((l, r) => Equals(l, r), v => Serialize(v ?? Array.Empty<T>(), options).GetHashCode(), v => v);
+        var comparer = new ValueComparer<T[]>((l, r) => Equals(l, r), v => Serialize(v ?? new T[0], options).GetHashCode(), v => v);
 
         builder.HasConversion(converter);
         builder.Metadata.SetValueConverter(converter);
