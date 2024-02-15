@@ -115,6 +115,7 @@ This is the list of implemented 2.0 features in the repository:
 
 - Only `rollback` value is accepted for `GS1-Capture-Error-Behaviour` header
 - Only `Never_Translates` value is accepted for `GS1-EPC-Format` header
+- Requests are captured synchronously in the repository
 
 # Authors
 
