@@ -25,8 +25,8 @@ public class WhenFormattingAnAssociationEvent
             ReadPoint = "readPointTest",
             EventId = "ni://test",
             Action = EventAction.Add,
-            Epcs = new List<Epc> { new Epc { Type = EpcType.ParentId, Id = "test:epc:parent" }, new Epc { Type = EpcType.ChildEpc, Id = "test:childepc" } },
-            Fields = new List<Field> { new Field { Type = FieldType.Ilmd, Name = "field", Namespace = "fastnt.ns", TextValue = "OK"} },
+            Epcs = [new Epc { Type = EpcType.ParentId, Id = "test:epc:parent" }, new Epc { Type = EpcType.ChildEpc, Id = "test:childepc" }],
+            Fields = [new Field { Type = FieldType.Ilmd, Name = "field", Namespace = "fastnt.ns", TextValue = "OK"}],
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 

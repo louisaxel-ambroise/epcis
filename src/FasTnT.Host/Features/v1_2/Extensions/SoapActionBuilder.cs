@@ -5,7 +5,7 @@ namespace FasTnT.Host.Features.v1_2.Extensions;
 
 public class SoapActionBuilder
 {
-    private readonly Dictionary<string, Delegate> _mappedActions = new();
+    private readonly Dictionary<string, Delegate> _mappedActions = [];
 
     public void On<TAction>(Delegate requestDelegate) => On(typeof(TAction).Name, requestDelegate);
     public void On(string action, Delegate requestDelegate) => _mappedActions[action] = requestDelegate;

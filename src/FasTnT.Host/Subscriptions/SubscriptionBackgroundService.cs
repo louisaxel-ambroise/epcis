@@ -6,16 +6,10 @@ using System.Collections.Concurrent;
 
 namespace FasTnT.Host.Subscriptions;
 
-public class SubscriptionBackgroundService : BackgroundService
+public class SubscriptionBackgroundService(IServiceProvider serviceProvider) : BackgroundService
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly ConcurrentDictionary<int, CancellationTokenSource> _runningSubscriptions = new();
     private CancellationToken _stoppingToken;
-
-    public SubscriptionBackgroundService(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -35,7 +29,7 @@ public class SubscriptionBackgroundService : BackgroundService
 
     private void LoadSubscriptions()
     {
-        using var scope = _serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
         using var context = scope.ServiceProvider.GetService<EpcisContext>();
 
         context.Set<Subscription>().ToList().ForEach(RegisterSubscription);
@@ -43,7 +37,7 @@ public class SubscriptionBackgroundService : BackgroundService
 
     private void RegisterSubscription(int subscriptionId)
     {
-        using var scope = _serviceProvider.CreateScope();
+        using var scope = serviceProvider.CreateScope();
         using var context = scope.ServiceProvider.GetService<EpcisContext>();
 
         var subscription = context.Find<Subscription>(subscriptionId);
@@ -58,7 +52,7 @@ public class SubscriptionBackgroundService : BackgroundService
         if (_runningSubscriptions.TryAdd(subscription.Id, cancellationSource))
         {
             _stoppingToken.Register(cancellationSource.Cancel);
-            _ = Task.Run(() => backgroundTask.RunAsync(_serviceProvider, cancellationSource.Token), _stoppingToken);
+            _ = Task.Run(() => backgroundTask.RunAsync(serviceProvider, cancellationSource.Token), _stoppingToken);
         }
     }
 

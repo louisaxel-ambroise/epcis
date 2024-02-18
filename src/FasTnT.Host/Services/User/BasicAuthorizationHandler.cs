@@ -11,17 +11,12 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FasTnT.Host.Services.User;
 
-public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOptions>
+public class BasicAuthentication(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     private const string Authorization = nameof(Authorization);
     private const string Basic = nameof(Basic);
 
     public static string SchemeName => Basic + Authorization;
-
-    public BasicAuthentication(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-        : base(options, logger, encoder, clock)
-    {
-    }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -92,9 +87,9 @@ public class BasicAuthentication : AuthenticationHandler<AuthenticationSchemeOpt
         var tenantParameter = new { Name = "EQ_userID", Values = new[] { userHash } };
         var claims = new List<Claim>
         {
-            new Claim(nameof(ICurrentUser.UserName), username),
-            new Claim(nameof(ICurrentUser.UserId), userHash),
-            new Claim(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(new[]{ tenantParameter }))
+            new(nameof(ICurrentUser.UserName), username),
+            new(nameof(ICurrentUser.UserId), userHash),
+            new(nameof(ICurrentUser.DefaultQueryParameters), JsonSerializer.Serialize(new[]{ tenantParameter }))
         };
         claims.AddRange(requiredClaims.Select(x => new Claim(x, x)));
 

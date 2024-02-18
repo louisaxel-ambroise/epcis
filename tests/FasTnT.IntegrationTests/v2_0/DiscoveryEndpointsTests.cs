@@ -33,8 +33,8 @@ public class DiscoveryEndpointsTests
                 DocumentTime = DateTime.Now,
                 SchemaVersion = "2.0",
                 UserId = "431257CC4ADAF410486CDD3D6DC22F08",
-                Events = new List<Event>
-                {
+                Events =
+                [
                     new Event
                     {
                         Action = EventAction.Add,
@@ -43,20 +43,20 @@ public class DiscoveryEndpointsTests
                         BusinessLocation = "loc1",
                         BusinessStep = "step",
                         ReadPoint = "readpoint",
-                        Epcs = new List<Epc> {
+                        Epcs = [
                             new Epc { Type = EpcType.List, Id = "test:epc:1" },
                             new Epc { Type = EpcType.List, Id = "test:epc:2" },
-                        }
+                        ]
                     },
                     new Event
                     {
                         BusinessLocation = "loc2",
                         BusinessStep = "step",
-                        Epcs = new List<Epc> {
+                        Epcs = [
                             new Epc { Type = EpcType.List, Id = "test:epc:3" }
-                        }
+                        ]
                     }
-                }
+                ]
             });
 
             dbContext.Add(new Request
@@ -65,20 +65,20 @@ public class DiscoveryEndpointsTests
                 DocumentTime = DateTime.Now,
                 SchemaVersion = "2.0",
                 UserId = "ANOTHERUSER",
-                Events = new List<Event>
-                {
+                Events =
+                [
                     new Event
                     {
                         Disposition = "seconddisp",
                         BusinessLocation = "secondloc1",
                         BusinessStep = "secondstep",
                         ReadPoint = "secondreadpoint",
-                        Epcs = new List<Epc> {
+                        Epcs = [
                             new Epc { Type = EpcType.List, Id = "second:epc:1" },
                             new Epc { Type = EpcType.List, Id = "second:epc:2" },
-                        }
+                        ]
                     }
-                }
+                ]
             });
             dbContext.SaveChanges();
         }

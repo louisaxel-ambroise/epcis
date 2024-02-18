@@ -22,7 +22,7 @@ public static class JsonCaptureRequestParser
         {
             DocumentTime = DateTime.UtcNow,
             SchemaVersion = "2.0",
-            Events = new List<Event> { JsonEventParser.Create(document.RootElement, extensions).Parse() }
+            Events = [JsonEventParser.Create(document.RootElement, extensions).Parse()]
         };
 
         return request;

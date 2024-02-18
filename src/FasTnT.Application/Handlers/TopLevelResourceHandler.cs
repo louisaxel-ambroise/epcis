@@ -8,17 +8,8 @@ using System.Linq.Expressions;
 
 namespace FasTnT.Application.Handlers;
 
-public class TopLevelResourceHandler
+public class TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
 {
-    private readonly EpcisContext _context;
-    private readonly ICurrentUser _user;
-
-    public TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
-    {
-        _context = context;
-        _user = user;
-    }
-
     public static IEnumerable<string> ListEventTypes(Pagination pagination)
     {
         return Enum.GetValues<EventType>()
@@ -30,8 +21,8 @@ public class TopLevelResourceHandler
 
     public async Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken)
     {
-        var epcs = await _context
-            .QueryEvents(_user.DefaultQueryParameters)
+        var epcs = await context
+            .QueryEvents(user.DefaultQueryParameters)
             .SelectMany(x => x.Epcs.Select(x => x.Id))
             .Distinct()
             .OrderBy(x => x)
@@ -64,8 +55,8 @@ public class TopLevelResourceHandler
 
     private IQueryable<string> DistinctFromEvents(Expression<Func<Event, string>> selector, Pagination pagination)
     {
-        return _context
-            .QueryEvents(_user.DefaultQueryParameters)
+        return context
+            .QueryEvents(user.DefaultQueryParameters)
             .Select(selector)
             .Where(x => x != null)
             .Distinct()

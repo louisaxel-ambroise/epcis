@@ -69,7 +69,7 @@ public class JsonMasterdataParser
     {
         if (element.ValueKind != JsonValueKind.Object)
         {
-            return new List<MasterDataField>();
+            return [];
         }
 
         var result = new List<MasterDataField>();

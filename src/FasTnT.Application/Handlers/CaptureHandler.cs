@@ -11,23 +11,12 @@ using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Handlers;
 
-public class CaptureHandler
+public class CaptureHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
 {
-    private readonly EpcisContext _context;
-    private readonly ICurrentUser _user;
-    private readonly Constants _constants;
-
-    public CaptureHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
-    {
-        _context = context;
-        _user = user;
-        _constants = constants.Value;
-    }
-
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
     {
-        var captures = await _context
-            .QueryEvents(_user.DefaultQueryParameters)
+        var captures = await context
+            .QueryEvents(user.DefaultQueryParameters)
             .Select(x => x.Request)
             .OrderBy(x => x.Id)
             .Skip(pagination.StartFrom)
@@ -39,17 +28,14 @@ public class CaptureHandler
 
     public async Task<Request> GetCaptureDetailsAsync(string captureId, CancellationToken cancellationToken)
     {
-        var capture = await _context
-            .QueryEvents(_user.DefaultQueryParameters)
+        var capture = await context
+            .QueryEvents(user.DefaultQueryParameters)
             .Select(x => x.Request)
             .FirstOrDefaultAsync(x => x.CaptureId == captureId, cancellationToken);
 
-        if (capture is null)
-        {
-            throw new EpcisException(ExceptionType.QueryParameterException, $"Capture not found: {captureId}");
-        }
-
-        return capture;
+        return capture is null
+            ? throw new EpcisException(ExceptionType.QueryParameterException, $"Capture not found: {captureId}")
+            : capture;
     }
 
     public async Task<Request> StoreAsync(Request request, CancellationToken cancellationToken)
@@ -58,7 +44,7 @@ public class CaptureHandler
         {
             throw new EpcisException(ExceptionType.ValidationException, "EPCIS request is not valid");
         }
-        if (request.Events.Count >= _constants.MaxEventsCapturePerCall)
+        if (request.Events.Count >= constants.Value.MaxEventsCapturePerCall)
         {
             throw new EpcisException(ExceptionType.CaptureLimitExceededException, "Capture Payload too large");
         }
@@ -67,16 +53,16 @@ public class CaptureHandler
             throw new EpcisException(ExceptionType.ValidationException, "Standard Business Header in EPCIS request is not valid");
         }
 
-        request.UserId = _user.UserId;
+        request.UserId = user.UserId;
         request.Events.ForEach(evt => evt.EventId ??= EventHash.Compute(evt));
 
-        using (var transaction = await _context.Database.BeginTransactionAsync(cancellationToken))
+        using (var transaction = await context.Database.BeginTransactionAsync(cancellationToken))
         {
-            _context.Add(request);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.Add(request);
+            await context.SaveChangesAsync(cancellationToken);
 
             request.RecordTime = DateTime.UtcNow;
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
         }
 

@@ -7,20 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Handlers;
 
-public class QueriesHandler
+public class QueriesHandler(EpcisContext context, ICurrentUser user)
 {
-    private readonly EpcisContext _context;
-    private readonly ICurrentUser _currentUser;
-
-    public QueriesHandler(EpcisContext context, ICurrentUser currentUser)
-    {
-        _context = context;
-        _currentUser = currentUser;
-    }
-
     public async Task<IEnumerable<StoredQuery>> ListQueriesAsync(Pagination pagination, CancellationToken cancellationToken)
     {
-        var queries = await _context.Set<StoredQuery>()
+        var queries = await context.Set<StoredQuery>()
             .OrderBy(x => x.Id)
             .Skip(pagination.StartFrom).Take(pagination.PerPage)
             .ToListAsync(cancellationToken);
@@ -30,52 +21,45 @@ public class QueriesHandler
 
     public async Task<StoredQuery> GetQueryDetailsAsync(string name, CancellationToken cancellationToken)
     {
-        var query = await _context.Set<StoredQuery>()
+        var query = await context.Set<StoredQuery>()
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
-        if (query is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{name}' not found.");
-        }
-
-        return query;
+        return query is null 
+            ? throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{name}' not found.") 
+            : query;
     }
 
     public async Task<StoredQuery> StoreQueryAsync(StoredQuery query, CancellationToken cancellationToken)
     {
-        if (await _context.Set<StoredQuery>().AnyAsync(x => x.Name == query.Name, cancellationToken))
+        if (await context.Set<StoredQuery>().AnyAsync(x => x.Name == query.Name, cancellationToken))
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{query.Name}' already exists.");
         }
 
-        query.UserId = _currentUser.UserId;
+        query.UserId = user.UserId;
 
-        _context.Add(query);
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Add(query);
+        await context.SaveChangesAsync(cancellationToken);
 
         return query;
     }
 
     public async Task<StoredQuery> DeleteQueryAsync(string queryName, CancellationToken cancellationToken)
     {
-        var query = await _context.Set<StoredQuery>()
-               .FirstOrDefaultAsync(x => x.Name == queryName, cancellationToken);
+        var query = await context.Set<StoredQuery>()
+               .FirstOrDefaultAsync(x => x.Name == queryName, cancellationToken) ?? throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
 
-        if (query is null)
-        {
-            throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' not found.");
-        }
-        if (query.UserId != _currentUser.UserId)
+        if (query.UserId != user.UserId)
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' was stored by another user.");
         }
-        if (await _context.Set<Subscription>().AnyAsync(x => x.QueryName == query.Name, cancellationToken))
+        if (await context.Set<Subscription>().AnyAsync(x => x.QueryName == query.Name, cancellationToken))
         {
             throw new EpcisException(ExceptionType.ValidationException, $"Query '{queryName}' has active subscriptions.");
         }
 
-        _context.Remove(query);
-        await _context.SaveChangesAsync(cancellationToken);
+        context.Remove(query);
+        await context.SaveChangesAsync(cancellationToken);
 
         return query;
     }

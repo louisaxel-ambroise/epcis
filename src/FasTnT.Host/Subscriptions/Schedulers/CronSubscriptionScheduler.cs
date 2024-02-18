@@ -2,20 +2,15 @@
 
 namespace FasTnT.Host.Subscriptions.Schedulers;
 
-public class CronSubscriptionScheduler : SubscriptionScheduler
+public class CronSubscriptionScheduler(SubscriptionSchedule schedule) : SubscriptionScheduler
 {
-    internal readonly ScheduleEntry Seconds, Minutes, Hours, DayOfMonth, Month, DayOfWeek;
-
-
-    public CronSubscriptionScheduler(SubscriptionSchedule schedule)
-    {
-        Seconds = ScheduleEntry.Parse(schedule.Second, 0, 60);
-        Minutes = ScheduleEntry.Parse(schedule.Minute, 0, 59);
-        Hours = ScheduleEntry.Parse(schedule.Hour, 0, 23);
-        DayOfMonth = ScheduleEntry.Parse(schedule.DayOfMonth, 1, 31);
-        Month = ScheduleEntry.Parse(schedule.Month, 1, 12);
+    internal readonly ScheduleEntry 
+        Seconds = ScheduleEntry.Parse(schedule.Second, 0, 60), 
+        Minutes = ScheduleEntry.Parse(schedule.Minute, 0, 59), 
+        Hours = ScheduleEntry.Parse(schedule.Hour, 0, 23), 
+        DayOfMonth = ScheduleEntry.Parse(schedule.DayOfMonth, 1, 31), 
+        Month = ScheduleEntry.Parse(schedule.Month, 1, 12), 
         DayOfWeek = ScheduleEntry.Parse(schedule.DayOfWeek, 1, 7);
-    }
 
     public override void ComputeNextExecution(DateTime startDate)
     {
@@ -87,7 +82,7 @@ public class CronSubscriptionScheduler : SubscriptionScheduler
 
     internal class ScheduleEntry
     {
-        private readonly List<int> _values = new();
+        private readonly List<int> _values = [];
         private readonly int _minValue, _maxValue;
 
         public int Min => _values.Min();
@@ -120,7 +115,7 @@ public class CronSubscriptionScheduler : SubscriptionScheduler
 
         private void ParseElement(string element)
         {
-            if (element.StartsWith("[") && element.EndsWith(']') && element.Contains('-'))
+            if (element.StartsWith('[') && element.EndsWith(']') && element.Contains('-'))
             {
                 ParseRange(element);
             }

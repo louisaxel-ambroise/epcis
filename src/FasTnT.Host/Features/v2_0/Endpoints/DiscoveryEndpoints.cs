@@ -5,7 +5,7 @@ namespace FasTnT.Host.Features.v2_0.Endpoints;
 
 public static class DiscoveryEndpoints
 {
-    public static readonly List<(string Path, string Method)> Endpoints = new();
+    public static readonly List<(string Path, string Method)> Endpoints = [];
 
     public static void AddRoutes(IEndpointRouteBuilder app)
     {
