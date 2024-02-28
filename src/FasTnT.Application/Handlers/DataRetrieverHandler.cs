@@ -22,7 +22,7 @@ public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOpti
             new QueryParameter { Name = "nextPageToken", Values = ["0"] }
         });
 
-        var maxEventCount = parameters.SingleOrDefault(x => x.Name == "maxEventCount")?.AsInt();
+        var maxResults = parameters.LastOrDefault(x => x.Name == "maxEventCount")?.AsInt() ?? constants.Value.MaxEventsReturnedInQuery;
         var eventIds = await context
             .QueryEvents(userParameters.Union(parameters))
             .Select(x => x.Id)
@@ -32,16 +32,16 @@ public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOpti
         {
             return [];
         }
-        if (eventIds.Count >= (maxEventCount ?? constants.Value.MaxEventsReturnedInQuery))
+        if (eventIds.Count >= maxResults)
         {
             throw new EpcisException(ExceptionType.QueryTooLargeException, "Query returned too many results");
         }
 
         var events = await context.Set<Event>()
-            .Where(x => eventIds.Contains(x.Id))
+            .WhereIn(x => x.Id, eventIds)
             .ToListAsync(cancellationToken);
 
-        return [.. events.OrderBy(e => eventIds.IndexOf(e.Id))];
+        return events.OrderBy(e => eventIds.IndexOf(e.Id)).ToList();
     }
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
