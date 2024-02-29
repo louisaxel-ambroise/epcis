@@ -168,7 +168,7 @@ internal class EventQueryContext
             case var s when s.StartsWith("EQ_INNER_"):
                 ApplyFieldParameter(FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_value_"):
-                ApplyReportUomParameter(param.Values.Select(float.Parse).Cast<float?>().ToArray(), param.ReportFieldUom()); break;
+                ApplyReportUomParameter(param.Values.Select(float.Parse).ToArray(), param.ReportFieldUom()); break;
             case var s when s.StartsWith("EQ_"):
                 ApplyFieldParameter(FieldType.CustomField, false, param.FieldName(), param.FieldNamespace(), param.Values); break;
             case var s when s.StartsWith("EQATTR_"):
@@ -232,24 +232,16 @@ internal class EventQueryContext
         Filter(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && f.Name == name && f.Namespace == ns && (values.Length == 0 || values.Contains(f.TextValue))));
     }
 
-    private void ApplyReportUomParameter(float?[] values, string uom)
+    private void ApplyReportUomParameter(float[] values, string uom)
     {
-        Filter(x => x.Reports.Any(r => r.UnitOfMeasure == uom && values.Contains(r.Value)));
+        Filter(x => x.Reports.Any(r => r.UnitOfMeasure == uom && r.Value.HasValue && values.Contains(r.Value.Value)));
     }
 
     private void ApplyComparison(QueryParameter param, FieldType type, string ns, string name, bool inner)
     {
         var customFieldPredicate = (Expression<Func<Field, bool>>)(f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex != null == inner);
-        var fieldValuePredicate = (Expression<Func<Field, bool>>)(param.Name[..2] switch
-        {
-            "GE" => param.IsDateTime() ? f => f.DateValue >= param.AsDate() : f => f.NumericValue >= param.AsFloat(),
-            "GT" => param.IsDateTime() ? f => f.DateValue > param.AsDate() : f => f.NumericValue > param.AsFloat(),
-            "LE" => param.IsDateTime() ? f => f.DateValue <= param.AsDate() : f => f.NumericValue <= param.AsFloat(),
-            "LT" => param.IsDateTime() ? f => f.DateValue < param.AsDate() : f => f.NumericValue < param.AsFloat(),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        });
 
-        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.AndAlso(fieldValuePredicate)));
+        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.AndAlso(param.Compare<Field>(x => param.IsDateTime() ? x.DateValue : x.NumericValue))));
     }
 
     private void ApplyMatchParameter(QueryParameter param)
@@ -257,7 +249,7 @@ internal class EventQueryContext
         var epcType = param.GetMatchEpcTypes();
         var values = param.Values.Select(p => p.Replace("*", "%"));
         var typePredicate = (Expression<Func<Epc, bool>>)(e => epcType.Contains(e.Type));
-        var likePredicate = values.Aggregate((Expression<Func<Epc, bool>>)(e => false), (expr, value) => expr.OrElse(e => EF.Functions.Like(e.Id, value)));
+        var likePredicate = values.Aggregate(False<Epc>(), (expr, value) => expr.OrElse(e => EF.Functions.Like(e.Id, value)));
 
         Filter(x => x.Epcs.AsQueryable().Any(typePredicate.AndAlso(likePredicate)));
     }
@@ -265,9 +257,7 @@ internal class EventQueryContext
     private void ApplyPersistentDispositionFilter(QueryParameter param, PersistentDispositionType type)
     {
         var typePredicate = (Expression<Func<PersistentDisposition, bool>>)(x => x.Type == type);
-        var anyPredicate = (Expression<Func<PersistentDisposition, bool>>)(x => false);
-
-        Array.ForEach(param.Values, value => anyPredicate.OrElse(e => e.Id == value));
+        var anyPredicate = param.Values.Aggregate(False<PersistentDisposition>(), (expr, value) => expr.OrElse(e => e.Id == value));
 
         Filter(x => x.PersistentDispositions.AsQueryable().Any(typePredicate.AndAlso(anyPredicate)));
     }
@@ -275,14 +265,7 @@ internal class EventQueryContext
     private void ApplyUomComparison(QueryParameter param)
     {
         var customFieldPredicate = (Expression<Func<SensorReport, bool>>)(r => r.UnitOfMeasure == param.ReportFieldUom());
-        var fieldValuePredicate = (Expression<Func<SensorReport, bool>>)(param.Name[..2] switch
-        {
-            "GE" => r => EF.Property<float?>(r, param.ReportField()) >= param.AsFloat(),
-            "GT" => r => EF.Property<float?>(r, param.ReportField()) > param.AsFloat(),
-            "LE" => r => EF.Property<float?>(r, param.ReportField()) <= param.AsFloat(),
-            "LT" => r => EF.Property<float?>(r, param.ReportField()) < param.AsFloat(),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        });
+        var fieldValuePredicate = param.Compare<SensorReport>(r => EF.Property<float?>(r, param.ReportField()));
 
         Filter(x => x.Reports.AsQueryable().Any(customFieldPredicate.AndAlso(fieldValuePredicate)));
     }
@@ -291,4 +274,6 @@ internal class EventQueryContext
     {
         _filters.Add(evt => evt.Where(expression));
     }
+
+    private static Expression<Func<T, bool>> False<T>() => _ => false;
 }
