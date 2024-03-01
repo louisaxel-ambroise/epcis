@@ -11,7 +11,7 @@ public class EpcisContext : DbContext
 {
     public EpcisContext(DbContextOptions<EpcisContext> options) : base(options)
     {
-        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking; 
+        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
     public IQueryable<Event> QueryEvents(IEnumerable<QueryParameter> parameters)
