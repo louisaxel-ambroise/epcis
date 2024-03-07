@@ -129,9 +129,9 @@ internal class EventQueryContext
             case "LT_percRank":
                 Filter(x => x.Reports.Any(r => r.PercRank < param.AsFloat())); break;
             case "EQ_persistentDisposition_set":
-                ApplyPersistenDispositionFilter(param, PersistentDispositionType.Set); break;
+                ApplyPersistentDispositionFilter(param, PersistentDispositionType.Set); break;
             case "EQ_persistentDisposition_unset":
-                ApplyPersistenDispositionFilter(param, PersistentDispositionType.Unset); break;
+                ApplyPersistentDispositionFilter(param, PersistentDispositionType.Unset); break;
             // Family filters
             case var s when s.StartsWith("MATCH_"):
                 ApplyMatchParameter(param); break;
@@ -142,39 +142,39 @@ internal class EventQueryContext
             case var s when s.StartsWith("EQ_bizTransaction_"):
                 Filter(x => x.Transactions.Any(t => t.Id == param.GetSimpleId() && param.Values.Contains(t.Type))); break;
             case var s when s.StartsWith("EQ_INNER_ILMD_"):
-                ApplyFieldParameter(param.Values, FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_ILMD_"):
-                ApplyFieldParameter(param.Values, FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_INNER_SENSORELEMENT_"):
-                ApplyFieldParameter(param.Values, FieldType.Sensor, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.Sensor, true, param.InnerIlmdName(), param.InnerIlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_SENSORELEMENT_"):
-                ApplyFieldParameter(param.Values, FieldType.Sensor, false, param.IlmdName(), param.IlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.Sensor, false, param.IlmdName(), param.IlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_SENSORMETADATA_"):
-                ApplyFieldParameter(param.Values, FieldType.SensorMetadata, false, param.IlmdName(), param.IlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.SensorMetadata, false, param.IlmdName(), param.IlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_INNER_SENSORMETADATA_"):
-                ApplyFieldParameter(param.Values, FieldType.SensorMetadata, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.SensorMetadata, true, param.InnerIlmdName(), param.InnerIlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_SENSORREPORT_"):
-                ApplyFieldParameter(param.Values, FieldType.SensorReport, false, param.IlmdName(), param.IlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.SensorReport, false, param.IlmdName(), param.IlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_INNER_SENSORREPORT_"):
-                ApplyFieldParameter(param.Values, FieldType.SensorReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.SensorReport, true, param.InnerIlmdName(), param.InnerIlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EXISTS_INNER_ILMD_"):
-                ApplyExistsFieldParameter(FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace(), []); break;
             case var s when s.StartsWith("EXISTS_ILMD_"):
-                ApplyExistsFieldParameter(FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace()); break;
+                ApplyFieldParameter(FieldType.Ilmd, false, param.IlmdName(), param.IlmdNamespace(), []); break;
             case var s when s.StartsWith("EXISTS_INNER_"):
-                ApplyExistsFieldParameter(FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()); break;
+                ApplyFieldParameter(FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace(), []); break;
             case var s when s.StartsWith("EXISTS_"):
-                ApplyExistsFieldParameter(FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()); break;
+                ApplyFieldParameter(FieldType.CustomField, false, param.FieldName(), param.FieldNamespace(), []); break;
             case var s when s.StartsWith("EQ_INNER_"):
-                ApplyFieldParameter(param.Values, FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace()); break;
+                ApplyFieldParameter(FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_value_"):
-                ApplyReportUomParameter(param.Values.Select(float.Parse).Cast<float?>().ToArray(), param.ReportFieldUom()); break;
+                ApplyReportUomParameter(param.Values.Select(float.Parse).ToArray(), param.ReportFieldUom()); break;
             case var s when s.StartsWith("EQ_"):
-                ApplyFieldParameter(param.Values, FieldType.CustomField, false, param.FieldName(), param.FieldNamespace()); break;
+                ApplyFieldParameter(FieldType.CustomField, false, param.FieldName(), param.FieldNamespace(), param.Values); break;
             case var s when s.StartsWith("EQATTR_"):
-                ApplyEqAttributeParameter(param.Values, param.MasterdataType(), param.AttributeName()); break;
+                ApplyMasterdataAttributeParameter(param.MasterdataType(), param.AttributeName(), param.Values); break;
             case var s when s.StartsWith("HASATTR_"):
-                ApplyHasAttributeParameter(param.MasterdataType(), param.AttributeName()); break;
+                ApplyMasterdataAttributeParameter(param.MasterdataType(), param.AttributeName(), []); break;
             // Regex filters (Date/Numeric value comparison)
             case var r when Regexs.InnerIlmd().IsMatch(r):
                 ApplyComparison(param, FieldType.Ilmd, param.InnerIlmdNamespace(), param.InnerIlmdName(), true); break;
@@ -201,27 +201,14 @@ internal class EventQueryContext
         return _filters.Aggregate(query, (q, f) => f(q));
     }
 
-    private void ApplyHasAttributeParameter(string field, string attributeName)
+    private void ApplyMasterdataAttributeParameter(string field, string attributeName, string[] values)
     {
         switch (field)
         {
             case "bizLocation":
-                Filter(e => _context.BizLocations.Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName))); break;
+                Filter(e => _context.BizLocations.Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName && (values.Length == 0 || values.Contains(a.Value))))); break;
             case "readPoint":
-                Filter(e => _context.ReadPoints.Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName))); break;
-            default:
-                throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
-        }
-    }
-
-    private void ApplyEqAttributeParameter(string[] values, string field, string attributeName)
-    {
-        switch (field)
-        {
-            case "bizLocation":
-                Filter(e => _context.BizLocations.Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
-            case "readPoint":
-                Filter(e => _context.ReadPoints.Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName && values.Contains(a.Value)))); break;
+                Filter(e => _context.ReadPoints.Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName && (values.Length == 0 || values.Contains(a.Value))))); break;
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
         }
@@ -240,34 +227,21 @@ internal class EventQueryContext
         }
     }
 
-    private void ApplyExistsFieldParameter(FieldType type, bool inner, string name, string ns)
+    private void ApplyFieldParameter(FieldType type, bool inner, string name, string ns, string[] values)
     {
-        Filter(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && f.Name == name && f.Namespace == ns));
+        Filter(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && f.Name == name && f.Namespace == ns && (values.Length == 0 || values.Contains(f.TextValue))));
     }
 
-    private void ApplyFieldParameter(string[] values, FieldType type, bool inner, string name, string ns)
+    private void ApplyReportUomParameter(float[] values, string uom)
     {
-        Filter(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && values.Contains(f.TextValue) && f.Name == name && f.Namespace == ns));
-    }
-
-    private void ApplyReportUomParameter(float?[] values, string uom)
-    {
-        Filter(x => x.Reports.Any(r => r.UnitOfMeasure == uom && values.Contains(r.Value)));
+        Filter(x => x.Reports.Any(r => r.UnitOfMeasure == uom && r.Value.HasValue && values.Contains(r.Value.Value)));
     }
 
     private void ApplyComparison(QueryParameter param, FieldType type, string ns, string name, bool inner)
     {
         var customFieldPredicate = (Expression<Func<Field, bool>>)(f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex != null == inner);
-        var fieldValuePredicate = (Expression<Func<Field, bool>>)(param.Name[..2] switch
-        {
-            "GE" => param.IsDateTime() ? f => f.DateValue >= param.AsDate() : f => f.NumericValue >= param.AsFloat(),
-            "GT" => param.IsDateTime() ? f => f.DateValue > param.AsDate() : f => f.NumericValue > param.AsFloat(),
-            "LE" => param.IsDateTime() ? f => f.DateValue <= param.AsDate() : f => f.NumericValue <= param.AsFloat(),
-            "LT" => param.IsDateTime() ? f => f.DateValue < param.AsDate() : f => f.NumericValue < param.AsFloat(),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        });
 
-        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.AndAlso(fieldValuePredicate)));
+        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.AndAlso(param.Compare<Field>(x => param.IsDateTime() ? x.DateValue : x.NumericValue))));
     }
 
     private void ApplyMatchParameter(QueryParameter param)
@@ -275,17 +249,15 @@ internal class EventQueryContext
         var epcType = param.GetMatchEpcTypes();
         var values = param.Values.Select(p => p.Replace("*", "%"));
         var typePredicate = (Expression<Func<Epc, bool>>)(e => epcType.Contains(e.Type));
-        var likePredicate = values.Aggregate((Expression<Func<Epc, bool>>)(e => false), (expr, value) => expr.OrElse(e => EF.Functions.Like(e.Id, value)));
+        var likePredicate = values.Aggregate(False<Epc>(), (expr, value) => expr.OrElse(e => EF.Functions.Like(e.Id, value)));
 
         Filter(x => x.Epcs.AsQueryable().Any(typePredicate.AndAlso(likePredicate)));
     }
 
-    private void ApplyPersistenDispositionFilter(QueryParameter param, PersistentDispositionType type)
+    private void ApplyPersistentDispositionFilter(QueryParameter param, PersistentDispositionType type)
     {
         var typePredicate = (Expression<Func<PersistentDisposition, bool>>)(x => x.Type == type);
-        var anyPredicate = (Expression<Func<PersistentDisposition, bool>>)(x => false);
-
-        Array.ForEach(param.Values, value => anyPredicate.OrElse(e => e.Id == value));
+        var anyPredicate = param.Values.Aggregate(False<PersistentDisposition>(), (expr, value) => expr.OrElse(e => e.Id == value));
 
         Filter(x => x.PersistentDispositions.AsQueryable().Any(typePredicate.AndAlso(anyPredicate)));
     }
@@ -293,14 +265,7 @@ internal class EventQueryContext
     private void ApplyUomComparison(QueryParameter param)
     {
         var customFieldPredicate = (Expression<Func<SensorReport, bool>>)(r => r.UnitOfMeasure == param.ReportFieldUom());
-        var fieldValuePredicate = (Expression<Func<SensorReport, bool>>)(param.Name[..2] switch
-        {
-            "GE" => r => EF.Property<float?>(r, param.ReportField()) >= param.AsFloat(),
-            "GT" => r => EF.Property<float?>(r, param.ReportField()) > param.AsFloat(),
-            "LE" => r => EF.Property<float?>(r, param.ReportField()) <= param.AsFloat(),
-            "LT" => r => EF.Property<float?>(r, param.ReportField()) < param.AsFloat(),
-            _ => throw new EpcisException(ExceptionType.QueryParameterException, "Unknown Parameter")
-        });
+        var fieldValuePredicate = param.Compare<SensorReport>(r => EF.Property<float?>(r, param.ReportField()));
 
         Filter(x => x.Reports.AsQueryable().Any(customFieldPredicate.AndAlso(fieldValuePredicate)));
     }
@@ -309,4 +274,6 @@ internal class EventQueryContext
     {
         _filters.Add(evt => evt.Where(expression));
     }
+
+    private static Expression<Func<T, bool>> False<T>() => _ => false;
 }
