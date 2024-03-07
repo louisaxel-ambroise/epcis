@@ -39,7 +39,7 @@ internal class MasterDataQueryContext
             case "EQ_name":
                 Filter(x => param.Values.Any(v => v == x.Id)); break;
             case "WD_name":
-                Filter(x => _context.Set<MasterDataHierarchy>().Any(h => h.Type == x.Type && h.Root == x.Id && param.Values.Contains(h.Id))); break;
+                Filter(x => _context.Set<MasterdataHierarchy>().Any(h => h.Type == x.Type && h.Root == x.Id && param.Values.Contains(h.Id))); break;
             case "HASATTR":
                 Filter(x => x.Attributes.Any(a => a.Id == param.AsString())); break;
             case "includeAttributes":

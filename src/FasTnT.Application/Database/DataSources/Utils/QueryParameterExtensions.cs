@@ -70,6 +70,22 @@ internal static class QueryParameterExtensions
         };
     }
 
+    public static Expression<Func<T, bool>> Compare<T>(this QueryParameter parameter, Expression<Func<T, object>> accessor)
+    {
+        var param = Expression.Parameter(typeof(T));
+        Expression right = parameter.IsDateTime() ? Expression.Constant(parameter.AsDate()) : Expression.Constant(parameter.AsFloat());
+        Expression left = Expression.Convert(Expression.Invoke(accessor, param), right.Type);
+
+        return parameter.Name[..2] switch
+        {
+            "GE" => Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(left, right), param),
+            "GT" => Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(left, right), param),
+            "LE" => Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(left, right), param),
+            "LT" => Expression.Lambda<Func<T, bool>>(Expression.LessThan(left, right), param),
+            _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid comparison parameter: '{parameter.Name[..2]}'")
+        };
+    }
+
     public static Expression<Func<T, bool>> AndAlso<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
     {
         return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
