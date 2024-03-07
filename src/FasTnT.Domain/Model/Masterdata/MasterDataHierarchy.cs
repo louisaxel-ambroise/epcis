@@ -1,6 +1,6 @@
 ﻿namespace FasTnT.Domain.Model.Masterdata;
 
-public class MasterDataHierarchy
+public class MasterdataHierarchy
 {
     public string Root { get; set; }
     public string Type { get; set; }

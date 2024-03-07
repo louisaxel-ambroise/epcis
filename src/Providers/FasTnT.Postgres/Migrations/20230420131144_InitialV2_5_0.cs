@@ -606,6 +606,20 @@ namespace FasTnT.Postgres.Migrations
             migrationBuilder.Sql(@"CREATE VIEW ""Cbv"".""CurrentMasterdata""
 AS
 SELECT MAX(""RequestId"") AS ""RequestId"", ""Type"", ""Id"" FROM ""Cbv"".""MasterData"" GROUP BY ""Type"", ""Id"";");
+
+            migrationBuilder.Sql(@"CREATE VIEW ""Cbv"".""MasterdataHierarchy"" AS
+WITH RECURSIVE hierarchy(""Root"", ""Type"", ""Id"")
+AS (
+	SELECT ""Id"", ""Type"", ""Id""
+	FROM ""Cbv"".""CurrentMasterdata""
+	UNION ALL
+	SELECT h.""Id"", ""MasterDataType"", ""ChildrenId""
+	FROM ""Cbv"".""MasterDataChildren"" children
+	JOIN ""Cbv"".""CurrentMasterdata"" cur ON cur.""Type"" = children.""MasterDataType"" AND cur.""Id"" = ""ChildrenId"" 
+	JOIN hierarchy h ON ""MasterDataType"" = h.""Type"" AND ""MasterDataId"" = h.""Id""
+)
+SELECT ""Root"", ""Type"", ""Id"" 
+FROM hierarchy h");
         }
 
         /// <inheritdoc />
