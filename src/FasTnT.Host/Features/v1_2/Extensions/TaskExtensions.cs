@@ -6,6 +6,11 @@ public static class TaskExtensions
 {
     public static Task<object> CastTask(this object taskObj)
     {
+        if (taskObj is not Task)
+        {
+            return Task.FromResult(taskObj);
+        }
+
         var resultType = taskObj.GetType().GenericTypeArguments.First();
         var castTaskMethodGeneric = typeof(TaskExtensions).GetMethod(nameof(CastTaskInner), BindingFlags.Static | BindingFlags.Public);
         var castTaskMethod = castTaskMethodGeneric.MakeGenericMethod(resultType, typeof(object));

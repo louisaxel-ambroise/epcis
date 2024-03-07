@@ -1,4 +1,4 @@
-﻿using FasTnT.Host.Features.v1_2.Communication.Parsers;
+﻿using FasTnT.Host.Communication.Xml.Parsers;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
@@ -10,6 +10,6 @@ public class WhenParsingAnInvalidQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAGetQueryNamesObject()
     {
-        Assert.ThrowsException<AggregateException>(() => XmlQueryParser.Parse(ParseResource(ResourceName).Root));
+        Assert.ThrowsException<AggregateException>(() => ParseResource(ResourceName).Parse());
     }
 }

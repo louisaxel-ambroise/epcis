@@ -5,28 +5,40 @@
     <UserSecretsId>3811061c-32dd-4c7c-98bc-d8f955a5b911</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Communication\Xml\Schemas\BasicTypes.xsd" />
+    <None Remove="Communication\Xml\Schemas\BusinessScope.xsd" />
+    <None Remove="Communication\Xml\Schemas\DocumentIdentification.xsd" />
+    <None Remove="Communication\Xml\Schemas\EPCglobal-epcis-2_0.xsd" />
+    <None Remove="Communication\Xml\Schemas\EPCglobal-epcis-masterdata-2_0.xsd" />
+    <None Remove="Communication\Xml\Schemas\EPCglobal-epcis-query-2_0.xsd" />
+    <None Remove="Communication\Xml\Schemas\EPCglobal.xsd" />
+    <None Remove="Communication\Xml\Schemas\Manifest.xsd" />
+    <None Remove="Communication\Xml\Schemas\Partner.xsd" />
+    <None Remove="Communication\Xml\Schemas\StandardBusinessDocumentHeader.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\BasicTypes.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\BusinessScope.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\DocumentIdentification.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\EPCglobal-epcis-2_0.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\EPCglobal-epcis-masterdata-2_0.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\EPCglobal-epcis-query-2_0.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\EPCglobal.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\Manifest.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\Partner.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\StandardBusinessDocumentHeader.xsd" />
     <EmbeddedResource Include="Features\v1_2\Artifacts\epcis1_2.wsdl" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\BasicTypes.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\BusinessScope.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\DocumentIdentification.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\EPCglobal-epcis-1_2.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\EPCglobal-epcis-masterdata-1_2.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\EPCglobal-epcis-query-1_2.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\EPCglobal.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\Manifest.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\Partner.xsd" />
-    <EmbeddedResource Include="Features\v1_2\Communication\Schemas\StandardBusinessDocumentHeader.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Json\Schemas\epcis2_0.json" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\BasicTypes.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\BusinessScope.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\DocumentIdentification.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\EPCglobal-epcis-2_0.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\EPCglobal-epcis-masterdata-2_0.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\EPCglobal-epcis-query-2_0.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\EPCglobal.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\Manifest.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\Partner.xsd" />
-    <EmbeddedResource Include="Features\v2_0\Communication\Xml\Schemas\StandardBusinessDocumentHeader.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\BasicTypes.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\BusinessScope.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\DocumentIdentification.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\EPCglobal-epcis-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\EPCglobal-epcis-masterdata-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\EPCglobal-epcis-query-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\EPCglobal.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\Manifest.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\Partner.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\StandardBusinessDocumentHeader.xsd" />
+    <EmbeddedResource Include="Communication\Json\Schemas\epcis2_0.json" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="FasTnT.IntegrationTests" />

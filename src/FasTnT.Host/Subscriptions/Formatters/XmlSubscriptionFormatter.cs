@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
-using FasTnT.Host.Features.v1_2.Communication.Utils;
+using FasTnT.Host.Communication.Xml.Formatters;
+using FasTnT.Host.Communication.Xml.Utils;
 
 namespace FasTnT.Host.Subscriptions.Formatters;
 

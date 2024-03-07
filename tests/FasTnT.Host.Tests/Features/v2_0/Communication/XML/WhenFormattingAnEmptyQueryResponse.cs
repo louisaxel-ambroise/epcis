@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Model.Queries;
-using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
+using FasTnT.Host.Communication.Xml.Formatters;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Xml.Linq;
 

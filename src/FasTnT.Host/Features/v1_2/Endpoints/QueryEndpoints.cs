@@ -41,19 +41,19 @@ public static class QueryEndpoints
         return new(nameof(SimpleMasterDataQuery), response);
     }
 
-    private static Task<GetQueryNamesResult> GetQueryNamesQuery()
+    private static GetQueryNamesResult GetQueryNamesQuery()
     {
-        return Task.FromResult(new GetQueryNamesResult(new[] { nameof(SimpleEventQuery), nameof(SimpleMasterDataQuery) }));
+        return new (new[] { nameof(SimpleEventQuery), nameof(SimpleMasterDataQuery) });
     }
 
-    private static Task<GetStandardVersionResult> GetStandardVersionQuery()
+    private static GetStandardVersionResult GetStandardVersionQuery()
     {
-        return Task.FromResult(new GetStandardVersionResult("1.2"));
+        return new ("1.2");
     }
 
-    private static Task<GetVendorVersionResult> GetVendorVersionQuery(IOptions<Constants> constants)
+    private static GetVendorVersionResult GetVendorVersionQuery(IOptions<Constants> constants)
     {
-        return Task.FromResult(new GetVendorVersionResult(constants.Value.VendorVersion.ToString()));
+        return new (constants.Value.VendorVersion.ToString());
     }
 
     private static async Task GetWsdl(HttpResponse response, CancellationToken cancellationToken)

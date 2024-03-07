@@ -1,8 +1,8 @@
 ﻿using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
-using FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
-using FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
+using FasTnT.Host.Communication.Json.Parsers;
+using FasTnT.Host.Communication.Xml.Parsers;
 using Microsoft.Extensions.Options;
 
 namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces;

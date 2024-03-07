@@ -1,4 +1,4 @@
-﻿using FasTnT.Host.Features.v1_2.Communication.Parsers;
+﻿using FasTnT.Host.Communication.Xml.Parsers;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
@@ -13,7 +13,7 @@ public class WhenParsingAGetSubscriptionIDsQuery : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Query = XmlQueryParser.Parse(ParseResource(ResourceName).Root);
+        Query = ParseResource(ResourceName).Parse();
     }
 
     [TestMethod]

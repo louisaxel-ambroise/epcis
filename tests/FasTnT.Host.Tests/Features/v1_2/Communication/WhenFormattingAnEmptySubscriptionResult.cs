@@ -1,5 +1,4 @@
-﻿using FasTnT.Domain.Model.Events;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
+﻿using FasTnT.Host.Communication.Xml.Formatters;
 using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using System.Xml.Linq;
 
@@ -14,7 +13,7 @@ public class WhenFormattingAnEmptySubscriptionResult
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.FormatPoll(Result);
+        Formatted = SoapResponseFormatter.FormatPoll(Result);
     }
 
     [TestMethod]

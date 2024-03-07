@@ -1,5 +1,5 @@
-﻿using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
-using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
+﻿using FasTnT.Host.Communication.Json.Formatters;
+using FasTnT.Host.Communication.Xml.Formatters;
 using FasTnT.Host.Features.v2_0.Extensions;
 using System.Web;
 
