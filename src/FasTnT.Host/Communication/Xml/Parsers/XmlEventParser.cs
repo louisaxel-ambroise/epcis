@@ -1,106 +1,347 @@
-﻿using FasTnT.Domain.Exceptions;
+﻿using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
-using FasTnT.Host.Subscriptions.Formatters;
 
 namespace FasTnT.Host.Communication.Xml.Parsers;
 
-public interface IXmlEventParser
+public abstract class XmlEventParser
 {
-    IEnumerable<Event> ParseEvents(XElement root);
-}
+    internal int Index;
+    internal Event Event;
 
-public static class XmlQueryParser
-{
-    public static object Parse(XElement queryElement)
+    public IEnumerable<Event> ParseEvents(XElement root)
     {
-        return queryElement?.Name?.LocalName switch
-        {
-            "Poll" => ParsePollQuery(queryElement),
-            "GetVendorVersion" => new GetVendorVersion(),
-            "GetStandardVersion" => new GetStandardVersion(),
-            "GetQueryNames" => ParseGetQueryNames(),
-            "Subscribe" => ParseSubscribe(queryElement),
-            "Unsubscribe" => ParseUnsubscribe(queryElement),
-            "GetSubscriptionIDs" => ParseGetSubscriptionIds(queryElement),
-            _ => throw new EpcisException(ExceptionType.ValidationException, "Unknown Query element")
-        };
+        return root.Elements().Select(ParseEvent);
     }
 
-    public static object ParsePollQuery(XElement element)
-    {
-        var queryName = element.Element("queryName").Value;
-        var parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToArray();
+    public abstract Event ParseEvent(XElement eventElement);
 
-        return queryName switch
+    internal void ParseReadPoint(XElement readPoint)
+    {
+        foreach (var field in readPoint.Elements())
         {
-            "SimpleEventQuery" => new PollEvents(parameters),
-            "SimpleMasterDataQuery" => new PollMasterData(parameters),
-            _ => throw new EpcisException(ExceptionType.NoSuchNameException, $"Unknown Query name: {queryName}")
-        };
-    }
-
-    public static Unsubscribe ParseUnsubscribe(XElement element)
-    {
-        return new(element.Element("subscriptionID").Value);
-    }
-
-    public static Subscribe ParseSubscribe(XElement element)
-    {
-        var subscription = new Subscription
-        {
-            Name = element.Element("subscriptionID").Value,
-            QueryName = element.Element("queryName").Value,
-            Destination = element.Element("dest").Value,
-            FormatterName = nameof(XmlSubscriptionFormatter),
-            Trigger = element.Element("controls")?.Element("trigger")?.Value,
-            ReportIfEmpty = bool.Parse(element.Element("controls").Element("reportIfEmpty").Value),
-            InitialRecordTime = DateTime.TryParse(element.Element("controls")?.Element("initialRecordTime")?.Value ?? string.Empty, null, DateTimeStyles.AdjustToUniversal, out DateTime date) ? date : DateTime.UtcNow,
-            Parameters = ParseQueryParameters(element.Element("params")?.Elements()).ToList(),
-            Schedule = ParseQuerySchedule(element.Element("controls")?.Element("schedule"))
-        };
-        subscription.LastExecutedTime = subscription.InitialRecordTime;
-
-        return new(subscription);
-    }
-
-    public static GetQueryNames ParseGetQueryNames() => new();
-
-    private static IEnumerable<QueryParameter> ParseQueryParameters(IEnumerable<XElement> elements)
-    {
-        foreach (var element in elements ?? Array.Empty<XElement>())
-        {
-            var name = element.Element("name")?.Value?.Trim();
-            var values = element.Element("value").HasElements
-                ? element.Element("value").Elements().Select(x => x.Value)
-                : new[] { element.Element("value").Value };
-
-            yield return QueryParameter.Create(name, values.ToArray());
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                switch (field.Name.LocalName)
+                {
+                    case "id":
+                        Event.ReadPoint = field.Value; break;
+                    case "extension":
+                        ParseFields(field, FieldType.ReadPointExtension); break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.ReadPointCustomField, null, null);
+            }
         }
     }
 
-    public static GetSubscriptionIDs ParseGetSubscriptionIds(XElement element)
+    internal void ParseBusinessLocation(XElement bizLocation)
     {
-        return new(element.Element("queryName")?.Value);
+        foreach (var field in bizLocation.Elements())
+        {
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                switch (field.Name.LocalName)
+                {
+                    case "id":
+                        Event.BusinessLocation = field.Value; break;
+                    case "extension":
+                        ParseFields(field, FieldType.BusinessLocationExtension); break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.BusinessLocationCustomField, null, null);
+            }
+        }
     }
 
-    private static SubscriptionSchedule ParseQuerySchedule(XElement element)
+    internal static IEnumerable<Epc> ParseEpcList(XElement element, EpcType type)
     {
-        if (element == null || element.IsEmpty)
+        return element.Elements("epc").Select(x => new Epc { Id = x.Value, Type = type });
+    }
+
+    internal static IEnumerable<Epc> ParseEpcQuantityList(XElement element, EpcType type)
+    {
+        return element.Elements("quantityElement").Select(x => new Epc
         {
-            return default;
+            Id = x.Element("epcClass").Value,
+            Quantity = float.TryParse(x.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float quantity) ? quantity : default(float?),
+            UnitOfMeasure = x.Element("uom")?.Value,
+            Type = type
+        });
+    }
+
+    internal void ParseErrorDeclaration(XElement element)
+    {
+        foreach (var field in element.Elements())
+        {
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                switch (field.Name.LocalName)
+                {
+                    case "declarationTime":
+                        Event.CorrectiveDeclarationTime = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "reason":
+                        Event.CorrectiveReason = field.Value; break;
+                    case "correctiveEventIDs":
+                        Event.CorrectiveEventIds.AddRange(field.Elements("correctiveEventID").Select(x => new CorrectiveEventId { CorrectiveId = x.Value })); break;
+                    case "extension":
+                        ParseFields(field, FieldType.ErrorDeclarationExtension); break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.ErrorDeclarationCustomField, null, null);
+            }
+        }
+    }
+
+    internal static IEnumerable<Source> ParseSources(XElement element)
+    {
+        return element.Elements("source").Select(x => new Source
+        {
+            Type = x.Attribute("type").Value,
+            Id = x.Value
+        });
+    }
+
+    internal static IEnumerable<Destination> ParseDestinations(XElement element)
+    {
+        return element.Elements("destination").Select(x => new Destination
+        {
+            Type = x.Attribute("type").Value,
+            Id = x.Value
+        });
+    }
+
+    internal static IEnumerable<BusinessTransaction> ParseTransactionList(XElement element)
+    {
+        return element.Elements("bizTransaction").Select(x => new BusinessTransaction
+        {
+            Id = x.Value,
+            Type = x.Attribute("type")?.Value ?? string.Empty
+        });
+    }
+
+    internal static IEnumerable<PersistentDisposition> ParsePersistentDisposition(XElement field)
+    {
+        return field.Elements().Select(x => new PersistentDisposition
+        {
+            Id = x.Value,
+            Type = Enum.Parse<PersistentDispositionType>(x.Name.LocalName, true)
+        });
+    }
+
+    internal IEnumerable<SensorElement> ParseSensorList(XElement field)
+    {
+        return field.Elements().Select(ParseSensorElement);
+    }
+
+    internal SensorElement ParseSensorElement(XElement element)
+    {
+        var sensorElement = new SensorElement();
+
+        foreach (var field in element.Elements())
+        {
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                if (field.Name.LocalName == "sensorMetadata")
+                {
+                    ParseSensorMetadata(sensorElement, field);
+                }
+                else if (field.Name.LocalName == "sensorReport")
+                {
+                    Event.Reports.Add(ParseSensorReport(sensorElement, field)); break;
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.Sensor, null, null);
+            }
         }
 
-        return new()
+        return sensorElement;
+    }
+
+    internal SensorReport ParseSensorReport(SensorElement sensorElement, XElement element)
+    {
+        var report = new SensorReport
         {
-            Second = element.Element("second")?.Value ?? string.Empty,
-            Minute = element.Element("minute")?.Value ?? string.Empty,
-            Hour = element.Element("hour")?.Value ?? string.Empty,
-            Month = element.Element("month")?.Value ?? string.Empty,
-            DayOfMonth = element.Element("dayOfMonth")?.Value ?? string.Empty,
-            DayOfWeek = element.Element("dayOfWeek")?.Value ?? string.Empty
+            Index = ++Index,
+            SensorIndex = sensorElement.Index
         };
+
+        foreach (var field in element.Attributes())
+        {
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                switch (field.Name.LocalName)
+                {
+                    case "value":
+                        report.Value = float.Parse(field.Value); break;
+                    case "type":
+                        report.Type = field.Value; break;
+                    case "component":
+                        report.Component = field.Value; break;
+                    case "stringValue":
+                        report.StringValue = field.Value; break;
+                    case "booleanValue":
+                        report.BooleanValue = bool.Parse(field.Value); break;
+                    case "hexBinaryValue":
+                        report.HexBinaryValue = field.Value; break;
+                    case "uriValue":
+                        report.UriValue = field.Value; break;
+                    case "uom":
+                        report.UnitOfMeasure = field.Value; break;
+                    case "minValue":
+                        report.MinValue = float.Parse(field.Value); break;
+                    case "maxValue":
+                        report.MaxValue = float.Parse(field.Value); break;
+                    case "sDev":
+                        report.SDev = float.Parse(field.Value); break;
+                    case "chemicalSubstance":
+                        report.ChemicalSubstance = field.Value; break;
+                    case "microorganism":
+                        report.Microorganism = field.Value; break;
+                    case "deviceID":
+                        report.DeviceId = field.Value; break;
+                    case "deviceMetadata":
+                        report.DeviceMetadata = field.Value; break;
+                    case "rawData":
+                        report.RawData = field.Value; break;
+                    case "time":
+                        report.Time = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "meanValue":
+                        report.MeanValue = float.Parse(field.Value); break;
+                    case "percRank":
+                        report.PercRank = float.Parse(field.Value); break;
+                    case "percValue":
+                        report.PercValue = float.Parse(field.Value); break;
+                    case "dataProcessingMethod":
+                        report.DataProcessingMethod = field.Value; break;
+                    case "coordinateReferenceSystem":
+                        report.CoordinateReferenceSystem = field.Value; break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.SensorReport, null, null);
+            }
+        }
+
+        return report;
+    }
+
+    internal void ParseSensorMetadata(SensorElement sensorElement, XElement metadata)
+    {
+        foreach (var field in metadata.Attributes())
+        {
+            if (string.IsNullOrEmpty(field.Name.NamespaceName))
+            {
+                switch (field.Name.LocalName)
+                {
+                    case "time":
+                        sensorElement.Time = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "bizRules":
+                        sensorElement.BizRules = field.Value; break;
+                    case "deviceID":
+                        sensorElement.DeviceId = field.Value; break;
+                    case "deviceMetadata":
+                        sensorElement.DeviceMetadata = field.Value; break;
+                    case "rawData":
+                        sensorElement.RawData = field.Value; break;
+                    case "startTime":
+                        sensorElement.StartTime = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "endTime":
+                        sensorElement.EndTime = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                    case "dataProcessingMethod":
+                        sensorElement.DataProcessingMethod = field.Value; break;
+                    default:
+                        throw new EpcisException(ExceptionType.ImplementationException, $"Unexpected event field: {field.Name}");
+                }
+            }
+            else
+            {
+                ParseCustomFields(field, FieldType.SensorMetadata, null, null);
+            }
+        }
+    }
+
+    internal void ParseFields(XElement element, FieldType fieldType)
+    {
+        foreach (var field in element.Elements())
+        {
+            ParseCustomFields(field, fieldType, null, null);
+        }
+    }
+
+    internal void ParseCustomFields(XElement element, FieldType fieldType, int? parentIndex, int? entityIndex)
+    {
+        var field = new Field
+        {
+            Index = ++Index,
+            ParentIndex = parentIndex,
+            EntityIndex = entityIndex,
+            Type = fieldType,
+            Name = element.Name.LocalName,
+            Namespace = string.IsNullOrWhiteSpace(element.Name.NamespaceName) ? default : element.Name.NamespaceName,
+            TextValue = element.HasElements ? default : element.Value,
+            NumericValue = element.HasElements ? default : float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
+            DateValue = element.HasElements ? default : DateTime.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTime dateValue) ? dateValue : default(DateTime?)
+        };
+
+        foreach (var children in element.Elements())
+        {
+            ParseCustomFields(children, fieldType, field.Index, entityIndex);
+        }
+        foreach (var attribute in element.Attributes().Where(x => !x.IsNamespaceDeclaration))
+        {
+            ParseAttribute(attribute, field.Index, entityIndex);
+        }
+
+        Event.Fields.Add(field);
+    }
+
+    internal void ParseCustomFields(XAttribute element, FieldType fieldType, int? parentIndex, int? entityIndex)
+    {
+        Event.Fields.Add(new()
+        {
+            Index = ++Index,
+            ParentIndex = parentIndex,
+            EntityIndex = entityIndex,
+            Type = fieldType,
+            Name = element.Name.LocalName,
+            Namespace = string.IsNullOrWhiteSpace(element.Name.NamespaceName) ? default : element.Name.NamespaceName,
+            TextValue = element.Value,
+            NumericValue = float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
+            DateValue = DateTime.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTime dateValue) ? dateValue : default(DateTime?)
+        });
+    }
+
+    internal void ParseAttribute(XAttribute element, int? parentIndex, int? entityIndex)
+    {
+        Event.Fields.Add(new()
+        {
+            Index = ++Index,
+            ParentIndex = parentIndex,
+            EntityIndex = entityIndex,
+            Type = FieldType.Attribute,
+            Name = element.Name.LocalName,
+            Namespace = element.Name.NamespaceName,
+            TextValue = element.Value,
+            NumericValue = float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
+            DateValue = DateTime.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTime dateValue) ? dateValue : default(DateTime?)
+        });
     }
 }

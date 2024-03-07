@@ -13,7 +13,7 @@ public class WhenParsingAnObjectEventWithCertificationInfo : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Event = new XmlV2EventParser().Parse(ParseXml(ResourceName));
+        Event = new XmlV2EventParser().ParseEvent(ParseXml(ResourceName));
     }
 
     [TestMethod]

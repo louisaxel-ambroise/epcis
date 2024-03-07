@@ -7,7 +7,7 @@ using System.Xml.XPath;
 
 namespace FasTnT.Host.Communication.Xml.Parsers;
 
-public class XmlEpcisDocumentParser(XElement root, IXmlEventParser eventParser)
+public class XmlEpcisDocumentParser(XElement root, XmlEventParser eventParser)
 {
     private Request _request;
 
