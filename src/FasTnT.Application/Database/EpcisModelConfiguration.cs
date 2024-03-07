@@ -114,8 +114,8 @@ public static class EpcisModelConfiguration
         mdChildren.HasOne(x => x.MasterData).WithMany(x => x.Children).HasForeignKey("MasterDataRequestId", "MasterDataType", "MasterDataId");
         mdChildren.Property(x => x.ChildrenId).HasMaxLength(256);
 
-        var mdHierarchy = modelBuilder.Entity<MasterDataHierarchy>();
-        mdHierarchy.ToView(nameof(MasterDataHierarchy), Cbv);
+        var mdHierarchy = modelBuilder.Entity<MasterdataHierarchy>();
+        mdHierarchy.ToView(nameof(MasterdataHierarchy), Cbv);
         mdHierarchy.HasNoKey();
         mdHierarchy.Property(x => x.Root).IsRequired(true);
         mdHierarchy.Property(x => x.Id).IsRequired(true);
