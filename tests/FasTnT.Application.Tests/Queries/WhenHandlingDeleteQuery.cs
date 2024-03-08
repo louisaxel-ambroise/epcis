@@ -34,7 +34,7 @@ public class WhenHandlingDeleteQuery
                 UserId = UserContext.UserId,
                 Parameters = new List<QueryParameter>
                 {
-                    new QueryParameter{ Name = "EQ_type", Values = new []{ "ObjectEvent", "TestEvent" }}
+                    new QueryParameter{ Name = "EQ_type", Values = ["ObjectEvent", "TestEvent"]}
                 }
             },
             new StoredQuery

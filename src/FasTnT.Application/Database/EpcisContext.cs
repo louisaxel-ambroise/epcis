@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FasTnT.Application.Database;
 
-public class EpcisContext : DbContext
+public sealed class EpcisContext : DbContext
 {
     public EpcisContext(DbContextOptions<EpcisContext> options) : base(options)
     {
@@ -28,8 +28,10 @@ public class EpcisContext : DbContext
         return masterdataContext.ApplyTo(Set<MasterData>());
     }
 
-    internal IQueryable<MasterData> BizLocations => Set<MasterData>().Where(x => x.Type == "urn:epcglobal:epcis:vtype:BusinessLocation");
-    internal IQueryable<MasterData> ReadPoints => Set<MasterData>().Where(x => x.Type == "urn:epcglobal:epcis:vtype:ReadPoint");
+    public IQueryable<MasterdataHierarchy> Hierarchy(string type, string root)
+    {
+        return Set<MasterdataHierarchy>().Where(x => x.Type == type && x.Root == root);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
