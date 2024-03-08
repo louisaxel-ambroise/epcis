@@ -18,10 +18,7 @@ public class EventQueryContextTests
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -35,7 +32,7 @@ public class EventQueryContextTests
                 RecordTime =  new DateTime(2020, 03, 15, 21, 14, 10),
                 Id = 1,
                 SchemaVersion = "2.0",
-                Events = new List<Event> {
+                Events = [
                     new Event
                     {
                         Type = EventType.ObjectEvent,
@@ -48,7 +45,7 @@ public class EventQueryContextTests
                         EventId = "ni://test",
                         EventTime =  new DateTime(2020, 02, 15, 21, 14, 10),
                         EventTimeZoneOffset = "+02:00",
-                        Epcs = new List<Epc>{ new Epc { Id = "epc1", Type = EpcType.List } }
+                        Epcs = [new Epc { Id = "epc1", Type = EpcType.List }]
                     },
                     new Event
                     {
@@ -60,9 +57,9 @@ public class EventQueryContextTests
                         Disposition = "disposition",
                         EventTime = new DateTime(2021, 02, 15, 21, 14, 10),
                         EventTimeZoneOffset = "+01:00",
-                        Epcs = new List<Epc>{ new Epc { Id = "epc2", Type = EpcType.List }, new Epc { Id = "epc.value.1", Type = EpcType.List } },
-                        Fields = new List<Field>
-                        {
+                        Epcs = [ new Epc { Id = "epc2", Type = EpcType.List }, new Epc { Id = "epc.value.1", Type = EpcType.List }],
+                        Fields =
+                        [
                             new Field
                             {
                                 Index = 1,
@@ -89,9 +86,9 @@ public class EventQueryContextTests
                                 NumericValue = 2.5,
                                 TextValue = "2.5"
                             }
-                        }
+                        ]
                     }
-                }
+                ]
             }
         });
 
@@ -110,7 +107,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldRestrictTheDataIfTheEventCountLimitIsExceeded()
     {
-        var result = Context.QueryEvents(new[] { new QueryParameter { Name = "eventCountLimit", Values = new[] { "1" } } }).ToList();
+        var result = Context.QueryEvents(new[] { new QueryParameter { Name = "eventCountLimit", Values = [ "1" ] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
@@ -119,7 +116,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldRestrictTheDataIfTheMaxEventCountIsExceeded()
     {
-        var result = Context.QueryEvents(new[] { new QueryParameter { Name = "maxEventCount", Values = new[] { "1" } } }).ToList();
+        var result = Context.QueryEvents(new[] { new QueryParameter { Name = "maxEventCount", Values = ["1"] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
@@ -374,11 +371,11 @@ public class EventQueryContextTests
     {
         if (throws)
         {
-            Assert.ThrowsException<EpcisException>(() => Context.QueryEvents(new[] { new QueryParameter { Name = paramName, Values = new[] { "value" } } }).ToList());
+            Assert.ThrowsException<EpcisException>(() => Context.QueryEvents(new[] { new QueryParameter { Name = paramName, Values = ["value"] } }).ToList());
         }
         else
         {
-            var result = Context.QueryEvents(new[] { new QueryParameter { Name = paramName, Values = new[] { "value" } } }).ToList();
+            var result = Context.QueryEvents(new[] { new QueryParameter { Name = paramName, Values = ["value"] } }).ToList();
 
             Assert.IsNotNull(result);
         }

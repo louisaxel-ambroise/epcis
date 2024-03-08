@@ -114,7 +114,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldRestrictTheDataIfTheMaxElementCountLimitIsExceeded()
     {
-        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "maxElementCount", Values = new[] { "1" } } }).ToList();
+        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "maxElementCount", Values = ["1"] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
@@ -123,7 +123,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheVocabularyNameParameter()
     {
-        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "vocabularyName", Values = new[] { "urn:epcglobal:epcis:vtype:ReadPoint" } } }).ToList();
+        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "vocabularyName", Values = ["urn:epcglobal:epcis:vtype:ReadPoint"] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
@@ -133,7 +133,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQNameParameter()
     {
-        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "EQ_name", Values = new[] { "MD02" } } }).ToList();
+        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "EQ_name", Values = ["MD02"] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
@@ -143,7 +143,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheWDNameParameter()
     {
-        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "WD_name", Values = new[] { "MD03" } } }).ToList();
+        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "WD_name", Values = ["MD03"] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(2, result.Count);
@@ -154,7 +154,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheHasAttrParameter()
     {
-        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "HASATTR", Values = new[] { "MD2AT1" } } }).ToList();
+        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = "HASATTR", Values = ["MD2AT1"] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
@@ -165,7 +165,7 @@ public class MasterDataQueryContextTests
     [DataRow("MD2AT1", "NOVALUE", 0)]
     public void ItShouldApplyTheEqAttrParameter(string paramName, string value, int expectedResult)
     {
-        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = $"EQATTR_{paramName}", Values = new[] { value } } }).ToList();
+        var result = Context.QueryMasterData(new[] { new QueryParameter { Name = $"EQATTR_{paramName}", Values = [value] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedResult, result.Count);
@@ -186,11 +186,11 @@ public class MasterDataQueryContextTests
     {
         if (throws)
         {
-            Assert.ThrowsException<EpcisException>(() => Context.QueryMasterData(new[] { new QueryParameter { Name = paramName, Values = new[] { paramValue } } }).ToList());
+            Assert.ThrowsException<EpcisException>(() => Context.QueryMasterData(new[] { new QueryParameter { Name = paramName, Values = [paramValue] } }).ToList());
         }
         else
         {
-            var result = Context.QueryMasterData(new[] { new QueryParameter { Name = paramName, Values = new[] { paramValue } } }).ToList();
+            var result = Context.QueryMasterData(new[] { new QueryParameter { Name = paramName, Values = [paramValue] } }).ToList();
 
             Assert.IsNotNull(result);
         }

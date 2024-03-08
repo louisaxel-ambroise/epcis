@@ -41,7 +41,7 @@ public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOpti
             .WhereIn(x => x.Id, eventIds)
             .ToListAsync(cancellationToken);
 
-        return events.OrderBy(e => eventIds.IndexOf(e.Id)).ToList();
+        return new (events.OrderBy(e => eventIds.IndexOf(e.Id)));
     }
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
