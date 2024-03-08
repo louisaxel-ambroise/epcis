@@ -53,13 +53,13 @@ public class XmlV2EventParser : XmlEventParser
                     case "outputEPCList":
                         Event.Epcs.AddRange(ParseEpcList(field, EpcType.OutputEpc)); break;
                     case "quantityList":
-                        Event.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.Quantity)); break;
+                        Event.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.Quantity)); break;
                     case "childQuantityList":
-                        Event.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.ChildQuantity)); break;
+                        Event.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.ChildQuantity)); break;
                     case "inputQuantityList":
-                        Event.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.InputQuantity)); break;
+                        Event.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.InputQuantity)); break;
                     case "outputQuantityList":
-                        Event.Epcs.AddRange(ParseQuantityEpcList(field, EpcType.OutputQuantity)); break;
+                        Event.Epcs.AddRange(ParseEpcQuantityList(field, EpcType.OutputQuantity)); break;
                     case "bizTransactionList":
                         Event.Transactions.AddRange(ParseTransactionList(field)); break;
                     case "sourceList":
@@ -83,16 +83,5 @@ public class XmlV2EventParser : XmlEventParser
         }
 
         return Event;
-    }
-
-    private static IEnumerable<Epc> ParseQuantityEpcList(XElement field, EpcType type)
-    {
-        return field.Elements().Select(x => new Epc
-        {
-            Id = x.Element("epcClass").Value,
-            Quantity = float.TryParse(x.Element("quantity")?.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float quantity) ? quantity : default(float?),
-            UnitOfMeasure = x.Element("uom")?.Value,
-            Type = type,
-        });
     }
 }
