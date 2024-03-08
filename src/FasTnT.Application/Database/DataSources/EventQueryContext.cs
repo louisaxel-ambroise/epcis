@@ -10,7 +10,7 @@ using FasTnT.Application.Database.DataSources.Utils;
 
 namespace FasTnT.Application.Database.DataSources;
 
-internal class EventQueryContext
+internal sealed class EventQueryContext
 {
     private bool _ascending;
     private int? _skip, _take;
@@ -78,9 +78,9 @@ internal class EventQueryContext
             case "EQ_correctiveEventID":
                 Filter(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))); break;
             case "WD_readPoint":
-                Filter(x => _context.Set<MasterdataHierarchy>().Any(h => h.Type == MasterData.ReadPoint && h.Root == x.ReadPoint && param.Values.Contains(h.Id))); break;
+                Filter(x => _context.Hierarchy(MasterData.ReadPoint, x.ReadPoint).Any(h => param.Values.Contains(h.Id))); break;
             case "WD_bizLocation":
-                Filter(x => _context.Set<MasterdataHierarchy>().Any(h => h.Type == MasterData.Location && h.Root == x.BusinessLocation && param.Values.Contains(h.Id))); break;
+                Filter(x => _context.Hierarchy(MasterData.Location, x.ReadPoint).Any(h => param.Values.Contains(h.Id))); break;
             case "EQ_requestID":
                 Filter(x => param.Values.Select(int.Parse).Contains(x.Request.Id)); break;
             case "EQ_captureID":
@@ -203,12 +203,19 @@ internal class EventQueryContext
 
     private void ApplyMasterdataAttributeParameter(string field, string attributeName, string[] values)
     {
+        var filter = (Expression<Func<MasterDataAttribute, bool>>)(a => a.Id == attributeName);
+        
+        if(values.Length > 0)
+        {
+            filter = filter.AndAlso(a => values.Contains(a.Value));
+        }
+
         switch (field)
         {
             case "bizLocation":
-                Filter(e => _context.BizLocations.Any(p => p.Id == e.BusinessLocation && p.Attributes.Any(a => a.Id == attributeName && (values.Length == 0 || values.Contains(a.Value))))); break;
+                Filter(e => _context.Set<MasterData>().Any(p => p.Type == MasterData.Location && p.Id == e.BusinessLocation && p.Attributes.AsQueryable().Any(filter))); break;
             case "readPoint":
-                Filter(e => _context.ReadPoints.Any(p => p.Id == e.ReadPoint && p.Attributes.Any(a => a.Id == attributeName && (values.Length == 0 || values.Contains(a.Value))))); break;
+                Filter(e => _context.Set<MasterData>().Any(p => p.Type == MasterData.ReadPoint && p.Id == e.ReadPoint && p.Attributes.AsQueryable().Any(filter))); break;
             default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid masterdata field: {field}");
         }
@@ -229,7 +236,14 @@ internal class EventQueryContext
 
     private void ApplyFieldParameter(FieldType type, bool inner, string name, string ns, string[] values)
     {
-        Filter(x => x.Fields.Any(f => f.Type == type && f.ParentIndex == null == !inner && f.Name == name && f.Namespace == ns && (values.Length == 0 || values.Contains(f.TextValue))));
+        var filter = (Expression<Func<Field, bool>>)(f => f.Type == type && f.ParentIndex.HasValue == inner && f.Name == name && f.Namespace == ns);
+
+        if (values.Length > 0)
+        {
+            filter = filter.AndAlso(f => values.Contains(f.TextValue));
+        }
+
+        Filter(x => x.Fields.AsQueryable().Any(filter));
     }
 
     private void ApplyReportUomParameter(float[] values, string uom)
@@ -239,9 +253,10 @@ internal class EventQueryContext
 
     private void ApplyComparison(QueryParameter param, FieldType type, string ns, string name, bool inner)
     {
-        var customFieldPredicate = (Expression<Func<Field, bool>>)(f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex != null == inner);
+        var customFieldPredicate = (Expression<Func<Field, bool>>)(f => f.Type == type && f.Name == name && f.Namespace == ns && f.ParentIndex.HasValue == inner);
+        var fieldValuePredicate = param.Compare<Field>(x => param.IsDateTime() ? x.DateValue : x.NumericValue);
 
-        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.AndAlso(param.Compare<Field>(x => param.IsDateTime() ? x.DateValue : x.NumericValue))));
+        Filter(x => x.Fields.AsQueryable().Any(customFieldPredicate.AndAlso(fieldValuePredicate)));
     }
 
     private void ApplyMatchParameter(QueryParameter param)

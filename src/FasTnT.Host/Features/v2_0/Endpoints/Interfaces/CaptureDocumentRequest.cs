@@ -26,7 +26,7 @@ public record CaptureDocumentRequest(Request Request)
         }
         else
         {
-            var headerContext = context.Request.Headers.TryGetValue("GS1-Extensions", out var extensions) ? extensions.ToArray() : Array.Empty<string>();
+            var headerContext = context.Request.Headers.TryGetValue("GS1-Extensions", out var extensions) ? extensions.ToArray() : [];
             var epcisContext = Namespaces.ParseHeader(headerContext);
 
             request = await JsonCaptureRequestParser.ParseDocumentAsync(context.Request.Body, epcisContext, context.RequestAborted);

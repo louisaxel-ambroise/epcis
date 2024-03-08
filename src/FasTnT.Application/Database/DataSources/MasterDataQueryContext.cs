@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace FasTnT.Application.Database.DataSources;
 
-internal class MasterDataQueryContext
+internal sealed class MasterDataQueryContext
 {
     private int _take = int.MaxValue;
     private readonly List<Func<IQueryable<MasterData>, IQueryable<MasterData>>> _filters = [];
