@@ -29,7 +29,7 @@ public class EventQueryContextTests
             new Request
             {
                 CaptureId = "capture_id_test",
-                RecordTime =  new DateTime(2020, 03, 15, 21, 14, 10),
+                RecordTime =  new DateTime(2020, 03, 15, 21, 14, 10, DateTimeKind.Utc),
                 Id = 1,
                 SchemaVersion = "2.0",
                 Events = [
@@ -38,7 +38,7 @@ public class EventQueryContextTests
                         Type = EventType.ObjectEvent,
                         Action = EventAction.Add,
                         BusinessLocation = "test_location",
-                        CorrectiveDeclarationTime = DateTime.UtcNow,
+                        CorrectiveDeclarationTime = new DateTime(2024, 02, 15, 21, 14, 10),
                         CorrectiveReason = "invalid_evt",
                         CorrectiveEventIds = new List<CorrectiveEventId>{{ new CorrectiveEventId { CorrectiveId = "ni://test2" } }},
                         BusinessStep = "step",
@@ -379,5 +379,31 @@ public class EventQueryContextTests
 
             Assert.IsNotNull(result);
         }
+    }
+
+    [TestMethod]
+    [DataRow("2023-01-15T00:00:00.000Z", 1)]
+    [DataRow("2024-02-15T21:14:10.000Z", 1)]
+    [DataRow("2025-01-10T00:00:00.000Z", 0)]
+    public void ItShouldApplyTheGE_errorDeclarationTimeFilter(string value, int expectedEvents)
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("GE_errorDeclarationTime", value) }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedEvents, result.Count);
+        Assert.IsTrue(result.All(x => x.CorrectiveDeclarationTime >= DateTime.Parse(value).ToUniversalTime()));
+    }
+
+    [TestMethod]
+    [DataRow("2025-01-10T00:00:00.000Z", 1)]
+    [DataRow("2024-02-15T21:14:10.000Z", 0)]
+    [DataRow("2023-01-15T00:00:00.000Z", 0)]
+    public void ItShouldApplyTheLT_errorDeclarationTimeFilter(string value, int expectedEvents)
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("LT_errorDeclarationTime", value) }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedEvents, result.Count);
+        Assert.IsTrue(result.All(x => x.CorrectiveDeclarationTime < DateTime.Parse(value).ToUniversalTime()));
     }
 }
