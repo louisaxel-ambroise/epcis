@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
-using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
-using FasTnT.Host.Features.v2_0.Communication.Json.Utils;
+using FasTnT.Host.Communication.Json.Formatters;
+using FasTnT.Host.Communication.Json.Utils;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
