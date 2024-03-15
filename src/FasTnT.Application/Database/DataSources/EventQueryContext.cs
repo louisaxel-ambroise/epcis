@@ -77,10 +77,14 @@ internal sealed class EventQueryContext
                 Filter(x => param.Values.Contains(x.CorrectiveReason)); break;
             case "EQ_correctiveEventID":
                 Filter(x => x.CorrectiveEventIds.Any(ce => param.Values.Contains(ce.CorrectiveId))); break;
+            case "GE_errorDeclarationTime":
+                Filter(x => x.CorrectiveDeclarationTime >= param.AsDate()); break;
+            case "LT_errorDeclarationTime":
+                Filter(x => x.CorrectiveDeclarationTime < param.AsDate()); break;
             case "WD_readPoint":
-                Filter(x => _context.Hierarchy(MasterData.ReadPoint, x.ReadPoint).Any(h => param.Values.Contains(h.Id))); break;
+                Filter(x => _context.ReadPointHierarchy(x.ReadPoint).Any(h => param.Values.Contains(h.Id))); break;
             case "WD_bizLocation":
-                Filter(x => _context.Hierarchy(MasterData.Location, x.ReadPoint).Any(h => param.Values.Contains(h.Id))); break;
+                Filter(x => _context.LocationHierarchy(x.BusinessLocation).Any(h => param.Values.Contains(h.Id))); break;
             case "EQ_requestID":
                 Filter(x => param.Values.Select(int.Parse).Contains(x.Request.Id)); break;
             case "EQ_captureID":
