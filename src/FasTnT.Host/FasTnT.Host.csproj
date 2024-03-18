@@ -5,38 +5,33 @@
     <UserSecretsId>3811061c-32dd-4c7c-98bc-d8f955a5b911</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Endpoints\Interfaces\CaptureRequest.cs" />
+    <Compile Remove="Features\**" />
+    <Content Remove="Features\**" />
+    <EmbeddedResource Remove="Features\**" />
+    <None Remove="Features\**" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Communication\v1_2\Artifacts\epcis1_2.wsdl" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\BasicTypes.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\BusinessScope.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\DocumentIdentification.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\EPCglobal-epcis-1_2.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\EPCglobal-epcis-masterdata-1_2.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\EPCglobal-epcis-query-1_2.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\EPCglobal.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\Manifest.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\Partner.xsd" />
-    <EmbeddedResource Include="Communication\v1_2\Communication\Schemas\StandardBusinessDocumentHeader.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Json\Schemas\epcis2_0.json" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\BasicTypes.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\BusinessScope.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\DocumentIdentification.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\EPCglobal-epcis-2_0.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\EPCglobal-epcis-masterdata-2_0.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\EPCglobal-epcis-query-2_0.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\EPCglobal.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\Manifest.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\Partner.xsd" />
-    <EmbeddedResource Include="Communication\v2_0\Xml\Schemas\StandardBusinessDocumentHeader.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\shared\BasicTypes.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\shared\BusinessScope.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\shared\DocumentIdentification.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\shared\EPCglobal.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\shared\Manifest.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\shared\Partner.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\shared\StandardBusinessDocumentHeader.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\EPCglobal-epcis-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\EPCglobal-epcis-masterdata-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v1\EPCglobal-epcis-query-1_2.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\EPCglobal-epcis-2_0.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\EPCglobal-epcis-masterdata-2_0.xsd" />
+    <EmbeddedResource Include="Communication\Xml\Schemas\v2\EPCglobal-epcis-query-2_0.xsd" />
+    <EmbeddedResource Include="Communication\Json\Schemas\epcis2_0.json" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="FasTnT.IntegrationTests" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="JsonSchema.Net" Version="6.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

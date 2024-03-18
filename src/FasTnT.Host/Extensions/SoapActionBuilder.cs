@@ -1,5 +1,6 @@
 ﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Endpoints.Responses.Soap;
+using FasTnT.Host.Features.v1_2.Extensions;
 using System.Runtime.CompilerServices;
 
 namespace FasTnT.Host.Extensions;
@@ -47,7 +48,7 @@ public class SoapActionBuilder
 
             var result = await handler.DynamicInvoke(paramList).CastTask();
 
-            return SoapResults.Create(result);
+            return SoapResults.FromResult(result);
         }
         catch (Exception ex)
         {

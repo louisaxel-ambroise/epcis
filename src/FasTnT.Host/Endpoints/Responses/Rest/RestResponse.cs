@@ -4,7 +4,7 @@ using FasTnT.Host.Endpoints.Interfaces;
 using FasTnT.Host.Extensions;
 using System.Web;
 
-namespace FasTnT.Host.Endpoints.Responses.Rest;
+namespace FasTnT.Host.Features.v2_0.Endpoints.Interfaces.Utils;
 
 public record RestResponse<T>(T Response) : IResult
 {

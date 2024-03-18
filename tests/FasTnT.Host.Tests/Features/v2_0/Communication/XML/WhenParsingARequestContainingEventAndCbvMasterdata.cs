@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Model;
-using FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
+using FasTnT.Host.Communication.Xml.Parsers;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.XML;
 
@@ -13,7 +13,7 @@ public class WhenParsingARequestContainingEventAndCbvMasterdata : XmlParsingTest
     [TestInitialize]
     public void When()
     {
-        Request = XmlEpcisDocumentParser.Parse(ParseResource(ResourceName));
+        Request = GetParser(ResourceName).Parse();
     }
 
     [TestMethod]

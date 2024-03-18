@@ -1,12 +1,12 @@
 ﻿using System.Reflection;
 
-namespace FasTnT.Host.Extensions;
+namespace FasTnT.Host.Features.v1_2.Extensions;
 
 public static class TaskExtensions
 {
     public static Task<object> CastTask(this object taskObj)
     {
-        if(taskObj is not Task)
+        if (taskObj is not Task)
         {
             return Task.FromResult(taskObj);
         }

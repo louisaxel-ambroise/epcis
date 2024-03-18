@@ -1,4 +1,4 @@
-﻿using FasTnT.Host.Features.v1_2.Communication.Parsers;
+﻿using FasTnT.Host.Communication.Xml.Parsers;
 
 namespace FasTnT.Host.Endpoints.Responses.Soap;
 

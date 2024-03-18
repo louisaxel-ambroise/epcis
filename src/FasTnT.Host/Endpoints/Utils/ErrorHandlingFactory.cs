@@ -1,8 +1,8 @@
 ﻿using FasTnT.Domain.Exceptions;
+using FasTnT.Host.Communication.Xml.Formatters;
 using FasTnT.Host.Endpoints.Responses.Soap;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
 
-namespace FasTnT.Host.Endpoints.Utils;
+namespace FasTnT.Host.Features.v1_2;
 
 public static class ErrorHandlingFactory
 {
@@ -37,9 +37,9 @@ public static class ErrorHandlingFactory
                 var error = ex is EpcisException epcisException ? epcisException : EpcisException.Default;
 
                 context.Response.ContentType = "application/xml";
-                context.Response.StatusCode = XmlResponseFormatter.GetHttpStatusCode(error);
+                context.Response.StatusCode = SoapResponseFormatter.GetHttpStatusCode(error);
 
-                await context.Response.WriteAsync(XmlResponseFormatter.FormatError(error).ToString(SaveOptions.None));
+                await context.Response.WriteAsync(SoapResponseFormatter.FormatError(error).ToString(SaveOptions.None));
             }
         };
     }

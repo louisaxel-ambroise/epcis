@@ -1,5 +1,5 @@
-﻿using FasTnT.Host.Features.v1_2.Communication.Formatters;
-using FasTnT.Host.Interfaces;
+﻿using FasTnT.Host.Communication.Xml.Formatters;
+using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
 using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
@@ -13,7 +13,7 @@ public class WhenFormattingAGetQueryNamesResult
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.Format(Result);
+        Formatted = SoapResponseFormatter.Format(Result);
     }
 
     [TestMethod]

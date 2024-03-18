@@ -1,7 +1,6 @@
 ﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
+using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication;
 
