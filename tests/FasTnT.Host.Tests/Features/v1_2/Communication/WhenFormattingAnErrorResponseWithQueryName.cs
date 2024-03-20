@@ -29,7 +29,7 @@ public class WhenFormattingAnErrorResponseWithQueryName
         Assert.AreEqual(1, Formatted.Elements().Count());
         Assert.AreEqual(Result.QueryName, Formatted.Element("queryName").Value);
     }
-    
+
     [TestMethod]
     public void ThereShouldNotBeASubscriptionIDField()
     {

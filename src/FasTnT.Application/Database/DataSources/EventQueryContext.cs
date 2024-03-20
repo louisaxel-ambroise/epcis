@@ -1,12 +1,12 @@
-﻿using FasTnT.Application.Services.DataSources.Utils;
+﻿using FasTnT.Application.Database.DataSources.Utils;
+using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Model.Queries;
-using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using FasTnT.Domain.Model.Masterdata;
-using FasTnT.Application.Database.DataSources.Utils;
+using FasTnT.Domain.Model.Queries;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace FasTnT.Application.Database.DataSources;
 
@@ -208,8 +208,8 @@ internal sealed class EventQueryContext
     private void ApplyMasterdataAttributeParameter(string field, string attributeName, string[] values)
     {
         var filter = (Expression<Func<MasterDataAttribute, bool>>)(a => a.Id == attributeName);
-        
-        if(values.Length > 0)
+
+        if (values.Length > 0)
         {
             filter = filter.AndAlso(a => values.Contains(a.Value));
         }

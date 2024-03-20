@@ -36,7 +36,7 @@ public class WebSocketSubscriptionJob(WebSocket webSocket, string queryName, IEn
                         });
 
                         using var scope = serviceProvider.CreateScope();
-                        
+
                         var runner = scope.ServiceProvider.GetService<SubscriptionRunner>();
                         var result = await runner.ExecuteAsync(new(executionParameters, bufferRequestIds), cancellationToken);
 

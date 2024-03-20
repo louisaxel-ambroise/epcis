@@ -1,6 +1,4 @@
-﻿using FasTnT.Host.Communication.Xml.Parsers;
-
-namespace FasTnT.Host.Tests.Features.v1_2.Communication;
+﻿namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
 [TestClass]
 public class WhenParsingAnInvalidQuery : XmlParsingTestCase

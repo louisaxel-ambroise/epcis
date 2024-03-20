@@ -69,6 +69,6 @@ public static class TopLevelEndpoints
 
     private static IResult SubResourceRequest()
     {
-        return EpcisResults.Ok(new CollectionResult([ "events" ]));
+        return EpcisResults.Ok(new CollectionResult(["events"]));
     }
 }

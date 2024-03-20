@@ -40,7 +40,7 @@ public static class SoapResponseFormatter
         if (response.Response.EventList?.Count > 0)
         {
             var customNamespaces = response.Response.EventList.SelectMany(x => x.Fields.Select(x => x.Namespace)).Where(IsCustomNamespace).Distinct().ToArray();
-            
+
             for (var i = 0; i < customNamespaces.Length; i++)
             {
                 queryResults.Add(new XAttribute(XNamespace.Xmlns + $"ext{i + 1}", customNamespaces[i]));

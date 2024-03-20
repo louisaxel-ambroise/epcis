@@ -1,5 +1,4 @@
 ﻿using FasTnT.Application.Handlers;
-using FasTnT.Domain.Exceptions;
 using FasTnT.Host.Endpoints.Interfaces;
 using FasTnT.Host.Endpoints.Responses.Rest;
 using FasTnT.Host.Extensions;

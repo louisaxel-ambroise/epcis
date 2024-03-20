@@ -8,8 +8,8 @@ namespace FasTnT.Host.Communication.Xml.Parsers;
 public class XmlDocumentParser
 {
     public static XmlDocumentParser Instance { get; } = new();
-    private readonly XmlSchemaSet 
-        _v1schema = CompileSchema("v1"), 
+    private readonly XmlSchemaSet
+        _v1schema = CompileSchema("v1"),
         _v2schema = CompileSchema("v2");
 
     public async Task<XmlEpcisDocumentParser> ParseAsync(Stream input, CancellationToken cancellationToken)

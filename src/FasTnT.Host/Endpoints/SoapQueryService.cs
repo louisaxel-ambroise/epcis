@@ -51,12 +51,12 @@ public static class SoapQueryService
 
     private static GetStandardVersionResult GetStandardVersion()
     {
-        return new ("1.2");
+        return new("1.2");
     }
 
     private static GetVendorVersionResult GetVendorVersion(IOptions<Constants> constants)
     {
-        return new (constants.Value.VendorVersion.ToString());
+        return new(constants.Value.VendorVersion.ToString());
     }
 
     private static async Task GetWsdl(HttpResponse response, CancellationToken cancellationToken)

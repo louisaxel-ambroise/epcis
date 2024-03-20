@@ -8,7 +8,7 @@ namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 [TestClass]
 public class WhenFormattingAnEmptySubscriptionResult
 {
-    public QueryResult Result = new(new ("ExampleQueryName", new List<Event>(), "TestSubscription")); 
+    public QueryResult Result = new(new("ExampleQueryName", new List<Event>(), "TestSubscription"));
     public XElement Formatted { get; set; }
 
     [TestInitialize]

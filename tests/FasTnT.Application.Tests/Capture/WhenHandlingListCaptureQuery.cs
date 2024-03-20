@@ -1,13 +1,13 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Enumerations;
-using Microsoft.Extensions.Options;
 using FasTnT.Domain;
+using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Queries;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Tests.Capture;
 

@@ -12,7 +12,7 @@ public class SubscriptionsHandler(EpcisContext context, ICurrentUser user)
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
     {
         var subscription = await context.Set<Subscription>().FirstOrDefaultAsync(x => x.Name == name, cancellationToken) ?? throw new EpcisException(ExceptionType.NoSuchNameException, $"Subscription '{name}' does not exist");
-        
+
         context.Remove(subscription);
 
         await context.SaveChangesAsync(cancellationToken);

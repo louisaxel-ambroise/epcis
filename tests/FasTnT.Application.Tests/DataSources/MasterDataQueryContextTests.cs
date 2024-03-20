@@ -17,7 +17,7 @@ public class MasterDataQueryContextTests
     [ClassCleanup]
     public static void Cleanup()
     {
-        if(Context != null)
+        if (Context != null)
         {
             Context.Database.EnsureDeleted();
         }

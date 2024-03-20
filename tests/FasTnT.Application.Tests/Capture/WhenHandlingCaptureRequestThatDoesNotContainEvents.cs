@@ -1,11 +1,11 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
+using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using Microsoft.Extensions.Options;
-using FasTnT.Domain;
 
 namespace FasTnT.Application.Tests.Capture;
 

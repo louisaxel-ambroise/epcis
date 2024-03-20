@@ -107,7 +107,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldRestrictTheDataIfTheEventCountLimitIsExceeded()
     {
-        var result = Context.QueryEvents(new[] { new QueryParameter { Name = "eventCountLimit", Values = [ "1" ] } }).ToList();
+        var result = Context.QueryEvents(new[] { new QueryParameter { Name = "eventCountLimit", Values = ["1"] } }).ToList();
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);

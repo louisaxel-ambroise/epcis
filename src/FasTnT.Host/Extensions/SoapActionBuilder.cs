@@ -1,5 +1,4 @@
-﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Host.Endpoints.Responses.Soap;
+﻿using FasTnT.Host.Endpoints.Responses.Soap;
 using System.Runtime.CompilerServices;
 
 namespace FasTnT.Host.Extensions;

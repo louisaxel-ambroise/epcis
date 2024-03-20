@@ -1,13 +1,13 @@
 using FasTnT.Application;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
+using FasTnT.Host.Endpoints;
 using FasTnT.Host.Services.Database;
-using FasTnT.Host.Subscriptions;
 using FasTnT.Host.Services.User;
+using FasTnT.Host.Subscriptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
-using FasTnT.Host.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(BasicAuthentication.SchemeName).AddScheme<AuthenticationSchemeOptions, BasicAuthentication>(BasicAuthentication.SchemeName, null);

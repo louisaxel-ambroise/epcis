@@ -60,7 +60,7 @@ public class WhenHandlingGetQueryDetails
     public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetQueryDetailsAsync("Unknown", CancellationToken.None));
     }
 }

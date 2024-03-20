@@ -1,5 +1,5 @@
-﻿using FasTnT.Domain.Model.Subscriptions;
-using FasTnT.Domain.Model;
+﻿using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Subscriptions;
 
 namespace FasTnT.Application;
 

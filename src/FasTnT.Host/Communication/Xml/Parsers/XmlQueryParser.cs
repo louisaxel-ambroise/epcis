@@ -56,7 +56,7 @@ public static class SoapQueryParser
 
     public static SoapEnvelope ParseGetSubscriptionIds(XElement element)
     {
-        return new ("GetSubscriptionIDs", [], new ListSubscriptionsRequest(element.Element("queryName")?.Value));
+        return new("GetSubscriptionIDs", [], new ListSubscriptionsRequest(element.Element("queryName")?.Value));
     }
 
     private static IEnumerable<QueryParameter> ParseQueryParameters(IEnumerable<XElement> elements)

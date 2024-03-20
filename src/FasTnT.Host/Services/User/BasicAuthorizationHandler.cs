@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using FasTnT.Application.Services.Users;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
-using FasTnT.Application.Services.Users;
 using System.Text.Json;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authorization;
 
 namespace FasTnT.Host.Services.User;
 
