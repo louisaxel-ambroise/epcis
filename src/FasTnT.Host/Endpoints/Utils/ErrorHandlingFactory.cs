@@ -2,7 +2,7 @@
 using FasTnT.Host.Communication.Xml.Formatters;
 using FasTnT.Host.Endpoints.Responses.Soap;
 
-namespace FasTnT.Host.Features.v1_2;
+namespace FasTnT.Host.Endpoints.Utils;
 
 public static class ErrorHandlingFactory
 {

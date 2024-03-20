@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace FasTnT.Host.Features.v1_2.Extensions;
+namespace FasTnT.Host.Extensions;
 
 public static class TaskExtensions
 {

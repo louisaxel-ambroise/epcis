@@ -1,5 +1,5 @@
-﻿using FasTnT.Host.Communication.Xml.Formatters;
-using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
+﻿using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
@@ -12,7 +12,7 @@ public class WhenFormattingASubscribeResult
     [TestInitialize]
     public void When()
     {
-        Formatted = SoapResponseFormatter.Format(new SubscribeResult());
+        Formatted = SoapResponseFormatter.Format(new Subscription());
     }
 
     [TestMethod]

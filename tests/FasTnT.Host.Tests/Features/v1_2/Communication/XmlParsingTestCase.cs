@@ -1,4 +1,5 @@
 ﻿using FasTnT.Host.Communication.Xml.Parsers;
+using FasTnT.Host.Endpoints.Responses.Soap;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -8,9 +9,7 @@ public abstract class XmlParsingTestCase
 {
     protected static XmlEpcisDocumentParser ParseResource(string resourceName)
     {
-        var manifest = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-        
-        return XmlDocumentParser.Instance.ParseAsync(manifest, default).Result;
+        return new XmlEpcisDocumentParser(ParseXml(resourceName), new XmlV1EventParser());
     }
 
     protected static XElement ParseXml(string resourceName)

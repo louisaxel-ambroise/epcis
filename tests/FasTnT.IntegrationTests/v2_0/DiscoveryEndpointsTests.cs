@@ -96,7 +96,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetEpcListShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/epcs").Result;
+        var response = Client.GetAsync("/epcs").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -109,7 +109,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetEventTypesShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/eventtypes").Result;
+        var response = Client.GetAsync("/eventtypes").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -122,7 +122,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetDispositionsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/dispositions").Result;
+        var response = Client.GetAsync("/dispositions").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -135,7 +135,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetReadPointsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/readPoints").Result;
+        var response = Client.GetAsync("/readPoints").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -148,7 +148,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetBizStepsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/bizSteps").Result;
+        var response = Client.GetAsync("/bizSteps").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -161,7 +161,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetBizLocationsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/bizLocations").Result;
+        var response = Client.GetAsync("/bizLocations").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -174,7 +174,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetEpcDetailShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/epcs/test:epc:2").Result;
+        var response = Client.GetAsync("/epcs/test:epc:2").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -188,7 +188,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetEventTypeDetailShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/eventtypes/ObjectEvent").Result;
+        var response = Client.GetAsync("/eventtypes/ObjectEvent").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -202,7 +202,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetDispositionDetailShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/dispositions/disp").Result;
+        var response = Client.GetAsync("/dispositions/disp").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -216,7 +216,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetReadPointDetailShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/readPoints/readpoint").Result;
+        var response = Client.GetAsync("/readPoints/readpoint").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -230,7 +230,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetBizStepDetailShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/bizSteps/step").Result;
+        var response = Client.GetAsync("/bizSteps/step").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -244,7 +244,7 @@ public class DiscoveryEndpointsTests
     [TestMethod]
     public void GetBizLocationDetailsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/bizLocations/loc1").Result;
+        var response = Client.GetAsync("/bizLocations/loc1").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);

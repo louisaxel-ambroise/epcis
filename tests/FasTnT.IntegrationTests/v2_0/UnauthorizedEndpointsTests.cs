@@ -19,7 +19,7 @@ public class UnauthorizedEndpointsTests
     [TestMethod]
     public void CallAnEndpointWithoutAuthorizationShouldReturnA401StatusCode()
     {
-        var response = Client.GetAsync("/v2_0/epcs").Result;
+        var response = Client.GetAsync("/epcs").Result;
 
         Assert.IsNotNull(response);
         Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);

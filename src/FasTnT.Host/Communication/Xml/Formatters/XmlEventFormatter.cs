@@ -6,7 +6,7 @@ namespace FasTnT.Host.Communication.Xml.Formatters;
 
 public static class XmlEventFormatter
 {
-    static readonly IDictionary<EventType, Func<Event, XElement>> Formatters = new Dictionary<EventType, Func<Event, XElement>>
+    static readonly Dictionary<EventType, Func<Event, XElement>> Formatters = new ()
     {
         { EventType.ObjectEvent, FormatObjectEvent },
         { EventType.AggregationEvent, FormatAggregationEvent },

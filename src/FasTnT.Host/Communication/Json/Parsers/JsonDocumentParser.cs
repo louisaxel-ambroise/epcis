@@ -12,7 +12,7 @@ public class JsonDocumentParser
     private JsonDocumentParser()
     {
         var assembly = typeof(JsonDocumentParser).Assembly;
-        using var reader = new StreamReader(assembly.GetManifestResourceStream("FasTnT.Host.Features.v2_0.Communication.Json.Schemas.epcis2_0.json"));
+        using var reader = new StreamReader(assembly.GetManifestResourceStream("FasTnT.Host.Communication.Json.Schemas.epcis2_0.json"));
 
         _schema = JsonSchema.FromText(reader.ReadToEnd());
     }

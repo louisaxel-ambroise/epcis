@@ -33,8 +33,7 @@ public static class SoapResponseFormatter
 
         var queryResults = new XElement(XName.Get("QueryResults", Namespaces.Query),
             new XElement("queryName", response.Response.QueryName),
-            // TODO
-            //!string.IsNullOrEmpty(response.SubscriptionId) ? new XElement("subscriptionID", response.SubscriptionId) : null,
+            !string.IsNullOrEmpty(response.Response.SubscriptionName) ? new XElement("subscriptionID", response.Response.SubscriptionName) : null,
             new XElement("resultsBody", new XElement(resultName, resultList))
         );
 

@@ -1,12 +1,13 @@
 ﻿using FasTnT.Host.Endpoints.Interfaces;
 using FasTnT.Host.Endpoints.Responses.Rest;
 using FasTnT.Host.Extensions;
+using System.Collections.Concurrent;
 
 namespace FasTnT.Host.Endpoints;
 
 public static class DiscoveryEndpoints
 {
-    public static readonly List<(string Path, string Method)> Endpoints = [];
+    public static readonly ConcurrentBag<(string Path, string Method)> Endpoints = [];
 
     public static IEndpointRouteBuilder AddDiscoveryEndpoints(this IEndpointRouteBuilder app)
     {

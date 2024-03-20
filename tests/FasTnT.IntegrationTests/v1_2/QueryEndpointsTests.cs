@@ -25,7 +25,7 @@ public class QueryEndpointsTests
     {
         var request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:urn=""urn:epcglobal:epcis-query:xsd:1""><soapenv:Body><urn:GetQueryNames /></soapenv:Body></soapenv:Envelope>";
         var httpContent = new StringContent(request, Encoding.UTF8, "application/xml");
-        var response = Client.PostAsync("/v1_2/Query.svc", httpContent).Result;
+        var response = Client.PostAsync("/Query.svc", httpContent).Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -37,7 +37,7 @@ public class QueryEndpointsTests
     {
         var request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:urn=""urn:epcglobal:epcis-query:xsd:1""><soapenv:Body><urn:GetStandardVersion /></soapenv:Body></soapenv:Envelope>";
         var httpContent = new StringContent(request, Encoding.UTF8, "application/xml");
-        var response = Client.PostAsync("/v1_2/Query.svc", httpContent).Result;
+        var response = Client.PostAsync("/Query.svc", httpContent).Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -49,7 +49,7 @@ public class QueryEndpointsTests
     {
         var request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:urn=""urn:epcglobal:epcis-query:xsd:1""><soapenv:Body><urn:GetVendorVersion /></soapenv:Body></soapenv:Envelope>";
         var httpContent = new StringContent(request, Encoding.UTF8, "application/xml");
-        var response = Client.PostAsync("/v1_2/Query.svc", httpContent).Result;
+        var response = Client.PostAsync("/Query.svc", httpContent).Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -69,7 +69,7 @@ public class QueryEndpointsTests
   </soapenv:Body>
 </soapenv:Envelope>";
         var httpContent = new StringContent(request, Encoding.UTF8, "application/xml");
-        var response = Client.PostAsync("/v1_2/Query.svc", httpContent).Result;
+        var response = Client.PostAsync("/Query.svc", httpContent).Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -82,14 +82,14 @@ public class QueryEndpointsTests
         var request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:urn=""urn:epcglobal:epcis-query:xsd:1"">
   <soapenv:Body>
     <urn:Poll>
-    	<queryName>SimpleMasterDataQuery</queryName>
+    	<queryName>SimpleMasterdataQuery</queryName>
     	<params>
     	</params>
 	</urn:Poll>
   </soapenv:Body>
 </soapenv:Envelope>";
         var httpContent = new StringContent(request, Encoding.UTF8, "application/xml");
-        var response = Client.PostAsync("/v1_2/Query.svc", httpContent).Result;
+        var response = Client.PostAsync("/Query.svc", httpContent).Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -109,7 +109,7 @@ public class QueryEndpointsTests
   </soapenv:Body>
 </soapenv:Envelope>";
         var httpContent = new StringContent(request, Encoding.UTF8, "application/xml");
-        var response = Client.PostAsync("/v1_2/Query.svc", httpContent).Result;
+        var response = Client.PostAsync("/Query.svc", httpContent).Result;
 
         Assert.IsNotNull(response);
         Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
@@ -127,7 +127,7 @@ public class QueryEndpointsTests
   </soapenv:Body>
 </soapenv:Envelope>";
         var httpContent = new StringContent(request, Encoding.UTF8, "application/xml");
-        var response = Client.PostAsync("/v1_2/Query.svc", httpContent).Result;
+        var response = Client.PostAsync("/Query.svc", httpContent).Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);

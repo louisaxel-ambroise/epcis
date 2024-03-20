@@ -1,6 +1,5 @@
 ﻿using FasTnT.Host.Endpoints;
 using FasTnT.Host.Endpoints.Utils;
-using FasTnT.Host.Features.v1_2;
 
 namespace FasTnT.Host.Extensions;
 

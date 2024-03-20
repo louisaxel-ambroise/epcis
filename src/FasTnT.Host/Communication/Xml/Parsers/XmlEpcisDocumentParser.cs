@@ -49,6 +49,12 @@ public class XmlEpcisDocumentParser(XElement root, XmlEventParser eventParser)
             case "QueryResults":
                 ParseCallbackResult(element);
                 break;
+            case "QueryTooLargeException":
+                ParseCallbackError(element, QueryCallbackType.QueryTooLargeException);
+                break;
+            case "ImplementationException":
+                ParseCallbackError(element, QueryCallbackType.ImplementationException);
+                break;
             case "EventList":
                 _request.Events = eventParser.ParseEvents(element).ToList();
                 break;
@@ -70,6 +76,16 @@ public class XmlEpcisDocumentParser(XElement root, XmlEventParser eventParser)
         {
             CallbackType = QueryCallbackType.Success,
             SubscriptionId = subscriptionId
+        };
+    }
+
+    private void ParseCallbackError(XElement element, QueryCallbackType errorType)
+    {
+        _request.SubscriptionCallback = new SubscriptionCallback
+        {
+            CallbackType = errorType,
+            Reason = element.Element("reason")?.Value,
+            SubscriptionId = element.Element("subscriptionID")?.Value
         };
     }
 }

@@ -1,5 +1,5 @@
 ﻿using FasTnT.Host.Communication.Xml.Formatters;
-using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Host.Endpoints.Interfaces;
 using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;

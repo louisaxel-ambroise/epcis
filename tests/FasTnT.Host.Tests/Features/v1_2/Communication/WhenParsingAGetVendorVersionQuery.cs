@@ -1,5 +1,5 @@
 ﻿using FasTnT.Host.Communication.Xml.Parsers;
-using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
+using FasTnT.Host.Endpoints.Responses.Soap;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
@@ -8,17 +8,17 @@ public class WhenParsingAGetVendorVersionQuery : XmlParsingTestCase
 {
     public static readonly string ResourceName = "FasTnT.Host.Tests.Features.v1_2.Communication.Resources.Queries.GetVendorVersion.xml";
 
-    public object Query { get; set; }
+    public SoapEnvelope Envelope { get; set; }
 
     [TestInitialize]
     public void When()
     {
-        Query = ParseResource(ResourceName).Parse();
+        Envelope = SoapQueryParser.Parse(ParseXml(ResourceName));
     }
 
     [TestMethod]
     public void ItShouldReturnAGetStandardVersionObject()
     {
-        Assert.IsInstanceOfType(Query, typeof(GetVendorVersion));
+        Assert.AreEqual(Envelope.Action, "GetVendorVersion");
     }
 }
