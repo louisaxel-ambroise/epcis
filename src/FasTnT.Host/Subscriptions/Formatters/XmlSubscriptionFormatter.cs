@@ -21,7 +21,7 @@ public class XmlSubscriptionFormatter : ISubscriptionFormatter
         var content = new XElement(XName.Get("QueryResults", Namespaces.Query),
             new XElement("queryName", response.QueryName),
             new XElement("subscriptionID", name),
-            new XElement("resultsBody", new XElement("EventList", XmlEventFormatter.FormatList(response.EventList))));
+            new XElement("resultsBody", new XElement("EventList", XmlV1EventFormatter.Instance.FormatList(response.EventList))));
         var attributes = new[] { new XAttribute("creationDate", DateTime.UtcNow), new XAttribute("schemaVersion", "1.2") };
 
         return new XElement(rootName, attributes, new XElement("EPCISBody", content)).ToString(SaveOptions.DisableFormatting);

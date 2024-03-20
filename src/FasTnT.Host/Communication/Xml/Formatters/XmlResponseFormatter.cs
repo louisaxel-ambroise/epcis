@@ -20,7 +20,7 @@ public static class XmlResponseFormatter
     {
         var (resultName, resultList) = response switch
         {
-            _ when response.EventList is not null => (nameof(response.EventList), XmlEventFormatter.FormatList(response.EventList)),
+            _ when response.EventList is not null => (nameof(response.EventList), XmlV2EventFormatter.Instance.FormatList(response.EventList)),
             _ when response.VocabularyList is not null => (nameof(response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.VocabularyList)),
             _ => throw new NotImplementedException()
         };

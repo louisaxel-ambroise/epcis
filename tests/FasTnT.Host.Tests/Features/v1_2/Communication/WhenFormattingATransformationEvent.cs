@@ -29,7 +29,7 @@ public class WhenFormattingATransformationEvent
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlEventFormatter.FormatList(new List<Event> { TransformationEvent }).FirstOrDefault();
+        Formatted = XmlV1EventFormatter.Instance.FormatList(new List<Event> { TransformationEvent }).FirstOrDefault();
     }
 
     [TestMethod]

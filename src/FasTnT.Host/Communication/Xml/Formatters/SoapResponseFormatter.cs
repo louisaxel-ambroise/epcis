@@ -26,7 +26,7 @@ public static class SoapResponseFormatter
     {
         var (resultName, resultList) = response switch
         {
-            _ when response.Response.EventList is not null => (nameof(response.Response.EventList), XmlEventFormatter.FormatList(response.Response.EventList)),
+            _ when response.Response.EventList is not null => (nameof(response.Response.EventList), XmlV1EventFormatter.Instance.FormatList(response.Response.EventList)),
             _ when response.Response.VocabularyList is not null => (nameof(response.Response.VocabularyList), XmlMasterdataFormatter.FormatMasterData(response.Response.VocabularyList)),
             _ => throw new NotImplementedException()
         };

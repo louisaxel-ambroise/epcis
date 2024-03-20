@@ -28,7 +28,7 @@ public class WhenFormattingAnAggregationEvent
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlEventFormatter.FormatList(new List<Event> { AggregationEvent }).FirstOrDefault();
+        Formatted = XmlV1EventFormatter.Instance.FormatList(new List<Event> { AggregationEvent }).FirstOrDefault();
     }
 
     [TestMethod]

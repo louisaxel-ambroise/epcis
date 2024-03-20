@@ -31,7 +31,7 @@ public class WhenFormattingATransactionEvent
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlEventFormatter.FormatList(new List<Event> { TransactionEvent }).FirstOrDefault();
+        Formatted = XmlV1EventFormatter.Instance.FormatList(new List<Event> { TransactionEvent }).FirstOrDefault();
     }
 
     [TestMethod]
