@@ -1,5 +1,5 @@
-﻿using FasTnT.Application;
-using FasTnT.Application.Database;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Subscriptions.Jobs;
 using System.Collections.Concurrent;
@@ -9,6 +9,7 @@ namespace FasTnT.Host.Subscriptions;
 public class SubscriptionBackgroundService(IServiceProvider serviceProvider) : BackgroundService
 {
     private readonly ConcurrentDictionary<int, CancellationTokenSource> _runningSubscriptions = new();
+    private readonly EpcisEvents _events = serviceProvider.GetRequiredService<EpcisEvents>();
     private CancellationToken _stoppingToken;
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -20,8 +21,8 @@ public class SubscriptionBackgroundService(IServiceProvider serviceProvider) : B
             _stoppingToken = stoppingToken;
             _stoppingToken.Register(() => resetEvent.Set());
 
-            EpcisEvents.OnSubscriptionRegistered += RegisterSubscription;
-            EpcisEvents.OnSubscriptionRemoved += RemoveSubscription;
+            _events.OnSubscriptionRegistered += RegisterSubscription;
+            _events.OnSubscriptionRemoved += RemoveSubscription;
 
             LoadSubscriptions(); resetEvent.WaitOne();
         }, stoppingToken);
@@ -46,7 +47,7 @@ public class SubscriptionBackgroundService(IServiceProvider serviceProvider) : B
 
     private void RegisterSubscription(Subscription subscription)
     {
-        var backgroundTask = new PersistentSubscriptionJob(subscription);
+        var backgroundTask = new PersistentSubscriptionJob(subscription, _events);
         var cancellationSource = new CancellationTokenSource();
 
         if (_runningSubscriptions.TryAdd(subscription.Id, cancellationSource))

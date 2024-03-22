@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
@@ -18,17 +19,14 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [TestMethod]
     [ExpectedException(typeof(EpcisException))]
     public void ItShoultThrowAnException()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
         var request = new Request { SchemaVersion = "1.0" };
 
         try

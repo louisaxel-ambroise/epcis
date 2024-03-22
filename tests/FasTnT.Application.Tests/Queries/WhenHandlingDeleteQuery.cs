@@ -17,10 +17,7 @@ public class WhenHandlingDeleteQuery
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -32,10 +29,10 @@ public class WhenHandlingDeleteQuery
                 Id = 1,
                 Name = "QueryOne",
                 UserId = UserContext.UserId,
-                Parameters = new List<QueryParameter>
-                {
+                Parameters =
+                [
                     new QueryParameter{ Name = "EQ_type", Values = ["ObjectEvent", "TestEvent"]}
-                }
+                ]
             },
             new StoredQuery
             {

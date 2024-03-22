@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Model.Queries;
+﻿using FasTnT.Application.Events;
+using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Subscriptions.Jobs;
 using FasTnT.Host.Subscriptions.Schedulers;
@@ -30,7 +31,9 @@ public static class HttpContextExtensions
     {
         var webSocket = await context.WebSockets.AcceptWebSocketAsync();
         var scheduler = ParseSchedule(context);
-        var subscriptionTask = new WebSocketSubscriptionJob(webSocket, queryName, parameters, scheduler);
+        var eventListener = context.RequestServices.GetRequiredService<IEventListener>();
+
+        var subscriptionTask = new WebSocketSubscriptionJob(webSocket, queryName, parameters, scheduler, eventListener);
         var applicationLifetime = context.RequestServices.GetService<IHostApplicationLifetime>();
 
         try

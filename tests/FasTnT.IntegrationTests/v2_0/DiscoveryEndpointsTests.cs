@@ -116,7 +116,7 @@ public class DiscoveryEndpointsTests
 
         var collection = response.Content.ReadFromJsonAsync<CollectionResult>().Result;
         Assert.IsNotNull(collection);
-        Assert.AreEqual(5, collection.Members.Length);
+        Assert.AreEqual(2, collection.Members.Length);
     }
 
     [TestMethod]

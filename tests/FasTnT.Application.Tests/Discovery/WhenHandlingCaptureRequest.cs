@@ -16,10 +16,7 @@ public class WhenHandlingListEpcsRequest
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [TestInitialize]
@@ -31,17 +28,17 @@ public class WhenHandlingListEpcsRequest
             DocumentTime = DateTime.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
-            Events = new List<Event>
-            {
+            Events =
+            [
                 new Event
                 {
-                    Epcs = new List<Epc> {
+                    Epcs = [
                         new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:1" },
                         new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:2" },
                         new Epc { Type = Domain.Enumerations.EpcType.List, Id = "test:epc:3" }
-                    }
+                    ]
                 }
-            }
+            ]
         });
 
         Context.SaveChanges();

@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
@@ -15,15 +16,13 @@ public class WhenHandlingCaptureRequest
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static List<int> CapturedRequests = new();
+    readonly static EpcisEvents EpcisEvents = new();
+    readonly static List<int> CapturedRequests = [];
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
         EpcisEvents.OnRequestCaptured -= CapturedRequests.Add;
     }
 
@@ -36,8 +35,8 @@ public class WhenHandlingCaptureRequest
     [TestMethod]
     public void ItShouldReturnACaptureResultAndStoreTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
-        var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.ObjectEvent } } };
+        var handler = new CaptureHandler(Context, UserContext, EpcisEvents, Options.Create(new Constants()));
+        var request = new Request { SchemaVersion = "1.0", Events = [new Event { Type = EventType.ObjectEvent }] };
         var result = handler.StoreAsync(request, default).Result;
 
         Assert.IsNotNull(result);

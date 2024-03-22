@@ -1,5 +1,5 @@
-﻿using FasTnT.Application;
-using FasTnT.Application.Database;
+﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
@@ -17,13 +17,15 @@ namespace FasTnT.Host.Subscriptions.Jobs;
 public class PersistentSubscriptionJob
 {
     private readonly Subscription _subscription;
+    private readonly IEventListener _eventListener;
     private readonly ISubscriptionFormatter _formatter;
     private readonly HttpClient _httpClient;
     private readonly HMACSHA256 _hmac;
 
-    public PersistentSubscriptionJob(Subscription subscription)
+    public PersistentSubscriptionJob(Subscription subscription, IEventListener eventListener)
     {
         _subscription = subscription;
+        _eventListener = eventListener;
         _httpClient = GetHttpClient(subscription);
         _hmac = !string.IsNullOrEmpty(subscription.SignatureToken)
             ? new HMACSHA256(Encoding.UTF8.GetBytes(_subscription.SignatureToken))
@@ -37,7 +39,7 @@ public class PersistentSubscriptionJob
     {
         var scheduler = SubscriptionScheduler.Create(_subscription);
 
-        EpcisEvents.OnRequestCaptured += scheduler.OnRequestCaptured;
+        _eventListener.OnRequestCaptured += scheduler.OnRequestCaptured;
         cancellationToken.Register(scheduler.Stop);
 
         try
@@ -93,7 +95,7 @@ public class PersistentSubscriptionJob
         }
         finally
         {
-            EpcisEvents.OnRequestCaptured -= scheduler.OnRequestCaptured;
+            _eventListener.OnRequestCaptured -= scheduler.OnRequestCaptured;
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Model.Subscriptions;
@@ -13,10 +14,7 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -43,7 +41,7 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [TestMethod]
     public void ItShouldReturnTheListOfExistingSubscriptionIdsForTheSpecifiedRequest()
     {
-        var handler = new SubscriptionsHandler(Context, default);
+        var handler = new SubscriptionsHandler(Context, default, new EpcisEvents());
         var result = handler.ListSubscriptionsAsync("TestQuery", CancellationToken.None).Result;
 
         Assert.AreEqual(1, result.Count());
@@ -53,7 +51,7 @@ public class WhenHandlingGetSubscriptionIdsQuery
     [TestMethod]
     public void ItShouldReturnAnEmptyListWhenNoSubscriptionMatch()
     {
-        var handler = new SubscriptionsHandler(Context, default);
+        var handler = new SubscriptionsHandler(Context, default, new EpcisEvents());
         var result = handler.ListSubscriptionsAsync("UnknownQuery", CancellationToken.None).Result;
 
         Assert.AreEqual(0, result.Count());

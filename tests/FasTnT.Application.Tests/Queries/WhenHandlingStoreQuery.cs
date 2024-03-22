@@ -16,10 +16,7 @@ public class WhenHandlingStoreQuery
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -30,10 +27,10 @@ public class WhenHandlingStoreQuery
             {
                 Id = 1,
                 Name = "QueryOne",
-                Parameters = new List<QueryParameter>
-                {
+                Parameters =
+                [
                     new QueryParameter{ Name = "EQ_type", Values = ["ObjectEvent", "TestEvent"]}
-                }
+                ]
             }
         });
         Context.SaveChanges();

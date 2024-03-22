@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
@@ -15,16 +16,14 @@ namespace FasTnT.Application.Tests.Capture;
 public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenAnEventIsInvalid));
+    readonly static EpcisEvents EpcisEvents = new();
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static List<int> CapturedRequests = new();
+    readonly static List<int> CapturedRequests = [];
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
         EpcisEvents.OnRequestCaptured -= CapturedRequests.Add;
     }
 
@@ -37,8 +36,8 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
     [TestMethod]
     public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
-        var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.AggregationEvent, Action = EventAction.Add } } }; // Does not have parent -> invalid event
+        var handler = new CaptureHandler(Context, UserContext, EpcisEvents, Options.Create(new Constants()));
+        var request = new Request { SchemaVersion = "1.0", Events = [new Event { Type = EventType.AggregationEvent, Action = EventAction.Add }] }; // Does not have parent -> invalid event
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());

@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
@@ -10,15 +11,13 @@ namespace FasTnT.Application.Tests.Queries;
 public class WhenHandlingUnsubscribeCommand
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingUnsubscribeCommand));
-    readonly static List<int> RemovedSubscriptions = new();
+    readonly static EpcisEvents EpcisEvents = new();
+    readonly static List<int> RemovedSubscriptions = [];
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
         EpcisEvents.OnSubscriptionRemoved -= RemovedSubscriptions.Add;
     }
 
@@ -42,7 +41,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldReturnAnUnubscribeResult()
     {
         var subscription = "TestSubscription";
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), EpcisEvents);
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
 
         Assert.AreEqual(0, Context.Set<Subscription>().Count());
@@ -53,7 +52,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameDoesNotExist()
     {
         var subscription = "UnknownSubscription";
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), EpcisEvents);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
     }

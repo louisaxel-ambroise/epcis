@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain.Exceptions;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Handlers;
 
-public class SubscriptionsHandler(EpcisContext context, ICurrentUser user)
+public class SubscriptionsHandler(EpcisContext context, ICurrentUser user, IEventNotifier notifier)
 {
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
     {
@@ -16,7 +17,7 @@ public class SubscriptionsHandler(EpcisContext context, ICurrentUser user)
         context.Remove(subscription);
 
         await context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.SubscriptionRemoved(subscription);
+        notifier.SubscriptionRemoved(subscription);
 
         return subscription;
     }
@@ -57,7 +58,7 @@ public class SubscriptionsHandler(EpcisContext context, ICurrentUser user)
         context.Add(subscription);
 
         await context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.SubscriptionRegistered(subscription);
+        notifier.SubscriptionRegistered(subscription);
 
         return subscription;
     }

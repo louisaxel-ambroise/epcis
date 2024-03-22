@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
@@ -14,10 +15,7 @@ public class WhenHandlingGetSubscriptionCommand
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -37,7 +35,7 @@ public class WhenHandlingGetSubscriptionCommand
     [TestMethod]
     public void ItShouldReturnTheSubscriptionIfItExists()
     {
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
         var result = handler.GetSubscriptionDetailsAsync("TestSubscription", CancellationToken.None).Result;
 
         Assert.IsInstanceOfType<Subscription>(result);
@@ -49,7 +47,7 @@ public class WhenHandlingGetSubscriptionCommand
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheSubscriptionDoesNotExists()
     {
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetSubscriptionDetailsAsync("UnknownSubscription", CancellationToken.None));
     }
 }

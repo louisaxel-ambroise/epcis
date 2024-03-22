@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
@@ -16,15 +17,13 @@ public class WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static List<int> CapturedRequests = new();
+    readonly static EpcisEvents EpcisEvents = new();
+    readonly static List<int> CapturedRequests = [];
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
         EpcisEvents.OnRequestCaptured -= CapturedRequests.Add;
     }
 
@@ -37,12 +36,12 @@ public class WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid
     [TestMethod]
     public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context, UserContext, EpcisEvents, Options.Create(new Constants()));
         var request = new Request
         {
             SchemaVersion = "1.0",
             StandardBusinessHeader = new StandardBusinessHeader(),
-            Events = new() { new Event { Type = EventType.ObjectEvent } }
+            Events = [new Event { Type = EventType.ObjectEvent }]
         };
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));

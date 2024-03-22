@@ -17,10 +17,7 @@ public class MasterDataQueryContextTests
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -33,13 +30,13 @@ public class MasterDataQueryContextTests
                 CaptureId = "1",
                 Id = 1,
                 SchemaVersion = "2.0",
-                Masterdata = new List<MasterData> {
+                Masterdata = [
                     new MasterData
                     {
                         Id = "MD01",
                         Type = "urn:epcglobal:epcis:vtype:ReadPoint",
-                        Attributes = new List<MasterDataAttribute>
-                        {
+                        Attributes =
+                        [
                             new MasterDataAttribute
                             {
                                 Index = 1,
@@ -52,35 +49,35 @@ public class MasterDataQueryContextTests
                                 Id = "COMMON",
                                 Value = "5"
                             }
-                        }
+                        ]
                     },
                     new MasterData
                     {
                         Id = "MD03",
                         Type = "urn:epcglobal:epcis:vtype:BusinessLocation",
-                        Attributes = new List<MasterDataAttribute>
-                        {
+                        Attributes =
+                        [
                             new MasterDataAttribute
                             {
                                 Index = 1,
                                 Id = "MD3AT1",
                                 Value = "INNER"
                             }
-                        }
+                        ]
                     },
                     new MasterData
                     {
                         Id = "MD02",
                         Type = "urn:epcglobal:epcis:vtype:BusinessLocation",
-                        Children = new List<MasterDataChildren>
-                        {
+                        Children =
+                        [
                             new MasterDataChildren
                             {
                                 ChildrenId = "MD03",
                             }
-                        },
-                        Attributes = new List<MasterDataAttribute>
-                        {
+                        ],
+                        Attributes =
+                        [
                             new MasterDataAttribute
                             {
                                 Index = 1,
@@ -93,9 +90,9 @@ public class MasterDataQueryContextTests
                                 Id = "COMMON",
                                 Value = "10"
                             }
-                        }
+                        ]
                     }
-                }
+                ]
             }
         });
 

@@ -25,11 +25,11 @@ public static class TopLevelEndpoints
         return app;
     }
 
-    private static IResult ListEventTypes(PaginationContext context)
+    private static async Task<IResult> ListEventTypes(PaginationContext context, TopLevelResourceHandler handler, CancellationToken cancellationToken)
     {
-        var response = TopLevelResourceHandler.ListEventTypes(context.Pagination);
+        var response = await handler.ListEventTypes(context.Pagination, cancellationToken);
 
-        return EpcisResults.Ok(new CollectionResult(response));
+        return EpcisResults.Ok(new CollectionResult(response.Select(x => x.ToString())));
     }
 
     private static async Task<IResult> ListEpcs(PaginationContext context, TopLevelResourceHandler handler, CancellationToken cancellationToken)
