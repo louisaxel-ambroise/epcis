@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
+using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.XML;
@@ -31,7 +31,7 @@ public class WhenFormattingATransformationEvent
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlEventFormatter.FormatList(new List<Event> { TransformationEvent }).FirstOrDefault();
+        Formatted = XmlV2EventFormatter.Instance.FormatList(new List<Event> { TransformationEvent }).FirstOrDefault();
     }
 
     [TestMethod]

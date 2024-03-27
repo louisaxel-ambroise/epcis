@@ -1,6 +1,5 @@
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
-using FasTnT.Host.Features.v1_2.Communication.Parsers;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
@@ -14,7 +13,7 @@ public class WhenParsingAQueryTooLargeExceptionCallback : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Request = XmlEpcisDocumentParser.Parse(ParseResource(ResourceName).Root);
+        Request = ParseResource(ResourceName).Parse();
     }
 
     [TestMethod]

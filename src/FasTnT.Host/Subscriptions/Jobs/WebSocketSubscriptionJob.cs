@@ -1,8 +1,8 @@
-﻿using FasTnT.Application;
+﻿using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
-using FasTnT.Host.Features.v2_0.Extensions;
+using FasTnT.Host.Extensions;
 using FasTnT.Host.Subscriptions.Formatters;
 using FasTnT.Host.Subscriptions.Schedulers;
 using Microsoft.EntityFrameworkCore;
@@ -10,14 +10,18 @@ using System.Net.WebSockets;
 
 namespace FasTnT.Host.Subscriptions.Jobs;
 
-public class WebSocketSubscriptionJob(WebSocket webSocket, string queryName, IEnumerable<QueryParameter> parameters, SubscriptionScheduler scheduler)
+public class WebSocketSubscriptionJob(
+    WebSocket webSocket, 
+    string queryName, 
+    IEnumerable<QueryParameter> parameters, 
+    SubscriptionScheduler scheduler,
+    ICaptureListener eventListener)
 {
     public async Task RunAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var bufferRequestIds = Array.Empty<int>();
         var lastExecutionDate = DateTime.UtcNow;
-
-        EpcisEvents.OnRequestCaptured += scheduler.OnRequestCaptured;
+        eventListener.OnCapture += scheduler.OnRequestCaptured;
 
         try
         {
@@ -36,7 +40,7 @@ public class WebSocketSubscriptionJob(WebSocket webSocket, string queryName, IEn
                         });
 
                         using var scope = serviceProvider.CreateScope();
-                        
+
                         var runner = scope.ServiceProvider.GetService<SubscriptionRunner>();
                         var result = await runner.ExecuteAsync(new(executionParameters, bufferRequestIds), cancellationToken);
 
@@ -62,7 +66,7 @@ public class WebSocketSubscriptionJob(WebSocket webSocket, string queryName, IEn
         }
         finally
         {
-            EpcisEvents.OnRequestCaptured -= scheduler.OnRequestCaptured;
+            eventListener.OnCapture -= scheduler.OnRequestCaptured;
         }
     }
 

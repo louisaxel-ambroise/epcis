@@ -15,7 +15,7 @@ public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOpti
 {
     public async Task<List<Event>> QueryEventsAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var userParameters = user.DefaultQueryParameters.Union(new []
+        var userParameters = user.DefaultQueryParameters.Union(new[]
         {
             new QueryParameter { Name = "orderBy", Values = ["eventTime"] },
             new QueryParameter { Name = "perPage", Values = [constants.Value.MaxEventsReturnedInQuery.ToString()] },
@@ -41,7 +41,7 @@ public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOpti
             .WhereIn(x => x.Id, eventIds)
             .ToListAsync(cancellationToken);
 
-        return new (events.OrderBy(e => eventIds.IndexOf(e.Id)));
+        return new(events.OrderBy(e => eventIds.IndexOf(e.Id)));
     }
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)

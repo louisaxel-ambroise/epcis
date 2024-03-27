@@ -4,12 +4,12 @@ namespace FasTnT.Host.Subscriptions.Schedulers;
 
 public class CronSubscriptionScheduler(SubscriptionSchedule schedule) : SubscriptionScheduler
 {
-    internal readonly ScheduleEntry 
-        Seconds = ScheduleEntry.Parse(schedule.Second, 0, 60), 
-        Minutes = ScheduleEntry.Parse(schedule.Minute, 0, 59), 
-        Hours = ScheduleEntry.Parse(schedule.Hour, 0, 23), 
-        DayOfMonth = ScheduleEntry.Parse(schedule.DayOfMonth, 1, 31), 
-        Month = ScheduleEntry.Parse(schedule.Month, 1, 12), 
+    internal readonly ScheduleEntry
+        Seconds = ScheduleEntry.Parse(schedule.Second, 0, 60),
+        Minutes = ScheduleEntry.Parse(schedule.Minute, 0, 59),
+        Hours = ScheduleEntry.Parse(schedule.Hour, 0, 23),
+        DayOfMonth = ScheduleEntry.Parse(schedule.DayOfMonth, 1, 31),
+        Month = ScheduleEntry.Parse(schedule.Month, 1, 12),
         DayOfWeek = ScheduleEntry.Parse(schedule.DayOfWeek, 1, 7);
 
     public override void ComputeNextExecution(DateTime startDate)

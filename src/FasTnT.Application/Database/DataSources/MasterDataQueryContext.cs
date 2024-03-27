@@ -51,7 +51,7 @@ internal sealed class MasterDataQueryContext
             // Family filters
             case var s when s.StartsWith("EQATTR_"):
                 ApplyEqAttrParameter(param); break;
-            default:    
+            default:
                 throw new EpcisException(ExceptionType.QueryParameterException, $"Parameter is invalid for simplemasterdata query: {param.Name}");
         }
     }

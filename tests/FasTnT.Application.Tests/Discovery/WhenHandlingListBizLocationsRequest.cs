@@ -1,7 +1,7 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 
@@ -16,10 +16,7 @@ public class WhenHandlingListBizLocationsRequest
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [TestInitialize]
@@ -31,8 +28,8 @@ public class WhenHandlingListBizLocationsRequest
             DocumentTime = DateTime.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
-            Events = new List<Event>
-            {
+            Events =
+            [
                 new Event
                 {
                     BusinessLocation = "BL1"
@@ -41,7 +38,7 @@ public class WhenHandlingListBizLocationsRequest
                 {
                     BusinessLocation = "BL2"
                 }
-            }
+            ]
         });
 
         Context.SaveChanges();

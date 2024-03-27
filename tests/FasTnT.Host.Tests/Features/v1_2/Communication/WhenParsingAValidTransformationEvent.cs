@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Host.Features.v1_2.Communication.Parsers;
+using FasTnT.Host.Communication.Xml.Parsers;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
@@ -14,7 +14,7 @@ public class WhenParsingAValidTransformationEvent : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Event = XmlEventParser.ParseEvent(ParseResource(ResourceName).Root);
+        Event = new XmlV1EventParser().ParseEvent(ParseXml(ResourceName));
     }
 
     [TestMethod]

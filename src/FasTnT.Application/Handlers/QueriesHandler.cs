@@ -24,8 +24,8 @@ public class QueriesHandler(EpcisContext context, ICurrentUser user)
         var query = await context.Set<StoredQuery>()
             .FirstOrDefaultAsync(x => x.Name == name, cancellationToken);
 
-        return query is null 
-            ? throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{name}' not found.") 
+        return query is null
+            ? throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{name}' not found.")
             : query;
     }
 

@@ -24,7 +24,7 @@ public static class DatabaseConfiguration
         {
             throw new ArgumentOutOfRangeException("FasTnT.Database.Provider", "Provider is not registered for EPCIS repository");
         }
-        
+
         configureAction(services, connectionString, commandTimeout);
 
         return services;

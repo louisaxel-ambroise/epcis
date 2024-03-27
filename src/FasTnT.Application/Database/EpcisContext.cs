@@ -17,7 +17,7 @@ public sealed class EpcisContext : DbContext
     public IQueryable<Event> QueryEvents(IEnumerable<QueryParameter> parameters)
     {
         var eventContext = new EventQueryContext(this, parameters);
-        
+
         return eventContext.ApplyTo(Set<Event>());
     }
 
@@ -31,7 +31,7 @@ public sealed class EpcisContext : DbContext
     public IEnumerable<MasterdataHierarchy> LocationHierarchy(string id) => QueryHierarchy(this, MasterData.Location, id);
     public IEnumerable<MasterdataHierarchy> ReadPointHierarchy(string id) => QueryHierarchy(this, MasterData.ReadPoint, id);
 
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         EpcisModelConfiguration.Apply(modelBuilder);

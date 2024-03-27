@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
+using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
@@ -12,7 +12,7 @@ public class WhenFormattingAnUnknownResponse
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.Format(new { Type = "Unknown object" });
+        Formatted = SoapResponseFormatter.Format(new { Type = "Unknown object" });
     }
 
     [TestMethod]

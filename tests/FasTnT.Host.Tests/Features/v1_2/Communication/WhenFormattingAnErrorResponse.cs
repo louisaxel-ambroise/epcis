@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
+using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
@@ -13,7 +13,7 @@ public class WhenFormattingAnErrorResponse
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.FormatError(Result);
+        Formatted = SoapResponseFormatter.FormatError(Result);
     }
 
     [TestMethod]

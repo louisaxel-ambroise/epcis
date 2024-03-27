@@ -16,10 +16,7 @@ public class WhenHandlingGetQueryDetails
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -30,10 +27,10 @@ public class WhenHandlingGetQueryDetails
             {
                 Id = 1,
                 Name = "QueryOne",
-                Parameters = new List<QueryParameter>
-                {
+                Parameters =
+                [
                     new QueryParameter{ Name = "EQ_type", Values = ["ObjectEvent", "TestEvent"]}
-                }
+                ]
             },
             new StoredQuery
             {
@@ -60,7 +57,7 @@ public class WhenHandlingGetQueryDetails
     public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetQueryDetailsAsync("Unknown", CancellationToken.None));
     }
 }
