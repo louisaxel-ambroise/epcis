@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Events;
 using FasTnT.Application.Services.Events;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain;

@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
@@ -18,7 +18,7 @@ public class WhenHandlingUnsubscribeCommand
     public static void Cleanup()
     {
         Context?.Database.EnsureDeleted();
-        EpcisEvents.OnSubscriptionRemoved -= RemovedSubscriptions.Add;
+        EpcisEvents.OnUnsubscribe -= RemovedSubscriptions.Add;
     }
 
     [ClassInitialize]
@@ -34,7 +34,7 @@ public class WhenHandlingUnsubscribeCommand
 
         Context.SaveChanges();
         Context.ChangeTracker.Clear();
-        EpcisEvents.OnSubscriptionRemoved += RemovedSubscriptions.Add;
+        EpcisEvents.OnUnsubscribe += RemovedSubscriptions.Add;
     }
 
     [TestMethod]

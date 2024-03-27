@@ -1,5 +1,5 @@
 using FasTnT.Application;
-using FasTnT.Application.Events;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
 using FasTnT.Host.Endpoints;
@@ -20,7 +20,8 @@ builder.Services.AddEpcisServices();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 builder.Services.AddSingleton<EpcisEvents>();
 builder.Services.AddSingleton<IEventNotifier>(svc => svc.GetRequiredService<EpcisEvents>());
-builder.Services.AddSingleton<IEventListener>(svc => svc.GetRequiredService<EpcisEvents>());
+builder.Services.AddSingleton<ISubscriptionListener>(svc => svc.GetRequiredService<EpcisEvents>());
+builder.Services.AddSingleton<ICaptureListener>(svc => svc.GetRequiredService<EpcisEvents>());
 builder.Services.Configure<Constants>(builder.Configuration.GetSection(nameof(Constants)));
 
 // Handle persistent subscriptions in-memory.

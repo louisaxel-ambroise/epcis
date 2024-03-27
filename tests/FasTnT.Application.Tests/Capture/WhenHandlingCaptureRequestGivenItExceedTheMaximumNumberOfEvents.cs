@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain;
@@ -25,14 +25,14 @@ public class WhenHandlingCaptureRequestGivenItExceedTheMaximumNumberOfEvents
     public static void Cleanup()
     {
         Context?.Database.EnsureDeleted();
-        EpcisEvents.OnRequestCaptured -= CapturedRequests.Add;
+        EpcisEvents.OnCapture -= CapturedRequests.Add;
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
         Constants = new Constants() { MaxEventsCapturePerCall = 1 };
-        EpcisEvents.OnRequestCaptured += CapturedRequests.Add;
+        EpcisEvents.OnCapture += CapturedRequests.Add;
     }
 
     [TestMethod]

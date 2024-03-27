@@ -1,6 +1,6 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Application.Events;
 using FasTnT.Application.Handlers;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Model.Subscriptions;
 

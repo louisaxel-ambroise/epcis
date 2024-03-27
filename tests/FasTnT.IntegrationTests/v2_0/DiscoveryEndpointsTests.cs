@@ -23,65 +23,63 @@ public class DiscoveryEndpointsTests
         Client = TestHost.CreateDefaultClient();
         Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "YWRtaW46UEBzc3cwcmQ=");
 
-        using (var scope = TestHost.Server.Services.CreateScope())
+        using var scope = TestHost.Server.Services.CreateScope();
+        var dbContext = scope.ServiceProvider.GetService<EpcisContext>();
+
+        dbContext.Add(new Request
         {
-            var dbContext = scope.ServiceProvider.GetService<EpcisContext>();
+            RecordTime = DateTime.Now,
+            DocumentTime = DateTime.Now,
+            SchemaVersion = "2.0",
+            UserId = "431257CC4ADAF410486CDD3D6DC22F08",
+            Events =
+            [
+                new Event
+                {
+                    Action = EventAction.Add,
+                    Type = EventType.ObjectEvent,
+                    Disposition = "disp",
+                    BusinessLocation = "loc1",
+                    BusinessStep = "step",
+                    ReadPoint = "readpoint",
+                    Epcs = [
+                        new Epc { Type = EpcType.List, Id = "test:epc:1" },
+                        new Epc { Type = EpcType.List, Id = "test:epc:2" },
+                    ]
+                },
+                new Event
+                {
+                    BusinessLocation = "loc2",
+                    BusinessStep = "step",
+                    Epcs = [
+                        new Epc { Type = EpcType.List, Id = "test:epc:3" }
+                    ]
+                }
+            ]
+        });
 
-            dbContext.Add(new Request
-            {
-                RecordTime = DateTime.Now,
-                DocumentTime = DateTime.Now,
-                SchemaVersion = "2.0",
-                UserId = "431257CC4ADAF410486CDD3D6DC22F08",
-                Events =
-                [
-                    new Event
-                    {
-                        Action = EventAction.Add,
-                        Type = EventType.ObjectEvent,
-                        Disposition = "disp",
-                        BusinessLocation = "loc1",
-                        BusinessStep = "step",
-                        ReadPoint = "readpoint",
-                        Epcs = [
-                            new Epc { Type = EpcType.List, Id = "test:epc:1" },
-                            new Epc { Type = EpcType.List, Id = "test:epc:2" },
-                        ]
-                    },
-                    new Event
-                    {
-                        BusinessLocation = "loc2",
-                        BusinessStep = "step",
-                        Epcs = [
-                            new Epc { Type = EpcType.List, Id = "test:epc:3" }
-                        ]
-                    }
-                ]
-            });
-
-            dbContext.Add(new Request
-            {
-                RecordTime = DateTime.Now,
-                DocumentTime = DateTime.Now,
-                SchemaVersion = "2.0",
-                UserId = "ANOTHERUSER",
-                Events =
-                [
-                    new Event
-                    {
-                        Disposition = "seconddisp",
-                        BusinessLocation = "secondloc1",
-                        BusinessStep = "secondstep",
-                        ReadPoint = "secondreadpoint",
-                        Epcs = [
-                            new Epc { Type = EpcType.List, Id = "second:epc:1" },
-                            new Epc { Type = EpcType.List, Id = "second:epc:2" },
-                        ]
-                    }
-                ]
-            });
-            dbContext.SaveChanges();
-        }
+        dbContext.Add(new Request
+        {
+            RecordTime = DateTime.Now,
+            DocumentTime = DateTime.Now,
+            SchemaVersion = "2.0",
+            UserId = "ANOTHERUSER",
+            Events =
+            [
+                new Event
+                {
+                    Disposition = "seconddisp",
+                    BusinessLocation = "secondloc1",
+                    BusinessStep = "secondstep",
+                    ReadPoint = "secondreadpoint",
+                    Epcs = [
+                        new Epc { Type = EpcType.List, Id = "second:epc:1" },
+                        new Epc { Type = EpcType.List, Id = "second:epc:2" },
+                    ]
+                }
+            ]
+        });
+        dbContext.SaveChanges();
     }
 
     [TestMethod]

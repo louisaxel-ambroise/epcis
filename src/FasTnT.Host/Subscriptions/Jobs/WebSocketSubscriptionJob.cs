@@ -1,4 +1,4 @@
-﻿using FasTnT.Application.Events;
+﻿using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
@@ -15,14 +15,13 @@ public class WebSocketSubscriptionJob(
     string queryName, 
     IEnumerable<QueryParameter> parameters, 
     SubscriptionScheduler scheduler,
-    IEventListener eventListener)
+    ICaptureListener eventListener)
 {
     public async Task RunAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
         var bufferRequestIds = Array.Empty<int>();
         var lastExecutionDate = DateTime.UtcNow;
-
-        eventListener.OnRequestCaptured += scheduler.OnRequestCaptured;
+        eventListener.OnCapture += scheduler.OnRequestCaptured;
 
         try
         {
@@ -67,7 +66,7 @@ public class WebSocketSubscriptionJob(
         }
         finally
         {
-            eventListener.OnRequestCaptured -= scheduler.OnRequestCaptured;
+            eventListener.OnCapture -= scheduler.OnRequestCaptured;
         }
     }
 
