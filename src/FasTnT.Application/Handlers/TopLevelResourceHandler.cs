@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 
 namespace FasTnT.Application.Handlers;
 
-public class TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
+public sealed class TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
 {
     public async Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken)
     {

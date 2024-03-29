@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Handlers;
 
-public class CaptureHandler(EpcisContext context, ICurrentUser user, IEventNotifier notifier, IOptions<Constants> constants)
+public sealed class CaptureHandler(EpcisContext context, ICurrentUser user, IEventNotifier notifier, IOptions<Constants> constants)
 {
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
     {

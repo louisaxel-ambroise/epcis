@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Handlers;
 
-public class SubscriptionsHandler(EpcisContext context, ICurrentUser user, IEventNotifier notifier)
+public sealed class SubscriptionsHandler(EpcisContext context, ICurrentUser user, IEventNotifier notifier)
 {
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
     {

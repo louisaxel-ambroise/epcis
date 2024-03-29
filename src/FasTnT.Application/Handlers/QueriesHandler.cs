@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Handlers;
 
-public class QueriesHandler(EpcisContext context, ICurrentUser user)
+public sealed class QueriesHandler(EpcisContext context, ICurrentUser user)
 {
     public async Task<IEnumerable<StoredQuery>> ListQueriesAsync(Pagination pagination, CancellationToken cancellationToken)
     {

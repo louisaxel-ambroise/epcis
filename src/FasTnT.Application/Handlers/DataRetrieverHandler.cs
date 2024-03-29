@@ -11,16 +11,15 @@ using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Handlers;
 
-public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
+public sealed class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
 {
     public async Task<List<Event>> QueryEventsAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
     {
-        var userParameters = user.DefaultQueryParameters.Union(new[]
-        {
-            new QueryParameter { Name = "orderBy", Values = ["eventTime"] },
-            new QueryParameter { Name = "perPage", Values = [constants.Value.MaxEventsReturnedInQuery.ToString()] },
-            new QueryParameter { Name = "nextPageToken", Values = ["0"] }
-        });
+        var userParameters = user.DefaultQueryParameters.Union([
+            QueryParameter.Create("orderBy", "eventTime"),
+            QueryParameter.Create("perPage", constants.Value.MaxEventsReturnedInQuery.ToString()),
+            QueryParameter.Create("nextPageToken", "0")
+        ]);
 
         var maxResults = parameters.LastOrDefault(x => x.Name == "maxEventCount")?.AsInt() ?? constants.Value.MaxEventsReturnedInQuery;
         var eventIds = await context
