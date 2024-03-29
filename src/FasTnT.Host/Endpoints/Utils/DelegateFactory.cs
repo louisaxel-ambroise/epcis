@@ -58,7 +58,7 @@ public static class DelegateFactory
         var constants = response.HttpContext.RequestServices.GetService<IOptions<Constants>>().Value;
 
         response.Headers.Append("GS1-EPCIS-Version", "2.0");
-        response.Headers.Append("GS1-EPCIS-Min", "2.0");
+        response.Headers.Append("GS1-EPCIS-Min", "1.2");
         response.Headers.Append("GS1-EPCIS-Max", "2.0");
         response.Headers.Append("GS1-EPC-Format", "Never_Translates");
         response.Headers.Append("GS1-EPCIS-Capture-Limit", constants.MaxEventsCapturePerCall.ToString());
