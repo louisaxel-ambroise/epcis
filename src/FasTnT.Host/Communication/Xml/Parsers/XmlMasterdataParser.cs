@@ -44,6 +44,7 @@ public class XmlMasterdataParser
         return new()
         {
             Id = element.Attribute("id").Value,
+            Index = ++_index,
             Value = element.HasElements ? string.Empty : element.Value,
             Fields = element.Elements().SelectMany(x => ParseField(x)).ToList()
         };
