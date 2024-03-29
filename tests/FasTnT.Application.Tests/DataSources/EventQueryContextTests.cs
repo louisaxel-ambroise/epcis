@@ -5,6 +5,7 @@ using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Masterdata;
 using FasTnT.Domain.Model.Queries;
 
 namespace FasTnT.Application.Tests.DataSources;
@@ -32,12 +33,43 @@ public class EventQueryContextTests
                 RecordTime =  new DateTime(2020, 03, 15, 21, 14, 10, DateTimeKind.Utc),
                 Id = 1,
                 SchemaVersion = "2.0",
+                Masterdata = [
+                    new MasterData
+                    {
+                        Type = MasterData.Location,
+                        Id = "test_location2"
+                    },
+                    new MasterData
+                    {
+                        Type = MasterData.Location,
+                        Id = "test_location",
+                        Children = [new MasterDataChildren
+                        {
+                            ChildrenId = "test_location2"
+                        }]
+                    },
+                    new MasterData
+                    {
+                        Type = MasterData.ReadPoint,
+                        Id = "rp_test2"
+                    },
+                    new MasterData
+                    {
+                        Type = MasterData.ReadPoint,
+                        Id = "rp_test",
+                        Children = [new MasterDataChildren
+                        {
+                            ChildrenId = "rp_test2"
+                        }]
+                    }
+                ],
                 Events = [
                     new Event
                     {
                         Type = EventType.ObjectEvent,
                         Action = EventAction.Add,
                         BusinessLocation = "test_location",
+                        ReadPoint = "rp_test2",
                         CorrectiveDeclarationTime = new DateTime(2024, 02, 15, 21, 14, 10),
                         CorrectiveReason = "invalid_evt",
                         CorrectiveEventIds = new List<CorrectiveEventId>{{ new CorrectiveEventId { CorrectiveId = "ni://test2" } }},
@@ -356,6 +388,30 @@ public class EventQueryContextTests
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
         Assert.IsTrue(result.All(x => x.Epcs.Any(e => e.Id.StartsWith("epc."))));
+    }
+
+    [TestMethod]
+    [DataRow("test_location2", 2)]
+    [DataRow("test_location", 1)]
+    [DataRow("test_unknownlocation", 0)]
+    public void ItShouldApplyTheWD_bizLocationFilter(string value, int expected)
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("WD_bizLocation", value) }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expected, result.Count);
+    }
+
+    [TestMethod]
+    [DataRow("rp_test2", 2)]
+    [DataRow("rp_test", 1)]
+    [DataRow("rp_unknown", 0)]
+    public void ItShouldApplyTheWD_readPointFilter(string value, int expected)
+    {
+        var result = Context.QueryEvents(new[] { QueryParameter.Create("WD_readPoint", value) }).ToList();
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expected, result.Count);
     }
 
     [TestMethod]

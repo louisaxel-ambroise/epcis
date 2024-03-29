@@ -30,12 +30,12 @@
     <InternalsVisibleTo Include="FasTnT.IntegrationTests" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JsonSchema.Net" Version="6.0.6" />
+    <PackageReference Include="JsonSchema.Net" Version="6.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FasTnT.Application\FasTnT.Application.csproj" />
