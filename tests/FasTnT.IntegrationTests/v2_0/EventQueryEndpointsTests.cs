@@ -79,7 +79,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetEpcEventShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/epcs/test:epc:1/events").Result;
+        var response = Client.GetAsync("/epcs/test:epc:1/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -92,7 +92,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetEventTypeEventsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/eventtypes/ObjectEvent/events").Result;
+        var response = Client.GetAsync("/eventtypes/ObjectEvent/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -105,7 +105,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetDispositionEventsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/dispositions/disp/events").Result;
+        var response = Client.GetAsync("/dispositions/disp/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -118,7 +118,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetReadPointEventsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/readPoints/readpoint/events").Result;
+        var response = Client.GetAsync("/readPoints/readpoint/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -131,7 +131,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetBizStepEventsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/bizSteps/step/events").Result;
+        var response = Client.GetAsync("/bizSteps/step/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -144,7 +144,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetBizLocationEventsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/bizLocations/loc1/events").Result;
+        var response = Client.GetAsync("/bizLocations/loc1/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -157,7 +157,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetEpcEventsForUnknownValueShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/epcs/unknown:epc:1/events").Result;
+        var response = Client.GetAsync("/epcs/unknown:epc:1/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -170,7 +170,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetEventTypeEventsForUnknownValueShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/eventtypes/AggregationEvent/events").Result;
+        var response = Client.GetAsync("/eventtypes/AggregationEvent/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -183,7 +183,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetDispositionEventsForUnknownValueShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/dispositions/unknown/events").Result;
+        var response = Client.GetAsync("/dispositions/unknown/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -196,7 +196,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetReadPointEventsForUnknownValueShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/readPoints/unknown/events").Result;
+        var response = Client.GetAsync("/readPoints/unknown/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -209,7 +209,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetBizStepEventsForUnknownValueShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/bizSteps/unknown/events").Result;
+        var response = Client.GetAsync("/bizSteps/unknown/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -222,7 +222,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetBizLocationEventsForUnknownValueShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/bizLocations/unknown/events").Result;
+        var response = Client.GetAsync("/bizLocations/unknown/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);
@@ -235,7 +235,7 @@ public class EventQueryEndpointsTests
     [TestMethod]
     public void GetAllEventsShouldReturnACollectionResult()
     {
-        var response = Client.GetAsync("/v2_0/events").Result;
+        var response = Client.GetAsync("/events").Result;
 
         Assert.IsNotNull(response);
         Assert.IsTrue(response.IsSuccessStatusCode);

@@ -19,10 +19,7 @@ public class SubscriptionRunnerTests
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -35,7 +32,7 @@ public class SubscriptionRunnerTests
                 RecordTime =  new DateTime(2020, 03, 15, 21, 14, 10),
                 Id = 1,
                 SchemaVersion = "2.0",
-                Events = new List<Event> {
+                Events = [
                     new Event
                     {
                         Type = EventType.ObjectEvent,
@@ -48,9 +45,9 @@ public class SubscriptionRunnerTests
                         EventId = "ni://test",
                         EventTime =  new DateTime(2020, 02, 15, 21, 14, 10),
                         EventTimeZoneOffset = "+02:00",
-                        Epcs = new List<Epc>{ new Epc { Id = "epc1", Type = EpcType.List } }
+                        Epcs = [new Epc { Id = "epc1", Type = EpcType.List }]
                     }
-                }
+                ]
             }
         });
 

@@ -8,17 +8,8 @@ using System.Linq.Expressions;
 
 namespace FasTnT.Application.Handlers;
 
-public class TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
+public sealed class TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
 {
-    public static IEnumerable<string> ListEventTypes(Pagination pagination)
-    {
-        return Enum.GetValues<EventType>()
-            .Where(x => !new[] { EventType.None, EventType.QuantityEvent }.Contains(x))
-            .Skip(pagination.StartFrom)
-            .Take(pagination.PerPage)
-            .Select(x => x.ToString());
-    }
-
     public async Task<IEnumerable<string>> ListEpcs(Pagination pagination, CancellationToken cancellationToken)
     {
         var epcs = await context
@@ -31,6 +22,11 @@ public class TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
             .ToListAsync(cancellationToken);
 
         return epcs;
+    }
+
+    public async Task<IEnumerable<EventType>> ListEventTypes(Pagination pagination, CancellationToken cancellationToken)
+    {
+        return await DistinctFromEvents(x => x.Type, pagination).ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<string>> ListDispositions(Pagination pagination, CancellationToken cancellationToken)
@@ -53,7 +49,7 @@ public class TopLevelResourceHandler(EpcisContext context, ICurrentUser user)
         return await DistinctFromEvents(x => x.ReadPoint, pagination).ToListAsync(cancellationToken);
     }
 
-    private IQueryable<string> DistinctFromEvents(Expression<Func<Event, string>> selector, Pagination pagination)
+    private IQueryable<T> DistinctFromEvents<T>(Expression<Func<Event, T>> selector, Pagination pagination)
     {
         return context
             .QueryEvents(user.DefaultQueryParameters)

@@ -17,10 +17,7 @@ public class WhenHandlingDeleteQuery
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -32,10 +29,10 @@ public class WhenHandlingDeleteQuery
                 Id = 1,
                 Name = "QueryOne",
                 UserId = UserContext.UserId,
-                Parameters = new List<QueryParameter>
-                {
+                Parameters =
+                [
                     new QueryParameter{ Name = "EQ_type", Values = ["ObjectEvent", "TestEvent"]}
-                }
+                ]
             },
             new StoredQuery
             {
@@ -73,7 +70,7 @@ public class WhenHandlingDeleteQuery
     public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("Unknown", CancellationToken.None));
     }
 
@@ -81,7 +78,7 @@ public class WhenHandlingDeleteQuery
     public void ItShouldThrowAnExceptionIfTheQueryHasSubscription()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("WithSubscription", CancellationToken.None));
         Assert.AreEqual(1, Context.Set<StoredQuery>().Count(x => x.Name == "WithSubscription"));
     }
@@ -90,7 +87,7 @@ public class WhenHandlingDeleteQuery
     public void ItShouldThrowAnExceptionIfTheQUeryWasCreatedByAnotherUser()
     {
         var handler = new QueriesHandler(Context, UserContext);
-        
+
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("FromOtherUser", CancellationToken.None));
         Assert.AreEqual(1, Context.Set<StoredQuery>().Count(x => x.Name == "FromOtherUser"));
     }

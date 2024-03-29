@@ -1,4 +1,5 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain.Exceptions;
@@ -7,16 +8,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FasTnT.Application.Handlers;
 
-public class SubscriptionsHandler(EpcisContext context, ICurrentUser user)
+public sealed class SubscriptionsHandler(EpcisContext context, ICurrentUser user, IEventNotifier notifier)
 {
     public async Task<Subscription> DeleteSubscriptionAsync(string name, CancellationToken cancellationToken)
     {
         var subscription = await context.Set<Subscription>().FirstOrDefaultAsync(x => x.Name == name, cancellationToken) ?? throw new EpcisException(ExceptionType.NoSuchNameException, $"Subscription '{name}' does not exist");
-        
+
         context.Remove(subscription);
 
         await context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.SubscriptionRemoved(subscription);
+        notifier.SubscriptionRemoved(subscription);
 
         return subscription;
     }
@@ -57,7 +58,7 @@ public class SubscriptionsHandler(EpcisContext context, ICurrentUser user)
         context.Add(subscription);
 
         await context.SaveChangesAsync(cancellationToken);
-        EpcisEvents.SubscriptionRegistered(subscription);
+        notifier.SubscriptionRegistered(subscription);
 
         return subscription;
     }

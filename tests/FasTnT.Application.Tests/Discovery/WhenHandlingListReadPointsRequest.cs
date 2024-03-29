@@ -16,10 +16,7 @@ public class WhenHandlingListReadPointsRequest
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [TestInitialize]
@@ -31,8 +28,8 @@ public class WhenHandlingListReadPointsRequest
             DocumentTime = DateTime.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
-            Events = new List<Event>
-            {
+            Events =
+            [
                 new Event
                 {
                     ReadPoint = "RP1"
@@ -41,7 +38,7 @@ public class WhenHandlingListReadPointsRequest
                 {
                     ReadPoint = "RP2"
                 }
-            }
+            ]
         });
 
         Context.SaveChanges();

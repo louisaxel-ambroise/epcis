@@ -6,7 +6,7 @@ public static class RequestValidator
 {
     public static bool IsValid(Request request)
     {
-        return (ContainsData(request) || IsSubscriptionResult(request)) 
+        return (ContainsData(request) || IsSubscriptionResult(request))
             && request.Events.All(EventValidator.IsValid);
     }
 

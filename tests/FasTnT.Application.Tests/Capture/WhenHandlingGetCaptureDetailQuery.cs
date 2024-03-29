@@ -1,13 +1,14 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Events;
+using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
+using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
 using Microsoft.Extensions.Options;
-using FasTnT.Domain;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -20,10 +21,7 @@ public class WhenHandlingGetCaptureDetailQuery
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
@@ -38,7 +36,7 @@ public class WhenHandlingGetCaptureDetailQuery
                 SchemaVersion = "2.0",
                 RecordTime = DateTime.UtcNow,
                 DocumentTime = DateTime.UtcNow,
-                Events = new List<Event>{ new Event { Type = EventType.ObjectEvent } }
+                Events = [new Event { Type = EventType.ObjectEvent }]
             },
             new Request
             {
@@ -48,7 +46,7 @@ public class WhenHandlingGetCaptureDetailQuery
                 SchemaVersion = "2.0",
                 RecordTime = DateTime.UtcNow,
                 DocumentTime = DateTime.UtcNow,
-                Events = new List<Event>{ new Event { Type = EventType.ObjectEvent } }
+                Events = [new Event { Type = EventType.ObjectEvent }]
             }
         });
 
@@ -58,7 +56,7 @@ public class WhenHandlingGetCaptureDetailQuery
     [TestMethod]
     public void ItShouldReturnTheRequests()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
         var result = handler.GetCaptureDetailsAsync("001", default).Result;
 
         Assert.IsNotNull(result);
@@ -70,7 +68,7 @@ public class WhenHandlingGetCaptureDetailQuery
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheCaptureDoesNotExist()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetCaptureDetailsAsync("unknown", default));
     }

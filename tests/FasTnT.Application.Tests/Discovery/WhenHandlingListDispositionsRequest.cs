@@ -16,10 +16,7 @@ public class WhenHandlingListDispositionsRequest
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [TestInitialize]
@@ -31,8 +28,8 @@ public class WhenHandlingListDispositionsRequest
             DocumentTime = DateTime.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
-            Events = new List<Event>
-            {
+            Events =
+            [
                 new Event
                 {
                     Disposition = "D1"
@@ -41,7 +38,7 @@ public class WhenHandlingListDispositionsRequest
                 {
                     Disposition = "D2"
                 }
-            }
+            ]
         });
 
         Context.SaveChanges();

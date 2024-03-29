@@ -16,10 +16,7 @@ public class WhenHandlingListBizStepsRequest
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [TestInitialize]
@@ -31,8 +28,8 @@ public class WhenHandlingListBizStepsRequest
             DocumentTime = DateTime.Now,
             SchemaVersion = "2.0",
             UserId = "TESTUSER",
-            Events = new List<Event>
-            {
+            Events =
+            [
                 new Event
                 {
                     BusinessStep = "BS1"
@@ -41,7 +38,7 @@ public class WhenHandlingListBizStepsRequest
                 {
                     BusinessStep = "BS2"
                 }
-            }
+            ]
         });
 
         Context.SaveChanges();

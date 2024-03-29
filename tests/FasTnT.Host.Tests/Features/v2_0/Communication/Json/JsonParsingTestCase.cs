@@ -1,4 +1,4 @@
-﻿using FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
+﻿using FasTnT.Host.Communication.Json.Parsers;
 using System.Reflection;
 using System.Text.Json;
 

@@ -5,7 +5,7 @@ namespace FasTnT.Host.Subscriptions.Schedulers;
 
 public abstract class SubscriptionScheduler
 {
-    public static readonly SubscriptionSchedule 
+    public static readonly SubscriptionSchedule
         HourlySchedule = new() { Second = "0", Minute = "0" },
         DailySchedule = new() { Second = "0", Minute = "0", Hour = "0" },
         WeeklySchedule = new() { Second = "0", Minute = "0", Hour = "0", DayOfWeek = "1" },

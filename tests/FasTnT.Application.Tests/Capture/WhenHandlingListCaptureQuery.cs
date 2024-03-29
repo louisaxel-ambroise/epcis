@@ -1,13 +1,14 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
-using FasTnT.Domain.Model;
-using FasTnT.Domain.Model.Queries;
-using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Enumerations;
-using Microsoft.Extensions.Options;
 using FasTnT.Domain;
+using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Model;
+using FasTnT.Domain.Model.Events;
+using FasTnT.Domain.Model.Queries;
+using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -20,10 +21,7 @@ public class WhenHandlingListCaptureQuery
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
 
@@ -39,7 +37,7 @@ public class WhenHandlingListCaptureQuery
                 SchemaVersion = "2.0",
                 RecordTime = DateTime.UtcNow,
                 DocumentTime = DateTime.UtcNow,
-                Events = new List<Event>{ new Event { Type = EventType.ObjectEvent } }
+                Events = [new Event { Type = EventType.ObjectEvent }]
             },
             new Request
             {
@@ -49,7 +47,7 @@ public class WhenHandlingListCaptureQuery
                 SchemaVersion = "2.0",
                 RecordTime = DateTime.UtcNow,
                 DocumentTime = DateTime.UtcNow,
-                Events = new List<Event>{ new Event { Type = EventType.ObjectEvent } }
+                Events = [new Event { Type = EventType.ObjectEvent }]
             }
         });
 
@@ -59,7 +57,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldReturnTheRequests()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
         var result = handler.ListCapturesAsync(Pagination.Max, default).Result;
 
         Assert.IsNotNull(result);
@@ -69,7 +67,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldApplyThePaginationPerPageFilter()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
         var result = handler.ListCapturesAsync(new Pagination(1, 0), default).Result;
 
         Assert.IsNotNull(result);
@@ -80,7 +78,7 @@ public class WhenHandlingListCaptureQuery
     [TestMethod]
     public void ItShouldApplyThePaginationStartFromFilter()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
         var result = handler.ListCapturesAsync(new Pagination(int.MaxValue, 1), default).Result;
 
         Assert.IsNotNull(result);
