@@ -1,10 +1,11 @@
+[![Last Commit (develop)](https://img.shields.io/github/last-commit/louisaxel-ambroise/epcis/main.svg?logo=github)](https://github.com/FasTnT/epcis/commits/develop)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5c0fa82713fd4960b5b91d95b4143e7f)](https://www.codacy.com/gh/FasTnT/epcis-ef-core/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=FasTnT/epcis-ef-core&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/5c0fa82713fd4960b5b91d95b4143e7f)](https://www.codacy.com/gh/FasTnT/epcis-ef-core/dashboard?utm_source=github.com&utm_medium=referral&utm_content=FasTnT/epcis-ef-core&utm_campaign=Badge_Coverage)
 [![.NET](https://github.com/FasTnT/epcis-ef-core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/FasTnT/epcis-ef-core/actions/workflows/dotnet.yml)
 
 # [FasTnT EPCIS repository](https://louisaxel-ambroise.github.io/epcis/)
 
-FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and 2.0 repository written in C# using .NET8 and backed using EntityFramework Core.
+FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and 2.0 repository written in C# using .NET8 and backed with EntityFramework Core.
 
 The repository fully supports the following databases:
  - SqlServer *(provider: SqlServer)*
@@ -19,12 +20,13 @@ A [Postman team](https://www.postman.com/fastnt-epcis) is also available that co
 
 ## Setup
 
-1. Download the source code, and setup a database for FasTnT ;
-2. Start the repository with the command `$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "Data Source=fastnt.db;" --FasTnT.Database.Provider "Sqlite"` ;
+1. Download the source code: `$ git clone https://www.github.com/louisaxel-ambroise/epcis && cd epcis`
+2. Apply database migrations: `$ dotnet ef database update --project src/FasTnT.Host --connection "Data Source=fastnt.db;" -- --FasTnT.Database.Provider "Sqlite"`
+3. Start the repository: `$ dotnet run --project src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "Data Source=fastnt.db;" --FasTnT.Database.Provider "Sqlite"`
 
 That's it! You have a properly working EPCIS repository using Sqlite as storage.
 
-You can obviously replace the Connection String and Database Provider with the values that suits better your needs (SqlServer or PostGreSQL).
+You can replace the Connection String and Database Provider with the values that suits better your needs (Sqlite, SqlServer or PostGreSQL).
 
 You can also setup FasTnT EPCIS using the Docker image or in Azure very easily. Check the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki/Installation) for more details.
 
