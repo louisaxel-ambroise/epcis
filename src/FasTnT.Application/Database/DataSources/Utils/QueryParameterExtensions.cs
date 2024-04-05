@@ -96,13 +96,4 @@ internal static class QueryParameterExtensions
     {
         return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
     }
-    internal static IQueryable<TQuery> WhereIn<TQuery, TKey>(this IQueryable<TQuery> queryable, Expression<Func<TQuery, TKey>> keySelector, IEnumerable<TKey> values)
-    {
-        var method = values.GetType().GetMethod("Contains");
-        var instance = Expression.Constant(values);
-        var expression = Expression.Call(instance, method, keySelector.Body);
-        var lambda = Expression.Lambda<Func<TQuery, bool>>(expression, keySelector.Parameters);
-
-        return queryable.Where(lambda);
-    }
 }

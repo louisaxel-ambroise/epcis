@@ -38,7 +38,7 @@ public class DataRetrieverHandler(EpcisContext context, ICurrentUser user, IOpti
         }
 
         var events = await context.Set<Event>()
-            .WhereIn(x => x.Id, eventIds)
+            .Where(x => eventIds.Contains(x.Id))
             .ToListAsync(cancellationToken);
 
         return new (events.OrderBy(e => eventIds.IndexOf(e.Id)));
