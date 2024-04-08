@@ -73,9 +73,8 @@ internal static class QueryParameterExtensions
     public static Expression<Func<T, bool>> Compare<T>(this QueryParameter parameter, Expression<Func<T, object>> accessor)
     {
         var param = Expression.Parameter(typeof(T));
-
-        Expression right = parameter.IsDateTime() ? Expression.Constant(parameter.AsDate()) : Expression.Constant(parameter.AsFloat());
-        Expression left = Expression.Convert(Expression.Invoke(accessor, param), right.Type);
+        var right = parameter.IsDateTime() ? Expression.Constant(parameter.AsDate()) : Expression.Constant(parameter.AsFloat());
+        var left = Expression.Convert(Expression.Invoke(accessor, param), right.Type);
 
         return parameter.Name[..2] switch
         {
