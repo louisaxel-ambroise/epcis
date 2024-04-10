@@ -57,7 +57,7 @@ resource "azurerm_windows_web_app" "api_app" {
 	always_on		    = false
 	application_stack {
 		current_stack 	  = "dotnet"
-		dotnet_version    = "v8.0"
+		dotnet_version    = "v9.0"
 	}
   }
   auth_settings {
