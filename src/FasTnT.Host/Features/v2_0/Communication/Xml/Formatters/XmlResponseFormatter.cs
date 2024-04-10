@@ -2,8 +2,6 @@
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Features.v2_0.Communication.Xml.Utils;
 using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
-using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
 
