@@ -1,11 +1,12 @@
-name: Build and deploy ASP.Net Core app to an Azure Web App
+name: Deploy to DEV API sandbox
 
 env:
   AZURE_WEBAPP_NAME: fastnt-dev 
   AZURE_WEBAPP_PACKAGE_PATH: '.' 
   DOTNET_VERSION: '8.0'
 
-on:
+on: 
+  workflow_dispatch:
   push:
     branches:
       - main
