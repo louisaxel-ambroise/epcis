@@ -1,0 +1,29 @@
+meta {
+  name: List available EventTypes
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/eventTypes
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+tests {
+  test("Should return a collection", function() {
+    expect(res.body.type).to.equals("Collection");
+  });
+  
+}
+
+docs {
+  # Returns all EPCIS event types currently available in the EPCIS repository.
+  
+  EPCIS event types specify the schema of an event. This endpoint returns the 5 standard event types as well as any custom event types supported by this repository.
+}

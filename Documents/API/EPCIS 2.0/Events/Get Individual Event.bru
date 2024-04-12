@@ -1,0 +1,31 @@
+meta {
+  name: Get Individual Event
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/events/ni%3A%2F%2F%2Fsha-256%3Bdf7bb3c352fef055578554f09f5e2aa41782150ced7bd0b8af24dd3ccb30ba69%3Fver%3DCBV2%3D0
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  eventId: 
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns an individual EPCIS event.
+  
+  This endpoint accesses individual events using their unique identifier. The response body is an `EPCISQueryDocument` enclosing the unique event and error declarations.
+}

@@ -1,0 +1,42 @@
+meta {
+  name: Get ReadPoint SubResources List
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/readPoints/{{readPoint}}
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  readPoint: epc.urn.readpoint.test
+}
+
+assert {
+  res.status: eq 200
+  res.body.members: contains events
+}
+
+tests {
+  test("Should return a collection", function() {
+    expect(res.body.type).to.equals("Collection");
+  });
+  
+  test("Should return at least events member", function() {
+    expect(res.body.members).to.contains("events");
+  });
+  
+}
+
+docs {
+  # Returns all sub-resources of a read point.
+  
+  This endpoint returns all sub-resources of a read point (for HATEOAS discovery), which includes at least `events`.
+}

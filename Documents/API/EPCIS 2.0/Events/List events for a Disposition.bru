@@ -1,0 +1,35 @@
+meta {
+  name: List events for a Disposition
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/dispositions/{{disposition}}/events
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  disposition: in_progress
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns all EPCIS events related to the disposition.
+  
+  This endpoint helps to navigate EPCIS events by dispositions. It returns EPCIS events up to the amount defined in `perPage`. The server returns a `Link` header to point to the remaining results. Optionally, EPCIS events can be further filtered using the EPCIS Query Language as query string parameters. Example:
+  
+  `https://example.com/dispositions/in_progress?GE_eventTime=2015-03-15T00%3A00%3A00.000-04%3A00`
+  
+  An EPCIS 2.0 query may also be expressed via the URI query string. The query parameters with fixed fieldnames are included in this OpenAPI interface. However, this list is not exhaustive and the EPCIS 2.0 standard defines additional query parameters with flexible names, depending on the specific value of `uom`, `type` or `fieldname` that appears within the name of the parameter.
+}

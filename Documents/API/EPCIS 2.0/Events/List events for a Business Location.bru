@@ -1,0 +1,35 @@
+meta {
+  name: List events for a Business Location
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/bizLocations/{{bizLocation}}/events
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  bizLocation: urn:epc:id:sgln:0012345.11111.400
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns all EPCIS events related to the business location.
+  
+  This endpoint helps to navigate EPCIS events by business locations. It returns EPCIS events up to the amount defined in `perPage`. The server returns a `Link` header to point to the remaining results. Optionally, EPCIS events can be further filtered using the EPCIS Query Language as query string parameters. Example:
+  
+  `https://example.com/bizLocations/urn:epc:id:sgln:0012345.11111.400/events?GE_eventTime=2015-03-15T00%3A00%3A00.000-04%3A00`
+  
+  An EPCIS 2.0 query may also be expressed via the URI query string. The query parameters with fixed fieldnames are included in this OpenAPI interface. However, this list is not exhaustive and the EPCIS 2.0 standard defines additional query parameters with flexible names, depending on the specific value of `uom`, `type` or `fieldname` that appears within the name of the parameter.
+}

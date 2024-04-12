@@ -1,0 +1,31 @@
+meta {
+  name: Capture Event Sync
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/events
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {}
+}
+
+assert {
+  res.status: eq 202
+  res.headers.location: isDefined
+}
+
+docs {
+  # Synchronous capture interface for a single EPCIS event.
+  
+  An individual EPCIS event can be created by making a `POST` request on the `/events` resource. Alternatively, the client can also use the `/capture` interface and capture a single event.
+}

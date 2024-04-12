@@ -1,0 +1,67 @@
+meta {
+  name: List events for a Query
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/queries/{{queryName}}/events
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  queryName: MyQuery
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns EPCIS events with the option to use pagination if needed. This endpoint supports query subscriptions using WebSockets.
+  
+  The `GET` endpoint is to retrieve results of a named query. Furthermore, this endpoint can also be used to subscribe to queries using Websocket. To do this, the client must specify the query schedule or set the `stream` parameter to `true` as a URL query string parameter. Please note that scheduling parameters and the `stream` parameter are mutually exclusive.
+  
+  ## Scheduled query: Receive query results at 1.05am
+  Handshake from client for scheduled query:
+  
+  ```
+  GET https://example.com/queries/MyQuery/events?minute=5&hour=1
+  Host: example.com
+  Upgrade: websocket
+  Connection: Upgrade
+  ```
+  
+  Handshake from the server:
+  
+  ```
+  HTTP/1.1 101 Switching Protocols
+  Upgrade: websocket
+  Connection: Upgrade
+  ```
+  
+  ## Streaming query subscription: Whenever a captured EPCIS event matches the query criteria
+  Handshake from client for streaming:
+  
+  ```
+  GET https://example.com/queries/MyQuery/events?stream=true
+  Host: example.com
+  Upgrade: websocket
+  Connection: Upgrade
+  ```
+  
+  Handshake from the server:
+  
+  ```
+  HTTP/1.1 101 Switching Protocols
+  Upgrade: websocket
+  Connection: Upgrade
+  ```
+}

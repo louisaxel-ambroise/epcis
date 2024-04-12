@@ -1,0 +1,27 @@
+meta {
+  name: List Top Level Resources
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns the list of top level resources available for this EPCIS repository.
+  
+  This endpoint returns all the top-level resources currently available in the repository.
+}

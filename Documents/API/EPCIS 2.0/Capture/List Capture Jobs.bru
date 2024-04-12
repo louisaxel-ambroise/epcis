@@ -1,0 +1,49 @@
+meta {
+  name: List Capture Jobs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/capture?perPage={{perPage}}&nextPageToken={{nextPageToken}}
+  body: none
+  auth: basic
+}
+
+query {
+  perPage: {{perPage}}
+  nextPageToken: {{nextPageToken}}
+}
+
+headers {
+  GS1-EPCIS-Min: 1.2.0
+  GS1-EPCIS-Max: 2.0.0
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  nextPageToken: 
+  perPage: 2
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("Should return a non-empty array", function() {
+    expect(res.body.length).gt(0);
+  });
+}
+
+docs {
+  # Returns a list of capture jobs.
+  
+  When EPCIS events are added through the capture interface, the capture process can run asynchronously. If the payload is syntactically correct and the client is allowed to call `/capture`, the server returns a `202` HTTP response code. 
+  
+  This endpoint returns all capture jobs that were created and supports pagination.
+}

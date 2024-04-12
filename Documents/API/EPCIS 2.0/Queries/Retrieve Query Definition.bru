@@ -1,0 +1,55 @@
+meta {
+  name: Retrieve Query Definition
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/epcis/queries/{{queryName}}
+  body: none
+  auth: basic
+}
+
+headers {
+  GS1-EPCIS-Version: 1.2.0
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "name": "test",
+    "query":{
+      "EQ_eventType":[
+        "ObjectEvent"
+      ]
+    }
+  }
+}
+
+body:xml {
+  <xml/>
+}
+
+vars:pre-request {
+  queryName: UniqueQueryName
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("Should return the correct query definition", function() {
+    expect(res.body.name).equals("UniqueQueryName");
+  });
+}
+
+docs {
+  # Returns a list of queries available.
+  
+  An endpoint to list named queries. This endpoint supports pagination.
+}
