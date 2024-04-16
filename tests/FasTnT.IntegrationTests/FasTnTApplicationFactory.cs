@@ -1,10 +1,10 @@
 ﻿using FasTnT.Application.Database;
-using FasTnT.Sqlite;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace FasTnT.IntegrationTests;
 
@@ -22,15 +22,29 @@ internal class FasTnTApplicationFactory : WebApplicationFactory<Program>
         }
     }
 
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        var configurationValues = new Dictionary<string, string>
+        {
+            { "FasTnT.Database.Provider", $"Sqlite" },
+            { "ConnectionStrings:FasTnT.Database", $"Data Source={_dbName}.db" }
+        };
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(configurationValues)
+            .Build();
+
+        builder.UseConfiguration(configuration)
+            .ConfigureAppConfiguration(configurationBuilder =>
+            {
+                configurationBuilder.AddInMemoryCollection(configurationValues);
+            });
+    }
+
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.ConfigureServices(svc =>
         {
-            svc.RemoveAll(typeof(DbContextOptions<EpcisContext>));
-            svc.RemoveAll(typeof(EpcisContext));
-
-            SqliteProvider.Configure(svc, $"Data Source={_dbName}.db;", 1000);
-
             using var provider = svc.BuildServiceProvider();
             using var scope = provider.CreateScope();
             using var context = scope.ServiceProvider.GetService<EpcisContext>();
