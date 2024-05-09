@@ -1,5 +1,6 @@
 ﻿using FasTnT.Domain.Model.Events;
 using FasTnT.Host.Features.v2_0.Communication.Json.Parsers;
+using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.Json;
 

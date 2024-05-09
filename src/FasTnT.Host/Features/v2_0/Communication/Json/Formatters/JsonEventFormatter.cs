@@ -7,22 +7,22 @@ namespace FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
 public class JsonEventFormatter
 {
     private readonly Event _evt;
-    private readonly IDictionary<string, string> _context;
+    private readonly Dictionary<string, string> _context;
 
-    private JsonEventFormatter(Event evt, IDictionary<string, string> context)
+    private JsonEventFormatter(Event evt, Dictionary<string, string> context)
     {
         _evt = evt;
         _context = context;
     }
 
-    public static IDictionary<string, object> FormatEvent(Event evt, IDictionary<string, string> context)
+    public static Dictionary<string, object> FormatEvent(Event evt, Dictionary<string, string> context)
     {
         var formatter = new JsonEventFormatter(evt, context);
 
         return formatter.FormatEvent();
     }
 
-    internal IDictionary<string, object> FormatEvent()
+    internal Dictionary<string, object> FormatEvent()
     {
         var element = new Dictionary<string, object>
         {
@@ -69,8 +69,8 @@ public class JsonEventFormatter
         }
         if (_evt.BusinessLocation is not null)
         {
-            var bizLocation = new Dictionary<string, object> { { "id", _evt.ReadPoint } };
-            var bizLocationFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.ReadPointCustomField));
+            var bizLocation = new Dictionary<string, object> { { "id", _evt.BusinessLocation } };
+            var bizLocationFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.BusinessLocationCustomField));
 
             foreach (var field in bizLocationFields)
             {
