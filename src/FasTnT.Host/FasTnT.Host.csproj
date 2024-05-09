@@ -32,7 +32,7 @@
     <InternalsVisibleTo Include="FasTnT.IntegrationTests" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="JsonSchema.Net" Version="7.0.0.3" />
+    <PackageReference Include="JsonSchema.Net" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
