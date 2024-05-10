@@ -1,0 +1,40 @@
+meta {
+  name: Get Capture Job Details
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/capture/{{captureId}}
+  body: none
+  auth: basic
+}
+
+query {
+  ~nextPageToken: {{nextPageToken}}
+  ~perPage: {{perPage}}
+}
+
+headers {
+  GS1-EPCIS-Min: 1.2.0
+  GS1-EPCIS-Max: 2.0.0
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  captureId: "6383636100840683267930228"
+}
+
+assert {
+  res.status: eq 200
+}
+
+docs {
+  # Returns information about the capture job.
+  
+  When EPCIS events are added through the capture interface, the capture process can run asynchronously. If the payload is syntactically correct and the client is allowed to call `/capture`, the server returns a `202` HTTP response code. This endpoint exposes the state of the capture job to the client.
+}

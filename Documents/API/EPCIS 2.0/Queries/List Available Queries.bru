@@ -1,0 +1,27 @@
+meta {
+  name: List Available Queries
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/queries
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns a list of queries available.
+  
+  An endpoint to list named queries. This endpoint supports pagination.
+}

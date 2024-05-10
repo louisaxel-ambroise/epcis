@@ -1,0 +1,41 @@
+meta {
+  name: Get EventType SubResources List
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/eventTypes/{{eventType}}
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  eventType: ObjectEvent
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("Should return a collection", function() {
+    expect(res.body.type).to.equals("Collection");
+  });
+  
+  test("Should return at least events member", function() {
+    expect(res.body.members).to.contains("events");
+  });
+  
+}
+
+docs {
+  # Returns all sub-resources of an EPCIS event type.
+  
+  This endpoint returns all sub-resources of an EPCIS event type (for HATEOAS discovery), which includes at least `events`. A server may add additional endpoints, for example `schema` to access the EPCIS event type schema.
+}

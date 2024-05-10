@@ -1,0 +1,33 @@
+meta {
+  name: List Available Dispositions
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{baseUrl}}/dispositions
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("Should return a collection", function() {
+    expect(res.body.type).to.equals("Collection");
+  });
+  
+}
+
+docs {
+  # Returns known dispositions.
+  
+  This endpoint returns the CBV standard dispositions as well as any custom dispositions supported by this repository.
+}

@@ -1,0 +1,35 @@
+meta {
+  name: List events for an EventType
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/eventTypes/{{eventType}}/events
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  eventType: ObjectEvent
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns EPCIS events of a given an EPCIS event type.
+  
+  This endpoint returns all EPCIS events of a specific EPCIS event type up to the amount defined in `perPage`. The server returns a 'Link' header to point to the remaining results. The client can further restrict the list of events returned by filtering events using the EPCIS query language using URL query string parameters as specified by the EPCIS Query Language. The parameter `eventCountLimit` is used to restrict the maximum number of events to be returned in total, whereas `perPage` restricts the number of events to return per page or paginated results. Example:
+  
+  `https://example.com/eventTypes/ObjectEvent/events?EQ_bizStep=shipping%7Cdecommissioning&GE_eventTime=2015-03-15T00%3A00%3A00.000-04%3A00`
+  
+  An EPCIS 2.0 query may also be expressed via parameters in the URI query string. The query parameters with fixed fieldnames are included in this OpenAPI interface. However, this list is not exhaustive and the EPCIS 2.0 standard defines additional query parameters with flexible names, depending on the specific value of `uom`, `type` or `fieldname` that appears within the name of the parameter.
+}

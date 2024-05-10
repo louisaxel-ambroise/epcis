@@ -1,0 +1,28 @@
+meta {
+  name: Remove A Query
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/queries/{{queryName}}
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  queryName: UniqueQueryName
+}
+
+assert {
+  res.status: eq 204
+}
+
+docs {
+  # Removes a named query and forcibly unsubscribes all active subscriptions, whether by WebSockets or Webhooks
+}

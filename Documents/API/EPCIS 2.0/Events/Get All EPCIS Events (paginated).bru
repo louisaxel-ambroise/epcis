@@ -1,0 +1,31 @@
+meta {
+  name: Get All EPCIS Events (paginated)
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/events
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns all EPCIS events available in the EPCIS repository.
+  
+  This endpoint allows querying EPCIS events that are currently in the repository. 
+  
+  Events can be filtered through URL query string parameters as specified by the EPCIS Query Language. An EPCIS 2.0 query body using the REST interface SHALL be serialised as a JSON object. The value of the query key within that JSON object SHALL validate against the schema defined at: https://ref.gs1.org/standards/epcis/2.0.0/query-schema.json. 
+  
+  An EPCIS 2.0 query may also be expressed via parameters in the URI query string. The query parameters with fixed fieldnames are included in this OpenAPI interface. However, this list is not exhaustive and the EPCIS 2.0 standard defines additional query parameters with flexible names, depending on the specific value of `uom`, `type` or `fieldname` that appears within the name of the parameter.
+}

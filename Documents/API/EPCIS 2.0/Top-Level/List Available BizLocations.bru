@@ -1,0 +1,33 @@
+meta {
+  name: List Available BizLocations
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/bizLocations
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("Should return a collection", function() {
+    expect(res.body.type).to.equals("Collection");
+  });
+  
+}
+
+docs {
+  # Returns known business locations.
+  
+  An endpoint to list all the business locations known to this repository.
+}

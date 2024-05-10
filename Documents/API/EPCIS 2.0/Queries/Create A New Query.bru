@@ -1,0 +1,53 @@
+meta {
+  name: Create A New Query
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/queries
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "name": "UniqueQueryName",
+    "query": {
+      "eventType": [
+        "ObjectEvent"
+      ],
+      "EQ_bizStep": [
+        "shipping",
+        "receiving"
+      ]
+    }
+  }
+}
+
+vars:pre-request {
+  queryName: UniqueQueryName
+}
+
+assert {
+  res.status: eq 201
+  res.headers.location: isDefined
+}
+
+tests {
+  test("Should contain the location header", function() {
+    expect(res.headers.location).to.equals("queries/UniqueQueryName");
+  });
+  
+}
+
+docs {
+  # Creates a named EPCIS events query.
+  
+  Creating a named query creates a view on the events in the repository, accessible through its events resource. To obtain the named query results, the client can use the URL in the `Location` header. The client can also use this URL to start a query subscription immediately after creating the query.
+}

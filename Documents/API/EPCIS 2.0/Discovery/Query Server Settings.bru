@@ -1,0 +1,43 @@
+meta {
+  name: Query Server Settings
+  type: http
+  seq: 1
+}
+
+options {
+  url: {{baseUrl}}/
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 204
+  res.body: isEmpty
+  res.headers.gs1-epcis-capture-limit: isDefined
+  res.headers.gs1-epcis-min: isDefined
+  res.headers.gs1-epcis-max: isDefined
+  res.headers.gs1-cbv-min: isDefined
+  res.headers.gs1-cbv-max: isDefined
+  res.headers.gs1-vendor-version: isDefined
+}
+
+tests {
+  test("Should not return any content", function() {
+    expect(res.status).to.equal(204);
+  });
+  
+  test("Should specify the allowed HTTP verbs", function() {
+    expect(res.headers.allow).to.contains('GET');
+  });
+}
+
+docs {
+  # Query server settings, EPCIS version(s) and related vocabularies/standards.
+  
+  `OPTIONS` on the root path gives the client an overview of the server's EPCIS-related configurations.
+}
