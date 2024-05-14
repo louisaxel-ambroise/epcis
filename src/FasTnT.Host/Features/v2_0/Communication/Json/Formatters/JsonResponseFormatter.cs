@@ -169,7 +169,7 @@ public static class JsonResponseFormatter
     private class EpcisDateFormatConverter : JsonConverter<DateTime>
     {
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => DateTime.Parse(reader.GetString()!, null, DateTimeStyles.AdjustToUniversal);
+            => UtcDateTime.Parse(reader.GetString()!);
 
         public override void Write(Utf8JsonWriter writer, DateTime dateTimeValue, JsonSerializerOptions options)
             => writer.WriteStringValue(dateTimeValue.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));

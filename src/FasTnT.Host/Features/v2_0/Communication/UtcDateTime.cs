@@ -2,7 +2,7 @@
 
 public static class UtcDateTime
 {
-    public const DateTimeStyles Styles = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal;
+    public static readonly DateTimeStyles Styles = DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal;
 
     public static DateTime Parse(string value)
     {
