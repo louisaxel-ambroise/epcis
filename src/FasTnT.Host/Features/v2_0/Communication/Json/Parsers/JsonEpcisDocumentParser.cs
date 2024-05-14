@@ -33,7 +33,7 @@ public static class JsonEpcisDocumentParser
                 case "schemaVersion":
                     request.SchemaVersion = property.Value.GetString(); break;
                 case "creationDate":
-                    request.DocumentTime = property.Value.GetDateTime().ToUniversalTime(); break;
+                    request.DocumentTime = UtcDateTime.Parse(property.Value.GetString()); break;
                 case "epcisHeader":
                     request.Masterdata = ParseMasterdata(property.Value, extensions); break;
                 case "epcisBody":

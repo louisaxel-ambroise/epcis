@@ -12,7 +12,7 @@ public static class XmlEpcisDocumentParser
     {
         var request = new Request
         {
-            DocumentTime = DateTime.Parse(root.Attribute("creationDate").Value, null, DateTimeStyles.AdjustToUniversal),
+            DocumentTime = UtcDateTime.Parse(root.Attribute("creationDate").Value),
             SchemaVersion = root.Attribute("schemaVersion").Value
         };
 
