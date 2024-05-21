@@ -1,4 +1,6 @@
-﻿namespace FasTnT.Host.Features.v1_2.Communication;
+﻿using System.Globalization;
+
+namespace FasTnT.Application.Services;
 
 public static class UtcDateTime
 {

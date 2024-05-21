@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.DataSources.Utils;
+﻿using FasTnT.Application.Services;
+using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
@@ -12,7 +13,7 @@ internal static class QueryParameterExtensions
     public static int AsInt(this QueryParameter parameter) => int.Parse(parameter.AsString());
     public static bool AsBool(this QueryParameter parameter) => bool.Parse(parameter.AsString());
     public static double AsFloat(this QueryParameter parameter) => double.Parse(parameter.AsString(), CultureInfo.InvariantCulture);
-    public static DateTime AsDate(this QueryParameter parameter) => DateTime.Parse(parameter.AsString(), null, DateTimeStyles.AdjustToUniversal);
+    public static DateTime AsDate(this QueryParameter parameter) => UtcDateTime.Parse(parameter.AsString());
     public static bool IsDateTime(this QueryParameter parameter) => Regexs.Date().IsMatch(parameter.AsString());
     public static bool IsNumeric(this QueryParameter parameter) => Regexs.Numeric().IsMatch(parameter.AsString());
 
