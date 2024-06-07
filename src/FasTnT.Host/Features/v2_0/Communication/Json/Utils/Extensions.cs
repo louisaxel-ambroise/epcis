@@ -17,7 +17,7 @@ public static class Extensions
     // Builds a context for JSON format.
     // key=namespace, value=prefix
     // The prefixes are incremental (ext1, ext2, ext...)
-    public static IDictionary<string, string> BuildContext(this IEnumerable<string> namespaces)
+    public static Dictionary<string, string> BuildContext(this IEnumerable<string> namespaces)
     {
         return namespaces
             .Where(x => !string.IsNullOrEmpty(x))

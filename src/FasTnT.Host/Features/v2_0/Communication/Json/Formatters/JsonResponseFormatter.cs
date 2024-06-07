@@ -11,7 +11,13 @@ namespace FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
 
 public static class JsonResponseFormatter
 {
-    private static readonly JsonSerializerOptions Options = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull };
+    private static readonly JsonSerializerOptions Options = new ();
+
+    static JsonResponseFormatter()
+    {
+        Options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        Options.Converters.Add(new EpcisDateFormatConverter());
+    }
 
     public static string Format<T>(T response)
     {
@@ -160,8 +166,12 @@ public static class JsonResponseFormatter
         return JsonSerializer.Serialize(document, Options);
     }
 
-    // Builds a context for JSON format.
-    // key=namespace, value=prefix
-    // The prefixes are incremental (ext1, ext2, ext...)
-    private static Dictionary<string, string> BuildContext(IEnumerable<string> namespaces, int counter = 0) => namespaces.ToDictionary(x => x, x => $"ext{counter++}");
+    private class EpcisDateFormatConverter : JsonConverter<DateTime>
+    {
+        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            => UtcDateTime.Parse(reader.GetString()!);
+
+        public override void Write(Utf8JsonWriter writer, DateTime dateTimeValue, JsonSerializerOptions options)
+            => writer.WriteStringValue(dateTimeValue.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
+    }
 }
