@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddAuthentication(BasicAuthentication.SchemeName).AddScheme<AuthenticationSchemeOptions, BasicAuthentication>(BasicAuthentication.SchemeName, null);
+builder.Services.AddAuthentication(BasicAuthentication.SchemeName)
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthentication>(BasicAuthentication.SchemeName, null);
 builder.Services.AddAuthorization(AuthorizationOptions);
 builder.Services.AddHttpLogging(LoggingOptions);
 builder.Services.AddHttpContextAccessor();
@@ -30,11 +31,6 @@ builder.Services.Configure<Constants>(builder.Configuration.GetSection(nameof(Co
 builder.Services.AddHostedService<SubscriptionBackgroundService>();
 
 var app = builder.Build();
-
-if (builder.Environment.IsDevelopment())
-{
-    app.MigrateDatabase();
-}
 
 app.UseDefaultFiles().UseStaticFiles();
 app.UseRouting();

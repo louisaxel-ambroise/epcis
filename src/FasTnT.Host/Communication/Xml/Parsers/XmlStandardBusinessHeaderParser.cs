@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Enumerations;
+﻿using FasTnT.Application.Services;
+using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 
@@ -16,7 +17,7 @@ internal static class XmlStandardBusinessHeaderParser
             Version = sbdh.Element(XName.Get("HeaderVersion", Namespace))?.Value,
             Standard = documentIdentification?.Element(XName.Get("Standard", Namespace))?.Value,
             TypeVersion = documentIdentification?.Element(XName.Get("TypeVersion", Namespace))?.Value,
-            CreationDateTime = DateTime.TryParse(documentIdentification?.Element(XName.Get("CreationDateAndTime", Namespace))?.Value, null, DateTimeStyles.AdjustToUniversal, out DateTime result) ? result : default,
+            CreationDateTime = UtcDateTime.TryParse(documentIdentification?.Element(XName.Get("CreationDateAndTime", Namespace))?.Value, out DateTime result) ? result : default,
             InstanceIdentifier = documentIdentification?.Element(XName.Get("InstanceIdentifier", Namespace))?.Value,
             Type = documentIdentification?.Element(XName.Get("Type", Namespace))?.Value,
             ContactInformations = ParseContactInformations(sbdh)

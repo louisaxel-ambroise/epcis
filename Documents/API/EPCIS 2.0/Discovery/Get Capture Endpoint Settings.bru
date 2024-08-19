@@ -1,0 +1,49 @@
+meta {
+  name: Get Capture Endpoint Settings
+  type: http
+  seq: 3
+}
+
+options {
+  url: {{baseUrl}}/capture
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 204
+  res.body: isEmpty
+  res.headers.gs1-epcis-capture-limit: isDefined
+  res.headers.gs1-epcis-min: isDefined
+  res.headers.gs1-epcis-max: isDefined
+  res.headers.gs1-cbv-min: isDefined
+  res.headers.gs1-cbv-max: isDefined
+  res.headers.gs1-vendor-version: isDefined
+}
+
+tests {
+  test("Should not return any content", function() {
+    expect(res.status).to.equal(204);
+  });
+  
+  test("Should specify the allowed HTTP verbs", function() {
+    expect(res.headers.allow).to.contains('GET');
+    expect(res.headers.allow).to.contains('POST');
+  });
+}
+
+docs {
+  # Discover the settings of the capture interface.
+  
+  The `OPTIONS` method is used as a discovery service for `/capture`. It describes
+  
+  - which EPCIS and CBV versions are supported,
+  - the EPCIS and CBV extensions,
+  - the maximum payload size as count of EPCIS events (`GS1-EPCIS-Capture-Limit` header) or as a maximum payload size in bytes (`GS1-EPCIS-Capture-File-Size-Limit` header)
+  - what the server will do if an error occurred during capture (`GS1-Capture-Error-Behaviour header`). The list of headers is not exhaustive. It only describes the functionality specific to EPCIS 2.0.
+}

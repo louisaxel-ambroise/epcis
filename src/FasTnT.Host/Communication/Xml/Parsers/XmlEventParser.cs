@@ -1,4 +1,5 @@
-﻿using FasTnT.Domain.Enumerations;
+﻿using FasTnT.Application.Services;
+using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 
@@ -219,7 +220,7 @@ public abstract class XmlEventParser
                     case "rawData":
                         report.RawData = field.Value; break;
                     case "time":
-                        report.Time = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                        report.Time = UtcDateTime.Parse(field.Value); break;
                     case "meanValue":
                         report.MeanValue = float.Parse(field.Value); break;
                     case "percRank":
@@ -252,7 +253,7 @@ public abstract class XmlEventParser
                 switch (field.Name.LocalName)
                 {
                     case "time":
-                        sensorElement.Time = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                        sensorElement.Time = UtcDateTime.Parse(field.Value); break;
                     case "bizRules":
                         sensorElement.BizRules = field.Value; break;
                     case "deviceID":
@@ -262,9 +263,9 @@ public abstract class XmlEventParser
                     case "rawData":
                         sensorElement.RawData = field.Value; break;
                     case "startTime":
-                        sensorElement.StartTime = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                        sensorElement.StartTime = UtcDateTime.Parse(field.Value); break;
                     case "endTime":
-                        sensorElement.EndTime = DateTime.Parse(field.Value, null, DateTimeStyles.AdjustToUniversal); break;
+                        sensorElement.EndTime = UtcDateTime.Parse(field.Value); break;
                     case "dataProcessingMethod":
                         sensorElement.DataProcessingMethod = field.Value; break;
                     default:
@@ -298,7 +299,7 @@ public abstract class XmlEventParser
             Namespace = string.IsNullOrWhiteSpace(element.Name.NamespaceName) ? default : element.Name.NamespaceName,
             TextValue = element.HasElements ? default : element.Value,
             NumericValue = element.HasElements ? default : float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
-            DateValue = element.HasElements ? default : DateTime.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTime dateValue) ? dateValue : default(DateTime?)
+            DateValue = element.HasElements ? default : UtcDateTime.TryParse(element.Value, out DateTime dateValue) ? dateValue : default(DateTime?)
         };
 
         foreach (var children in element.Elements())
@@ -325,7 +326,7 @@ public abstract class XmlEventParser
             Namespace = string.IsNullOrWhiteSpace(element.Name.NamespaceName) ? default : element.Name.NamespaceName,
             TextValue = element.Value,
             NumericValue = float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
-            DateValue = DateTime.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTime dateValue) ? dateValue : default(DateTime?)
+            DateValue = UtcDateTime.TryParse(element.Value, out DateTime dateValue) ? dateValue : default(DateTime?)
         });
     }
 
@@ -341,7 +342,7 @@ public abstract class XmlEventParser
             Namespace = element.Name.NamespaceName,
             TextValue = element.Value,
             NumericValue = float.TryParse(element.Value, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float floatValue) ? floatValue : default(float?),
-            DateValue = DateTime.TryParse(element.Value, null, DateTimeStyles.AdjustToUniversal, out DateTime dateValue) ? dateValue : default(DateTime?)
+            DateValue = UtcDateTime.TryParse(element.Value, out DateTime dateValue) ? dateValue : default(DateTime?)
         });
     }
 }

@@ -4,6 +4,7 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Communication.Xml.Utils;
 using System.Xml.XPath;
+using FasTnT.Application.Services;
 
 namespace FasTnT.Host.Communication.Xml.Parsers;
 
@@ -15,7 +16,7 @@ public class XmlEpcisDocumentParser(XElement root, XmlEventParser eventParser)
     {
         _request = new Request
         {
-            DocumentTime = DateTime.Parse(root.Attribute("creationDate").Value, null, DateTimeStyles.AdjustToUniversal),
+            DocumentTime = UtcDateTime.Parse(root.Attribute("creationDate").Value),
             SchemaVersion = root.Attribute("schemaVersion").Value
         };
 

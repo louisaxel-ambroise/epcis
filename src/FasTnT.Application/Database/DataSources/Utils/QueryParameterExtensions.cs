@@ -1,4 +1,5 @@
-﻿using FasTnT.Application.Services.DataSources.Utils;
+﻿using FasTnT.Application.Services;
+using FasTnT.Application.Services.DataSources.Utils;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
@@ -12,7 +13,7 @@ internal static class QueryParameterExtensions
     public static int AsInt(this QueryParameter parameter) => int.Parse(parameter.AsString());
     public static bool AsBool(this QueryParameter parameter) => bool.Parse(parameter.AsString());
     public static double AsFloat(this QueryParameter parameter) => double.Parse(parameter.AsString(), CultureInfo.InvariantCulture);
-    public static DateTime AsDate(this QueryParameter parameter) => DateTime.Parse(parameter.AsString(), null, DateTimeStyles.AdjustToUniversal);
+    public static DateTime AsDate(this QueryParameter parameter) => UtcDateTime.Parse(parameter.AsString());
     public static bool IsDateTime(this QueryParameter parameter) => Regexs.Date().IsMatch(parameter.AsString());
     public static bool IsNumeric(this QueryParameter parameter) => Regexs.Numeric().IsMatch(parameter.AsString());
 
@@ -73,9 +74,8 @@ internal static class QueryParameterExtensions
     public static Expression<Func<T, bool>> Compare<T>(this QueryParameter parameter, Expression<Func<T, object>> accessor)
     {
         var param = Expression.Parameter(typeof(T));
-
-        Expression right = parameter.IsDateTime() ? Expression.Constant(parameter.AsDate()) : Expression.Constant(parameter.AsFloat());
-        Expression left = Expression.Convert(Expression.Invoke(accessor, param), right.Type);
+        var right = parameter.IsDateTime() ? Expression.Constant(parameter.AsDate()) : Expression.Constant(parameter.AsFloat());
+        var left = Expression.Convert(Expression.Invoke(accessor, param), right.Type);
 
         return parameter.Name[..2] switch
         {
@@ -95,14 +95,5 @@ internal static class QueryParameterExtensions
     public static Expression<Func<T, bool>> OrElse<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
     {
         return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
-    }
-    internal static IQueryable<TQuery> WhereIn<TQuery, TKey>(this IQueryable<TQuery> queryable, Expression<Func<TQuery, TKey>> keySelector, IEnumerable<TKey> values)
-    {
-        var method = values.GetType().GetMethod("Contains");
-        var instance = Expression.Constant(values);
-        var expression = Expression.Call(instance, method, keySelector.Body);
-        var lambda = Expression.Lambda<Func<TQuery, bool>>(expression, keySelector.Parameters);
-
-        return queryable.Where(lambda);
     }
 }

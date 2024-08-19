@@ -1,0 +1,39 @@
+meta {
+  name: List events for an EPC
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/epcs/{{epc}}/events
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  epc: urn:epc:id:sgtin:0614141.107346.2018
+}
+
+assert {
+  res.status: eq 200
+  res.body: isDefined
+}
+
+docs {
+  # Returns EPCIS events matching the specified electronic product code.
+  
+  This endpoint helps to navigate EPCIS events by electronic product codes. It returns EPCIS events up to the amount defined in `perPage`. If applicable, the server returns a `Link` header to point to the remaining results. Optionally, EPCIS events can be further filtered using the EPCIS Query Language as query string parameters. Example 1 - EPC in a URN form with EPCIS Query Language filtering
+  
+  `https://example.com/epcs/urn:epc:id:sgtin:0614141.107346.2018/events?EQ_bizStep=shipping%7Cdecommissioning&GE_eventTime=2015-03-15T00%3A00%3A00.000-04%3A00`
+  
+  Example 2 - EPC in a constrained GS1 Digital Link form (URL encoded)
+  
+  `https://example.com/epcs/https:%2f%2fexample.org%2f01%2f1234567089012400/events`
+  
+  An EPCIS 2.0 query may also be expressed via the URI query string. The query parameters with fixed fieldnames are included in this OpenAPI interface. However, this list is not exhaustive and the EPCIS 2.0 standard defines additional query parameters with flexible names, depending on the specific value of `uom`, `type` or `fieldname` that appears within the name of the parameter.
+}

@@ -1,0 +1,43 @@
+meta {
+  name: Get EventTypes Endpoint Settings
+  type: http
+  seq: 6
+}
+
+options {
+  url: {{baseUrl}}/eventTypes
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 204
+  res.body: isEmpty
+  res.headers.gs1-epcis-capture-limit: isDefined
+  res.headers.gs1-epcis-min: isDefined
+  res.headers.gs1-epcis-max: isDefined
+  res.headers.gs1-cbv-min: isDefined
+  res.headers.gs1-cbv-max: isDefined
+  res.headers.gs1-vendor-version: isDefined
+}
+
+tests {
+  test("Should not return any content", function() {
+    expect(res.status).to.equal(204);
+  });
+  
+  test("Should specify the allowed HTTP verbs", function() {
+    expect(res.headers.allow).to.contains('GET');
+  });
+}
+
+docs {
+  # Query metadata for the EPCIS event types endpoint.
+  
+  EPCIS 2.0 supports a number of custom headers to describe custom vocabularies and support multiple versions of EPCIS and CBV. The `OPTIONS` method allows the client to discover which vocabularies and EPCIS and CBV versions are used.
+}

@@ -1,0 +1,114 @@
+meta {
+  name: Capture Request Async
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/capture
+  body: json
+  auth: basic
+}
+
+headers {
+  GS1-Capture-Error-Behaviour: Proceed
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:json {
+  {
+    "type": "EPCISDocument",
+    "schemaVersion": "2.0",
+    "creationDate": "2020-07-03T09:00:00.0Z",
+    "epcisBody": {
+      "eventList": [
+        {
+          "type": "TransactionEvent",
+          "eventTime": "2019-10-04T13:12:00.000Z",
+          "eventTimeZoneOffset": "+01:00",
+          "bizTransactionList": [{"bizTransaction": "urn:epc:id:gdti:95252084.0001.0003555480001000"}],
+          "epcList": ["urn:epc:id:gsrn:95252084.000000001"],
+          "action": "ADD",
+          "bizStep": "http://epcis.example.org/hc/bizstep/summarising_discharge",
+          "readPoint": {"id": "urn:epc:id:sgln:9524567.98765.0"}
+        },
+        {
+          "type": "TransactionEvent",
+          "eventTime": "2014-12-12T10:00:00.000Z",
+          "eventTimeZoneOffset": "+02:00",
+          "bizTransactionList": [{
+              "type": "urn:gs1:epcisapp:rail:btt:passage",
+              "bizTransaction": "http://transaction.examplerail.com/passage/xyz12345"}],
+          "epcList": ["urn:epc:id:giai:952005385.w2"],
+          "action": "ADD",
+          "bizStep": "transporting",
+          "disposition": "in_transit",
+          "readPoint": {
+            "id": "urn:epc:id:sgln:952005385.011.ts4711"
+          },
+          "bizLocation": {"id": "urn:epc:id:sgln:952005385.011.scA"},
+          "sourceList":      [{"type":"location", "source": "urn:epc:id:sgln:952005385.481.0"}],
+          "destinationList": [{"type":"location", "destination": "urn:epc:id:sgln:952005385.011.0"}],
+          "rail:trainVehicleCount": "3",
+          "rail:vehicle": [
+            {
+              "rail:vehicleUniquelyIdentified": "true",
+              "rail:vehicleAxleCount": "4",
+              "rail:vehiclePosition": "1",
+              "rail:vehicleMasterGIAI": "urn:epc:id:giai:952005385.vehicle2"
+            },
+            {
+              "rail:vehicleUniquelyIdentified": "false",
+              "rail:vehicleAxleCount": "4",
+              "rail:vehiclePosition": "2"
+            },
+            {
+              "rail:vehicleUniquelyIdentified": true,
+              "rail:vehicleAxleCount": "4",
+              "rail:vehiclePosition": "3",
+              "rail:vehicleMasterGIAI": "urn:epc:id:giai:735005385.vehicle1"
+            }
+          ],
+          "rail:trainAxleCount": "12"
+        }
+      ]
+    },
+    "@context": [
+      "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld",
+      {"rail": "urn:gs1:epcisapp:rail:",
+       "rail:vehicleMasterGIAI": {"@type": "@id"},
+       "rail:trainAxleCount": {"@type": "xsd:integer"},
+       "rail:vehicleAxleCount": {"@type": "xsd:integer"},
+       "rail:vehiclePosition": {"@type": "xsd:integer"},
+       "rail:vehicleUniquelyIdentified": {"@type": "xsd:boolean"}
+      }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 202
+  res.headers.location: isDefined
+}
+
+tests {
+  test("Should contain the location header", function() {
+    expect(res.headers.location).to.equals("capture/" + res.body.Id);
+  });
+  
+}
+
+docs {
+  # Asynchronous capture endpoint for one or more EPCIS events.
+  
+  EPCIS events are added in bulk using the capture interface. Four design considerations were made to remain compatible with EPCIS 1.2:
+  
+  - EPCIS 2.0 keeps event IDs optional. If event IDs are missing, the server should populate the event ID with a unique value. Otherwise, it won't be possible to retrieve these events by eventID.
+  - By default, EPCIS events are only stored if the entire capture job was successful. This behaviour can be changed with the `GS1-Capture-Error-Behaviour` header.
+  - EPCIS master data can be captured in the header (`epcisHeader`) of an `EPCISDocument`.
+  - This endpoint should support both `EPCISDocument` and `EPCISQueryDocument` as input. To prevent timeouts for large payloads, the client potentially may need to split the payload into several capture calls. To that end, the server can specify a capture limit (number of EPCIS events) and file size limit (payload size). A successful capturing of events does not guarantee that events will be stored. Instead, the server returns a capture id, which the client can use to obtain information about the capture job.
+}

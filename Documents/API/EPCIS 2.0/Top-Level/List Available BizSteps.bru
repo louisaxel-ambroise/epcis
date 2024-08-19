@@ -1,0 +1,33 @@
+meta {
+  name: List Available BizSteps
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/bizSteps
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+tests {
+  test("Should return a collection", function() {
+    expect(res.body.type).to.equals("Collection");
+  });
+  
+}
+
+docs {
+  # Returns known business steps.
+  
+  This endpoint returns the CBV standard business steps as well as any custom business steps supported by this repository.
+}

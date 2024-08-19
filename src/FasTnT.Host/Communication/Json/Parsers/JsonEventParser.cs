@@ -2,6 +2,7 @@
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 using System.Text.Json;
+using FasTnT.Application.Services;
 
 namespace FasTnT.Host.Communication.Json.Parsers;
 
@@ -69,7 +70,7 @@ public class JsonEventParser
                 case "disposition":
                     _evt.Disposition = property.Value.GetString(); break;
                 case "eventTime":
-                    _evt.EventTime = property.Value.GetDateTime().ToUniversalTime(); break;
+                    _evt.EventTime = UtcDateTime.Parse(property.Value.GetString()); break;
                 case "eventTimeZoneOffset":
                     _evt.EventTimeZoneOffset = property.Value.GetString(); break;
                 case "readPoint":
@@ -108,7 +109,7 @@ public class JsonEventParser
             switch (property.Name)
             {
                 case "declarationTime":
-                    _evt.CorrectiveDeclarationTime = property.Value.GetDateTime().ToUniversalTime(); break;
+                    _evt.CorrectiveDeclarationTime = UtcDateTime.Parse(property.Value.GetString()); break;
                 case "reason":
                     _evt.CorrectiveReason = property.Value.GetString(); break;
                 case "correctiveEventIDs":
@@ -285,7 +286,7 @@ public class JsonEventParser
                 case "dataProcessingMethod":
                     report.DataProcessingMethod = property.Value.GetString(); break;
                 case "time":
-                    report.Time = property.Value.GetDateTime().ToUniversalTime(); break;
+                    report.Time = UtcDateTime.Parse(property.Value.GetString()); break;
                 case "microorganism":
                     report.Microorganism = property.Value.GetString(); break;
                 case "chemicalSubstance":
@@ -335,7 +336,7 @@ public class JsonEventParser
             switch (property.Name)
             {
                 case "time":
-                    sensorElement.Time = property.Value.GetDateTime().ToUniversalTime(); break;
+                    sensorElement.Time = UtcDateTime.Parse(property.Value.GetString()); break;
                 case "deviceID":
                     sensorElement.DeviceId = property.Value.GetString(); break;
                 case "deviceMetadata":
@@ -343,9 +344,9 @@ public class JsonEventParser
                 case "rawData":
                     sensorElement.RawData = property.Value.GetString(); break;
                 case "startTime":
-                    sensorElement.StartTime = property.Value.GetDateTime().ToUniversalTime(); break;
+                    sensorElement.StartTime = UtcDateTime.Parse(property.Value.GetString()); break;
                 case "endTime":
-                    sensorElement.EndTime = property.Value.GetDateTime().ToUniversalTime(); break;
+                    sensorElement.EndTime = UtcDateTime.Parse(property.Value.GetString()); break;
                 case "dataProcessingMethod":
                     sensorElement.DataProcessingMethod = property.Value.GetString(); break;
                 case "bizRules":
@@ -397,7 +398,7 @@ public class JsonEventParser
         {
             field.TextValue = element.GetRawText().Trim('\\', '"');
             field.NumericValue = float.TryParse(field.TextValue, NumberStyles.AllowDecimalPoint, new CultureInfo("en-GB"), out float numericValue) ? numericValue : default(float?);
-            field.DateValue = DateTime.TryParse(field.TextValue, null, DateTimeStyles.AdjustToUniversal, out DateTime dateValue) ? dateValue : default(DateTime?);
+            field.DateValue = UtcDateTime.TryParse(field.TextValue, out DateTime dateValue) ? dateValue : default(DateTime?);
         }
 
         return customFields;

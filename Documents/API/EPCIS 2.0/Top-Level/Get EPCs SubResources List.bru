@@ -1,0 +1,42 @@
+meta {
+  name: Get EPCs SubResources List
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/epcs/{{epc}}
+  body: none
+  auth: basic
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+vars:pre-request {
+  epc: urn:epc:id:sgtin:0614141.107346.2018
+}
+
+assert {
+  res.status: eq 200
+  res.body.members: contains events
+}
+
+tests {
+  test("Should return a collection", function() {
+    expect(res.body.type).to.equals("Collection");
+  });
+  
+  test("Should return at least events member", function() {
+    expect(res.body.members).to.contains("events");
+  });
+  
+}
+
+docs {
+  # Returns all sub-resources of an electronic product code.
+  
+  This endpoint returns all sub-resources of an electronic product code (for HATEOAS discovery), which includes at least `events`.
+}
