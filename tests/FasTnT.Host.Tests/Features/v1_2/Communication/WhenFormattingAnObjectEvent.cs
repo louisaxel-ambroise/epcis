@@ -3,7 +3,7 @@ using FasTnT.Domain.Model.Events;
 using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
-namespace FasTnT.Host.Tests.Features.v1_2.Communication.XML;
+namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
 [TestClass]
 public class WhenFormattingAnObjectEvent

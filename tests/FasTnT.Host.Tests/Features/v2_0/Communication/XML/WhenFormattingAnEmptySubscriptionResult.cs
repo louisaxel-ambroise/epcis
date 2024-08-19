@@ -3,7 +3,7 @@ using FasTnT.Host.Communication.Xml.Formatters;
 using FasTnT.Host.Endpoints.Interfaces;
 using System.Xml.Linq;
 
-namespace FasTnT.Host.Tests.Features.v2_0.Communication;
+namespace FasTnT.Host.Tests.Features.v2_0.Communication.XML;
 
 [TestClass]
 public class WhenFormattingAnEmptySubscriptionResult
