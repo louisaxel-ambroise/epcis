@@ -31,7 +31,7 @@ public static class EpcisModelConfiguration
         request.Property(x => x.DocumentTime).IsRequired();
         request.Property(x => x.RecordTime).IsRequired();
         request.Property(x => x.CaptureId).IsRequired().HasMaxLength(256);
-        request.Property(x => x.SchemaVersion).IsRequired(true).HasMaxLength(10);
+        request.Property(x => x.SchemaVersion).IsRequired().HasMaxLength(10);
         request.HasMany(x => x.Events).WithOne(x => x.Request).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
         request.HasMany(x => x.Masterdata).WithOne(x => x.Request).HasForeignKey("RequestId").OnDelete(DeleteBehavior.Cascade);
         request.HasOne(x => x.StandardBusinessHeader).WithOne().HasForeignKey<StandardBusinessHeader>("RequestId");
@@ -42,27 +42,27 @@ public static class EpcisModelConfiguration
         subscriptionCallback.Property<int>("RequestId");
         subscriptionCallback.HasKey("RequestId");
         subscriptionCallback.HasOne(x => x.Request).WithOne(x => x.SubscriptionCallback).HasForeignKey<SubscriptionCallback>("RequestId");
-        subscriptionCallback.Property(x => x.CallbackType).IsRequired(true).HasConversion<short>();
+        subscriptionCallback.Property(x => x.CallbackType).IsRequired().HasConversion<short>();
         subscriptionCallback.Property(x => x.Reason).IsRequired(false).HasMaxLength(256);
-        subscriptionCallback.Property(x => x.SubscriptionId).HasColumnName("SubscriptionId").IsRequired(true).HasMaxLength(256);
+        subscriptionCallback.Property(x => x.SubscriptionId).HasColumnName("SubscriptionId").IsRequired().HasMaxLength(256);
 
         var sbdh = modelBuilder.Entity<StandardBusinessHeader>();
         sbdh.ToTable(nameof(StandardBusinessHeader), Sbdh);
         sbdh.HasKey("RequestId");
         sbdh.Property<int>("RequestId");
-        sbdh.Property(x => x.Version).HasMaxLength(256).IsRequired(true);
-        sbdh.Property(x => x.Standard).HasMaxLength(256).IsRequired(true);
-        sbdh.Property(x => x.TypeVersion).HasMaxLength(256).IsRequired(true);
-        sbdh.Property(x => x.InstanceIdentifier).HasMaxLength(256).IsRequired(true);
-        sbdh.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
+        sbdh.Property(x => x.Version).HasMaxLength(256).IsRequired();
+        sbdh.Property(x => x.Standard).HasMaxLength(256).IsRequired();
+        sbdh.Property(x => x.TypeVersion).HasMaxLength(256).IsRequired();
+        sbdh.Property(x => x.InstanceIdentifier).HasMaxLength(256).IsRequired();
+        sbdh.Property(x => x.Type).HasMaxLength(256).IsRequired();
         sbdh.Property(x => x.CreationDateTime).IsRequired(false);
         sbdh.OwnsMany(x => x.ContactInformations, c =>
         {
             c.ToTable(nameof(ContactInformation), Sbdh);
             c.Property<int>("RequestId");
             c.HasKey("RequestId", nameof(ContactInformation.Type), nameof(ContactInformation.Identifier));
-            c.Property(x => x.Type).HasMaxLength(256).HasConversion<short>().IsRequired(true);
-            c.Property(x => x.Identifier).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Type).HasMaxLength(256).HasConversion<short>().IsRequired();
+            c.Property(x => x.Identifier).HasMaxLength(256).IsRequired();
             c.Property(x => x.Contact).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.EmailAddress).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.FaxNumber).HasMaxLength(256).IsRequired(false);
@@ -74,8 +74,8 @@ public static class EpcisModelConfiguration
         masterData.ToTable(nameof(MasterData), Cbv);
         masterData.Property<int>("RequestId");
         masterData.HasKey("RequestId", nameof(MasterData.Type), nameof(MasterData.Id));
-        masterData.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
-        masterData.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+        masterData.Property(x => x.Type).HasMaxLength(256).IsRequired();
+        masterData.Property(x => x.Id).HasMaxLength(256).IsRequired();
         masterData.HasMany(x => x.Attributes).WithOne(x => x.MasterData).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
         masterData.HasMany(x => x.Children).WithOne(x => x.MasterData).HasForeignKey("MasterDataRequestId", "MasterDataType", "MasterDataId");
 
@@ -85,9 +85,9 @@ public static class EpcisModelConfiguration
         mdAttribute.Property<string>("MasterdataType").HasMaxLength(256);
         mdAttribute.Property<string>("MasterdataId").HasMaxLength(256);
         mdAttribute.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataAttribute.Index));
-        mdAttribute.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
-        mdAttribute.Property(x => x.Value).HasMaxLength(256).IsRequired(true);
-        mdAttribute.Property(x => x.Index).HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+        mdAttribute.Property(x => x.Id).HasMaxLength(256).IsRequired();
+        mdAttribute.Property(x => x.Value).HasMaxLength(256).IsRequired();
+        mdAttribute.Property(x => x.Index).HasMaxLength(256).IsRequired().ValueGeneratedNever();
         mdAttribute.HasOne(x => x.MasterData).WithMany(x => x.Attributes).HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
         mdAttribute.OwnsMany(x => x.Fields, c =>
         {
@@ -95,12 +95,12 @@ public static class EpcisModelConfiguration
             c.Property<int>("RequestId");
             c.Property<string>("MasterdataType").HasMaxLength(256);
             c.Property<string>("MasterdataId").HasMaxLength(256);
-            c.Property<int>("AttributeIndex").HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+            c.Property<int>("AttributeIndex").HasMaxLength(256).IsRequired().ValueGeneratedNever();
             c.HasKey("RequestId", "MasterdataType", "MasterdataId", nameof(MasterDataField.Index));
-            c.Property(x => x.Index).HasMaxLength(256).IsRequired(true).ValueGeneratedNever();
+            c.Property(x => x.Index).HasMaxLength(256).IsRequired().ValueGeneratedNever();
             c.Property(x => x.ParentIndex).HasMaxLength(256).IsRequired(false).ValueGeneratedNever();
-            c.Property(x => x.Namespace).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Namespace).HasMaxLength(256).IsRequired();
+            c.Property(x => x.Name).HasMaxLength(256).IsRequired();
             c.Property(x => x.Value).HasMaxLength(256).IsRequired(false);
             c.WithOwner().HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
         });
@@ -117,18 +117,18 @@ public static class EpcisModelConfiguration
         var mdHierarchy = modelBuilder.Entity<MasterdataHierarchy>();
         mdHierarchy.ToView(nameof(MasterdataHierarchy), Cbv);
         mdHierarchy.HasNoKey();
-        mdHierarchy.Property(x => x.Root).IsRequired(true);
-        mdHierarchy.Property(x => x.Id).IsRequired(true);
-        mdHierarchy.Property(x => x.Type).IsRequired(true);
+        mdHierarchy.Property(x => x.Root).IsRequired();
+        mdHierarchy.Property(x => x.Id).IsRequired();
+        mdHierarchy.Property(x => x.Type).IsRequired();
 
         var evt = modelBuilder.Entity<Event>();
         evt.ToTable(nameof(Event), Epcis);
         evt.HasKey(x => x.Id);
         evt.Property(x => x.Id).ValueGeneratedOnAdd();
-        evt.Property(x => x.Type).IsRequired(true).HasConversion<short>();
-        evt.Property(x => x.EventTime).IsRequired(true);
-        evt.Property(x => x.EventTimeZoneOffset).IsRequired(true).HasConversion(x => x.Value, x => x);
-        evt.Property(x => x.Action).IsRequired(true).HasConversion<short>();
+        evt.Property(x => x.Type).IsRequired().HasConversion<short>();
+        evt.Property(x => x.EventTime).IsRequired();
+        evt.Property(x => x.EventTimeZoneOffset).IsRequired().HasConversion(x => x.Value, x => x);
+        evt.Property(x => x.Action).IsRequired().HasConversion<short>();
         evt.Property(x => x.CertificationInfo).HasMaxLength(256).IsRequired(false);
         evt.Property(x => x.EventId).HasMaxLength(256).IsRequired(false);
         evt.Property(x => x.ReadPoint).HasMaxLength(256).IsRequired(false);
@@ -146,8 +146,8 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(Epc.Type), nameof(Epc.Id));
-            c.Property(x => x.Type).IsRequired(true).HasConversion<short>();
-            c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Type).IsRequired().HasConversion<short>();
+            c.Property(x => x.Id).HasMaxLength(256).IsRequired();
             c.Property(x => x.Quantity).IsRequired(false);
             c.Property(x => x.UnitOfMeasure).IsRequired(false).HasMaxLength(10);
         });
@@ -157,8 +157,8 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(Source.Type), nameof(Source.Id));
-            c.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Type).HasMaxLength(256).IsRequired();
+            c.Property(x => x.Id).HasMaxLength(256).IsRequired();
         });
         evt.OwnsMany(x => x.Destinations, c =>
         {
@@ -166,8 +166,8 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(Destination.Type), nameof(Destination.Id));
-            c.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Type).HasMaxLength(256).IsRequired();
+            c.Property(x => x.Id).HasMaxLength(256).IsRequired();
         });
         evt.OwnsMany(x => x.Transactions, c =>
         {
@@ -175,8 +175,8 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(BusinessTransaction.Type), nameof(BusinessTransaction.Id));
-            c.Property(x => x.Type).HasMaxLength(256).IsRequired(true);
-            c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Type).HasMaxLength(256).IsRequired();
+            c.Property(x => x.Id).HasMaxLength(256).IsRequired();
         });
         evt.OwnsMany(x => x.PersistentDispositions, c =>
         {
@@ -184,8 +184,8 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(PersistentDisposition.Type), nameof(PersistentDisposition.Id));
-            c.Property(x => x.Type).HasConversion<short>().IsRequired(true);
-            c.Property(x => x.Id).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Type).HasConversion<short>().IsRequired();
+            c.Property(x => x.Id).HasMaxLength(256).IsRequired();
         });
         evt.OwnsMany(x => x.SensorElements, c =>
         {
@@ -193,7 +193,7 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(SensorElement.Index));
-            c.Property(x => x.Index).IsRequired(true).ValueGeneratedNever();
+            c.Property(x => x.Index).IsRequired().ValueGeneratedNever();
             c.Property(x => x.DeviceMetadata).HasMaxLength(256);
             c.Property(x => x.RawData).HasMaxLength(2048);
             c.Property(x => x.DataProcessingMethod).HasMaxLength(256);
@@ -208,8 +208,8 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(SensorReport.Index));
-            c.Property(x => x.Index).IsRequired(true).ValueGeneratedNever();
-            c.Property(x => x.SensorIndex).IsRequired(true).ValueGeneratedNever();
+            c.Property(x => x.Index).IsRequired().ValueGeneratedNever();
+            c.Property(x => x.SensorIndex).IsRequired().ValueGeneratedNever();
             c.Property(x => x.DataProcessingMethod).HasMaxLength(256);
             c.Property(x => x.Type).HasMaxLength(256);
             c.Property(x => x.HexBinaryValue).HasMaxLength(256);
@@ -232,9 +232,9 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(Field.Index));
-            c.Property(x => x.Index).IsRequired(true).ValueGeneratedNever();
-            c.Property(x => x.Type).HasConversion<short>().IsRequired(true);
-            c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Index).IsRequired().ValueGeneratedNever();
+            c.Property(x => x.Type).HasConversion<short>().IsRequired();
+            c.Property(x => x.Name).HasMaxLength(256).IsRequired();
             c.Property(x => x.Namespace).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.TextValue).HasMaxLength(256).IsRequired(false);
             c.Property(x => x.NumericValue).IsRequired(false);
@@ -246,22 +246,22 @@ public static class EpcisModelConfiguration
             c.Property<int>("EventId");
             c.WithOwner().HasForeignKey("EventId");
             c.HasKey("EventId", nameof(CorrectiveEventId.CorrectiveId));
-            c.Property(x => x.CorrectiveId).IsRequired(true).HasMaxLength(256);
+            c.Property(x => x.CorrectiveId).IsRequired().HasMaxLength(256);
         });
 
         var subscription = modelBuilder.Entity<Subscription>();
         subscription.HasKey(x => x.Id);
         subscription.Property(x => x.Id).ValueGeneratedOnAdd();
         subscription.ToTable(nameof(Subscription), Subscriptions);
-        subscription.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
-        subscription.Property(x => x.QueryName).IsRequired(true).HasMaxLength(256);
-        subscription.Property(x => x.Destination).IsRequired(true).HasMaxLength(2048);
-        subscription.Property(x => x.InitialRecordTime).IsRequired(true);
-        subscription.Property(x => x.LastExecutedTime).IsRequired(true);
-        subscription.Property(x => x.ReportIfEmpty).IsRequired(true);
+        subscription.Property(x => x.Name).IsRequired().HasMaxLength(256);
+        subscription.Property(x => x.QueryName).IsRequired().HasMaxLength(256);
+        subscription.Property(x => x.Destination).IsRequired().HasMaxLength(2048);
+        subscription.Property(x => x.InitialRecordTime).IsRequired();
+        subscription.Property(x => x.LastExecutedTime).IsRequired();
+        subscription.Property(x => x.ReportIfEmpty).IsRequired();
         subscription.Property(x => x.Trigger).IsRequired(false).HasMaxLength(256);
         subscription.Property(x => x.SignatureToken).IsRequired(false).HasMaxLength(256);
-        subscription.Property(x => x.FormatterName).IsRequired(true).HasMaxLength(30);
+        subscription.Property(x => x.FormatterName).IsRequired().HasMaxLength(30);
         subscription.Property(x => x.BufferRequestIds).HasJsonArrayConversion();
         subscription.OwnsOne(x => x.Schedule, c =>
         {
@@ -281,7 +281,7 @@ public static class EpcisModelConfiguration
             c.WithOwner().HasForeignKey("SubscriptionId");
             c.HasKey("SubscriptionId", nameof(QueryParameter.Name));
             c.Property(x => x.Values).IsRequired(false).HasJsonArrayConversion();
-            c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Name).HasMaxLength(256).IsRequired();
         });
         subscription.HasIndex(x => x.Name).IsUnique();
 
@@ -289,7 +289,7 @@ public static class EpcisModelConfiguration
         storedQuery.ToTable(nameof(StoredQuery), Queries);
         storedQuery.HasKey(x => x.Id);
         storedQuery.Property(x => x.Id).ValueGeneratedOnAdd();
-        storedQuery.Property(x => x.Name).IsRequired(true).HasMaxLength(256);
+        storedQuery.Property(x => x.Name).IsRequired().HasMaxLength(256);
         storedQuery.Property(x => x.UserId).IsRequired(false).HasMaxLength(50);
         storedQuery.OwnsMany(x => x.Parameters, c =>
         {
@@ -297,20 +297,18 @@ public static class EpcisModelConfiguration
             c.WithOwner().HasForeignKey("QueryId");
             c.HasKey("QueryId", nameof(QueryParameter.Name));
             c.Property(x => x.Values).IsRequired(false).HasJsonArrayConversion();
-            c.Property(x => x.Name).HasMaxLength(256).IsRequired(true);
+            c.Property(x => x.Name).HasMaxLength(256).IsRequired();
         });
         storedQuery.HasIndex(x => x.Name).IsUnique();
     }
 
-    private static PropertyBuilder<T[]> HasJsonArrayConversion<T>(this PropertyBuilder<T[]> builder, JsonSerializerOptions options = null)
+    private static void HasJsonArrayConversion<T>(this PropertyBuilder<T[]> builder, JsonSerializerOptions options = default)
     {
         var converter = new ValueConverter<T[], string>(v => Serialize(v, options), v => Deserialize<T[]>(v, options));
-        var comparer = new ValueComparer<T[]>((l, r) => Equals(l, r), v => Serialize(v ?? new T[0], options).GetHashCode(), v => v);
+        var comparer = new ValueComparer<T[]>((l, r) => Equals(l, r), v => HashCode.Combine(v), v => v);
 
         builder.HasConversion(converter);
         builder.Metadata.SetValueConverter(converter);
         builder.Metadata.SetValueComparer(comparer);
-
-        return builder;
     }
 }
