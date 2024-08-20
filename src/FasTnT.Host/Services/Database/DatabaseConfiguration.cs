@@ -29,14 +29,4 @@ public static class DatabaseConfiguration
 
         return services;
     }
-
-    public static IApplicationBuilder MigrateDatabase(this IApplicationBuilder application)
-    {
-        using var scope = application.ApplicationServices.CreateScope();
-        using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
-
-        context.Database.Migrate();
-
-        return application;
-    }
 }

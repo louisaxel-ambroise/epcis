@@ -50,7 +50,9 @@ public static class DelegateFactory
 
     private static Dictionary<string, string> ParseEpcisHeaders(HttpRequest request)
     {
-        return request.Headers.Where(x => x.Key.StartsWith("GS1-") && x.Key != "GS1-EPCIS-Extensions").ToDictionary(x => x.Key, x => x.Value.FirstOrDefault());
+        return request.Headers
+            .Where(x => x.Key.StartsWith("GS1-") && x.Key != "GS1-EPCIS-Extensions")
+            .ToDictionary(x => x.Key, x => x.Value.FirstOrDefault());
     }
 
     private static void SetResponseHeaders(HttpResponse response)

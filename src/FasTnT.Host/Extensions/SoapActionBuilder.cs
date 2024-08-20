@@ -5,9 +5,10 @@ namespace FasTnT.Host.Extensions;
 
 public class SoapActionBuilder
 {
+    private const string Default = nameof(Default);
     private readonly Dictionary<string, Delegate> _mappedActions = [];
 
-    public void Handle(Delegate requestDelegate, [CallerArgumentExpression(nameof(requestDelegate))] string action = null) => _mappedActions[action] = requestDelegate;
+    public void Handle(Delegate requestDelegate, [CallerArgumentExpression(nameof(requestDelegate))] string action = Default) => _mappedActions[action] = requestDelegate;
     public void On(string action, Delegate requestDelegate) => _mappedActions[action] = requestDelegate;
 
     internal Task<IResult> SoapAction(SoapEnvelope envelope, HttpContext context)
@@ -22,7 +23,7 @@ public class SoapActionBuilder
         var parameters = handler.Method.GetParameters();
         var paramList = new object[parameters.Length];
 
-        for (int i = 0; i < paramList.Length; i++)
+        for (var i = 0; i < paramList.Length; i++)
         {
             if (parameters[i].ParameterType == envelope.Query?.GetType())
             {
@@ -32,9 +33,9 @@ public class SoapActionBuilder
             {
                 paramList[i] = context.RequestAborted;
             }
-            else if (envelope.CustomFields.TryGetValue(parameters[i].Name, out var parameter))
+            else if (!string.IsNullOrEmpty(parameters[i].Name) && envelope.CustomFields.TryGetValue(parameters[i].Name, out var value))
             {
-                paramList[i] = parameter;
+                paramList[i] = value;
             }
             else
             {
