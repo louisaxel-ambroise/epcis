@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Model.Events;
-using FasTnT.Host.Features.v2_0.Communication.Xml.Parsers;
+using FasTnT.Host.Communication.Xml.Parsers;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.XML;
 
@@ -13,7 +13,7 @@ public class WhenParsingAnObjectEventWithCertificationInfo : XmlParsingTestCase
     [TestInitialize]
     public void When()
     {
-        Event = XmlEventParser.ParseEvent(ParseResource(ResourceName));
+        Event = new XmlV2EventParser().ParseEvent(ParseXml(ResourceName));
     }
 
     [TestMethod]

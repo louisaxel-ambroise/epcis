@@ -1,9 +1,9 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Host.Features.v2_0.Communication.Json.Formatters;
-using FasTnT.Host.Features.v2_0.Endpoints.Interfaces;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using FasTnT.Host.Communication.Json.Formatters;
+using FasTnT.Host.Endpoints.Interfaces;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.Json;
 

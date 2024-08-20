@@ -14,15 +14,10 @@ public sealed class EpcisContext : DbContext
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }
 
-    public IQueryable<MasterdataHierarchy> QueryHierarchy(string type, string root)
-    {
-        return Set<MasterdataHierarchy>().Where(x => x.Type == type && x.Root == root);
-    }
-
     public IQueryable<Event> QueryEvents(IEnumerable<QueryParameter> parameters)
     {
         var eventContext = new EventQueryContext(this, parameters);
-        
+
         return eventContext.ApplyTo(Set<Event>());
     }
 

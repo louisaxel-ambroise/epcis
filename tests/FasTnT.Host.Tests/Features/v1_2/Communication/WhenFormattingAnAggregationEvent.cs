@@ -1,9 +1,9 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
+using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
-namespace FasTnT.Host.Tests.Features.v1_2.Communication.XML;
+namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
 [TestClass]
 public class WhenFormattingAnAggregationEvent
@@ -28,7 +28,7 @@ public class WhenFormattingAnAggregationEvent
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlEventFormatter.FormatList(new List<Event> { AggregationEvent }).FirstOrDefault();
+        Formatted = XmlV1EventFormatter.Instance.FormatList(new List<Event> { AggregationEvent }).FirstOrDefault();
     }
 
     [TestMethod]

@@ -1,5 +1,6 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Events;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Validators;
 using FasTnT.Domain;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace FasTnT.Application.Handlers;
 
-public class CaptureHandler(EpcisContext context, ICurrentUser user, IOptions<Constants> constants)
+public sealed class CaptureHandler(EpcisContext context, ICurrentUser user, IEventNotifier notifier, IOptions<Constants> constants)
 {
     public async Task<IEnumerable<Request>> ListCapturesAsync(Pagination pagination, CancellationToken cancellationToken)
     {
@@ -66,7 +67,7 @@ public class CaptureHandler(EpcisContext context, ICurrentUser user, IOptions<Co
             await transaction.CommitAsync(cancellationToken);
         }
 
-        EpcisEvents.RequestCaptured(request);
+        notifier.RequestCaptured(request);
 
         return request;
     }

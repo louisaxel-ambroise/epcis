@@ -14,7 +14,7 @@ public class HttpContextCurrentUser : ICurrentUser
     {
         var user = contextAccessor?.HttpContext?.User;
 
-        if(user == default)
+        if (user == default)
         {
             return;
         }

@@ -17,10 +17,7 @@ public class WhenHandlingPollQuery
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
+        Context?.Database.EnsureDeleted();
     }
 
     [TestMethod]

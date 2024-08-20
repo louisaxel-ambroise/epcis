@@ -1,4 +1,4 @@
-﻿using FasTnT.Host.Features.v1_2.Communication.Parsers;
+﻿using FasTnT.Host.Communication.Xml.Parsers;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -6,11 +6,15 @@ namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
 public abstract class XmlParsingTestCase
 {
-    protected static XDocument ParseResource(string resourceName)
+    protected static XmlEpcisDocumentParser ParseResource(string resourceName)
+    {
+        return new XmlEpcisDocumentParser(ParseXml(resourceName), new XmlV1EventParser());
+    }
+
+    protected static XElement ParseXml(string resourceName)
     {
         var manifest = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-        using var resourceStream = XmlDocumentParser.Instance.ParseAsync(manifest, default);
 
-        return resourceStream.Result;
+        return XDocument.Load(manifest).Root;
     }
 }

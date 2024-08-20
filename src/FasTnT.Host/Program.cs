@@ -1,11 +1,11 @@
 using FasTnT.Application;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Domain;
-using FasTnT.Host.Features.v1_2;
-using FasTnT.Host.Features.v2_0;
+using FasTnT.Host.Endpoints;
 using FasTnT.Host.Services.Database;
-using FasTnT.Host.Subscriptions;
 using FasTnT.Host.Services.User;
+using FasTnT.Host.Subscriptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
@@ -19,6 +19,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
+builder.Services.AddSingleton<EpcisEvents>();
+builder.Services.AddSingleton<IEventNotifier>(svc => svc.GetRequiredService<EpcisEvents>());
+builder.Services.AddSingleton<ISubscriptionListener>(svc => svc.GetRequiredService<EpcisEvents>());
+builder.Services.AddSingleton<ICaptureListener>(svc => svc.GetRequiredService<EpcisEvents>());
 builder.Services.Configure<Constants>(builder.Configuration.GetSection(nameof(Constants)));
 
 // Handle persistent subscriptions in-memory.
@@ -35,8 +39,16 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health").AllowAnonymous();
 app.UseWebSockets();
-app.UseEpcis12Endpoints();
-app.UseEpcis20Endpoints();
+
+app.AddCaptureEndpoints()
+   .AddEventsEndpoints()
+   .AddQueriesEndpoints()
+   .AddSubscriptionEndpoints()
+   .AddTopLevelEndpoints()
+   .AddDiscoveryEndpoints();
+
+// Map 1.x queries with SOAP service
+app.AddSoapQueryService();
 
 app.Run();
 

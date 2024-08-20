@@ -1,5 +1,6 @@
-﻿using FasTnT.Host.Features.v1_2.Communication.Parsers;
-using FasTnT.Host.Features.v1_2.Endpoints.Interfaces;
+﻿using FasTnT.Host.Communication.Xml.Parsers;
+using FasTnT.Host.Endpoints.Interfaces;
+using FasTnT.Host.Endpoints.Responses.Soap;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 
@@ -8,23 +9,23 @@ public class WhenParsingAGetSubscriptionIDsQuery : XmlParsingTestCase
 {
     public static readonly string ResourceName = "FasTnT.Host.Tests.Features.v1_2.Communication.Resources.Queries.GetSubscriptionIDs.xml";
 
-    public object Query { get; set; }
+    public SoapEnvelope Envelope { get; set; }
 
     [TestInitialize]
     public void When()
     {
-        Query = XmlQueryParser.Parse(ParseResource(ResourceName).Root);
+        Envelope = SoapQueryParser.Parse(ParseXml(ResourceName));
     }
 
     [TestMethod]
-    public void ItShouldReturnAGetSubscriptionIDsObject()
+    public void ItShouldReturnAListSubscriptionsRequest()
     {
-        Assert.IsInstanceOfType(Query, typeof(GetSubscriptionIDs));
+        Assert.AreEqual(Envelope.Action, "GetSubscriptionIDs");
     }
 
     [TestMethod]
-    public void TheGetSubscriptionIDsQueryShouldHaveTheCorrectQueryName()
+    public void TheListSubscriptionsRequestShouldHaveTheCorrectQueryName()
     {
-        Assert.AreEqual("SimpleEventQuery", (Query as GetSubscriptionIDs).QueryName);
+        Assert.AreEqual("SimpleEventQuery", (Envelope.Query as ListSubscriptionsRequest).QueryName);
     }
 }

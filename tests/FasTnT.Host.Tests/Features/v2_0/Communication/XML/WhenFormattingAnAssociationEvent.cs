@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Host.Features.v2_0.Communication.Json.Utils;
-using FasTnT.Host.Features.v2_0.Communication.Xml.Formatters;
+using FasTnT.Host.Communication.Json.Utils;
+using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.XML;
@@ -26,11 +26,11 @@ public class WhenFormattingAnAssociationEvent
             EventId = "ni://test",
             Action = EventAction.Add,
             Epcs = [new Epc { Type = EpcType.ParentId, Id = "test:epc:parent" }, new Epc { Type = EpcType.ChildEpc, Id = "test:childepc" }],
-            Fields = [new Field { Type = FieldType.Ilmd, Name = "field", Namespace = "fastnt.ns", TextValue = "OK"}],
+            Fields = [new Field { Type = FieldType.Ilmd, Name = "field", Namespace = "fastnt.ns", TextValue = "OK" }],
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlEventFormatter.FormatList(new List<Event> { AssociationEvent }).FirstOrDefault();
+        Formatted = XmlV2EventFormatter.Instance.FormatList(new List<Event> { AssociationEvent }).FirstOrDefault();
     }
 
     [TestMethod]

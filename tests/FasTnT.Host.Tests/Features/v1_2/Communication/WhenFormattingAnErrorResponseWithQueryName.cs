@@ -1,5 +1,5 @@
 ﻿using FasTnT.Domain.Exceptions;
-using FasTnT.Host.Features.v1_2.Communication.Formatters;
+using FasTnT.Host.Communication.Xml.Formatters;
 using System.Xml.Linq;
 
 namespace FasTnT.Host.Tests.Features.v1_2.Communication;
@@ -13,7 +13,7 @@ public class WhenFormattingAnErrorResponseWithQueryName
     [TestInitialize]
     public void When()
     {
-        Formatted = XmlResponseFormatter.FormatError(Result);
+        Formatted = SoapResponseFormatter.FormatError(Result);
     }
 
     [TestMethod]
@@ -29,7 +29,7 @@ public class WhenFormattingAnErrorResponseWithQueryName
         Assert.AreEqual(1, Formatted.Elements().Count());
         Assert.AreEqual(Result.QueryName, Formatted.Element("queryName").Value);
     }
-    
+
     [TestMethod]
     public void ThereShouldNotBeASubscriptionIDField()
     {

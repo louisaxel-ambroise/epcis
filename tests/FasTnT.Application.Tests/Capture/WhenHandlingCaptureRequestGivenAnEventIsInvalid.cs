@@ -1,13 +1,14 @@
 ﻿using FasTnT.Application.Database;
+using FasTnT.Application.Handlers;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
-using FasTnT.Application.Handlers;
+using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
+using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
-using FasTnT.Domain.Exceptions;
 using Microsoft.Extensions.Options;
-using FasTnT.Domain;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -15,30 +16,28 @@ namespace FasTnT.Application.Tests.Capture;
 public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestGivenAnEventIsInvalid));
+    readonly static EpcisEvents EpcisEvents = new();
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly static List<int> CapturedRequests = new();
+    readonly static List<int> CapturedRequests = [];
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
-        EpcisEvents.OnRequestCaptured -= CapturedRequests.Add;
+        Context?.Database.EnsureDeleted();
+        EpcisEvents.OnCapture -= CapturedRequests.Add;
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        EpcisEvents.OnRequestCaptured += CapturedRequests.Add;
+        EpcisEvents.OnCapture += CapturedRequests.Add;
     }
 
     [TestMethod]
     public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
-        var handler = new CaptureHandler(Context, UserContext, Options.Create(new Constants()));
-        var request = new Request { SchemaVersion = "1.0", Events = new() { new Event { Type = EventType.AggregationEvent, Action = EventAction.Add } } }; // Does not have parent -> invalid event
+        var handler = new CaptureHandler(Context, UserContext, EpcisEvents, Options.Create(new Constants()));
+        var request = new Request { SchemaVersion = "1.0", Events = [new Event { Type = EventType.AggregationEvent, Action = EventAction.Add }] }; // Does not have parent -> invalid event
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());

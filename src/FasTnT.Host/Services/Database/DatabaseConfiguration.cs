@@ -24,19 +24,9 @@ public static class DatabaseConfiguration
         {
             throw new ArgumentOutOfRangeException("FasTnT.Database.Provider", "Provider is not registered for EPCIS repository");
         }
-        
+
         configureAction(services, connectionString, commandTimeout);
 
         return services;
-    }
-
-    public static IApplicationBuilder MigrateDatabase(this IApplicationBuilder application)
-    {
-        using var scope = application.ApplicationServices.CreateScope();
-        using var context = scope.ServiceProvider.GetRequiredService<EpcisContext>();
-
-        context.Database.Migrate();
-
-        return application;
     }
 }

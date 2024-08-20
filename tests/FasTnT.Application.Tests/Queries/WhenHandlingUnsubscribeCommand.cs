@@ -1,5 +1,6 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Handlers;
+using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
@@ -10,16 +11,14 @@ namespace FasTnT.Application.Tests.Queries;
 public class WhenHandlingUnsubscribeCommand
 {
     readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingUnsubscribeCommand));
-    readonly static List<int> RemovedSubscriptions = new();
+    readonly static EpcisEvents EpcisEvents = new();
+    readonly static List<int> RemovedSubscriptions = [];
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        if (Context != null)
-        {
-            Context.Database.EnsureDeleted();
-        }
-        EpcisEvents.OnSubscriptionRemoved -= RemovedSubscriptions.Add;
+        Context?.Database.EnsureDeleted();
+        EpcisEvents.OnUnsubscribe -= RemovedSubscriptions.Add;
     }
 
     [ClassInitialize]
@@ -35,14 +34,14 @@ public class WhenHandlingUnsubscribeCommand
 
         Context.SaveChanges();
         Context.ChangeTracker.Clear();
-        EpcisEvents.OnSubscriptionRemoved += RemovedSubscriptions.Add;
+        EpcisEvents.OnUnsubscribe += RemovedSubscriptions.Add;
     }
 
     [TestMethod]
     public void ItShouldReturnAnUnubscribeResult()
     {
         var subscription = "TestSubscription";
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), EpcisEvents);
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
 
         Assert.AreEqual(0, Context.Set<Subscription>().Count());
@@ -53,7 +52,7 @@ public class WhenHandlingUnsubscribeCommand
     public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameDoesNotExist()
     {
         var subscription = "UnknownSubscription";
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser());
+        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), EpcisEvents);
 
         Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
     }
