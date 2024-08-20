@@ -35,27 +35,34 @@ You can also setup FasTnT EPCIS using the Docker image or in Azure very easily. 
 The API is secured using HTTP Basic auth by default. 
 The users are not stored in the database, but a hash of the authorization value is stored alongside the request. By default the events and masterdata returned in a query are restricted to the ones captured with the same authorization header.
 
-### EPCIS 1.2 endpoints:
+### EPCIS endpoints:
 
-FasT&T provides a full implementation of the EPCIS 1.2 specification. The endpoints are:
+FasT&T provides a full implementation of the EPCIS 1.2 and 2.0 specification. The endpoints are:
 
-- Capture: `POST /v1_2/Capture`
-- Queries : `POST /v1_2/Query.svc`
+- Capture: `POST /Capture`
+- Query : `GET /events`
+- SOAP Service : `POST /Query.svc`
 
-**Capture** endpoint only supports requests with `content-type: application/xml` or `content-type: text/xml` header and XML payload.
+**Capture** and **Query** endpoints supports requests with `content-type: application/json` (EPCIS v2.0), `content-type: application/xml` or `content-type: text/xml` header and JSON or XML payload.
 
-**Queries** endpoint supports SOAP requests on endpoint `/v1_2/Query.svc`.
+**Queries** endpoint supports SOAP requests on endpoint `/Query.svc`.
 
 See the [wiki](https://github.com/louisaxel-ambroise/wiki) for more details.
 
 #### Implemented Features
 
-This is the list of implemented 1.2 features in the repository:
+This is the list of implemented 1.2 and 2.0 features in the repository:
 
 - Capture
-  - [x] Events
+  - [x] Capture a list of Events
+  - [x] Capture a single Event
   - [x] Capture Master Data (CBV)
 - Queries:
+  - [x] List events
+  - [x] Event pagination
+  - [x] Create/Delete a named query
+  - [x] Execute a named query
+- Soap Queries:
   - [x] GetVendorVersion
   - [x] GetStandardVersion
   - [x] GetQueryNames
@@ -63,48 +70,11 @@ This is the list of implemented 1.2 features in the repository:
   - Poll
     - [x] SimpleEventQuery
     - [x] SimpleMasterDataQuery
-- Query Callback:
-  - [x] CallbackResults
-  - [x] CallbackQueryTooLargeException
-  - [x] CallbackImplementationException
-- Subscriptions:
-  - [x] Subscribe to an EPCIS request
-  - [x] Unsubscribe from EPCIS repository
-  - [x] Trigger subscriptions that register to specific trigger name
-  - [x] Execute subscription based on schedule
-
-  
-### EPCIS 2.0 endpoints:
-
-The repository also implements the EPCIS 2.0 specification. The endpoints are:
-
-- Capture: `POST /v2_0/Capture`
-- Query : `GET /v2_0/events`
-
-**Capture** endpoint supports requests with both `content-type: application/xml` or `content-type: application/json` headers and payload.
-
-**Queries** endpoint supports HTTP requests and supports both `accept: application/json` and `accept: application/xml` headers.
-
-The subscriptions will always receive the results in JSON format.
-
-The OpenApi definition of the EPCIS 2.0 endpoints is available at the URL `/v2_0/openapi.json`. See the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki) for more details.
-
-#### Implemented Features
-
-This is the list of implemented 2.0 features in the repository:
-
-- Capture
-  - [x] Capture list of Events
-  - [x] Capture a single Event
-  - [x] Capture CBV masterdata
-- Queries:
-  - [x] List events
-  - [x] Event pagination
-  - [x] Create/Delete a named query
-  - [x] Execute a named query
 - Subscriptions:
   - [x] Subscribe to an EPCIS request (webhook)
   - [x] Subscribe to an EPCIS request (websocket)
+  - [x] Trigger subscriptions that register to specific trigger name
+  - [x] Execute subscription based on schedule
 - Discovery endpoints
    - [x] EventType discovery endpoint
    - [x] EPCs discovery endpoint
@@ -112,6 +82,13 @@ This is the list of implemented 2.0 features in the repository:
    - [x] Business Locations discovery endpoint
    - [x] Read Points discovery endpoint
    - [x] Dispositions discovery endpoint
+- Query Callback:
+  - [x] CallbackResults
+  - [x] CallbackQueryTooLargeException
+  - [x] CallbackImplementationException
+
+
+The OpenApi definition of the EPCIS 2.0 endpoints is available at the URL `/v2_0/openapi.json`. See the [wiki](https://github.com/louisaxel-ambroise/epcis/wiki) for more details.
    
 #### Restrictions
 
