@@ -24,7 +24,7 @@ function get_credentials(){
 function send_query(){
 	clear('http_comms');
 	let request = new XMLHttpRequest();
-	let url='https://fastnt-dev.azurewebsites.net/v2_0/events';
+	let url='https://fastnt-dev.azurewebsites.net/events';
 	request.open("GET", url);
 	request.setRequestHeader("Authorization", "Basic " + get_credentials());
 	request.setRequestHeader("Content-Type", "application/json");
@@ -46,7 +46,7 @@ function send_query(){
 function send_capture(){
 	clear('http_comms');
 	let request = new XMLHttpRequest();
-	let url='https://fastnt-dev.azurewebsites.net/v2_0/events';
+	let url='https://fastnt-dev.azurewebsites.net/events';
 	
 	request.open("POST", url);
 	request.setRequestHeader("Authorization", "Basic " + get_credentials());
