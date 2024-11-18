@@ -212,7 +212,7 @@ public class JsonEventParser
     {
         return value.ValueKind switch
         {
-            JsonValueKind.Array => value.EnumerateArray().Select(x => x.GetString()).Single(),
+            JsonValueKind.Array => value.EnumerateArray().Select(x => x.GetString()).FirstOrDefault(),
             JsonValueKind.String => value.GetString(),
             _ => throw new Exception("Invalid CertificationInfo value")
         };
