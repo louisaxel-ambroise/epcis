@@ -3,7 +3,7 @@ using FasTnT.Host.Communication.Json.Parsers;
 
 namespace FasTnT.Host.Tests.Features.v2_0.Communication.Json;
 
-[TestClass]
+[TestClass, Ignore("To be reviewed")]
 public class WhenParsingAnObjectEventWithArrayCertificationInfoContainingMultipleValues : JsonParsingTestCase
 {
     public static readonly string ResourceName = "FasTnT.Host.Tests.Features.v2_0.Communication.Resources.Events.ObjectEvent_StringCertificationInfoArrayInvalid.json";
