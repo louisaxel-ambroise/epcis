@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Postgres;
+﻿using FasTnT.Postgres;
 using FasTnT.Sqlite;
 using FasTnT.SqlServer;
 using Microsoft.EntityFrameworkCore;
