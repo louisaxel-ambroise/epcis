@@ -21,7 +21,7 @@ public class WhenHandlingListQueries
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange(new[] {
+        Context.AddRange([
             new StoredQuery
             {
                 Id = 1,
@@ -32,7 +32,7 @@ public class WhenHandlingListQueries
                 Id = 2,
                 Name = "QueryTwo"
             }
-        });
+        ]);
         Context.SaveChanges();
     }
 

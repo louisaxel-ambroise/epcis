@@ -40,6 +40,6 @@ public static class EndpointRouteHandlerBuilderExtensions
             DiscoveryEndpoints.Endpoints.Add((pattern, method));
         }
 
-        return endpoints.MapMethods(pattern, new[] { method }, DelegateFactory.Create(_ => handler));
+        return endpoints.MapMethods(pattern, [method], DelegateFactory.Create(_ => handler));
     }
 }

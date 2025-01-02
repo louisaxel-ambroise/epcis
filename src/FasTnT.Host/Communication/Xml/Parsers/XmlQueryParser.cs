@@ -66,7 +66,7 @@ public static class SoapQueryParser
             var name = element.Element("name")?.Value?.Trim();
             var values = element.Element("value").HasElements
                 ? element.Element("value").Elements().Select(x => x.Value)
-                : new[] { element.Element("value").Value };
+                : [element.Element("value").Value];
 
             yield return QueryParameter.Create(name, values.ToArray());
         }

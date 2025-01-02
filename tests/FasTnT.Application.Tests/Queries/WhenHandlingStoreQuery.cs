@@ -22,7 +22,7 @@ public class WhenHandlingStoreQuery
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange(new[] {
+        Context.AddRange([
             new StoredQuery
             {
                 Id = 1,
@@ -32,7 +32,7 @@ public class WhenHandlingStoreQuery
                     new QueryParameter{ Name = "EQ_type", Values = ["ObjectEvent", "TestEvent"]}
                 ]
             }
-        });
+        ]);
         Context.SaveChanges();
     }
 

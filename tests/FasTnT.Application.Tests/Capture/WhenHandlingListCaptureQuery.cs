@@ -28,7 +28,7 @@ public class WhenHandlingListCaptureQuery
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange(new object[] {
+        Context.AddRange([
             new Request
             {
                 Id = 1,
@@ -49,7 +49,7 @@ public class WhenHandlingListCaptureQuery
                 DocumentTime = DateTime.UtcNow,
                 Events = [new Event { Type = EventType.ObjectEvent }]
             }
-        });
+        ]);
 
         Context.SaveChanges();
     }

@@ -30,7 +30,7 @@ public class WhenFormattingAnObjectEvent
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlV2EventFormatter.Instance.FormatList(new List<Event> { ObjectEvent }).FirstOrDefault();
+        Formatted = XmlV2EventFormatter.Instance.FormatList([ObjectEvent]).FirstOrDefault();
     }
 
     [TestMethod]

@@ -25,7 +25,7 @@ public class SubscriptionRunnerTests
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange(new object[] {
+        Context.AddRange([
             new Request
             {
                 CaptureId = "capture_id_test",
@@ -49,7 +49,7 @@ public class SubscriptionRunnerTests
                     }
                 ]
             }
-        });
+        ]);
 
         Context.SaveChanges();
         Context.ChangeTracker.Clear();
@@ -70,7 +70,7 @@ public class SubscriptionRunnerTests
     [TestMethod]
     public void ItShouldExcludeTheEventsSpecifiedInTheContext()
     {
-        var context = new SubscriptionContext(Array.Empty<QueryParameter>(), new[] { 1 });
+        var context = new SubscriptionContext(Array.Empty<QueryParameter>(), [1]);
         var result = SubscriptionRunner.ExecuteAsync(context, CancellationToken.None).Result;
 
         Assert.IsTrue(result.Successful);
@@ -82,7 +82,7 @@ public class SubscriptionRunnerTests
     [TestMethod]
     public void ItShouldReturnAnExceptionIfExecutionFails()
     {
-        var context = new SubscriptionContext(new[] { QueryParameter.Create("ERROR", "unknown_param") }, Array.Empty<int>());
+        var context = new SubscriptionContext([QueryParameter.Create("ERROR", "unknown_param")], Array.Empty<int>());
         var result = SubscriptionRunner.ExecuteAsync(context, CancellationToken.None).Result;
 
         Assert.IsFalse(result.Successful);

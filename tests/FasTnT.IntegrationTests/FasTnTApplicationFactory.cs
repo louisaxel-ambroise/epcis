@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +26,7 @@ internal class FasTnTApplicationFactory : WebApplicationFactory<Program>
     {
         var configurationValues = new Dictionary<string, string>
         {
-            { "FasTnT.Database.Provider", $"Sqlite" },
+            { "FasTnT.Database.Provider", "Sqlite" },
             { "ConnectionStrings:FasTnT.Database", $"Data Source={_dbName}.db" }
         };
 

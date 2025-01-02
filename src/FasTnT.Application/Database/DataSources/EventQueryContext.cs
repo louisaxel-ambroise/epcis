@@ -202,7 +202,7 @@ internal sealed class EventQueryContext
 
     public IQueryable<Event> ApplyTo(IQueryable<Event> query)
     {
-        return _filters.Aggregate(query, (q, f) => f(q));
+        return _filters.Aggregate(query, (query, filter) => filter(query));
     }
 
     private void ApplyMasterdataAttributeParameter(string field, string attributeName, string[] values)

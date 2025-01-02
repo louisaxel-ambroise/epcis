@@ -51,10 +51,10 @@ public class PersistentSubscriptionJob
                 if (scheduler.IsDue())
                 {
                     var minRecordTime = _subscription.LastExecutedTime.Subtract(TimeSpan.FromSeconds(10));
-                    var parameters = _subscription.Parameters.Union(new[]
-                    {
+                    var parameters = _subscription.Parameters.Union(
+                    [
                         QueryParameter.Create("GE_recordTime", minRecordTime.ToString()),
-                    });
+                    ]);
 
                     try
                     {

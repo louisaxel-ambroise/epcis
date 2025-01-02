@@ -31,7 +31,7 @@ public static class EventsEndpoints
     {
         var parameter = QueryParameter.Create("EQ_eventID", eventId);
 
-        return ExecuteQuery(handler, new[] { parameter }, cancellationToken);
+        return ExecuteQuery(handler, [parameter], cancellationToken);
     }
 
     private static Task<IResult> EventTypeQuery(string eventType, QueryContext context, DataRetrieverHandler handler, CancellationToken cancellationToken)

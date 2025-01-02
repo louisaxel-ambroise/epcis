@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/events
+  url: {{baseUrl}}events
   body: json
   auth: basic
 }
@@ -16,7 +16,52 @@ auth:basic {
 }
 
 body:json {
-  {}
+  {"@context": [
+      "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"
+    ],
+      "type": "TransactionEvent",
+      "eventTime": "2024-08-26T20:06:14.000Z",
+                "eventTimeZoneOffset": "+01:00",
+                "action": "ADD",
+          "epcList":[],
+      "quantityList":[
+          {
+              "epcClass": "urn:epc:id:gtin:9780306406157",
+              "quantity": 1600,
+              "uom": "KGM"
+          }
+      ],
+      "readPoint": {
+          "id": "https://id.gs1.org/414/0123456789"
+      },
+      "bizLocation":{
+          "id":"https://id.gs1.org/414/0123456789"
+      },
+      "bizStep": "installing",
+      "disposition": "completeness_verified",
+      "bizTransactionList": [
+          {
+              "type": "po",
+              "bizTransaction": "urn:epcis:A-3961"
+          }
+      ],
+      "sourceList":[
+          {
+              "type": "possessing_party",
+              "source": "MISSING: GS1 GLN of PossessingParty"
+          }
+      ],
+      "destinationList":[
+          {
+              "type": "owning_party",
+              "destination": "MISSING: GS1 GLN of OwningParty"
+          }
+      ],
+      "certificationInfo":[
+          "https://www.iso.org/standard/62085.html",
+          "https://qualityinspection.org/what-is-certificate-of-conformity-coc/"
+      ]
+  }
 }
 
 assert {

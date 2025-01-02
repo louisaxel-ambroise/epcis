@@ -17,13 +17,13 @@ public class Event
     public string TransformationId { get; set; }
     public DateTime? CorrectiveDeclarationTime { get; set; }
     public string CorrectiveReason { get; set; }
-    public List<CorrectiveEventId> CorrectiveEventIds { get; set; } = new();
-    public List<Epc> Epcs { get; set; } = new();
-    public List<BusinessTransaction> Transactions { get; set; } = new();
-    public List<Source> Sources { get; set; } = new();
-    public List<Destination> Destinations { get; set; } = new();
-    public List<SensorElement> SensorElements { get; set; } = new();
-    public List<SensorReport> Reports { get; set; } = new();
-    public List<PersistentDisposition> PersistentDispositions { get; set; } = new();
-    public List<Field> Fields { get; set; } = new();
+    public List<CorrectiveEventId> CorrectiveEventIds { get; set; } = [];
+    public List<Epc> Epcs { get; set; } = [];
+    public List<BusinessTransaction> Transactions { get; set; } = [];
+    public List<Source> Sources { get; set; } = [];
+    public List<Destination> Destinations { get; set; } = [];
+    public List<SensorElement> SensorElements { get; set; } = [];
+    public List<SensorReport> Reports { get; set; } = [];
+    public List<PersistentDisposition> PersistentDispositions { get; set; } = [];
+    public List<Field> Fields { get; set; } = [];
 }
