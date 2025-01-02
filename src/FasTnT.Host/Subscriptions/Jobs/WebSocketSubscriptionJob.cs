@@ -34,10 +34,10 @@ public class WebSocketSubscriptionJob(
                     try
                     {
                         var minRecordDate = lastExecutionDate.Subtract(TimeSpan.FromSeconds(10));
-                        var executionParameters = parameters.Union(new[]
-                        {
+                        var executionParameters = parameters.Union(
+                        [
                             QueryParameter.Create("GE_recordTime", minRecordDate.ToString())
-                        });
+                        ]);
 
                         using var scope = serviceProvider.CreateScope();
 

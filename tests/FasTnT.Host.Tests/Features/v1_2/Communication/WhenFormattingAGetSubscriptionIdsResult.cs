@@ -8,7 +8,7 @@ namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 [TestClass]
 public class WhenFormattingAGetSubscriptionIdsResult
 {
-    public ListSubscriptionsResult Result = new(new[] { new Subscription { Name = "Sub1" }, new Subscription { Name = "Sub2" }, new Subscription { Name = "Sub2" } });
+    public ListSubscriptionsResult Result = new([new Subscription { Name = "Sub1" }, new Subscription { Name = "Sub2" }, new Subscription { Name = "Sub2" }]);
     public XElement Formatted { get; set; }
 
     [TestInitialize]

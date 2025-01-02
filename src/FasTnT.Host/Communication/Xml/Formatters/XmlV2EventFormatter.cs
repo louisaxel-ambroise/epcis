@@ -1,5 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
+using FasTnT.Host.Communication.Xml.Utils;
 
 namespace FasTnT.Host.Communication.Xml.Formatters;
 
@@ -25,7 +26,7 @@ public sealed class XmlV2EventFormatter : XmlEventFormatter
 
         AddCommonEventFields(evt, xmlEvent);
         xmlEvent.Add(CreateEpcList(evt, EpcType.List, "epcList"));
-        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        xmlEvent.Add(new XElement("action", evt.Action.ToUpperString()));
         AddV1_1Fields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(CreateQuantityList(evt, EpcType.Quantity, "quantityList"));
@@ -48,7 +49,7 @@ public sealed class XmlV2EventFormatter : XmlEventFormatter
         xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
         xmlEvent.Add(CreateEpcList(evt, EpcType.ChildEpc, "childEPCs"));
         xmlEvent.AddIfNotNull(CreateQuantityList(evt, EpcType.Quantity, "childQuantityList"));
-        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        xmlEvent.Add(new XElement("action", evt.Action.ToUpperString()));
         AddV1_1Fields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));
@@ -75,7 +76,7 @@ public sealed class XmlV2EventFormatter : XmlEventFormatter
         AddCommonEventFields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
         xmlEvent.Add(CreateEpcList(evt, EpcType.ChildEpc, "childEPCs"));
-        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        xmlEvent.Add(new XElement("action", evt.Action.ToUpperString()));
         AddV1_1Fields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(CreateQuantityList(evt, EpcType.Quantity, "childQuantityList"));
@@ -96,7 +97,7 @@ public sealed class XmlV2EventFormatter : XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
         xmlEvent.Add(CreateEpcList(evt, EpcType.List, "epcList"));
-        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        xmlEvent.Add(new XElement("action", evt.Action.ToUpperString()));
         AddV1_1Fields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(CreateQuantityList(evt, EpcType.Quantity, "quantityList"));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));

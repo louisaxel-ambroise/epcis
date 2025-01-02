@@ -496,7 +496,7 @@ namespace FasTnT.Sqlite.Migrations
                         columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId },
                         principalSchema: "Cbv",
                         principalTable: "MasterData",
-                        principalColumns: new[] { "RequestId", "Type", "Id" },
+                        principalColumns: ["RequestId", "Type", "Id"],
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -518,7 +518,7 @@ namespace FasTnT.Sqlite.Migrations
                         columns: x => new { x.MasterDataRequestId, x.MasterDataType, x.MasterDataId },
                         principalSchema: "Cbv",
                         principalTable: "MasterData",
-                        principalColumns: new[] { "RequestId", "Type", "Id" },
+                        principalColumns: ["RequestId", "Type", "Id"],
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -571,7 +571,7 @@ namespace FasTnT.Sqlite.Migrations
                         columns: x => new { x.RequestId, x.MasterdataType, x.MasterdataId, x.AttributeIndex },
                         principalSchema: "Cbv",
                         principalTable: "MasterDataAttribute",
-                        principalColumns: new[] { "RequestId", "MasterdataType", "MasterdataId", "Index" },
+                        principalColumns: ["RequestId", "MasterdataType", "MasterdataId", "Index"],
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -585,7 +585,7 @@ namespace FasTnT.Sqlite.Migrations
                 name: "IX_MasterDataField_RequestId_MasterdataType_MasterdataId_AttributeIndex",
                 schema: "Cbv",
                 table: "MasterDataField",
-                columns: new[] { "RequestId", "MasterdataType", "MasterdataId", "AttributeIndex" });
+                columns: ["RequestId", "MasterdataType", "MasterdataId", "AttributeIndex"]);
 
             migrationBuilder.CreateIndex(
                 name: "IX_StoredQuery_Name",

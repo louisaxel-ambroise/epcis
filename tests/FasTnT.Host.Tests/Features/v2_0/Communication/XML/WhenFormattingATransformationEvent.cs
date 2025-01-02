@@ -31,7 +31,7 @@ public class WhenFormattingATransformationEvent
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlV2EventFormatter.Instance.FormatList(new List<Event> { TransformationEvent }).FirstOrDefault();
+        Formatted = XmlV2EventFormatter.Instance.FormatList([TransformationEvent]).FirstOrDefault();
     }
 
     [TestMethod]

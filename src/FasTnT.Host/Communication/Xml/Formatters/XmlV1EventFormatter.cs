@@ -1,5 +1,6 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model.Events;
+using FasTnT.Host.Communication.Xml.Utils;
 
 namespace FasTnT.Host.Communication.Xml.Formatters;
 
@@ -26,7 +27,7 @@ public sealed class XmlV1EventFormatter : XmlEventFormatter
 
         AddCommonEventFields(evt, xmlEvent);
         xmlEvent.Add(CreateEpcList(evt, EpcType.List, "epcList"));
-        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        xmlEvent.Add(new XElement("action", evt.Action.ToUpperString()));
         AddV1_1Fields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(FormatObjectEventExtension(evt));
@@ -77,7 +78,7 @@ public sealed class XmlV1EventFormatter : XmlEventFormatter
         AddCommonEventFields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
         xmlEvent.Add(CreateEpcList(evt, EpcType.ChildEpc, "childEPCs"));
-        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        xmlEvent.Add(new XElement("action", evt.Action.ToUpperString()));
         AddV1_1Fields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(FormatAggregationEventExtension(evt));
@@ -105,7 +106,7 @@ public sealed class XmlV1EventFormatter : XmlEventFormatter
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
         xmlEvent.Add(CreateEpcList(evt, EpcType.List, "epcList"));
-        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        xmlEvent.Add(new XElement("action", evt.Action.ToUpperString()));
         AddV1_1Fields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(FormatTransactionEventExtension(evt));
         xmlEvent.AddIfNotNull(CreateCustomFields(evt, FieldType.CustomField));
@@ -153,7 +154,7 @@ public sealed class XmlV1EventFormatter : XmlEventFormatter
         xmlEvent.AddIfNotNull(new XElement("parentID", evt.Epcs.FirstOrDefault(x => x.Type == EpcType.ParentId)?.Id));
         xmlEvent.Add(CreateEpcList(evt, EpcType.ChildEpc, "childEPCs"));
         xmlEvent.Add(CreateQuantityList(evt, EpcType.ChildQuantity, "childQuantityList"));
-        xmlEvent.Add(new XElement("action", evt.Action.ToString().ToUpper()));
+        xmlEvent.Add(new XElement("action", evt.Action.ToUpperString()));
         AddV1_1Fields(evt, xmlEvent);
         xmlEvent.AddIfNotNull(CreateBizTransactions(evt));
         xmlEvent.AddIfNotNull(CreateSourceList(evt));

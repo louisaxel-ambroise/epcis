@@ -14,6 +14,6 @@ public class Request
     public DateTime DocumentTime { get; set; }
     public string SchemaVersion { get; set; }
     public SubscriptionCallback SubscriptionCallback { get; set; }
-    public List<Event> Events { get; set; } = new();
-    public List<MasterData> Masterdata { get; set; } = new();
+    public List<Event> Events { get; set; } = [];
+    public List<MasterData> Masterdata { get; set; } = [];
 }

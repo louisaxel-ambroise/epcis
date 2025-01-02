@@ -23,7 +23,7 @@ public class WhenHandlingDeleteQuery
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange(new object[] {
+        Context.AddRange([
             new StoredQuery
             {
                 Id = 1,
@@ -47,7 +47,7 @@ public class WhenHandlingDeleteQuery
                 UserId = "1234"
             },
             new Subscription { Id = 1, QueryName = "WithSubscription", Name = "test", Destination = "", FormatterName = "" }
-        });
+        ]);
 
         Context.SaveChanges();
         Context.ChangeTracker.Clear();

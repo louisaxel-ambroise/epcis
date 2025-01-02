@@ -7,7 +7,7 @@ namespace FasTnT.Host.Tests.Features.v1_2.Communication;
 [TestClass]
 public class WhenFormattingAGetQueryNamesResult
 {
-    public ListCustomQueriesResult Result = new(new[] { new CustomQueryDefinitionResult("QueryOne", []), new CustomQueryDefinitionResult("QueryTwo", []) });
+    public ListCustomQueriesResult Result = new([new CustomQueryDefinitionResult("QueryOne", []), new CustomQueryDefinitionResult("QueryTwo", [])]);
     public XElement Formatted { get; set; }
 
     [TestInitialize]

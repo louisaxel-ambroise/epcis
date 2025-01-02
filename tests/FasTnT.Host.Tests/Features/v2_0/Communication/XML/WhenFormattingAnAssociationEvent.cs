@@ -30,7 +30,7 @@ public class WhenFormattingAnAssociationEvent
             Request = new Domain.Model.Request { RecordTime = DateTime.Now }
         };
 
-        Formatted = XmlV2EventFormatter.Instance.FormatList(new List<Event> { AssociationEvent }).FirstOrDefault();
+        Formatted = XmlV2EventFormatter.Instance.FormatList([AssociationEvent]).FirstOrDefault();
     }
 
     [TestMethod]

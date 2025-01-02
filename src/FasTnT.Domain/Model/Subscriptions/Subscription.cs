@@ -13,7 +13,7 @@ public class Subscription
     public string Trigger { get; set; }
     public bool ReportIfEmpty { get; set; }
     public string Destination { get; set; }
-    public List<QueryParameter> Parameters { get; set; } = new();
+    public List<QueryParameter> Parameters { get; set; } = [];
     public DateTime InitialRecordTime { get; set; } = DateTime.UtcNow;
     public DateTime LastExecutedTime { get; set; } = DateTime.UtcNow;
     public int[] BufferRequestIds { get; set; } = Array.Empty<int>();

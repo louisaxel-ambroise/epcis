@@ -9,6 +9,6 @@ public class MasterData
     public string Type { get; set; }
     public string Id { get; set; }
 
-    public List<MasterDataAttribute> Attributes { get; set; } = new();
-    public List<MasterDataChildren> Children { get; set; } = new();
+    public List<MasterDataAttribute> Attributes { get; set; } = [];
+    public List<MasterDataChildren> Children { get; set; } = [];
 }

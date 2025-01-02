@@ -22,7 +22,7 @@ public class WhenHandlingGetQueryDetails
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange(new[] {
+        Context.AddRange([
             new StoredQuery
             {
                 Id = 1,
@@ -37,7 +37,7 @@ public class WhenHandlingGetQueryDetails
                 Id = 2,
                 Name = "QueryTwo"
             }
-        });
+        ]);
         Context.SaveChanges();
     }
 

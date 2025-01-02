@@ -1,7 +1,9 @@
-﻿namespace FasTnT.Host.Communication.Xml.Formatters;
+﻿namespace FasTnT.Host.Communication.Xml.Utils;
 
-public static class XElementExtensions
+public static class Extensions
 {
+    public static string ToUpperString(this object value) => value.ToString().ToUpperInvariant();
+
     public static void AddIfNotNull(this XElement destination, XElement children)
     {
         if (children != null && (!children.IsEmpty || children.HasAttributes))

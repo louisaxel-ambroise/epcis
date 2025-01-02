@@ -1,6 +1,7 @@
 ﻿using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
+using FasTnT.Host.Communication.Xml.Utils;
 
 namespace FasTnT.Host.Communication.Xml.Formatters;
 
@@ -193,7 +194,7 @@ public abstract class XmlEventFormatter
         list.AddIfNotNull(epcs.Select(x =>
         {
             var element = new XElement("quantityElement", new XElement("epcClass", x.Id));
-            element.AddIfNotNull(new[] { new XElement("quantity", x.Quantity), new XElement("uom", x.UnitOfMeasure) });
+            element.AddIfNotNull([new XElement("quantity", x.Quantity), new XElement("uom", x.UnitOfMeasure)]);
 
             return element;
         }));
@@ -211,7 +212,6 @@ public abstract class XmlEventFormatter
 
         return errorDeclaration;
     }
-
 
     protected static IEnumerable<XElement> CreateCustomFields(Event evt, FieldType type)
     {

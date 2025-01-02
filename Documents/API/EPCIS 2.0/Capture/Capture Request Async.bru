@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/capture
+  url: {{baseUrl}}capture
   body: json
   auth: basic
 }
 
 headers {
-  GS1-Capture-Error-Behaviour: Proceed
+  GS1-Capture-Error-Behaviour: rollback
 }
 
 auth:basic {
@@ -21,72 +21,61 @@ auth:basic {
 
 body:json {
   {
+    "@context": [
+      "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"
+    ],
+    "id": "https://id.example.org/document1",
     "type": "EPCISDocument",
     "schemaVersion": "2.0",
-    "creationDate": "2020-07-03T09:00:00.0Z",
+    "creationDate": "2022-10-17T08:42:00.000+02:00",
     "epcisBody": {
       "eventList": [
         {
-          "type": "TransactionEvent",
-          "eventTime": "2019-10-04T13:12:00.000Z",
-          "eventTimeZoneOffset": "+01:00",
-          "bizTransactionList": [{"bizTransaction": "urn:epc:id:gdti:95252084.0001.0003555480001000"}],
-          "epcList": ["urn:epc:id:gsrn:95252084.000000001"],
-          "action": "ADD",
-          "bizStep": "http://epcis.example.org/hc/bizstep/summarising_discharge",
-          "readPoint": {"id": "urn:epc:id:sgln:9524567.98765.0"}
-        },
-        {
-          "type": "TransactionEvent",
-          "eventTime": "2014-12-12T10:00:00.000Z",
-          "eventTimeZoneOffset": "+02:00",
-          "bizTransactionList": [{
-              "type": "urn:gs1:epcisapp:rail:btt:passage",
-              "bizTransaction": "http://transaction.examplerail.com/passage/xyz12345"}],
-          "epcList": ["urn:epc:id:giai:952005385.w2"],
-          "action": "ADD",
-          "bizStep": "transporting",
-          "disposition": "in_transit",
-          "readPoint": {
-            "id": "urn:epc:id:sgln:952005385.011.ts4711"
-          },
-          "bizLocation": {"id": "urn:epc:id:sgln:952005385.011.scA"},
-          "sourceList":      [{"type":"location", "source": "urn:epc:id:sgln:952005385.481.0"}],
-          "destinationList": [{"type":"location", "destination": "urn:epc:id:sgln:952005385.011.0"}],
-          "rail:trainVehicleCount": "3",
-          "rail:vehicle": [
-            {
-              "rail:vehicleUniquelyIdentified": "true",
-              "rail:vehicleAxleCount": "4",
-              "rail:vehiclePosition": "1",
-              "rail:vehicleMasterGIAI": "urn:epc:id:giai:952005385.vehicle2"
-            },
-            {
-              "rail:vehicleUniquelyIdentified": "false",
-              "rail:vehicleAxleCount": "4",
-              "rail:vehiclePosition": "2"
-            },
-            {
-              "rail:vehicleUniquelyIdentified": true,
-              "rail:vehicleAxleCount": "4",
-              "rail:vehiclePosition": "3",
-              "rail:vehicleMasterGIAI": "urn:epc:id:giai:735005385.vehicle1"
-            }
-          ],
-          "rail:trainAxleCount": "12"
-        }
+      "type": "TransactionEvent",
+      "eventTime": "2024-08-26T20:06:14.000Z",
+                "eventTimeZoneOffset": "+01:00",
+                "action": "ADD",
+          "epcList":[],
+      "quantityList":[
+          {
+              "epcClass": "urn:epc:id:gtin:9780306406157",
+              "quantity": 1600,
+              "uom": "KGM"
+          }
+      ],
+      "readPoint": {
+          "id": "https://id.gs1.org/414/0123456789"
+      },
+      "bizLocation":{
+          "id":"https://id.gs1.org/414/0123456789"
+      },
+      "bizStep": "installing",
+      "disposition": "completeness_verified",
+      "bizTransactionList": [
+          {
+              "type": "po",
+              "bizTransaction": "urn:epcis:A-3961"
+          }
+      ],
+      "sourceList":[
+          {
+              "type": "possessing_party",
+              "source": "MISSING: GS1 GLN of PossessingParty"
+          }
+      ],
+      "destinationList":[
+          {
+              "type": "owning_party",
+              "destination": "MISSING: GS1 GLN of OwningParty"
+          }
+      ],
+      "certificationInfo":[
+          "https://www.iso.org/standard/62085.html",
+          "https://qualityinspection.org/what-is-certificate-of-conformity-coc/"
       ]
-    },
-    "@context": [
-      "https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld",
-      {"rail": "urn:gs1:epcisapp:rail:",
-       "rail:vehicleMasterGIAI": {"@type": "@id"},
-       "rail:trainAxleCount": {"@type": "xsd:integer"},
-       "rail:vehicleAxleCount": {"@type": "xsd:integer"},
-       "rail:vehiclePosition": {"@type": "xsd:integer"},
-       "rail:vehicleUniquelyIdentified": {"@type": "xsd:boolean"}
-      }
-    ]
+  }
+      ]
+    }
   }
 }
 
