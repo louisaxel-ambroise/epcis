@@ -1,11 +1,11 @@
 ﻿namespace FasTnT.Domain.Model.Subscriptions;
 
-public class SubscriptionSchedule
+public sealed record SubscriptionSchedule
 {
-    public string Second { get; set; }
-    public string Minute { get; set; }
-    public string Hour { get; set; }
-    public string DayOfMonth { get; set; }
-    public string Month { get; set; }
-    public string DayOfWeek { get; set; }
+    public string Second { get; init; }
+    public string Minute { get; init; }
+    public string Hour { get; init; }
+    public string DayOfMonth { get; init; }
+    public string Month { get; init; }
+    public string DayOfWeek { get; init; }
 }

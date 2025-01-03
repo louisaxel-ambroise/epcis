@@ -38,7 +38,7 @@ public static class SubscriptionEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> SubscribeRequest(SubscriptionRequest request, QueriesHandler queryDetails, SubscriptionsHandler subscribe, CancellationToken cancellationToken)
+    private static async Task<IResult> SubscribeRequest(SubscriptionRequest request, QueriesHandler queryDetails, SubscriptionsHandler handler, CancellationToken cancellationToken)
     {
         var query = await queryDetails.GetQueryDetailsAsync(request.QueryName, cancellationToken);
 
@@ -46,7 +46,7 @@ public static class SubscriptionEndpoints
         request.Subscription.Name = Guid.NewGuid().ToString();
         request.Subscription.Parameters.AddRange(query.Parameters);
 
-        var response = await subscribe.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
+        var response = await handler.RegisterSubscriptionAsync(request.Subscription, cancellationToken);
 
         return Results.Created($"queries/{query}/subscriptions/{response.Name}", null);
     }

@@ -2,10 +2,10 @@
 
 namespace FasTnT.Host.Subscriptions.Schedulers;
 
-public class CronSubscriptionScheduler(SubscriptionSchedule schedule) : SubscriptionScheduler
+public sealed class CronSubscriptionScheduler(SubscriptionSchedule schedule) : SubscriptionScheduler
 {
     internal readonly ScheduleEntry
-        Seconds = ScheduleEntry.Parse(schedule.Second, 0, 60),
+        Seconds = ScheduleEntry.Parse(schedule.Second, 0, 59),
         Minutes = ScheduleEntry.Parse(schedule.Minute, 0, 59),
         Hours = ScheduleEntry.Parse(schedule.Hour, 0, 23),
         DayOfMonth = ScheduleEntry.Parse(schedule.DayOfMonth, 1, 31),
@@ -80,7 +80,7 @@ public class CronSubscriptionScheduler(SubscriptionSchedule schedule) : Subscrip
         return tentative;
     }
 
-    internal class ScheduleEntry
+    internal sealed record ScheduleEntry
     {
         private readonly List<int> _values = [];
         private readonly int _minValue, _maxValue;
