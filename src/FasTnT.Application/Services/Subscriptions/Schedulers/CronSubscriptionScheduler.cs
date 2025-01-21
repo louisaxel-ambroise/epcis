@@ -1,6 +1,6 @@
 ﻿using FasTnT.Domain.Model.Subscriptions;
 
-namespace FasTnT.Host.Subscriptions.Schedulers;
+namespace FasTnT.Application.Services.Subscriptions.Schedulers;
 
 public sealed class CronSubscriptionScheduler(SubscriptionSchedule schedule) : SubscriptionScheduler
 {
@@ -12,17 +12,19 @@ public sealed class CronSubscriptionScheduler(SubscriptionSchedule schedule) : S
         Month = ScheduleEntry.Parse(schedule.Month, 1, 12),
         DayOfWeek = ScheduleEntry.Parse(schedule.DayOfWeek, 1, 7);
 
-    public override void ComputeNextExecution(DateTime startDate)
+    public override DateTime ComputeNextExecution(DateTime startDate)
     {
         var methods = new[] { SetSeconds, SetMinutes, SetHours, SetDayOfMonth, SetMonth };
         var tentative = methods.Aggregate(startDate.AddSeconds(1), (date, function) => function(date));
 
         if (!DayOfWeek.HasValue(1 + (int)tentative.DayOfWeek))
         {
-            ComputeNextExecution(new DateTime(tentative.Year, tentative.Month, tentative.Day, 23, 59, 59));
+            return ComputeNextExecution(new DateTime(tentative.Year, tentative.Month, tentative.Day, 23, 59, 59));
         }
-
-        NextComputedExecution = tentative;
+        else
+        {
+            return tentative;
+        }
     }
 
     private DateTime SetMinutes(DateTime tentative)

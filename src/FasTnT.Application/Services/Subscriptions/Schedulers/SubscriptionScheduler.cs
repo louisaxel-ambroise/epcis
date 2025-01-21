@@ -1,7 +1,7 @@
 ﻿using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
 
-namespace FasTnT.Host.Subscriptions.Schedulers;
+namespace FasTnT.Application.Services.Subscriptions.Schedulers;
 
 public abstract class SubscriptionScheduler
 {
@@ -38,7 +38,12 @@ public abstract class SubscriptionScheduler
         return parts.All(string.IsNullOrEmpty);
     }
 
-    public abstract void ComputeNextExecution(DateTime startDate);
+    public void SetNextExecution(DateTime startDate)
+    {
+        NextComputedExecution = ComputeNextExecution(startDate);
+    }
+
+    public abstract DateTime ComputeNextExecution(DateTime startDate);
 
     public virtual bool IsDue()
     {

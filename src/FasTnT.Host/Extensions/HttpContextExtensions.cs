@@ -1,8 +1,8 @@
 ﻿using FasTnT.Application.Services.Notifications;
+using FasTnT.Application.Services.Subscriptions.Schedulers;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Subscriptions.Jobs;
-using FasTnT.Host.Subscriptions.Schedulers;
 using System.Web;
 
 namespace FasTnT.Host.Extensions;

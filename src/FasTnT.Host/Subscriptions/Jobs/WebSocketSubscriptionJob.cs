@@ -1,10 +1,10 @@
 ﻿using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.Services.Subscriptions.Schedulers;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Host.Extensions;
 using FasTnT.Host.Subscriptions.Formatters;
-using FasTnT.Host.Subscriptions.Schedulers;
 using Microsoft.EntityFrameworkCore;
 using System.Net.WebSockets;
 
@@ -57,7 +57,7 @@ public class WebSocketSubscriptionJob(
                     }
                     finally
                     {
-                        scheduler.ComputeNextExecution(executionDate);
+                        scheduler.SetNextExecution(executionDate);
                     }
                 }
 
