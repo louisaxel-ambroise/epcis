@@ -1,12 +1,12 @@
 ﻿using FasTnT.Application.Database;
 using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Services.Subscriptions;
+using FasTnT.Application.Services.Subscriptions.Schedulers;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
 using FasTnT.Host.Subscriptions.Formatters;
-using FasTnT.Host.Subscriptions.Schedulers;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Security.Cryptography;
@@ -86,7 +86,7 @@ public class PersistentSubscriptionJob
                     }
                     finally
                     {
-                        scheduler.ComputeNextExecution(executionDate);
+                        scheduler.SetNextExecution(executionDate);
                     }
                 }
 
