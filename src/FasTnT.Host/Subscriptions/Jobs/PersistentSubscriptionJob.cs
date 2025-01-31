@@ -6,6 +6,7 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
+using FasTnT.Host.Endpoints.Interfaces;
 using FasTnT.Host.Subscriptions.Formatters;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -114,14 +115,15 @@ public class PersistentSubscriptionJob
 
     private Task<HttpResponseMessage> SendResults(List<Event> events, CancellationToken cancellationToken)
     {
-        var formatted = _formatter.FormatResult(_subscription.Name, new(_subscription.QueryName, events));
+        var result = new QueryResult(new(_subscription.QueryName, events, _subscription.Name));
+        var formatted = _formatter.Format(result);
 
         return SendWebhook(formatted, _formatter.ContentType, cancellationToken);
     }
 
     private Task<HttpResponseMessage> SendError(EpcisException ex, CancellationToken cancellationToken)
     {
-        var formatted = _formatter.FormatError(_subscription.Name, _subscription.QueryName, ex);
+        var formatted = _formatter.Format(ex);
 
         return SendWebhook(formatted, _formatter.ContentType, cancellationToken);
     }
