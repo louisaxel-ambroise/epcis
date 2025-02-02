@@ -3,6 +3,7 @@ using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Subscriptions.Schedulers;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
+using FasTnT.Host.Endpoints.Interfaces;
 using FasTnT.Host.Extensions;
 using FasTnT.Host.Subscriptions.Formatters;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ using System.Net.WebSockets;
 
 namespace FasTnT.Host.Subscriptions.Jobs;
 
-public class WebSocketSubscriptionJob(
+public class WebSocketSubscriptionJob(  
     WebSocket webSocket, 
     string queryName, 
     IEnumerable<QueryParameter> parameters, 
@@ -72,8 +73,8 @@ public class WebSocketSubscriptionJob(
 
     private async Task SendQueryDataAsync(List<Event> queryData, CancellationToken cancellationToken)
     {
-        var response = new QueryResponse(queryName, queryData);
-        var formattedResponse = JsonSubscriptionFormatter.Instance.FormatResult("ws-subscription", response);
+        var result = new QueryResult(new(queryName, queryData, "ws-subscription"));
+        var formattedResponse = JsonSubscriptionFormatter.Instance.Format(result);
 
         await webSocket.SendAsync(formattedResponse, cancellationToken);
     }

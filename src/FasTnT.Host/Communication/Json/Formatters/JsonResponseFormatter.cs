@@ -144,6 +144,21 @@ public static class JsonResponseFormatter
     private static string FormatQueryResult(QueryResponse result)
     {
         var context = result.EventList.SelectMany(x => x.Fields).Select(x => x.Namespace).BuildContext();
+
+        var queryResultContent = new Dictionary<string, object>
+        {
+            ["queryName"] = result.QueryName,
+            ["resultsBody"] = new
+            {
+                eventList = result.EventList.Select(x => JsonEventFormatter.FormatEvent(x, context))
+            }
+        };
+
+        if (!string.IsNullOrEmpty(result.SubscriptionName))
+        {
+            queryResultContent["subscriptionID"] = result.SubscriptionName;
+        }
+
         var document = new Dictionary<string, object>
         {
             ["@context"] = context.Select(x => (object)new Dictionary<string, string> { [x.Value] = x.Key }).Append("https://ref.gs1.org/standards/epcis/2.0.0/epcis-context.jsonld"),
@@ -153,14 +168,7 @@ public static class JsonResponseFormatter
             ["creationDate"] = DateTime.UtcNow,
             ["epcisBody"] = new
             {
-                queryResults = new
-                {
-                    queryName = result.QueryName,
-                    resultsBody = new
-                    {
-                        eventList = result.EventList.Select(x => JsonEventFormatter.FormatEvent(x, context))
-                    }
-                }
+                queryResults = queryResultContent
             }
         };
 
