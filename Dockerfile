@@ -10,6 +10,7 @@ COPY ["src/FasTnT.Domain/", "FasTnT.Domain/"]
 COPY ["src/Providers/FasTnT.Sqlite/", "Providers/FasTnT.Sqlite/"]
 COPY ["src/Providers/FasTnT.Postgres/", "Providers/FasTnT.Postgres/"]
 COPY ["src/Providers/FasTnT.SqlServer/", "Providers/FasTnT.SqlServer/"]
+COPY ["Directory.Packages.props", "FasTnT.Host/"]
 RUN dotnet restore "FasTnT.Host/FasTnT.Host.csproj"
 
 WORKDIR "/epcis/FasTnT.Host"
