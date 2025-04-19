@@ -5,76 +5,83 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace FasTnT.Sqlite.Migrations
+namespace FasTnT.Postgres.Migrations
 {
     [DbContext(typeof(EpcisContext))]
-    [Migration("20230420091332_InitialV2_5_0")]
-    partial class InitialV2_5_0
+    [Migration("20250421103728_InitialV2_8_0")]
+    partial class InitialV2_8_0
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<short>("Action")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("smallint");
 
                     b.Property<string>("BusinessLocation")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("BusinessStep")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("CertificationInfo")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTime?>("CorrectiveDeclarationTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("CorrectiveReason")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Disposition")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("EventId")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTime>("EventTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<short>("EventTimeZoneOffset")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("smallint");
 
                     b.Property<string>("ReadPoint")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<int?>("RequestId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("TransformationId")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<short>("Type")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 
@@ -86,60 +93,81 @@ namespace FasTnT.Sqlite.Migrations
             modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterData", b =>
                 {
                     b.Property<int>("RequestId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Type")
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Index")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Id")
+                        .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
-                    b.HasKey("RequestId", "Type", "Id");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("RequestId", "Index");
 
                     b.ToTable("MasterData", "Cbv");
 
                     b.ToView("CurrentMasterdata", "Cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataChildren", b =>
+                {
+                    b.Property<int>("MasterDataRequestId")
+                        .HasMaxLength(256)
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MasterDataIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChildrenId")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("MasterDataRequestId", "MasterDataIndex", "ChildrenId");
+
+                    b.ToTable("MasterDataChildren", "Cbv");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterdataHierarchy", b =>
                 {
                     b.Property<string>("Id")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Root")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.ToTable((string)null);
 
-                    b.ToView("MasterDataHierarchy", "Cbv");
-
-                    b.HasDiscriminator<string>("Type").IsComplete(false).HasValue("MasterDataHierarchy");
-
-                    b.UseTphMappingStrategy();
+                    b.ToView("MasterdataHierarchy", "Cbv");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Queries.StoredQuery", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("UserId")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -153,27 +181,29 @@ namespace FasTnT.Sqlite.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CaptureId")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTime>("DocumentTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("RecordTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SchemaVersion")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(10)");
 
                     b.Property<string>("UserId")
                         .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -183,35 +213,35 @@ namespace FasTnT.Sqlite.Migrations
             modelBuilder.Entity("FasTnT.Domain.Model.StandardBusinessHeader", b =>
                 {
                     b.Property<int>("RequestId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime?>("CreationDateTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("InstanceIdentifier")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Standard")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("TypeVersion")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Version")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("RequestId");
 
@@ -222,47 +252,49 @@ namespace FasTnT.Sqlite.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BufferRequestIds")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Destination")
                         .IsRequired()
                         .HasMaxLength(2048)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(2048)");
 
                     b.Property<string>("FormatterName")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<DateTime>("InitialRecordTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("LastExecutedTime")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("QueryName")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("ReportIfEmpty")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SignatureToken")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("Trigger")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -275,38 +307,24 @@ namespace FasTnT.Sqlite.Migrations
             modelBuilder.Entity("FasTnT.Domain.Model.Subscriptions.SubscriptionCallback", b =>
                 {
                     b.Property<int>("RequestId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<short>("CallbackType")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("SubscriptionId")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("character varying(256)")
                         .HasColumnName("SubscriptionId");
 
                     b.HasKey("RequestId");
 
                     b.ToTable("SubscriptionCallback", "Epcis");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.BizLocationHierarchy", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:BusinessLocation");
-                });
-
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.ReadPointHierarchy", b =>
-                {
-                    b.HasBaseType("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy");
-
-                    b.HasDiscriminator().HasValue("urn:epcglobal:epcis:vtype:ReadPoint");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Events.Event", b =>
@@ -319,15 +337,15 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.BusinessTransaction", "Transactions", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -340,11 +358,11 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.CorrectiveEventId", "CorrectiveEventIds", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("CorrectiveId")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.HasKey("EventId", "CorrectiveId");
 
@@ -357,15 +375,15 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.Destination", "Destinations", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -378,21 +396,21 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.Epc", "Epcs", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<short>("Type")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("smallint");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<float?>("Quantity")
-                                .HasColumnType("REAL");
+                                .HasColumnType("real");
 
                             b1.Property<string>("UnitOfMeasure")
                                 .HasMaxLength(10)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(10)");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -405,38 +423,38 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.Field", "Fields", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Index")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<DateTime?>("DateValue")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("timestamp with time zone");
 
                             b1.Property<int?>("EntityIndex")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("Name")
                                 .IsRequired()
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Namespace")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<double?>("NumericValue")
-                                .HasColumnType("REAL");
+                                .HasColumnType("double precision");
 
                             b1.Property<int?>("ParentIndex")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("TextValue")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<short>("Type")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("smallint");
 
                             b1.HasKey("EventId", "Index");
 
@@ -449,14 +467,14 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.PersistentDisposition", "PersistentDispositions", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<short>("Type")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("smallint");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -469,39 +487,39 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.SensorElement", "SensorElements", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Index")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("BizRules")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("DataProcessingMethod")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("DeviceId")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("DeviceMetadata")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<DateTime?>("EndTime")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("timestamp with time zone");
 
                             b1.Property<string>("RawData")
                                 .HasMaxLength(2048)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(2048)");
 
                             b1.Property<DateTime?>("StartTime")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("timestamp with time zone");
 
                             b1.Property<DateTime?>("Time")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("timestamp with time zone");
 
                             b1.HasKey("EventId", "Index");
 
@@ -514,92 +532,92 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.SensorReport", "Reports", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Index")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<bool>("BooleanValue")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("boolean");
 
                             b1.Property<string>("ChemicalSubstance")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Component")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("CoordinateReferenceSystem")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("DataProcessingMethod")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("DeviceId")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("DeviceMetadata")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("HexBinaryValue")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<float?>("MaxValue")
-                                .HasColumnType("REAL");
+                                .HasColumnType("real");
 
                             b1.Property<float?>("MeanValue")
-                                .HasColumnType("REAL");
+                                .HasColumnType("real");
 
                             b1.Property<string>("Microorganism")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<float?>("MinValue")
-                                .HasColumnType("REAL");
+                                .HasColumnType("real");
 
                             b1.Property<float?>("PercRank")
-                                .HasColumnType("REAL");
+                                .HasColumnType("real");
 
                             b1.Property<float?>("PercValue")
-                                .HasColumnType("REAL");
+                                .HasColumnType("real");
 
                             b1.Property<string>("RawData")
                                 .HasMaxLength(2048)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(2048)");
 
                             b1.Property<float?>("SDev")
-                                .HasColumnType("REAL");
+                                .HasColumnType("real");
 
                             b1.Property<int>("SensorIndex")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("StringValue")
                                 .HasMaxLength(2048)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(2048)");
 
                             b1.Property<DateTime?>("Time")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("timestamp with time zone");
 
                             b1.Property<string>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("UnitOfMeasure")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("UriValue")
                                 .HasMaxLength(2048)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(2048)");
 
                             b1.Property<float?>("Value")
-                                .HasColumnType("REAL");
+                                .HasColumnType("real");
 
                             b1.HasKey("EventId", "Index");
 
@@ -612,15 +630,15 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.Source", "Sources", b1 =>
                         {
                             b1.Property<int>("EventId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Id")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.HasKey("EventId", "Type", "Id");
 
@@ -659,112 +677,75 @@ namespace FasTnT.Sqlite.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataChildren", "Children", b1 =>
-                        {
-                            b1.Property<int>("MasterDataRequestId")
-                                .HasColumnType("INTEGER");
-
-                            b1.Property<string>("MasterDataType")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("MasterDataId")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("ChildrenId")
-                                .HasMaxLength(256)
-                                .HasColumnType("TEXT");
-
-                            b1.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
-
-                            b1.ToTable("MasterDataChildren", "Cbv");
-
-                            b1.WithOwner("MasterData")
-                                .HasForeignKey("MasterDataRequestId", "MasterDataType", "MasterDataId");
-
-                            b1.Navigation("MasterData");
-                        });
-
                     b.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataAttribute", "Attributes", b1 =>
                         {
                             b1.Property<int>("RequestId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
-                            b1.Property<string>("MasterdataType")
-                                .HasMaxLength(256)
-                                .HasColumnType("TEXT");
-
-                            b1.Property<string>("MasterdataId")
-                                .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                            b1.Property<int>("MasterDataIndex")
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Index")
                                 .HasMaxLength(256)
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("Id")
                                 .IsRequired()
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Value")
                                 .IsRequired()
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
-                            b1.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
+                            b1.HasKey("RequestId", "MasterDataIndex", "Index");
 
                             b1.ToTable("MasterDataAttribute", "Cbv");
 
                             b1.WithOwner()
-                                .HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
+                                .HasForeignKey("RequestId", "MasterDataIndex");
 
                             b1.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataField", "Fields", b2 =>
                                 {
                                     b2.Property<int>("RequestId")
-                                        .HasColumnType("INTEGER");
+                                        .HasColumnType("integer");
 
-                                    b2.Property<string>("MasterdataType")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("TEXT");
-
-                                    b2.Property<string>("MasterdataId")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("TEXT");
-
-                                    b2.Property<int>("Index")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("INTEGER");
+                                    b2.Property<int>("MasterDataIndex")
+                                        .HasColumnType("integer");
 
                                     b2.Property<int>("AttributeIndex")
                                         .HasMaxLength(256)
-                                        .HasColumnType("INTEGER");
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Index")
+                                        .HasMaxLength(256)
+                                        .HasColumnType("integer");
 
                                     b2.Property<string>("Name")
                                         .IsRequired()
                                         .HasMaxLength(256)
-                                        .HasColumnType("TEXT");
+                                        .HasColumnType("character varying(256)");
 
                                     b2.Property<string>("Namespace")
                                         .IsRequired()
                                         .HasMaxLength(256)
-                                        .HasColumnType("TEXT");
+                                        .HasColumnType("character varying(256)");
 
                                     b2.Property<int?>("ParentIndex")
                                         .HasMaxLength(256)
-                                        .HasColumnType("INTEGER");
+                                        .HasColumnType("integer");
 
                                     b2.Property<string>("Value")
                                         .HasMaxLength(256)
-                                        .HasColumnType("TEXT");
+                                        .HasColumnType("character varying(256)");
 
-                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
-
-                                    b2.HasIndex("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
+                                    b2.HasKey("RequestId", "MasterDataIndex", "AttributeIndex", "Index");
 
                                     b2.ToTable("MasterDataField", "Cbv");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
+                                        .HasForeignKey("RequestId", "MasterDataIndex", "AttributeIndex");
                                 });
 
                             b1.Navigation("Fields");
@@ -772,9 +753,18 @@ namespace FasTnT.Sqlite.Migrations
 
                     b.Navigation("Attributes");
 
-                    b.Navigation("Children");
-
                     b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataChildren", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Masterdata.MasterData", "MasterData")
+                        .WithMany("Children")
+                        .HasForeignKey("MasterDataRequestId", "MasterDataIndex")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MasterData");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Queries.StoredQuery", b =>
@@ -782,14 +772,14 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Queries.QueryParameter", "Parameters", b1 =>
                         {
                             b1.Property<int>("QueryId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("Name")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Values")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("text");
 
                             b1.HasKey("QueryId", "Name");
 
@@ -813,35 +803,35 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Events.ContactInformation", "ContactInformations", b1 =>
                         {
                             b1.Property<int>("RequestId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<short>("Type")
                                 .HasMaxLength(256)
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("smallint");
 
                             b1.Property<string>("Identifier")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Contact")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("ContactTypeIdentifier")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("EmailAddress")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("FaxNumber")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("TelephoneNumber")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.HasKey("RequestId", "Type", "Identifier");
 
@@ -859,14 +849,14 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsMany("FasTnT.Domain.Model.Queries.QueryParameter", "Parameters", b1 =>
                         {
                             b1.Property<int>("SubscriptionId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("Name")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Values")
-                                .HasColumnType("TEXT");
+                                .HasColumnType("text");
 
                             b1.HasKey("SubscriptionId", "Name");
 
@@ -879,31 +869,31 @@ namespace FasTnT.Sqlite.Migrations
                     b.OwnsOne("FasTnT.Domain.Model.Subscriptions.SubscriptionSchedule", "Schedule", b1 =>
                         {
                             b1.Property<int>("SubscriptionId")
-                                .HasColumnType("INTEGER");
+                                .HasColumnType("integer");
 
                             b1.Property<string>("DayOfMonth")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("DayOfWeek")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Hour")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Minute")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Month")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.Property<string>("Second")
                                 .HasMaxLength(256)
-                                .HasColumnType("TEXT");
+                                .HasColumnType("character varying(256)");
 
                             b1.HasKey("SubscriptionId");
 
@@ -927,6 +917,11 @@ namespace FasTnT.Sqlite.Migrations
                         .IsRequired();
 
                     b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterData", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>

@@ -1,0 +1,31 @@
+﻿<VocabularyList>
+	<Vocabulary type="urn:epcglobal:epcis:vtype:EPCClass">
+		<VocabularyElementList>
+			<VocabularyElement id="urn:epc:idpat:sgtin:0123456.012102.*">
+				<attribute id="urn:epcglobal:cbv:mda#fields">
+					<type xmlns="https://fastnt.io/epcis/ns">Field Type</type>
+					<name xmlns="https://fastnt.io/epcis/ns">Field Name</name>
+				</attribute>
+			</VocabularyElement>
+		</VocabularyElementList>
+	</Vocabulary>
+	<Vocabulary type="urn:epcglobal:epcis:vtype:BusinessLocation">
+		<VocabularyElementList>
+			<VocabularyElement id="urn:epc:id:sgln:110009698587..0">
+				<attribute id="urn:epcglobal:cbv:mda#name">LOC 1 NAME</attribute>
+				<attribute id="urn:epcglobal:cbv:mda#city">BRUSSELS</attribute>
+				<attribute id="urn:epcglobal:cbv:mda#countryCode">BE</attribute>
+			</VocabularyElement>
+			<VocabularyElement id="urn:epc:id:sgln:0123456.01234.0">
+				<attribute id="urn:epcglobal:cbv:mda#name">LOC 2 NAME</attribute>
+				<attribute id="urn:epcglobal:cbv:mda#city">NAMUR</attribute>
+				<attribute id="urn:epcglobal:cbv:mda#countryCode">BE</attribute>
+			</VocabularyElement>
+			<VocabularyElement id="urn:epc:id:sgln:0123456.01234.0">
+				<attribute id="urn:epcglobal:cbv:mda#name">LOC 2 NAME BIS</attribute>
+				<attribute id="urn:epcglobal:cbv:mda#city">NAMUR</attribute>
+				<attribute id="urn:epcglobal:cbv:mda#countryCode">BE</attribute>
+			</VocabularyElement>
+		</VocabularyElementList>
+	</Vocabulary>
+</VocabularyList>

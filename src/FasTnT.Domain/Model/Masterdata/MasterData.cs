@@ -6,6 +6,7 @@ public class MasterData
     public const string ReadPoint = "urn:epcglobal:epcis:vtype:ReadPoint";
 
     public Request Request { get; set; }
+    public int Index { get; set; }
     public string Type { get; set; }
     public string Id { get; set; }
 

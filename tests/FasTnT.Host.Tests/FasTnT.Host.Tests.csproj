@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Features\v1_2\Communication\Resources\MasterData\ValidMasterdataElement.xml" />
     <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\ObjectEvent_Full.json" />
     <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfo.json" />
     <EmbeddedResource Include="Features\v2_0\Communication\Resources\Events\ObjectEvent_StringCertificationInfo.xml" />

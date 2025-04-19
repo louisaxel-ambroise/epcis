@@ -33,6 +33,7 @@ public class MasterDataQueryContextTests
                 Masterdata = [
                     new MasterData
                     {
+                        Index = 1,
                         Id = "MD01",
                         Type = "urn:epcglobal:epcis:vtype:ReadPoint",
                         Attributes =
@@ -53,6 +54,7 @@ public class MasterDataQueryContextTests
                     },
                     new MasterData
                     {
+                        Index = 2,
                         Id = "MD03",
                         Type = "urn:epcglobal:epcis:vtype:BusinessLocation",
                         Attributes =
@@ -67,6 +69,7 @@ public class MasterDataQueryContextTests
                     },
                     new MasterData
                     {
+                        Index = 3,
                         Id = "MD02",
                         Type = "urn:epcglobal:epcis:vtype:BusinessLocation",
                         Children =
