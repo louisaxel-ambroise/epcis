@@ -3,7 +3,7 @@ name: Deploy to DEV API sandbox
 env:
   AZURE_WEBAPP_NAME: fastnt-dev 
   AZURE_WEBAPP_PACKAGE_PATH: '.' 
-  DOTNET_VERSION: '9.0'
+  DOTNET_VERSION: '10.0'
 
 on: 
   workflow_dispatch:
