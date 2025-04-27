@@ -36,11 +36,13 @@ public class EventQueryContextTests
                 Masterdata = [
                     new MasterData
                     {
+                        Index = 1,
                         Type = MasterData.Location,
                         Id = "test_location2"
                     },
                     new MasterData
                     {
+                        Index = 2,
                         Type = MasterData.Location,
                         Id = "test_location",
                         Children = [new MasterDataChildren
@@ -50,11 +52,13 @@ public class EventQueryContextTests
                     },
                     new MasterData
                     {
+                        Index = 3,
                         Type = MasterData.ReadPoint,
                         Id = "rp_test2"
                     },
                     new MasterData
                     {
+                        Index = 4,
                         Type = MasterData.ReadPoint,
                         Id = "rp_test",
                         Children = [new MasterDataChildren
