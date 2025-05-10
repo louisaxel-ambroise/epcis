@@ -27,7 +27,7 @@ internal static class QueryParameterExtensions
         return parameter.Values[0];
     }
 
-    public static string GetSimpleId(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2]; // Consider renaming, something like GetSimpleType?
+    public static string GetSimpleType(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
     public static string InnerIlmdName(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[1];
     public static string InnerIlmdNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[0];
     public static string IlmdName(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[1];
