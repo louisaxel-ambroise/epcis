@@ -140,11 +140,11 @@ internal sealed class EventQueryContext
             case var s when s.StartsWith("MATCH_"):
                 ApplyMatchParameter(param); break;
             case var s when s.StartsWith("EQ_source_"):
-                Filter(x => x.Sources.Any(s => s.Id == param.GetSimpleId() && param.Values.Contains(s.Type))); break;
+                Filter(x => x.Sources.Any(s => s.Type == param.GetSimpleType() && param.Values.Contains(s.Id))); break;
             case var s when s.StartsWith("EQ_destination_"):
-                Filter(x => x.Destinations.Any(d => d.Id == param.GetSimpleId() && param.Values.Contains(d.Type))); break;
+                Filter(x => x.Destinations.Any(d => d.Type == param.GetSimpleType() && param.Values.Contains(d.Id))); break;
             case var s when s.StartsWith("EQ_bizTransaction_"):
-                Filter(x => x.Transactions.Any(t => t.Id == param.GetSimpleId() && param.Values.Contains(t.Type))); break;
+                Filter(x => x.Transactions.Any(t => t.Type == param.GetSimpleType() && param.Values.Contains(t.Id))); break;
             case var s when s.StartsWith("EQ_INNER_ILMD_"):
                 ApplyFieldParameter(FieldType.Ilmd, true, param.InnerIlmdName(), param.InnerIlmdNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_ILMD_"):
