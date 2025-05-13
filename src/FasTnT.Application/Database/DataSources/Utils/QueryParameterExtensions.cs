@@ -36,10 +36,10 @@ internal static class QueryParameterExtensions
     public static string InnerFieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[0];
     public static string SensorFieldName(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[1];
     public static string SensorFieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[2].Split('#')[0];
-    public static FieldType SensorType(this QueryParameter parameter) => Enum.Parse<FieldType>(parameter.Name.Split('_')[1], true);
+    public static FieldType SensorType(this QueryParameter parameter) => parameter.Name.Split('_')[1].Parse<FieldType>();
     public static string InnerSensorFieldName(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[1];
     public static string InnerSensorFieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[3].Split('#')[0];
-    public static FieldType InnerSensorType(this QueryParameter parameter) => Enum.Parse<FieldType>(parameter.Name.Split('_')[2], true);
+    public static FieldType InnerSensorType(this QueryParameter parameter) => parameter.Name.Split('_')[2].Parse<FieldType>();
     public static string FieldName(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[1];
     public static string FieldNamespace(this QueryParameter parameter) => parameter.Name.Split('_')[1].Split('#')[0];
     public static string AttributeName(this QueryParameter parameter) => parameter.Name.Split('_', 3)[2];
@@ -79,21 +79,26 @@ internal static class QueryParameterExtensions
 
         return parameter.Name[..2] switch
         {
-            "GE" => Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(left, right), param),
-            "GT" => Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(left, right), param),
-            "LE" => Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(left, right), param),
-            "LT" => Expression.Lambda<Func<T, bool>>(Expression.LessThan(left, right), param),
+            "GE" => Lambda<T>(Expression.GreaterThanOrEqual(left, right), param),
+            "GT" => Lambda<T>(Expression.GreaterThan(left, right), param),
+            "LE" => Lambda<T>(Expression.LessThanOrEqual(left, right), param),
+            "LT" => Lambda<T>(Expression.LessThan(left, right), param),
             _ => throw new EpcisException(ExceptionType.QueryParameterException, $"Invalid comparison parameter: '{parameter.Name[..2]}'")
         };
     }
 
-    public static Expression<Func<T, bool>> AndAlso<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
+    private static Expression<Func<T, bool>> AndAlso<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
     {
-        return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
+        return Lambda<T>(Expression.AndAlso(expr1.Body, Expression.Invoke(expr2, expr1.Parameters)), expr1.Parameters);
     }
 
-    public static Expression<Func<T, bool>> OrElse<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
+    private static Expression<Func<T, bool>> OrElse<T>(this Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
     {
-        return Expression.Lambda<Func<T, bool>>(Expression.OrElse(expr1.Body, Expression.Invoke(expr2, expr1.Parameters[0])), expr1.Parameters[0]);
+        return Lambda<T>(Expression.OrElse(expr1.Body, Expression.Invoke(expr2, expr1.Parameters)), expr1.Parameters);
+    }
+
+    private static Expression<Func<T, bool>> Lambda<T>(BinaryExpression expr, params IEnumerable<ParameterExpression> parameters)
+    {
+        return Expression.Lambda<Func<T, bool>>(expr, parameters);
     }
 }

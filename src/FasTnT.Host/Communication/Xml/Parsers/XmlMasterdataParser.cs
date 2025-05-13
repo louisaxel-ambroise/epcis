@@ -30,7 +30,7 @@ public class XmlMasterdataParser
             Type = type,
             Id = element.Attribute("id").Value,
             Index = ++_index,
-            Attributes = element.Elements("attribute").Select(ParseVocabularyAttribute).ToList(),
+            Attributes = [.. element.Elements("attribute").Select(ParseVocabularyAttribute)],
             Children = ParseChildren(element.Element("children"))
         };
     }
@@ -49,7 +49,7 @@ public class XmlMasterdataParser
             Id = element.Attribute("id").Value,
             Index = index,
             Value = element.HasElements ? string.Empty : element.Value,
-            Fields = element.Elements().SelectMany(x => parser.ParseField(x)).ToList()
+            Fields = [.. element.Elements().SelectMany(x => parser.ParseField(x))]
         };
     }
 }

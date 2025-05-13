@@ -28,22 +28,22 @@ public static class XmlMasterdataFormatter
 
     private static XElement FormatVocabularyElementChildren(List<MasterDataChildren> children)
     {
-        return children.Any() ? new XElement("children", children.Select(x => new XElement("id", x.ChildrenId))) : null;
+        return children.Count > 0 ? new XElement("children", children.Select(x => new XElement("id", x.ChildrenId))) : null;
     }
 
     private static XElement FormatVocabularyAttribute(MasterDataAttribute attribute)
     {
-        var value = attribute.Fields.Any() ? FormatFields(attribute.Fields) : attribute.Value;
+        object value = attribute.Fields.Count > 0 ? FormatFields(attribute.Fields) : attribute.Value;
         return new XElement("attribute", new XAttribute("id", attribute.Id), value);
     }
 
-    private static object FormatFields(List<MasterDataField> fields, int? parentIndex = null)
+    private static List<XElement> FormatFields(List<MasterDataField> fields, int? parentIndex = null)
     {
         var formatted = new List<XElement>();
 
         foreach (var field in fields.Where(x => x.ParentIndex == parentIndex))
         {
-            var value = fields.Any(f => f.ParentIndex == field.Index)
+            object value = fields.Any(f => f.ParentIndex == field.Index)
                 ? FormatFields(fields, field.Index)
                 : field.Value;
 

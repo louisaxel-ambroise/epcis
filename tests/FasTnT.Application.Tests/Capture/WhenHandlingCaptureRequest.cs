@@ -19,7 +19,7 @@ public class WhenHandlingCaptureRequest
     readonly static EpcisEvents EpcisEvents = new();
     readonly static List<int> CapturedRequests = [];
 
-    [ClassCleanup]
+    [ClassCleanup(ClassCleanupBehavior.EndOfClass)]
     public static void Cleanup()
     {
         Context?.Database.EnsureDeleted();

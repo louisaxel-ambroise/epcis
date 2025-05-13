@@ -46,7 +46,7 @@ internal sealed class EventQueryContext
                 _take = Math.Min(_take ?? int.MaxValue, param.AsInt()); break;
             // Simple filters
             case "eventType":
-                Filter(x => param.Values.Select(x => Enum.Parse<EventType>(x, true)).Contains(x.Type)); break;
+                Filter(x => param.Values.Select(x => x.Parse<EventType>()).Contains(x.Type)); break;
             case "GE_eventTime":
                 Filter(x => x.EventTime >= param.AsDate()); break;
             case "LT_eventTime":
@@ -56,7 +56,7 @@ internal sealed class EventQueryContext
             case "LT_recordTime":
                 Filter(x => x.Request.RecordTime < param.AsDate()); break;
             case "EQ_action":
-                Filter(x => param.Values.Select(x => Enum.Parse<EventAction>(x, true)).Contains(x.Action)); break;
+                Filter(x => param.Values.Select(x => x.Parse<EventAction>()).Contains(x.Action)); break;
             case "EQ_bizLocation":
                 Filter(x => param.Values.Contains(x.BusinessLocation)); break;
             case "EQ_bizStep":
@@ -172,7 +172,7 @@ internal sealed class EventQueryContext
             case var s when s.StartsWith("EQ_INNER_"):
                 ApplyFieldParameter(FieldType.CustomField, true, param.InnerFieldName(), param.InnerFieldNamespace(), param.Values); break;
             case var s when s.StartsWith("EQ_value_"):
-                ApplyReportUomParameter(param.Values.Select(float.Parse).ToArray(), param.ReportFieldUom()); break;
+                ApplyReportUomParameter(param.Values.Select(float.Parse), param.ReportFieldUom()); break;
             case var s when s.StartsWith("EQ_"):
                 ApplyFieldParameter(FieldType.CustomField, false, param.FieldName(), param.FieldNamespace(), param.Values); break;
             case var s when s.StartsWith("EQATTR_"):
@@ -250,7 +250,7 @@ internal sealed class EventQueryContext
         Filter(x => x.Fields.AsQueryable().Any(filter));
     }
 
-    private void ApplyReportUomParameter(float[] values, string uom)
+    private void ApplyReportUomParameter(IEnumerable<float> values, string uom)
     {
         Filter(x => x.Reports.Any(r => r.UnitOfMeasure == uom && r.Value.HasValue && values.Contains(r.Value.Value)));
     }
