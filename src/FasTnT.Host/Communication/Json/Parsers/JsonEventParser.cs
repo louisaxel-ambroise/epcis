@@ -199,13 +199,13 @@ public class JsonEventParser
 
     private static IEnumerable<PersistentDisposition> ParsePersistentDispositions(JsonElement value)
     {
-        var parser = (JsonProperty p) => p.Value.EnumerateArray().Select(v => new PersistentDisposition
-        {
-            Type = Enum.Parse<PersistentDispositionType>(p.Name, true),
-            Id = v.GetString()
-        });
-
-        return value.EnumerateObject().SelectMany(parser);
+        return value
+            .EnumerateObject()
+            .SelectMany(p => p.Value.EnumerateArray().Select(v => new PersistentDisposition
+            {
+                Type = Enum.Parse<PersistentDispositionType>(p.Name, true),
+                Id = v.GetString()
+            }));
     }
 
     private static string ParseCertificationInfo(JsonElement value)
