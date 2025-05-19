@@ -5,7 +5,7 @@
 
 # [FasTnT EPCIS repository](https://louisaxel-ambroise.github.io/epcis/)
 
-FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and 2.0 repository written in C# using .NET8 and backed with EntityFramework Core.
+FasTnT EPCIS is a lightweight GS1 EPCIS 1.2 and 2.0 repository written in C# using .NET9 and backed with EntityFramework Core.
 
 The repository fully supports the following databases:
  - SqlServer *(provider: SqlServer)*
