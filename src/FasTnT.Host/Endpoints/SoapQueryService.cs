@@ -35,7 +35,7 @@ public static class SoapQueryService
         QueryResponse response = queryName switch
         {
             "SimpleEventQuery" => new(queryName, await handler.QueryEventsAsync(query.Parameters, cancellationToken)),
-            "SimpleMasterdataQuery" => new(queryName, await handler.QueryMasterDataAsync(query.Parameters, cancellationToken)),
+            "SimpleMasterDataQuery" => new(queryName, await handler.QueryMasterDataAsync(query.Parameters, cancellationToken)),
             _ => throw new EpcisException(ExceptionType.NoSuchNameException, $"Query '{queryName}' does not exist")
         };
 
