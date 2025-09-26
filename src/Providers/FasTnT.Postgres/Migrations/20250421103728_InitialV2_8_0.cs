@@ -595,9 +595,10 @@ namespace FasTnT.Postgres.Migrations
                 column: "Name",
                 unique: true);
 
-            migrationBuilder.Sql(@"CREATE VIEW ""Cbv"".""CurrentMasterdata""
-AS
-SELECT ""RequestId"" AS ""RequestId"", ""Type"", ""Id"" FROM ""Cbv"".""MasterData"" md WHERE ""RequestId"" = (SELECT MAX(other.""RequestId"") FROM  ""Cbv"".""MasterData"" other WHERE other.""Type"" = md.""Type"" AND other.""Id"" = md.""Id"");");
+            migrationBuilder.Sql(@"CREATE VIEW ""Cbv"".""CurrentMasterdata"" AS 
+SELECT ""RequestId"", ""Type"", ""Id"", ""Index"" 
+FROM ""Cbv"".""MasterData"" md 
+WHERE ""RequestId"" = (SELECT MAX(""RequestId"") FROM ""Cbv"".""MasterData"" other WHERE other.""Type"" = md.""Type"" AND other.""Id"" = md.""Id"");");
 
             migrationBuilder.Sql(@"CREATE VIEW ""Cbv"".""MasterdataHierarchy"" AS
 WITH RECURSIVE hierarchy(""Root"", ""Type"", ""Id"")
@@ -605,13 +606,13 @@ AS (
 	SELECT ""Id"", ""Type"", ""Id""
 	FROM ""Cbv"".""CurrentMasterdata""
 	UNION ALL
-    SELECT h.""Id"", ""MasterDataType"", ""ChildrenId""
-	SELECT [hierarchy].[Id], cur.[Type], children.[ChildrenId]FROM ""Cbv"".""MasterDataChildren"" children
+	SELECT ""hierarchy"".""Id"", cur.""Type"", children.""ChildrenId""
+    FROM ""Cbv"".""MasterDataChildren"" children
 	JOIN ""Cbv"".""CurrentMasterdata"" cur ON cur.""RequestId"" = children.""MasterDataRequestId"" AND cur.""Index"" = ""MasterDataIndex"" 
-    JOIN hierarchy h ON cur.""type"" = h.""Type"" AND cur""Id"" = h.""Id""	
+    JOIN hierarchy ON cur.""Type"" = hierarchy.""Type"" AND cur.""Id"" = hierarchy.""Id""	
 )
 SELECT ""Root"", ""Type"", ""Id"" 
-FROM hierarchy h");
+FROM ""hierarchy"";");
         }
 
         /// <inheritdoc />
