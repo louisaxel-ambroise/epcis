@@ -9,6 +9,7 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -66,10 +67,10 @@ public class WhenHandlingGetCaptureDetailQuery
     }
 
     [TestMethod]
-    public void ItShouldThrowAnExceptionIfTheCaptureDoesNotExist()
+    public async Task ItShouldThrowAnExceptionIfTheCaptureDoesNotExist()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetCaptureDetailsAsync("unknown", default));
+        await Assert.ThrowsAsync<EpcisException>(() => handler.GetCaptureDetailsAsync("unknown", default));
     }
 }

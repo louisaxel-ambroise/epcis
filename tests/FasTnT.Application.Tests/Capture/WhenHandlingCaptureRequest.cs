@@ -19,7 +19,7 @@ public class WhenHandlingCaptureRequest
     readonly static EpcisEvents EpcisEvents = new();
     readonly static List<int> CapturedRequests = [];
 
-    [ClassCleanup(ClassCleanupBehavior.EndOfClass)]
+    [ClassCleanup]
     public static void Cleanup()
     {
         Context?.Database.EnsureDeleted();
@@ -41,6 +41,6 @@ public class WhenHandlingCaptureRequest
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, Context.Set<Request>().Count());
-        Assert.AreEqual(1, CapturedRequests.Count);
+        Assert.HasCount(1, CapturedRequests);
     }
 }

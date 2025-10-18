@@ -4,6 +4,7 @@ using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
+using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -47,17 +48,17 @@ public class WhenHandlingGetQueryDetails
         var handler = new QueriesHandler(Context, UserContext);
         var result = handler.GetQueryDetailsAsync("QueryOne", CancellationToken.None).Result;
 
-        Assert.IsInstanceOfType(result, typeof(StoredQuery));
+        Assert.IsInstanceOfType<StoredQuery>(result);
 
         Assert.AreEqual("QueryOne", result.Name);
-        Assert.AreEqual(1, result.Parameters.Count);
+        Assert.HasCount(1, result.Parameters);
     }
 
     [TestMethod]
-    public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
+    public async Task ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetQueryDetailsAsync("Unknown", CancellationToken.None));
+        await Assert.ThrowsAsync<EpcisException>(() => handler.GetQueryDetailsAsync("Unknown", CancellationToken.None));
     }
 }

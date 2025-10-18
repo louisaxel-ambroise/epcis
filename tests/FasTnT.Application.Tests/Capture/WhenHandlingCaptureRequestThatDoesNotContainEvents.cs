@@ -7,6 +7,7 @@ using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -23,19 +24,11 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
     }
 
     [TestMethod]
-    [ExpectedException(typeof(EpcisException))]
-    public void ItShoultThrowAnException()
+    public async Task ItShoultThrowAnException()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
         var request = new Request { SchemaVersion = "1.0" };
 
-        try
-        {
-            var result = handler.StoreAsync(request, default).Result;
-        }
-        catch (AggregateException ex)
-        {
-            throw ex.InnerException;
-        }
+        await Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
     }
 }
