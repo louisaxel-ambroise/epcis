@@ -9,6 +9,7 @@ using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using FasTnT.Domain.Model.Queries;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -55,20 +56,20 @@ public class WhenHandlingListCaptureQuery
     }
 
     [TestMethod]
-    public void ItShouldReturnTheRequests()
+    public async Task ItShouldReturnTheRequests()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
-        var result = handler.ListCapturesAsync(Pagination.Max, default).Result;
+        var result = await handler.ListCapturesAsync(Pagination.Max, default);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(2, result.Count());
     }
 
     [TestMethod]
-    public void ItShouldApplyThePaginationPerPageFilter()
+    public async Task ItShouldApplyThePaginationPerPageFilter()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
-        var result = handler.ListCapturesAsync(new Pagination(1, 0), default).Result;
+        var result = await handler.ListCapturesAsync(new Pagination(1, 0), default);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count());
@@ -76,10 +77,10 @@ public class WhenHandlingListCaptureQuery
     }
 
     [TestMethod]
-    public void ItShouldApplyThePaginationStartFromFilter()
+    public async Task ItShouldApplyThePaginationStartFromFilter()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
-        var result = handler.ListCapturesAsync(new Pagination(int.MaxValue, 1), default).Result;
+        var result = await handler.ListCapturesAsync(new Pagination(int.MaxValue, 1), default);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count());

@@ -8,6 +8,7 @@ using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -33,11 +34,11 @@ public class WhenHandlingCaptureRequest
     }
 
     [TestMethod]
-    public void ItShouldReturnACaptureResultAndStoreTheRequest()
+    public async Task ItShouldReturnACaptureResultAndStoreTheRequest()
     {
         var handler = new CaptureHandler(Context, UserContext, EpcisEvents, Options.Create(new Constants()));
         var request = new Request { SchemaVersion = "1.0", Events = [new Event { Type = EventType.ObjectEvent }] };
-        var result = handler.StoreAsync(request, default).Result;
+        var result = await handler.StoreAsync(request, default);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, Context.Set<Request>().Count());

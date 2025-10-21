@@ -20,7 +20,7 @@ public class WhenHandlingListBizLocationsRequest
     }
 
     [ClassInitialize]
-    public void Initialize()
+    public static void Initialize(TestContext _)
     {
         Context.Add(new Domain.Model.Request
         {

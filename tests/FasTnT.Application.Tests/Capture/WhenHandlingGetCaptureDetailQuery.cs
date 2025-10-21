@@ -55,10 +55,10 @@ public class WhenHandlingGetCaptureDetailQuery
     }
 
     [TestMethod]
-    public void ItShouldReturnTheRequests()
+    public async Task ItShouldReturnTheRequests()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
-        var result = handler.GetCaptureDetailsAsync("001", default).Result;
+        var result = await handler.GetCaptureDetailsAsync("001", default);
 
         Assert.IsNotNull(result);
         Assert.AreEqual("001", result.CaptureId);
