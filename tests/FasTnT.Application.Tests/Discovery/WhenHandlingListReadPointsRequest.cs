@@ -19,7 +19,7 @@ public class WhenHandlingListReadPointsRequest
         Context?.Database.EnsureDeleted();
     }
 
-    [TestInitialize]
+    [ClassInitialize]
     public void Initialize()
     {
         Context.Add(new Domain.Model.Request
