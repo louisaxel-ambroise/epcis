@@ -11,7 +11,7 @@ namespace FasTnT.Application.Tests.Discovery;
 [TestClass]
 public class WhenHandlingListEventTypesRequest
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListReadPointsRequest));
+    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListEventTypesRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]

@@ -16,7 +16,7 @@ namespace FasTnT.Application.Tests.Capture;
 [TestClass]
 public class WhenHandlingGetCaptureDetailQuery
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListCaptureQuery));
+    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetCaptureDetailQuery));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]

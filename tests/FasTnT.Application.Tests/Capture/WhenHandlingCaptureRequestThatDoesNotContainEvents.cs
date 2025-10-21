@@ -14,7 +14,7 @@ namespace FasTnT.Application.Tests.Capture;
 [TestClass]
 public class WhenHandlingCaptureRequestThatDoesNotContainEvents
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
+    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestThatDoesNotContainEvents));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
