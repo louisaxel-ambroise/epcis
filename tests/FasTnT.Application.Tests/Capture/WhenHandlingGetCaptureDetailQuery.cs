@@ -9,13 +9,14 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
 [TestClass]
 public class WhenHandlingGetCaptureDetailQuery
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListCaptureQuery));
+    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetCaptureDetailQuery));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
@@ -54,10 +55,10 @@ public class WhenHandlingGetCaptureDetailQuery
     }
 
     [TestMethod]
-    public void ItShouldReturnTheRequests()
+    public async Task ItShouldReturnTheRequests()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
-        var result = handler.GetCaptureDetailsAsync("001", default).Result;
+        var result = await handler.GetCaptureDetailsAsync("001", default);
 
         Assert.IsNotNull(result);
         Assert.AreEqual("001", result.CaptureId);
@@ -66,10 +67,10 @@ public class WhenHandlingGetCaptureDetailQuery
     }
 
     [TestMethod]
-    public void ItShouldThrowAnExceptionIfTheCaptureDoesNotExist()
+    public async Task ItShouldThrowAnExceptionIfTheCaptureDoesNotExist()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetCaptureDetailsAsync("unknown", default));
+        await Assert.ThrowsAsync<EpcisException>(() => handler.GetCaptureDetailsAsync("unknown", default));
     }
 }

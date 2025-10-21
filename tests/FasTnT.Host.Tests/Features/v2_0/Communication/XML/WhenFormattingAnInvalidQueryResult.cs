@@ -18,6 +18,6 @@ public class WhenFormattingAnInvalidQueryResult
     [TestMethod]
     public void ItShouldThrowANotImplementedException()
     {
-        Assert.ThrowsException<NotImplementedException>(() => XmlResponseFormatter.Format(new QueryResult(Result)));
+        Assert.Throws<NotImplementedException>(() => XmlResponseFormatter.Format(new QueryResult(Result)));
     }
 }

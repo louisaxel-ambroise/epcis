@@ -4,6 +4,7 @@ using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
+using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -45,14 +46,14 @@ public class WhenHandlingStoreQuery
         Assert.IsInstanceOfType(result, typeof(StoredQuery));
 
         Assert.AreEqual("NewQuery", result.Name);
-        Assert.AreEqual(0, result.Parameters.Count);
+        Assert.IsEmpty(result.Parameters);
     }
 
     [TestMethod]
-    public void ItShouldThrowAnExceptionIfAQueryWithSameNameAlreadyExists()
+    public async Task ItShouldThrowAnExceptionIfAQueryWithSameNameAlreadyExists()
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreQueryAsync(new StoredQuery { Name = "QueryOne" }, CancellationToken.None));
+        await Assert.ThrowsAsync<EpcisException>(() => handler.StoreQueryAsync(new StoredQuery { Name = "QueryOne" }, CancellationToken.None));
     }
 }

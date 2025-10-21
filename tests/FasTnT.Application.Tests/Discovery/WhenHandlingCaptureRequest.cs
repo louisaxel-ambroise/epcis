@@ -19,8 +19,8 @@ public class WhenHandlingListEpcsRequest
         Context?.Database.EnsureDeleted();
     }
 
-    [TestInitialize]
-    public void Initialize()
+    [ClassInitialize]
+    public static void Initialize(TestContext _)
     {
         Context.Add(new Domain.Model.Request
         {

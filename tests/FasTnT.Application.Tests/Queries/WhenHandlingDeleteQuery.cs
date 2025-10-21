@@ -5,6 +5,7 @@ using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Queries;
 using FasTnT.Domain.Model.Subscriptions;
+using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -62,33 +63,33 @@ public class WhenHandlingDeleteQuery
         Assert.IsInstanceOfType(result, typeof(StoredQuery));
 
         Assert.AreEqual("QueryOne", result.Name);
-        Assert.AreEqual(1, result.Parameters.Count);
+        Assert.HasCount(1, result.Parameters);
         Assert.AreEqual(0, Context.Set<StoredQuery>().Count(x => x.Name == "QueryOne"));
     }
 
     [TestMethod]
-    public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
+    public async Task ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("Unknown", CancellationToken.None));
+        await Assert.ThrowsAsync<EpcisException>(() => handler.DeleteQueryAsync("Unknown", CancellationToken.None));
     }
 
     [TestMethod]
-    public void ItShouldThrowAnExceptionIfTheQueryHasSubscription()
+    public async Task ItShouldThrowAnExceptionIfTheQueryHasSubscription()
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("WithSubscription", CancellationToken.None));
+        await Assert.ThrowsAsync<EpcisException>(() => handler.DeleteQueryAsync("WithSubscription", CancellationToken.None));
         Assert.AreEqual(1, Context.Set<StoredQuery>().Count(x => x.Name == "WithSubscription"));
     }
 
     [TestMethod]
-    public void ItShouldThrowAnExceptionIfTheQUeryWasCreatedByAnotherUser()
+    public async Task ItShouldThrowAnExceptionIfTheQUeryWasCreatedByAnotherUser()
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("FromOtherUser", CancellationToken.None));
+        await Assert.ThrowsAsync<EpcisException>(() => handler.DeleteQueryAsync("FromOtherUser", CancellationToken.None));
         Assert.AreEqual(1, Context.Set<StoredQuery>().Count(x => x.Name == "FromOtherUser"));
     }
 }

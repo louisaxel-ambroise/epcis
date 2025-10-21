@@ -62,8 +62,8 @@ public class SubscriptionRunnerTests
         var result = SubscriptionRunner.ExecuteAsync(context, CancellationToken.None).Result;
 
         Assert.IsTrue(result.Successful);
-        Assert.AreEqual(1, result.Events.Count);
-        Assert.AreEqual(1, result.RequestIds.Count);
+        Assert.HasCount(1, result.Events);
+        Assert.HasCount(1, result.RequestIds);
         Assert.IsNull(result.Exception);
     }
 
@@ -74,8 +74,8 @@ public class SubscriptionRunnerTests
         var result = SubscriptionRunner.ExecuteAsync(context, CancellationToken.None).Result;
 
         Assert.IsTrue(result.Successful);
-        Assert.AreEqual(0, result.Events.Count);
-        Assert.AreEqual(1, result.RequestIds.Count);
+        Assert.IsEmpty(result.Events);
+        Assert.HasCount(1, result.RequestIds);
         Assert.IsNull(result.Exception);
     }
 

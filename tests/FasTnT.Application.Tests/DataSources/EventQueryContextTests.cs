@@ -134,10 +134,10 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldReturnTheStoredEvents()
     {
-        var result = Context.QueryEvents(Array.Empty<QueryParameter>()).ToList();
+        var result = Context.QueryEvents([]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        Assert.HasCount(2, result);
     }
 
     [TestMethod]
@@ -146,7 +146,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([new QueryParameter { Name = "eventCountLimit", Values = ["1"] }]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
     }
 
     [TestMethod]
@@ -155,7 +155,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([new QueryParameter { Name = "maxEventCount", Values = ["1"] }]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
     }
 
     [TestMethod]
@@ -164,7 +164,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("eventType", "ObjectEvent")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.Type == EventType.ObjectEvent));
     }
 
@@ -174,7 +174,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("GE_eventTime", "2021-01-12T10:24:10Z")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.EventTime >= new DateTime(2021, 01, 12, 10, 24, 10)));
     }
 
@@ -184,7 +184,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("LT_eventTime", "2021-01-12T10:24:10Z")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.EventTime < new DateTime(2021, 01, 12, 10, 24, 10)));
     }
 
@@ -194,7 +194,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("GE_recordTime", "2021-03-12T10:24:10Z")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Count);
+        Assert.IsEmpty(result);
         Assert.IsTrue(result.All(x => x.Request.RecordTime >= new DateTime(2021, 03, 12, 10, 24, 10)));
     }
 
@@ -204,7 +204,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("LT_recordTime", "2021-03-12T10:24:10Z")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        Assert.HasCount(2, result);
         Assert.IsTrue(result.All(x => x.Request.RecordTime < new DateTime(2021, 03, 12, 10, 24, 10)));
     }
 
@@ -214,7 +214,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_action", "ADD")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.Action == EventAction.Add));
     }
 
@@ -224,7 +224,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_bizLocation", "test_location", "test_location2")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        Assert.HasCount(2, result);
         Assert.IsTrue(result.All(x => x.BusinessLocation == "test_location" || x.BusinessLocation == "test_location2"));
     }
 
@@ -234,7 +234,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_bizStep", "step")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.BusinessStep == "step"));
     }
 
@@ -244,7 +244,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_disposition", "disposition")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.Disposition == "disposition"));
     }
 
@@ -274,7 +274,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("nextPageToken", "1")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
     }
 
     [TestMethod]
@@ -283,7 +283,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("perPage", "1")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
     }
 
     [TestMethod]
@@ -292,7 +292,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_eventID", "ni://test")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.EventId == "ni://test"));
     }
 
@@ -302,7 +302,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_readPoint", "rp_test")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.ReadPoint == "rp_test"));
     }
 
@@ -312,7 +312,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_transformationID", "transformationIdEvent")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.ReadPoint == "rp_test"));
     }
 
@@ -322,7 +322,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EXISTS_errorDeclaration", "")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.CorrectiveDeclarationTime.HasValue));
     }
 
@@ -332,7 +332,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_errorReason", "invalid_evt")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.CorrectiveReason == "invalid_evt"));
     }
 
@@ -342,7 +342,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_correctiveEventID", "ni://test2")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.CorrectiveEventIds.Any(c => c.CorrectiveId == "ni://test2")));
     }
 
@@ -352,7 +352,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_requestID", "1")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        Assert.HasCount(2, result);
     }
 
     [TestMethod]
@@ -361,7 +361,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("EQ_captureID", "capture_id_test")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        Assert.HasCount(2, result);
     }
 
     [TestMethod]
@@ -370,7 +370,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("GE_INNER_ILMD_test#numeric", "5")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.Fields.Any(f => f.Namespace == "test" && f.Name == "numeric" && f.ParentIndex.HasValue && f.NumericValue >= 5)));
     }
 
@@ -380,7 +380,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("LT_ILMD_test#numeric", "3")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.Fields.Any(f => f.Namespace == "test" && f.Name == "numeric" && !f.ParentIndex.HasValue && f.NumericValue < 3)));
     }
 
@@ -390,7 +390,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("MATCH_anyEPC", "epc.*")]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.IsTrue(result.All(x => x.Epcs.Any(e => e.Id.StartsWith("epc."))));
     }
 
@@ -403,7 +403,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("WD_bizLocation", value)]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(expected, result.Count);
+        Assert.HasCount(expected, result);
     }
 
     [TestMethod]
@@ -415,7 +415,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("WD_readPoint", value)]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(expected, result.Count);
+        Assert.HasCount(expected, result);
     }
 
     [TestMethod]
@@ -431,7 +431,7 @@ public class EventQueryContextTests
     {
         if (throws)
         {
-            Assert.ThrowsException<EpcisException>(() => Context.QueryEvents([new QueryParameter { Name = paramName, Values = ["value"] }]).ToList());
+            Assert.Throws<EpcisException>(() => Context.QueryEvents([new QueryParameter { Name = paramName, Values = ["value"] }]).ToList());
         }
         else
         {
@@ -450,7 +450,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("GE_errorDeclarationTime", value)]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(expectedEvents, result.Count);
+        Assert.HasCount(expectedEvents, result);
         Assert.IsTrue(result.All(x => x.CorrectiveDeclarationTime >= DateTime.Parse(value).ToUniversalTime()));
     }
 
@@ -463,7 +463,7 @@ public class EventQueryContextTests
         var result = Context.QueryEvents([QueryParameter.Create("LT_errorDeclarationTime", value)]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(expectedEvents, result.Count);
+        Assert.HasCount(expectedEvents, result);
         Assert.IsTrue(result.All(x => x.CorrectiveDeclarationTime < DateTime.Parse(value).ToUniversalTime()));
     }
 }
