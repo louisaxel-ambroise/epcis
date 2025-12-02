@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /epcis
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /epcis
 COPY ["src/FasTnT.Host/", "FasTnT.Host/"]
 COPY ["src/FasTnT.Application/", "FasTnT.Application/"]

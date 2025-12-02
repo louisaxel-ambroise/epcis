@@ -44,7 +44,7 @@ public class WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid
             Events = [new Event { Type = EventType.ObjectEvent }]
         };
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
+        Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
         Assert.AreEqual(0, CapturedRequests.Count);
     }

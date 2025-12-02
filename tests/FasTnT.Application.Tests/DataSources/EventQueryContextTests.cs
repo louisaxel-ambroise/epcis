@@ -427,7 +427,7 @@ public class EventQueryContextTests
     {
         if (throws)
         {
-            Assert.ThrowsException<EpcisException>(() => Context.QueryEvents([new QueryParameter { Name = paramName, Values = ["value"] }]).ToList());
+            Assert.Throws<EpcisException>(() => Context.QueryEvents([new QueryParameter { Name = paramName, Values = ["value"] }]).ToList());
         }
         else
         {

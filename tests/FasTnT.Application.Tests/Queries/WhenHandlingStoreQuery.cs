@@ -53,6 +53,6 @@ public class WhenHandlingStoreQuery
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreQueryAsync(new StoredQuery { Name = "QueryOne" }, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.StoreQueryAsync(new StoredQuery { Name = "QueryOne" }, CancellationToken.None));
     }
 }

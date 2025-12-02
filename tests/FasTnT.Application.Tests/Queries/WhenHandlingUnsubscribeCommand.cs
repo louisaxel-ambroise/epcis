@@ -54,6 +54,6 @@ public class WhenHandlingUnsubscribeCommand
         var subscription = "UnknownSubscription";
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), EpcisEvents);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
     }
 }

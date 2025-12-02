@@ -71,7 +71,7 @@ public class WhenHandlingDeleteQuery
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("Unknown", CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.DeleteQueryAsync("Unknown", CancellationToken.None));
     }
 
     [TestMethod]
@@ -79,7 +79,7 @@ public class WhenHandlingDeleteQuery
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("WithSubscription", CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.DeleteQueryAsync("WithSubscription", CancellationToken.None));
         Assert.AreEqual(1, Context.Set<StoredQuery>().Count(x => x.Name == "WithSubscription"));
     }
 
@@ -88,7 +88,7 @@ public class WhenHandlingDeleteQuery
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.DeleteQueryAsync("FromOtherUser", CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.DeleteQueryAsync("FromOtherUser", CancellationToken.None));
         Assert.AreEqual(1, Context.Set<StoredQuery>().Count(x => x.Name == "FromOtherUser"));
     }
 }

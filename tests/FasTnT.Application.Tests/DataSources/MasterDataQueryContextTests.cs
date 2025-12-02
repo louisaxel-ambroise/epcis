@@ -183,7 +183,7 @@ public class MasterDataQueryContextTests
     {
         if (throws)
         {
-            Assert.ThrowsException<EpcisException>(() => Context.QueryMasterData([new QueryParameter { Name = paramName, Values = [paramValue] }]).ToList());
+            Assert.Throws<EpcisException>(() => Context.QueryMasterData([new QueryParameter { Name = paramName, Values = [paramValue] }]).ToList());
         }
         else
         {

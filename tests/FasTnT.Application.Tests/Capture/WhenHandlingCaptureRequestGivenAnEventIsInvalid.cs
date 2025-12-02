@@ -39,7 +39,7 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
         var handler = new CaptureHandler(Context, UserContext, EpcisEvents, Options.Create(new Constants()));
         var request = new Request { SchemaVersion = "1.0", Events = [new Event { Type = EventType.AggregationEvent, Action = EventAction.Add }] }; // Does not have parent -> invalid event
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.StoreAsync(request, default));
+        Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
         Assert.AreEqual(0, CapturedRequests.Count);
     }

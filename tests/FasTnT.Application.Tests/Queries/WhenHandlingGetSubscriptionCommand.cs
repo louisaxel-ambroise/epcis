@@ -48,6 +48,6 @@ public class WhenHandlingGetSubscriptionCommand
     public void ItShouldThrowAnExceptionIfTheSubscriptionDoesNotExists()
     {
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetSubscriptionDetailsAsync("UnknownSubscription", CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.GetSubscriptionDetailsAsync("UnknownSubscription", CancellationToken.None));
     }
 }

@@ -58,6 +58,6 @@ public class WhenHandlingGetQueryDetails
     {
         var handler = new QueriesHandler(Context, UserContext);
 
-        Assert.ThrowsExceptionAsync<EpcisException>(() => handler.GetQueryDetailsAsync("Unknown", CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.GetQueryDetailsAsync("Unknown", CancellationToken.None));
     }
 }
