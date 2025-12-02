@@ -4,7 +4,6 @@ using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -46,15 +45,15 @@ public class WhenHandlingUnsubscribeCommand
         handler.DeleteSubscriptionAsync(subscription, CancellationToken.None).Wait();
 
         Assert.AreEqual(0, Context.Set<Subscription>().Count());
-        Assert.HasCount(1, RemovedSubscriptions);
+        Assert.AreEqual(1, RemovedSubscriptions.Count);
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameDoesNotExist()
+    public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameDoesNotExist()
     {
         var subscription = "UnknownSubscription";
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), EpcisEvents);
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.DeleteSubscriptionAsync(subscription, CancellationToken.None));
     }
 }

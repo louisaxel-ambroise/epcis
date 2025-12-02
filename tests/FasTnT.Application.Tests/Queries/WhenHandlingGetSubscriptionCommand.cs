@@ -4,7 +4,6 @@ using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -46,9 +45,9 @@ public class WhenHandlingGetSubscriptionCommand
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfTheSubscriptionDoesNotExists()
+    public void ItShouldThrowAnExceptionIfTheSubscriptionDoesNotExists()
     {
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
-        await Assert.ThrowsAsync<EpcisException>(() => handler.GetSubscriptionDetailsAsync("UnknownSubscription", CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.GetSubscriptionDetailsAsync("UnknownSubscription", CancellationToken.None));
     }
 }

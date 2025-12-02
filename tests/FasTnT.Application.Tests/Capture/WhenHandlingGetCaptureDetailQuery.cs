@@ -9,7 +9,6 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -55,10 +54,10 @@ public class WhenHandlingGetCaptureDetailQuery
     }
 
     [TestMethod]
-    public async Task ItShouldReturnTheRequests()
+    public void ItShouldReturnTheRequests()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
-        var result = await handler.GetCaptureDetailsAsync("001", default);
+        var result = handler.GetCaptureDetailsAsync("001", default).Result;
 
         Assert.IsNotNull(result);
         Assert.AreEqual("001", result.CaptureId);
@@ -67,10 +66,10 @@ public class WhenHandlingGetCaptureDetailQuery
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfTheCaptureDoesNotExist()
+    public void ItShouldThrowAnExceptionIfTheCaptureDoesNotExist()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.GetCaptureDetailsAsync("unknown", default));
+        Assert.ThrowsAsync<EpcisException>(() => handler.GetCaptureDetailsAsync("unknown", default));
     }
 }

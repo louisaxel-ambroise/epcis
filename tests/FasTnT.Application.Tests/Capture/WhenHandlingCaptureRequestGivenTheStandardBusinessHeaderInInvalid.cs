@@ -9,7 +9,6 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -35,7 +34,7 @@ public class WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionAnNotCaptureTheRequest()
+    public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
         var handler = new CaptureHandler(Context, UserContext, EpcisEvents, Options.Create(new Constants()));
         var request = new Request
@@ -45,8 +44,8 @@ public class WhenHandlingCaptureRequestGivenTheStandardBusinessHeaderInInvalid
             Events = [new Event { Type = EventType.ObjectEvent }]
         };
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
+        Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
-        Assert.IsEmpty(CapturedRequests);
+        Assert.AreEqual(0, CapturedRequests.Count);
     }
 }
