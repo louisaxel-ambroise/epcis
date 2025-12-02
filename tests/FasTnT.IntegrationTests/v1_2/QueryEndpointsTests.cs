@@ -77,12 +77,12 @@ public class QueryEndpointsTests
     }
 
     [TestMethod]
-    public void PollQuerySimpleMasterdataQueryShouldReturnAPollResult()
+    public void PollQuerySimpleMasterDataQueryShouldReturnAPollResult()
     {
         var request = @"<soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:urn=""urn:epcglobal:epcis-query:xsd:1"">
   <soapenv:Body>
     <urn:Poll>
-    	<queryName>SimpleMasterdataQuery</queryName>
+    	<queryName>SimpleMasterDataQuery</queryName>
     	<params>
     	</params>
 	</urn:Poll>

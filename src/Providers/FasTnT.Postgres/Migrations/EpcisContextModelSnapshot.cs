@@ -17,7 +17,7 @@ namespace FasTnT.Postgres.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "9.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -92,22 +92,45 @@ namespace FasTnT.Postgres.Migrations
                     b.Property<int>("RequestId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Type")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                    b.Property<int>("Index")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Id")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.HasKey("RequestId", "Type", "Id");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("RequestId", "Index");
 
                     b.ToTable("MasterData", "Cbv");
 
                     b.ToView("CurrentMasterdata", "Cbv");
                 });
 
-            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataHierarchy", b =>
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataChildren", b =>
+                {
+                    b.Property<int>("MasterDataRequestId")
+                        .HasMaxLength(256)
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MasterDataIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChildrenId")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("MasterDataRequestId", "MasterDataIndex", "ChildrenId");
+
+                    b.ToTable("MasterDataChildren", "Cbv");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterdataHierarchy", b =>
                 {
                     b.Property<string>("Id")
                         .IsRequired()
@@ -123,7 +146,7 @@ namespace FasTnT.Postgres.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("MasterDataHierarchy", "Cbv");
+                    b.ToView("MasterdataHierarchy", "Cbv");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Queries.StoredQuery", b =>
@@ -651,43 +674,13 @@ namespace FasTnT.Postgres.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataChildren", "Children", b1 =>
-                        {
-                            b1.Property<int>("MasterDataRequestId")
-                                .HasColumnType("integer");
-
-                            b1.Property<string>("MasterDataType")
-                                .HasColumnType("character varying(256)");
-
-                            b1.Property<string>("MasterDataId")
-                                .HasColumnType("character varying(256)");
-
-                            b1.Property<string>("ChildrenId")
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
-
-                            b1.HasKey("MasterDataRequestId", "MasterDataType", "MasterDataId", "ChildrenId");
-
-                            b1.ToTable("MasterDataChildren", "Cbv");
-
-                            b1.WithOwner("MasterData")
-                                .HasForeignKey("MasterDataRequestId", "MasterDataType", "MasterDataId");
-
-                            b1.Navigation("MasterData");
-                        });
-
                     b.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataAttribute", "Attributes", b1 =>
                         {
                             b1.Property<int>("RequestId")
                                 .HasColumnType("integer");
 
-                            b1.Property<string>("MasterdataType")
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
-
-                            b1.Property<string>("MasterdataId")
-                                .HasMaxLength(256)
-                                .HasColumnType("character varying(256)");
+                            b1.Property<int>("MasterDataIndex")
+                                .HasColumnType("integer");
 
                             b1.Property<int>("Index")
                                 .HasMaxLength(256)
@@ -703,31 +696,26 @@ namespace FasTnT.Postgres.Migrations
                                 .HasMaxLength(256)
                                 .HasColumnType("character varying(256)");
 
-                            b1.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
+                            b1.HasKey("RequestId", "MasterDataIndex", "Index");
 
                             b1.ToTable("MasterDataAttribute", "Cbv");
 
                             b1.WithOwner()
-                                .HasForeignKey("RequestId", "MasterdataType", "MasterdataId");
+                                .HasForeignKey("RequestId", "MasterDataIndex");
 
                             b1.OwnsMany("FasTnT.Domain.Model.Masterdata.MasterDataField", "Fields", b2 =>
                                 {
                                     b2.Property<int>("RequestId")
                                         .HasColumnType("integer");
 
-                                    b2.Property<string>("MasterdataType")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<string>("MasterdataId")
-                                        .HasMaxLength(256)
-                                        .HasColumnType("character varying(256)");
-
-                                    b2.Property<int>("Index")
-                                        .HasMaxLength(256)
+                                    b2.Property<int>("MasterDataIndex")
                                         .HasColumnType("integer");
 
                                     b2.Property<int>("AttributeIndex")
+                                        .HasMaxLength(256)
+                                        .HasColumnType("integer");
+
+                                    b2.Property<int>("Index")
                                         .HasMaxLength(256)
                                         .HasColumnType("integer");
 
@@ -749,14 +737,12 @@ namespace FasTnT.Postgres.Migrations
                                         .HasMaxLength(256)
                                         .HasColumnType("character varying(256)");
 
-                                    b2.HasKey("RequestId", "MasterdataType", "MasterdataId", "Index");
-
-                                    b2.HasIndex("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
+                                    b2.HasKey("RequestId", "MasterDataIndex", "AttributeIndex", "Index");
 
                                     b2.ToTable("MasterDataField", "Cbv");
 
                                     b2.WithOwner()
-                                        .HasForeignKey("RequestId", "MasterdataType", "MasterdataId", "AttributeIndex");
+                                        .HasForeignKey("RequestId", "MasterDataIndex", "AttributeIndex");
                                 });
 
                             b1.Navigation("Fields");
@@ -764,9 +750,18 @@ namespace FasTnT.Postgres.Migrations
 
                     b.Navigation("Attributes");
 
-                    b.Navigation("Children");
-
                     b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterDataChildren", b =>
+                {
+                    b.HasOne("FasTnT.Domain.Model.Masterdata.MasterData", "MasterData")
+                        .WithMany("Children")
+                        .HasForeignKey("MasterDataRequestId", "MasterDataIndex")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MasterData");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Queries.StoredQuery", b =>
@@ -919,6 +914,11 @@ namespace FasTnT.Postgres.Migrations
                         .IsRequired();
 
                     b.Navigation("Request");
+                });
+
+            modelBuilder.Entity("FasTnT.Domain.Model.Masterdata.MasterData", b =>
+                {
+                    b.Navigation("Children");
                 });
 
             modelBuilder.Entity("FasTnT.Domain.Model.Request", b =>

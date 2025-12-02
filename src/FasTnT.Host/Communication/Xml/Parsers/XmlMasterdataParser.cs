@@ -8,10 +8,12 @@ public class XmlMasterdataParser
 
     public static IEnumerable<MasterData> ParseMasterdata(XElement root)
     {
-        return root.Elements("Vocabulary").SelectMany(ParseVocabulary);
+        var parser = new XmlMasterdataParser();
+
+        return root.Elements("Vocabulary").SelectMany(parser.ParseVocabulary);
     }
 
-    private static IEnumerable<MasterData> ParseVocabulary(XElement element)
+    private IEnumerable<MasterData> ParseVocabulary(XElement element)
     {
         var type = element.Attribute("type").Value;
 
@@ -21,36 +23,42 @@ public class XmlMasterdataParser
             ?.Select(x => ParseVocabularyElement(x, type));
     }
 
-    private static MasterData ParseVocabularyElement(XElement element, string type)
+    private MasterData ParseVocabularyElement(XElement element, string type)
     {
-        var parser = new XmlMasterdataParser();
-
         return new()
         {
             Type = type,
             Id = element.Attribute("id").Value,
-            Attributes = element.Elements("attribute").Select(parser.ParseVocabularyAttribute).ToList(),
+            Index = ++_index,
+            Attributes = [.. element.Elements("attribute").Select(ParseVocabularyAttribute)],
             Children = ParseChildren(element.Element("children"))
         };
     }
 
-    private static List<MasterDataChildren> ParseChildren(XElement element)
+    internal static List<MasterDataChildren> ParseChildren(XElement element)
     {
         return element?.Elements("id")?.Select(x => new MasterDataChildren { ChildrenId = x.Value })?.ToList() ?? [];
     }
 
-    private MasterDataAttribute ParseVocabularyAttribute(XElement element)
+    internal static MasterDataAttribute ParseVocabularyAttribute(XElement element, int index)
     {
+        var parser = new XmlMasterdataFieldParser();
+
         return new()
         {
             Id = element.Attribute("id").Value,
-            Index = ++_index,
+            Index = index,
             Value = element.HasElements ? string.Empty : element.Value,
-            Fields = element.Elements().SelectMany(x => ParseField(x)).ToList()
+            Fields = [.. element.Elements().SelectMany(x => parser.ParseField(x))]
         };
     }
+}
 
-    private List<MasterDataField> ParseField(XElement element, int? parentIndex = null)
+internal class XmlMasterdataFieldParser
+{
+    private int _index;
+
+    internal List<MasterDataField> ParseField(XElement element, int? parentIndex = null)
     {
         var result = new List<MasterDataField>
         {

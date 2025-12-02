@@ -33,6 +33,7 @@ public class MasterDataQueryContextTests
                 Masterdata = [
                     new MasterData
                     {
+                        Index = 1,
                         Id = "MD01",
                         Type = "urn:epcglobal:epcis:vtype:ReadPoint",
                         Attributes =
@@ -53,6 +54,7 @@ public class MasterDataQueryContextTests
                     },
                     new MasterData
                     {
+                        Index = 2,
                         Id = "MD03",
                         Type = "urn:epcglobal:epcis:vtype:BusinessLocation",
                         Attributes =
@@ -67,6 +69,7 @@ public class MasterDataQueryContextTests
                     },
                     new MasterData
                     {
+                        Index = 3,
                         Id = "MD02",
                         Type = "urn:epcglobal:epcis:vtype:BusinessLocation",
                         Children =
@@ -105,7 +108,7 @@ public class MasterDataQueryContextTests
         var result = Context.QueryMasterData(Array.Empty<QueryParameter>()).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(3, result.Count);
+        Assert.HasCount(3, result);
     }
 
     [TestMethod]
@@ -114,7 +117,7 @@ public class MasterDataQueryContextTests
         var result = Context.QueryMasterData([new QueryParameter { Name = "maxElementCount", Values = ["1"] }]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
     }
 
     [TestMethod]
@@ -123,7 +126,7 @@ public class MasterDataQueryContextTests
         var result = Context.QueryMasterData([new QueryParameter { Name = "vocabularyName", Values = ["urn:epcglobal:epcis:vtype:ReadPoint"] }]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual("urn:epcglobal:epcis:vtype:ReadPoint", result.Single().Type);
     }
 
@@ -133,7 +136,7 @@ public class MasterDataQueryContextTests
         var result = Context.QueryMasterData([new QueryParameter { Name = "EQ_name", Values = ["MD02"] }]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
         Assert.AreEqual("MD02", result.Single().Id);
     }
 
@@ -143,7 +146,7 @@ public class MasterDataQueryContextTests
         var result = Context.QueryMasterData([new QueryParameter { Name = "WD_name", Values = ["MD03"] }]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count);
+        Assert.HasCount(2, result);
         Assert.IsTrue(result.Any(x => x.Id == "MD02"));
         Assert.IsTrue(result.Any(x => x.Id == "MD03"));
     }
@@ -154,7 +157,7 @@ public class MasterDataQueryContextTests
         var result = Context.QueryMasterData([new QueryParameter { Name = "HASATTR", Values = ["MD2AT1"] }]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count);
+        Assert.HasCount(1, result);
     }
 
     [TestMethod]
@@ -165,7 +168,7 @@ public class MasterDataQueryContextTests
         var result = Context.QueryMasterData([new QueryParameter { Name = $"EQATTR_{paramName}", Values = [value] }]).ToList();
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(expectedResult, result.Count);
+        Assert.HasCount(expectedResult, result);
     }
 
     [TestMethod]

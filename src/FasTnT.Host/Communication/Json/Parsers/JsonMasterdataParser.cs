@@ -30,12 +30,12 @@ public class JsonMasterdataParser
     {
         var type = _element.GetProperty("type").GetString();
 
-        return _element.GetProperty("vocabularyElementList").EnumerateArray().Select(x => ParseVocabularyElement(x, type));
+        return _element.GetProperty("vocabularyElementList").EnumerateArray().Select((x, i) => ParseVocabularyElement(x, i, type));
     }
 
-    private MasterData ParseVocabularyElement(JsonElement element, string type)
+    private MasterData ParseVocabularyElement(JsonElement element, int index, string type)
     {
-        var masterdata = new MasterData { Type = type };
+        var masterdata = new MasterData { Type = type, Index = index-1 };
 
         foreach (var property in element.EnumerateObject())
         {
@@ -55,11 +55,12 @@ public class JsonMasterdataParser
         return masterdata;
     }
 
-    private MasterDataAttribute ParseVocabularyAttribute(JsonElement element)
+    private MasterDataAttribute ParseVocabularyAttribute(JsonElement element, int index)
     {
         return new()
         {
             Id = element.GetProperty("id").GetString(),
+            Index = index,
             Value = element.GetProperty("attribute").ValueKind == JsonValueKind.Object ? string.Empty : element.GetProperty("attribute").GetString(),
             Fields = ParseFields(element.GetProperty("attribute")),
         };
@@ -85,8 +86,8 @@ public class JsonMasterdataParser
                 Name = name,
                 Namespace = ns,
                 ParentIndex = parentIndex
-
             });
+
             result.AddRange(ParseFields(property.Value, _index));
         }
 
