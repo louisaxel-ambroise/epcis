@@ -7,14 +7,13 @@ using FasTnT.Domain;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
 [TestClass]
 public class WhenHandlingCaptureRequestThatDoesNotContainEvents
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestThatDoesNotContainEvents));
+    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
@@ -24,11 +23,11 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
     }
 
     [TestMethod]
-    public async Task ItShoultThrowAnException()
+    public void ItShoultThrowAnException()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
         var request = new Request { SchemaVersion = "1.0" };
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
+        Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
     }
 }

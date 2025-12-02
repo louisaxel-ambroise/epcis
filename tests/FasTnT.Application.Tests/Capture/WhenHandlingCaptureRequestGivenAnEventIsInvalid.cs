@@ -9,7 +9,6 @@ using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
 using FasTnT.Domain.Model.Events;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Capture;
 
@@ -35,13 +34,13 @@ public class WhenHandlingCaptureRequestGivenAnEventIsInvalid
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionAnNotCaptureTheRequest()
+    public void ItShouldThrowAnExceptionAnNotCaptureTheRequest()
     {
         var handler = new CaptureHandler(Context, UserContext, EpcisEvents, Options.Create(new Constants()));
         var request = new Request { SchemaVersion = "1.0", Events = [new Event { Type = EventType.AggregationEvent, Action = EventAction.Add }] }; // Does not have parent -> invalid event
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
+        Assert.ThrowsAsync<EpcisException>(() => handler.StoreAsync(request, default));
         Assert.AreEqual(0, Context.Set<Request>().Count());
-        Assert.IsEmpty(CapturedRequests);
+        Assert.AreEqual(0, CapturedRequests.Count);
     }
 }

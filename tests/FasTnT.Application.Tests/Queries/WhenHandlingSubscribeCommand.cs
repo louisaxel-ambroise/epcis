@@ -4,7 +4,6 @@ using FasTnT.Application.Services.Notifications;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
-using System.Threading.Tasks;
 
 namespace FasTnT.Application.Tests.Queries;
 
@@ -52,7 +51,7 @@ public class WhenHandlingSubscribeCommand
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameAlreadyExist()
+    public void ItShouldThrowAnExceptionIfASubscriptionWithTheSameNameAlreadyExist()
     {
         var subscription = new Subscription
         {
@@ -64,11 +63,11 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfTheSubscriptionHasEmptyDestination()
+    public void ItShouldThrowAnExceptionIfTheSubscriptionHasEmptyDestination()
     {
         var subscription = new Subscription
         {
@@ -80,11 +79,11 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfTheTriggerIsInvalid()
+    public void ItShouldThrowAnExceptionIfTheTriggerIsInvalid()
     {
         var subscription = new Subscription
         {
@@ -96,11 +95,11 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfTheSubscriptionHasNoScheduleOrTrigger()
+    public void ItShouldThrowAnExceptionIfTheSubscriptionHasNoScheduleOrTrigger()
     {
         var subscription = new Subscription
         {
@@ -111,11 +110,11 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfTheSpecifiedQueryNameDoesNotExist()
+    public void ItShouldThrowAnExceptionIfTheSpecifiedQueryNameDoesNotExist()
     {
         var subscription = new Subscription
         {
@@ -125,11 +124,11 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 
     [TestMethod]
-    public async Task ItShouldThrowAnExceptionIfTheSpecifiedQueryDoesNotAllowSubscription()
+    public void ItShouldThrowAnExceptionIfTheSpecifiedQueryDoesNotAllowSubscription()
     {
         var subscription = new Subscription
         {
@@ -139,6 +138,6 @@ public class WhenHandlingSubscribeCommand
         };
         var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
 
-        await Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
+        Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
 }
