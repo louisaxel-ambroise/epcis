@@ -13,7 +13,7 @@ namespace FasTnT.Application.Tests.Capture;
 [TestClass]
 public class WhenHandlingCaptureRequestThatDoesNotContainEvents
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequest));
+    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingCaptureRequestThatDoesNotContainEvents));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
@@ -23,7 +23,7 @@ public class WhenHandlingCaptureRequestThatDoesNotContainEvents
     }
 
     [TestMethod]
-    public void ItShoultThrowAnException()
+    public void ItShouldThrowAnException()
     {
         var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
         var request = new Request { SchemaVersion = "1.0" };
