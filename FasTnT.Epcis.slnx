@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Providers/">
+    <Project Path="src/Providers/FasTnT.Postgres/FasTnT.Postgres.csproj" />
+    <Project Path="src/Providers/FasTnT.Sqlite/FasTnT.Sqlite.csproj" />
+    <Project Path="src/Providers/FasTnT.SqlServer/FasTnT.SqlServer.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="tests/FasTnT.Application.Tests/FasTnT.Application.Tests.csproj" />
+    <Project Path="tests/FasTnT.Host.Tests/FasTnT.Host.Tests.csproj" />
+    <Project Path="tests/FasTnT.IntegrationTests/FasTnT.IntegrationTests.csproj" />
+  </Folder>
+  <Project Path="src/FasTnT.Application/FasTnT.Application.csproj" />
+  <Project Path="src/FasTnT.Domain/FasTnT.Domain.csproj" />
+  <Project Path="src/FasTnT.Host/FasTnT.Host.csproj" />
+</Solution>
