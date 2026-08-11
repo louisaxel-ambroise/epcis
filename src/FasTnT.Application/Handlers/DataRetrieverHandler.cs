@@ -40,7 +40,7 @@ public sealed class DataRetrieverHandler(EpcisContext context, ICurrentUser user
             .Where(x => eventIds.Contains(x.Id))
             .ToListAsync(cancellationToken);
 
-        return new(events.OrderBy(e => eventIds.IndexOf(e.Id)));
+        return [.. events.OrderBy(e => eventIds.IndexOf(e.Id))];
     }
 
     public async Task<List<MasterData>> QueryMasterDataAsync(IEnumerable<QueryParameter> parameters, CancellationToken cancellationToken)
