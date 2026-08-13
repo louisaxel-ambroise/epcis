@@ -38,7 +38,7 @@
 			<section>
 				<h1>Presentation</h1>
 				<p>FasT&amp;T provides a full implementation of GS1 EPCIS repository for both <em>1.2</em> and <em>2.0</em> versions <i>(with full retrocompatibility of 1.0 and 1.1 versions)</i>.</p>
-				<p>It is written in <strong>C#</strong> with <strong>.NET9</strong> and uses <strong>EntityFramework Core</strong> as storage mechanism so it supports most of the common RDBMS providers. It is currently possible to store data in SQL Server, Sqlite and PostGreSQL databases.</p>
+				<p>It is written in <strong>C#</strong> with <strong>.NET10</strong> and uses <strong>EntityFramework Core</strong> as storage mechanism so it supports most of the common RDBMS providers. It is currently possible to store data in SQL Server, Sqlite and PostGreSQL databases.</p>
 				<p>The project is open-source and available on github: <a href="https://github.com/louisaxel-ambroise/epcis" target="_blank">https://github.com/louisaxel-ambroise/epcis</a>
 				<div class="img">
 					<span>{}</span> or <span>&lt;/&gt;</span>
@@ -55,7 +55,8 @@
 				<p>The repository can be easily setup in different ways:</p>
 				
 				<h2>1. Building from source</h2>
-				<p>To setup the repository from the source code, simply download the source code or clone the repository on GitHub and start the API with the command:
+				<p>To setup the repository from the source code, simply download the source code or clone the repository on GitHub and run the following commands:
+				<code>$ dotnet ef database update --project src\FasTnT.Host --connection "{your connectionstring}" -- --FasTnT.Database.Provider "{your db provider}"</code></p>
 				<code>$ dotnet run -p src\FasTnT.Host\FasTnT.Host.csproj --urls "http://localhost:5102/" --connectionStrings:FasTnT.Database "{your connectionstring}"</code></p>
 				
 				<h2>2. Deploy from Docker image</h2>
@@ -83,11 +84,11 @@
 			<section>
 				<h1>Contact And Links</h1>
 				<p>FasT&amp;T is developed and maintained by <a href="https://github.com/louisaxel-ambroise" target="_blank">Louis-Axel Ambroise</a>. You can contact me directly for any question/suggestion.</p>
-				<p>There is an instance of FasT&amp;T deployed and available for everybody at the URL: <a href="https://fastnt-dev.azurewebsites.net/" target="_blank">https://fastnt-dev.azurewebsites.net/</a></p>
+				<p>There is an instance of FasT&amp;T deployed and available for everybody at the URL: <a href="https://epcis.fastnt.eu/" target="_blank">https://epcis.fastnt.eu/</a></p>
 			</section>
 		</main>
 		<footer>
-			FasT&amp;T 2025
+			FasT&amp;T 2026
 		</footer>
 	</body>
 </html>

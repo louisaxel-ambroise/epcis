@@ -24,7 +24,7 @@ function get_credentials(){
 function send_query(){
 	clear('http_comms');
 	let request = new XMLHttpRequest();
-	let url='https://fastnt-dev.azurewebsites.net/events';
+	let url='https://epcis.fastnt.eu/events';
 	request.open("GET", url);
 	request.setRequestHeader("Authorization", "Basic " + get_credentials());
 	request.setRequestHeader("Content-Type", "application/json");
@@ -46,7 +46,7 @@ function send_query(){
 function send_capture(){
 	clear('http_comms');
 	let request = new XMLHttpRequest();
-	let url='https://fastnt-dev.azurewebsites.net/events';
+	let url='https://epcis.fastnt.eu/events';
 	
 	request.open("POST", url);
 	request.setRequestHeader("Authorization", "Basic " + get_credentials());
@@ -100,7 +100,7 @@ function send_capture(){
 			<section>
 				<h1>Public EPCIS repository</h1>
 				<p>An instance of the FasT&amp;T repository is deployed and freely accessible from anywhere. It includes all the implemented features of the repository.</p>
-				<p>It is available at the following URL: <a href="https://fastnt-dev.azurewebsites.net/" target="_blank">https://fastnt-dev.azurewebsites.net/</a></p>
+				<p>It is available at the following URL: <a href="https://epcis.fastnt.eu/" target="_blank">https://epcis.fastnt.eu/</a></p>
 			</section>
 			<section>
 				<h1>Usage</h1>
@@ -121,7 +121,7 @@ function send_capture(){
 			</section>
 		</main>
 		<footer>
-			FasT&amp;T 2025
+			FasT&amp;T 2026
 		</footer>
 	</body>
 </html>
