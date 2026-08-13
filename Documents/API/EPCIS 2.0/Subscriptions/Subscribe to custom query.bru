@@ -1,0 +1,29 @@
+meta {
+  name: Subscribe to custom query
+  type: ws
+  seq: 1
+}
+
+ws {
+  url: wss://epcis.fastnt.eu/queries/Transactions/events?stream=true
+  body: ws
+  auth: basic
+}
+
+headers {
+  ~Connection: Upgrade
+  ~Upgrade: websocket
+}
+
+auth:basic {
+  username: {{username}}
+  password: {{password}}
+}
+
+body:ws {
+  name: message 1
+  type: json
+  content: '''
+  
+  '''
+}
