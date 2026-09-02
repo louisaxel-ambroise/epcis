@@ -106,4 +106,11 @@ public class BasicAuthentication(IOptionsMonitor<AuthenticationSchemeOptions> op
 
         return string.Concat(hash.Select(x => x.ToString("X2")));
     }
+
+    protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        Response.Headers.Add("WWW-Authenticate", $"Basic realm=\"{Request.Host}\"");
+
+        return base.HandleChallengeAsync(properties);
+    }
 }
