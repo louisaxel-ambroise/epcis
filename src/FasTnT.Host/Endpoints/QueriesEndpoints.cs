@@ -36,7 +36,7 @@ public static class QueriesEndpoints
     {
         var query = await queryHandler.GetQueryDetailsAsync(queryName, httpContext.RequestAborted);
 
-        if (httpContext.WebSockets.IsWebSocketRequest)
+        if (httpContext.WebSockets.IsWebSocketRequest || (httpContext.Request.Headers["Connection"] == "Upgrade" && httpContext.Request.Headers["Upgrade"] == "websocket"))
         {
             return await httpContext.HandleWebsocketAsync(queryName, query.Parameters);
         }
