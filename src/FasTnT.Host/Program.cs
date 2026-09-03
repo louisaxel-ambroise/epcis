@@ -9,6 +9,7 @@ using FasTnT.Host.Subscriptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(BasicAuthentication.SchemeName)
@@ -18,6 +19,7 @@ builder.Services.AddHttpLogging(LoggingOptions);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEpcisStorage(builder.Configuration);
 builder.Services.AddEpcisServices();
+builder.Services.AddCors(options => options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 builder.Services.AddSingleton<EpcisEvents>();
 builder.Services.AddSingleton<IEventNotifier>(svc => svc.GetRequiredService<EpcisEvents>());
@@ -39,6 +41,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthChecks("/health").AllowAnonymous();
 app.UseWebSockets();
+app.UseCors("AllowAll");
 
 app.AddCaptureEndpoints()
    .AddEventsEndpoints()
