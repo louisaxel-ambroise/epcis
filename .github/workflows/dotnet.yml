@@ -8,13 +8,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-slim
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.0'
 
@@ -31,6 +31,7 @@ jobs:
       run: mv tests/FasTnT.Host.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Host.Tests/; mv tests/FasTnT.Application.Tests/TestResults/*/coverage.cobertura.xml tests/FasTnT.Application.Tests/; mv tests/FasTnT.IntegrationTests/TestResults/*/coverage.cobertura.xml tests/FasTnT.IntegrationTests/
       
     - name: Upload Coverage
+      if: ${{ secrets.CODACY_PROJECT_TOKEN != '' }}
       run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r tests/FasTnT.Host.Tests/coverage.cobertura.xml -r tests/FasTnT.Application.Tests/coverage.cobertura.xml -r tests/FasTnT.IntegrationTests/coverage.cobertura.xml
       env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
