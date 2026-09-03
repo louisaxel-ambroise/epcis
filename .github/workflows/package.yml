@@ -16,13 +16,13 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-slim
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v7
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: '10.0'
 
@@ -33,7 +33,7 @@ jobs:
       run: dotnet build --no-restore
           
     - name: Log in to the Container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v4
       with:
         registry: ghcr.io
         username: ${{ github.repository_owner }}
@@ -41,7 +41,7 @@ jobs:
 
     - name: Build and push Development Docker image
       if: ${{ github.event.release.tag_name == '' }}
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v7
       with:
         context: .
         file: Dockerfile
@@ -51,7 +51,7 @@ jobs:
 
     - name: Build and push Release Docker image
       if: ${{ github.event.release.tag_name != '' }}
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v7
       with:
         context: .
         file: Dockerfile
