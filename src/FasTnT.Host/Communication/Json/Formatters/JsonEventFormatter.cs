@@ -208,6 +208,7 @@ public class JsonEventFormatter
         AddEpcList(element, "epcList", epcs.Where(x => x.Type == EpcType.List));
         AddEpcList(element, "childEPCs", epcs.Where(x => x.Type == EpcType.ChildEpc));
         AddEpcList(element, "inputEPCList", epcs.Where(x => x.Type == EpcType.InputEpc));
+        AddQuantityEpcList(element, "quantityList", epcs.Where(x => x.Type == EpcType.Quantity));
         AddQuantityEpcList(element, "inputQuantityList", epcs.Where(x => x.Type == EpcType.InputQuantity));
         AddEpcList(element, "outputEPCList", epcs.Where(x => x.Type == EpcType.OutputEpc));
         AddQuantityEpcList(element, "outputQuantityList", epcs.Where(x => x.Type == EpcType.OutputQuantity));
