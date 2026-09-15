@@ -109,7 +109,7 @@ public class BasicAuthentication(IOptionsMonitor<AuthenticationSchemeOptions> op
 
     protected override Task HandleChallengeAsync(AuthenticationProperties properties)
     {
-        Response.Headers.Add("WWW-Authenticate", $"Basic realm=\"{Request.Host}\"");
+        Response.Headers.Append("WWW-Authenticate", $"Basic realm=\"{Request.Host}\"");
 
         return base.HandleChallengeAsync(properties);
     }

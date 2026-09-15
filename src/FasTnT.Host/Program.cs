@@ -9,7 +9,6 @@ using FasTnT.Host.Subscriptions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpLogging;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(BasicAuthentication.SchemeName)

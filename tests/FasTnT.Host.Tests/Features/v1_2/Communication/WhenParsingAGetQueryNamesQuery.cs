@@ -19,6 +19,6 @@ public class WhenParsingAGetQueryNamesQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAGetQueryNamesObject()
     {
-        Assert.AreEqual(Query.Action, "GetQueryNames");
+        Assert.AreEqual("GetQueryNames", Query.Action);
     }
 }
