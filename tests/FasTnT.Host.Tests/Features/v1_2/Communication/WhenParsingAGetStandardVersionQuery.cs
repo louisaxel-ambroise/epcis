@@ -19,6 +19,6 @@ public class WhenParsingAGetStandardVersionQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAGetStandardVersionObject()
     {
-        Assert.AreEqual(Query.Action, "GetStandardVersion");
+        Assert.AreEqual("GetStandardVersion", Query.Action);
     }
 }
