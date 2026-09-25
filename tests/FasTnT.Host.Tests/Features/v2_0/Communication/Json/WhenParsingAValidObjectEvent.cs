@@ -79,4 +79,13 @@ public class WhenParsingAValidObjectEvent : JsonParsingTestCase
         Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:id:sscc:4001356.5900000822"), "EPC urn:epc:id:sscc:4001356.5900000822 is expected");
         Assert.IsTrue(Event.Epcs.Any(e => e.Id == "urn:epc:class:lgtin:409876.0000001.L1" && e.Quantity == 3500 && e.UnitOfMeasure == "KGM"), "Quantity EPC urn:epc:class:lgtin:409876.0000001.L1 is expected");
     }
+
+    [TestMethod]
+    public void ExtensionFieldsShouldBeParsedCorrectly()
+    {
+        var extensionField = Assert.ContainsSingle(Event.Fields.Where(f => f.Type == FieldType.Extension));
+        Assert.AreEqual("myField", extensionField.Name);
+        Assert.IsEmpty(extensionField.Namespace);
+        Assert.AreEqual("this is an extension value", extensionField.TextValue);
+    }
 }

@@ -104,6 +104,12 @@ public class JsonEventFormatter
             element["ilmd"] = ilmd;
         }
 
+        var extensions = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.Extension));
+        if (extensions.Count > 0)
+        {
+            element["extension"] = extensions;
+        }
+
         var customFields = BuildExtensionFields(_evt.Fields.Where(x => x.Type == FieldType.CustomField));
         foreach (var field in customFields)
         {
@@ -258,12 +264,12 @@ public class JsonEventFormatter
     {
         var extension = new Dictionary<string, object>();
 
-        foreach (var group in fields.Where(x => x.ParentIndex == null).GroupBy(x => (x.Name, x.Namespace)))
+        foreach (var group in fields.Where(x => x.ParentIndex is null).GroupBy(x => (x.Name, x.Namespace)))
         {
             if (group.Count() > 1)
             {
                 var value = BuildArrayElement(group, fields);
-                extension.Add(_context[group.Key.Namespace] + ":" + group.Key.Name, value);
+                extension.Add(QualifiedName(group.Key.Namespace, group.Key.Name), value);
             }
             else
             {
@@ -271,16 +277,23 @@ public class JsonEventFormatter
 
                 if (fields.Any(x => x.Type != FieldType.Attribute && x.ParentIndex == field.Index))
                 {
-                    extension.Add(_context[field.Namespace] + ":" + field.Name, BuildElement(fields, field.Index));
+                    extension.Add(QualifiedName(field.Namespace, field.Name), BuildElement(fields, field.Index));
                 }
                 else
                 {
-                    extension.Add(_context[field.Namespace] + ":" + field.Name, field.TextValue);
+                    extension.Add(QualifiedName(field.Namespace, field.Name), field.TextValue);
                 }
             }
         }
 
         return extension;
+    }
+
+    private string QualifiedName(string ns, string name)
+    {
+        return string.IsNullOrEmpty(ns)
+            ? name
+            : _context[ns] + ":" + name;
     }
 
     private Dictionary<string, object> BuildElement(IEnumerable<Field> fields, int? parentIndex = null)
