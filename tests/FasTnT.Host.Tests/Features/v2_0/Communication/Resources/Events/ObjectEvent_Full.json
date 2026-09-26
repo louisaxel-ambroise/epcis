@@ -29,5 +29,8 @@
       "type": "po",
       "bizTransaction": "urn:epcglobal:cbv:bt:8811891013778:PO654321"
     }
-  ]
+  ],
+  "extension": {
+    "myField": "this is an extension value"
+  }
 }
