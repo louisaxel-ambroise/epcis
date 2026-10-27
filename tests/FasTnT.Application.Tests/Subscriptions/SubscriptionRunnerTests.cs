@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Subscriptions;
+﻿using FasTnT.Application.Services.Subscriptions;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Enumerations;
@@ -12,20 +11,20 @@ namespace FasTnT.Application.Tests.Subscriptions;
 [TestClass]
 public class SubscriptionRunnerTests
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(SubscriptionRunnerTests));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(SubscriptionRunnerTests));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
-    readonly SubscriptionRunner SubscriptionRunner = new SubscriptionRunner(Context);
+    readonly SubscriptionRunner SubscriptionRunner = new(Context.DbContext);
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange([
+        Context.DbContext.AddRange([
             new Request
             {
                 CaptureId = "capture_id_test",
@@ -51,14 +50,14 @@ public class SubscriptionRunnerTests
             }
         ]);
 
-        Context.SaveChanges();
-        Context.ChangeTracker.Clear();
+        Context.DbContext.SaveChanges();
+        Context.DbContext.ChangeTracker.Clear();
     }
 
     [TestMethod]
     public void ItShouldReturnASuccessfulExecutionResult()
     {
-        var context = new SubscriptionContext(Array.Empty<QueryParameter>(), Array.Empty<int>());
+        var context = new SubscriptionContext([], []);
         var result = SubscriptionRunner.ExecuteAsync(context, CancellationToken.None).Result;
 
         Assert.IsTrue(result.Successful);
@@ -70,7 +69,7 @@ public class SubscriptionRunnerTests
     [TestMethod]
     public void ItShouldExcludeTheEventsSpecifiedInTheContext()
     {
-        var context = new SubscriptionContext(Array.Empty<QueryParameter>(), [1]);
+        var context = new SubscriptionContext([], [1]);
         var result = SubscriptionRunner.ExecuteAsync(context, CancellationToken.None).Result;
 
         Assert.IsTrue(result.Successful);
@@ -82,7 +81,7 @@ public class SubscriptionRunnerTests
     [TestMethod]
     public void ItShouldReturnAnExceptionIfExecutionFails()
     {
-        var context = new SubscriptionContext([QueryParameter.Create("ERROR", "unknown_param")], Array.Empty<int>());
+        var context = new SubscriptionContext([QueryParameter.Create("ERROR", "unknown_param")], []);
         var result = SubscriptionRunner.ExecuteAsync(context, CancellationToken.None).Result;
 
         Assert.IsFalse(result.Successful);

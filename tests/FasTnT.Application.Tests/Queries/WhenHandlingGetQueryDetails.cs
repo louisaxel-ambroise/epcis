@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
@@ -10,19 +9,19 @@ namespace FasTnT.Application.Tests.Queries;
 [TestClass]
 public class WhenHandlingGetQueryDetails
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetQueryDetails));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetQueryDetails));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange([
+        Context.DbContext.AddRange([
             new StoredQuery
             {
                 Id = 1,
@@ -38,16 +37,16 @@ public class WhenHandlingGetQueryDetails
                 Name = "QueryTwo"
             }
         ]);
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public void ItShouldReturnTheQueryWhenItExists()
     {
-        var handler = new QueriesHandler(Context, UserContext);
+        var handler = new QueriesHandler(Context.DbContext, UserContext);
         var result = handler.GetQueryDetailsAsync("QueryOne", CancellationToken.None).Result;
 
-        Assert.IsInstanceOfType(result, typeof(StoredQuery));
+        Assert.IsInstanceOfType<StoredQuery>(result);
 
         Assert.AreEqual("QueryOne", result.Name);
         Assert.AreEqual(1, result.Parameters.Count);
@@ -56,7 +55,7 @@ public class WhenHandlingGetQueryDetails
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheQueryDoesNotExist()
     {
-        var handler = new QueriesHandler(Context, UserContext);
+        var handler = new QueriesHandler(Context.DbContext, UserContext);
 
         Assert.ThrowsAsync<EpcisException>(() => handler.GetQueryDetailsAsync("Unknown", CancellationToken.None));
     }

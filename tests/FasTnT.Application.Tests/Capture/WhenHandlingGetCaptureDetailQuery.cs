@@ -1,7 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers;
-using FasTnT.Application.Services.Notifications;
-using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
@@ -15,19 +12,19 @@ namespace FasTnT.Application.Tests.Capture;
 [TestClass]
 public class WhenHandlingGetCaptureDetailQuery
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetCaptureDetailQuery));
-    readonly static ICurrentUser UserContext = new TestCurrentUser();
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetCaptureDetailQuery));
+    readonly static TestCurrentUser UserContext = new();
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange([
+        Context.DbContext.AddRange([
             new Request
             {
                 Id = 1,
@@ -50,13 +47,13 @@ public class WhenHandlingGetCaptureDetailQuery
             }
         ]);
 
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public void ItShouldReturnTheRequests()
     {
-        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context.DbContext, UserContext, Options.Create(new Constants()));
         var result = handler.GetCaptureDetailsAsync("001", default).Result;
 
         Assert.IsNotNull(result);
@@ -68,7 +65,7 @@ public class WhenHandlingGetCaptureDetailQuery
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheCaptureDoesNotExist()
     {
-        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context.DbContext, UserContext, Options.Create(new Constants()));
 
         Assert.ThrowsAsync<EpcisException>(() => handler.GetCaptureDetailsAsync("unknown", default));
     }
