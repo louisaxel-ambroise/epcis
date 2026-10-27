@@ -33,11 +33,6 @@ public sealed class EpcisContext : DbContext
 
         return masterdataContext.ApplyTo(Set<MasterData>());
     }
-    
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        EpcisModelConfiguration.Apply(modelBuilder);
-    }
 
     public async Task AddSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken)
     {
@@ -68,5 +63,10 @@ public sealed class EpcisContext : DbContext
         }
 
         EventNotifier.RequestCaptured(request);
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        EpcisModelConfiguration.Apply(modelBuilder);
     }
 }
