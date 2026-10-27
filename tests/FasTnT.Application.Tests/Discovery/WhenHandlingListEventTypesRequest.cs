@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Model.Events;
@@ -11,19 +10,19 @@ namespace FasTnT.Application.Tests.Discovery;
 [TestClass]
 public class WhenHandlingListEventTypesRequest
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListEventTypesRequest));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListEventTypesRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Add(new Domain.Model.Request
+        Context.DbContext.Add(new Domain.Model.Request
         {
             RecordTime = DateTime.Now,
             DocumentTime = DateTime.Now,
@@ -44,13 +43,13 @@ public class WhenHandlingListEventTypesRequest
             ]
         });
 
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public async Task ItShouldReturnAllTheReadPointsIfPageSizeIsGreaterThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceHandler(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context.DbContext, UserContext);
         var request = new Pagination(10, 0);
 
         var result = await handler.ListEventTypes(request, default);
@@ -62,7 +61,7 @@ public class WhenHandlingListEventTypesRequest
     [TestMethod]
     public async Task ItShouldReturnTheRequestedNumberOfReadPointsIfPageSizeIsLowerThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceHandler(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context.DbContext, UserContext);
         var request = new Pagination(1, 0);
 
         var result = await handler.ListEventTypes(request, default);
@@ -74,7 +73,7 @@ public class WhenHandlingListEventTypesRequest
     [TestMethod]
     public async Task ItShouldReturnTheCorrectPageOfData()
     {
-        var handler = new TopLevelResourceHandler(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context.DbContext, UserContext);
         var request = new Pagination(10, 1);
 
         var result = await handler.ListEventTypes(request, default);

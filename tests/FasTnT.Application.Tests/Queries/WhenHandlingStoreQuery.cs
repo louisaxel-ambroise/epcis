@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
@@ -10,19 +9,19 @@ namespace FasTnT.Application.Tests.Queries;
 [TestClass]
 public class WhenHandlingStoreQuery
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingStoreQuery));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingStoreQuery));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange([
+        Context.DbContext.AddRange([
             new StoredQuery
             {
                 Id = 1,
@@ -33,13 +32,13 @@ public class WhenHandlingStoreQuery
                 ]
             }
         ]);
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public void ItShouldReturnTheQueryIfItIsSuccessfullyStored()
     {
-        var handler = new QueriesHandler(Context, UserContext);
+        var handler = new QueriesHandler(Context.DbContext, UserContext);
         var result = handler.StoreQueryAsync(new StoredQuery { Name = "NewQuery" }, CancellationToken.None).Result;
 
         Assert.IsInstanceOfType(result, typeof(StoredQuery));
@@ -51,7 +50,7 @@ public class WhenHandlingStoreQuery
     [TestMethod]
     public void ItShouldThrowAnExceptionIfAQueryWithSameNameAlreadyExists()
     {
-        var handler = new QueriesHandler(Context, UserContext);
+        var handler = new QueriesHandler(Context.DbContext, UserContext);
 
         Assert.ThrowsAsync<EpcisException>(() => handler.StoreQueryAsync(new StoredQuery { Name = "QueryOne" }, CancellationToken.None));
     }

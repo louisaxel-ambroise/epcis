@@ -1,7 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers;
-using FasTnT.Application.Services.Notifications;
-using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain;
 using FasTnT.Domain.Enumerations;
@@ -16,20 +13,20 @@ namespace FasTnT.Application.Tests.Capture;
 [TestClass]
 public class WhenHandlingListCaptureQuery
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListCaptureQuery));
-    readonly static ICurrentUser UserContext = new TestCurrentUser();
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListCaptureQuery));
+    readonly static TestCurrentUser UserContext = new();
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange([
+        Context.DbContext.AddRange([
             new Request
             {
                 Id = 1,
@@ -52,38 +49,38 @@ public class WhenHandlingListCaptureQuery
             }
         ]);
 
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public async Task ItShouldReturnTheRequests()
     {
-        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context.DbContext, UserContext, Options.Create(new Constants()));
         var result = await handler.ListCapturesAsync(Pagination.Max, default);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(2, result.Count());
+        Assert.HasCount(2, result);
     }
 
     [TestMethod]
     public async Task ItShouldApplyThePaginationPerPageFilter()
     {
-        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context.DbContext, UserContext, Options.Create(new Constants()));
         var result = await handler.ListCapturesAsync(new Pagination(1, 0), default);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count());
+        Assert.HasCount(1, result);
         Assert.AreEqual("001", result.First().CaptureId);
     }
 
     [TestMethod]
     public async Task ItShouldApplyThePaginationStartFromFilter()
     {
-        var handler = new CaptureHandler(Context, UserContext, new EpcisEvents(), Options.Create(new Constants()));
+        var handler = new CaptureHandler(Context.DbContext, UserContext, Options.Create(new Constants()));
         var result = await handler.ListCapturesAsync(new Pagination(int.MaxValue, 1), default);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(1, result.Count());
+        Assert.HasCount(1, result);
         Assert.AreEqual("002", result.First().CaptureId);
     }
 }
