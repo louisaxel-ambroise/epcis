@@ -20,7 +20,7 @@ public class WhenParsingAnUnsubscribeQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAnUnsubscribeObject()
     {
-        Assert.AreEqual(Envelope.Action, "Unsubscribe");
+        Assert.AreEqual("Unsubscribe", Envelope.Action);
     }
 
     [TestMethod]

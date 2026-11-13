@@ -1,6 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers;
-using FasTnT.Application.Services.Notifications;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
@@ -10,18 +8,18 @@ namespace FasTnT.Application.Tests.Queries;
 [TestClass]
 public class WhenHandlingGetSubscriptionCommand
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetSubscriptionCommand));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingGetSubscriptionCommand));
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Add(new Subscription
+        Context.DbContext.Add(new Subscription
         {
             Name = "TestSubscription",
             QueryName = "SimpleEventQuery",
@@ -29,13 +27,13 @@ public class WhenHandlingGetSubscriptionCommand
             FormatterName = "TestFormatter"
         });
 
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public void ItShouldReturnTheSubscriptionIfItExists()
     {
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
         var result = handler.GetSubscriptionDetailsAsync("TestSubscription", CancellationToken.None).Result;
 
         Assert.IsInstanceOfType<Subscription>(result);
@@ -47,7 +45,7 @@ public class WhenHandlingGetSubscriptionCommand
     [TestMethod]
     public void ItShouldThrowAnExceptionIfTheSubscriptionDoesNotExists()
     {
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
         Assert.ThrowsAsync<EpcisException>(() => handler.GetSubscriptionDetailsAsync("UnknownSubscription", CancellationToken.None));
     }
 }

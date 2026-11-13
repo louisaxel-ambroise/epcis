@@ -88,7 +88,9 @@ public class JsonEventParser
                 case "persistentDisposition":
                     _evt.PersistentDispositions.AddRange(ParsePersistentDispositions(property.Value)); break;
                 case "ilmd":
-                    _evt.Fields.AddRange(ParseIlmd(property)); break;
+                    _evt.Fields.AddRange(ParseFieldType(property, FieldType.Ilmd)); break;
+                case "extension":
+                    _evt.Fields.AddRange(ParseFieldType(property, FieldType.Extension)); break;
                 case "recordTime":
                 /* Don't do anything - record time is set to the time the event was inserted. */
                 case "@context":
@@ -223,12 +225,12 @@ public class JsonEventParser
         return value.EnumerateArray().Select(ParseSensorElement);
     }
 
-    private IEnumerable<Field> ParseIlmd(JsonProperty jsonProperty)
+    private IEnumerable<Field> ParseFieldType(JsonProperty jsonProperty, FieldType fieldType)
     {
         return jsonProperty.Value.EnumerateObject().SelectMany(e =>
         {
             var (ns, name) = _extensions.ParseName(e.Name);
-            return ParseCustomField(e.Value, FieldType.Ilmd, name, ns);
+            return ParseCustomField(e.Value, fieldType, name, ns);
         });
     }
 

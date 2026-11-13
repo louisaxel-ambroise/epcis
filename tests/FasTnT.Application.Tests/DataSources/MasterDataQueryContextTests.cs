@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model;
@@ -11,19 +10,19 @@ namespace FasTnT.Application.Tests.DataSources;
 [TestClass]
 public class MasterDataQueryContextTests
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(MasterDataQueryContextTests));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(MasterDataQueryContextTests));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange(
+        Context.DbContext.AddRange(
         [
             new Request
             {
@@ -99,13 +98,13 @@ public class MasterDataQueryContextTests
             }
         ]);
 
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public void ItShouldReturnTheStoredMasterdata()
     {
-        var result = Context.QueryMasterData(Array.Empty<QueryParameter>()).ToList();
+        var result = Context.DbContext.QueryMasterData([]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(3, result);
@@ -114,7 +113,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldRestrictTheDataIfTheMaxElementCountLimitIsExceeded()
     {
-        var result = Context.QueryMasterData([new QueryParameter { Name = "maxElementCount", Values = ["1"] }]).ToList();
+        var result = Context.DbContext.QueryMasterData([new QueryParameter { Name = "maxElementCount", Values = ["1"] }]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -123,7 +122,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheVocabularyNameParameter()
     {
-        var result = Context.QueryMasterData([new QueryParameter { Name = "vocabularyName", Values = ["urn:epcglobal:epcis:vtype:ReadPoint"] }]).ToList();
+        var result = Context.DbContext.QueryMasterData([new QueryParameter { Name = "vocabularyName", Values = ["urn:epcglobal:epcis:vtype:ReadPoint"] }]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -133,7 +132,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQNameParameter()
     {
-        var result = Context.QueryMasterData([new QueryParameter { Name = "EQ_name", Values = ["MD02"] }]).ToList();
+        var result = Context.DbContext.QueryMasterData([new QueryParameter { Name = "EQ_name", Values = ["MD02"] }]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -143,7 +142,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheWDNameParameter()
     {
-        var result = Context.QueryMasterData([new QueryParameter { Name = "WD_name", Values = ["MD03"] }]).ToList();
+        var result = Context.DbContext.QueryMasterData([new QueryParameter { Name = "WD_name", Values = ["MD03"] }]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(2, result);
@@ -154,7 +153,7 @@ public class MasterDataQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheHasAttrParameter()
     {
-        var result = Context.QueryMasterData([new QueryParameter { Name = "HASATTR", Values = ["MD2AT1"] }]).ToList();
+        var result = Context.DbContext.QueryMasterData([new QueryParameter { Name = "HASATTR", Values = ["MD2AT1"] }]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -165,7 +164,7 @@ public class MasterDataQueryContextTests
     [DataRow("MD2AT1", "NOVALUE", 0)]
     public void ItShouldApplyTheEqAttrParameter(string paramName, string value, int expectedResult)
     {
-        var result = Context.QueryMasterData([new QueryParameter { Name = $"EQATTR_{paramName}", Values = [value] }]).ToList();
+        var result = Context.DbContext.QueryMasterData([new QueryParameter { Name = $"EQATTR_{paramName}", Values = [value] }]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(expectedResult, result);
@@ -186,11 +185,11 @@ public class MasterDataQueryContextTests
     {
         if (throws)
         {
-            Assert.Throws<EpcisException>(() => Context.QueryMasterData([new QueryParameter { Name = paramName, Values = [paramValue] }]).ToList());
+            Assert.Throws<EpcisException>(() => Context.DbContext.QueryMasterData([new QueryParameter { Name = paramName, Values = [paramValue] }]).ToList());
         }
         else
         {
-            var result = Context.QueryMasterData([new QueryParameter { Name = paramName, Values = [paramValue] }]).ToList();
+            var result = Context.DbContext.QueryMasterData([new QueryParameter { Name = paramName, Values = [paramValue] }]).ToList();
 
             Assert.IsNotNull(result);
         }

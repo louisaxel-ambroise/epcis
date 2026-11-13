@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Services.Users;
+﻿using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Enumerations;
 using FasTnT.Domain.Exceptions;
@@ -13,19 +12,19 @@ namespace FasTnT.Application.Tests.DataSources;
 [TestClass]
 public class EventQueryContextTests
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(EventQueryContextTests));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(EventQueryContextTests));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.AddRange(
+        Context.DbContext.AddRange(
         [
             new Request
             {
@@ -128,13 +127,13 @@ public class EventQueryContextTests
             }
         ]);
 
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public void ItShouldReturnTheStoredEvents()
     {
-        var result = Context.QueryEvents([]).ToList();
+        var result = Context.DbContext.QueryEvents([]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(2, result);
@@ -143,7 +142,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldRestrictTheDataIfTheEventCountLimitIsExceeded()
     {
-        var result = Context.QueryEvents([new QueryParameter { Name = "eventCountLimit", Values = ["1"] }]).ToList();
+        var result = Context.DbContext.QueryEvents([new QueryParameter { Name = "eventCountLimit", Values = ["1"] }]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -152,7 +151,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldRestrictTheDataIfTheMaxEventCountIsExceeded()
     {
-        var result = Context.QueryEvents([new QueryParameter { Name = "maxEventCount", Values = ["1"] }]).ToList();
+        var result = Context.DbContext.QueryEvents([new QueryParameter { Name = "maxEventCount", Values = ["1"] }]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -161,7 +160,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheeventTypeFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("eventType", "ObjectEvent")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("eventType", "ObjectEvent")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -171,7 +170,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheGE_eventTimeFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("GE_eventTime", "2021-01-12T10:24:10Z")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("GE_eventTime", "2021-01-12T10:24:10Z")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -181,7 +180,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheLT_eventTimeFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("LT_eventTime", "2021-01-12T10:24:10Z")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("LT_eventTime", "2021-01-12T10:24:10Z")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -191,7 +190,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheGE_recordTimeFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("GE_recordTime", "2021-03-12T10:24:10Z")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("GE_recordTime", "2021-03-12T10:24:10Z")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.IsEmpty(result);
@@ -201,7 +200,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheLT_recordTimeFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("LT_recordTime", "2021-03-12T10:24:10Z")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("LT_recordTime", "2021-03-12T10:24:10Z")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(2, result);
@@ -211,7 +210,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_actionFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_action", "ADD")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_action", "ADD")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -221,7 +220,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_bizLocationFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_bizLocation", "test_location", "test_location2")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_bizLocation", "test_location", "test_location2")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(2, result);
@@ -231,7 +230,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_bizStepFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_bizStep", "step")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_bizStep", "step")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -241,7 +240,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_dispositionFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_disposition", "disposition")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_disposition", "disposition")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -251,27 +250,27 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheorderByFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("orderBy", "eventTime")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("orderBy", "eventTime")]).ToList();
         var sorted = result.OrderByDescending(s => s.EventTime);
 
         Assert.IsNotNull(result);
-        CollectionAssert.AreEqual(sorted.ToList(), result.ToList());
+        Assert.AreSequenceEqual(sorted.ToList(), [.. result]);
     }
 
     [TestMethod]
     public void ItShouldApplyTheorderDirectionFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("orderBy", "eventTime"), QueryParameter.Create("orderDirection", "ASC")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("orderBy", "eventTime"), QueryParameter.Create("orderDirection", "ASC")]).ToList();
         var sorted = result.OrderBy(s => s.EventTime);
 
         Assert.IsNotNull(result);
-        CollectionAssert.AreEqual(sorted.ToList(), result.ToList());
+        Assert.AreSequenceEqual(sorted.ToList(), [.. result]);
     }
 
     [TestMethod]
     public void ItShouldApplyTheNextPageTokenFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("nextPageToken", "1")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("nextPageToken", "1")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -280,7 +279,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyThePerPageFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("perPage", "1")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("perPage", "1")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -289,7 +288,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_eventIDFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_eventID", "ni://test")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_eventID", "ni://test")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -299,7 +298,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_readPointFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_readPoint", "rp_test")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_readPoint", "rp_test")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -309,7 +308,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_transformationIDFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_transformationID", "transformationIdEvent")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_transformationID", "transformationIdEvent")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -319,7 +318,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEXISTS_errorDeclarationFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EXISTS_errorDeclaration", "")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EXISTS_errorDeclaration", "")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -329,7 +328,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_errorReasonFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_errorReason", "invalid_evt")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_errorReason", "invalid_evt")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -339,7 +338,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_correctiveEventIDFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_correctiveEventID", "ni://test2")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_correctiveEventID", "ni://test2")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -349,7 +348,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_requestIDFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_requestID", "1")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_requestID", "1")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(2, result);
@@ -358,7 +357,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheEQ_captureIDFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("EQ_captureID", "capture_id_test")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("EQ_captureID", "capture_id_test")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(2, result);
@@ -367,7 +366,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheInnerIlmdFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("GE_INNER_ILMD_test#numeric", "5")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("GE_INNER_ILMD_test#numeric", "5")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -377,7 +376,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheIlmdFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("LT_ILMD_test#numeric", "3")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("LT_ILMD_test#numeric", "3")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -387,7 +386,7 @@ public class EventQueryContextTests
     [TestMethod]
     public void ItShouldApplyTheMATCH_anyEpcFilter()
     {
-        var result = Context.QueryEvents([QueryParameter.Create("MATCH_anyEPC", "epc.*")]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("MATCH_anyEPC", "epc.*")]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(1, result);
@@ -400,7 +399,7 @@ public class EventQueryContextTests
     [DataRow("test_unknownlocation", 0)]
     public void ItShouldApplyTheWD_bizLocationFilter(string value, int expected)
     {
-        var result = Context.QueryEvents([QueryParameter.Create("WD_bizLocation", value)]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("WD_bizLocation", value)]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(expected, result);
@@ -412,7 +411,7 @@ public class EventQueryContextTests
     [DataRow("rp_unknown", 0)]
     public void ItShouldApplyTheWD_readPointFilter(string value, int expected)
     {
-        var result = Context.QueryEvents([QueryParameter.Create("WD_readPoint", value)]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("WD_readPoint", value)]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(expected, result);
@@ -431,11 +430,11 @@ public class EventQueryContextTests
     {
         if (throws)
         {
-            Assert.Throws<EpcisException>(() => Context.QueryEvents([new QueryParameter { Name = paramName, Values = ["value"] }]).ToList());
+            Assert.Throws<EpcisException>(() => Context.DbContext.QueryEvents([new QueryParameter { Name = paramName, Values = ["value"] }]).ToList());
         }
         else
         {
-            var result = Context.QueryEvents([new QueryParameter { Name = paramName, Values = ["value"] }]).ToList();
+            var result = Context.DbContext.QueryEvents([new QueryParameter { Name = paramName, Values = ["value"] }]).ToList();
 
             Assert.IsNotNull(result);
         }
@@ -447,7 +446,7 @@ public class EventQueryContextTests
     [DataRow("2025-01-10T00:00:00.000Z", 0)]
     public void ItShouldApplyTheGE_errorDeclarationTimeFilter(string value, int expectedEvents)
     {
-        var result = Context.QueryEvents([QueryParameter.Create("GE_errorDeclarationTime", value)]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("GE_errorDeclarationTime", value)]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(expectedEvents, result);
@@ -460,7 +459,7 @@ public class EventQueryContextTests
     [DataRow("2023-01-15T00:00:00.000Z", 0)]
     public void ItShouldApplyTheLT_errorDeclarationTimeFilter(string value, int expectedEvents)
     {
-        var result = Context.QueryEvents([QueryParameter.Create("LT_errorDeclarationTime", value)]).ToList();
+        var result = Context.DbContext.QueryEvents([QueryParameter.Create("LT_errorDeclarationTime", value)]).ToList();
 
         Assert.IsNotNull(result);
         Assert.HasCount(expectedEvents, result);

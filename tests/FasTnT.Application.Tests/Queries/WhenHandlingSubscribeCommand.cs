@@ -1,6 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers;
-using FasTnT.Application.Services.Notifications;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Exceptions;
 using FasTnT.Domain.Model.Subscriptions;
@@ -10,18 +8,18 @@ namespace FasTnT.Application.Tests.Queries;
 [TestClass]
 public class WhenHandlingSubscribeCommand
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingSubscribeCommand));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingSubscribeCommand));
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Add(new Subscription
+        Context.DbContext.Add(new Subscription
         {
             Name = "TestSubscription",
             QueryName = "SimpleEventQuery",
@@ -29,8 +27,8 @@ public class WhenHandlingSubscribeCommand
             FormatterName = "TestFormatter"
         });
 
-        Context.SaveChanges();
-        Context.ChangeTracker.Clear();
+        Context.DbContext.SaveChanges();
+        Context.DbContext.ChangeTracker.Clear();
     }
 
     [TestMethod]
@@ -44,7 +42,7 @@ public class WhenHandlingSubscribeCommand
             QueryName = "SimpleEventQuery",
             Trigger = "daily"
         };
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
         var result = handler.RegisterSubscriptionAsync(subscription, CancellationToken.None).Result;
 
         Assert.IsInstanceOfType<Subscription>(result);
@@ -61,7 +59,7 @@ public class WhenHandlingSubscribeCommand
             QueryName = "SimpleEventQuery",
             Trigger = "daily"
         };
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
 
         Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
@@ -77,7 +75,7 @@ public class WhenHandlingSubscribeCommand
             QueryName = "SimpleEventQuery",
             Trigger = "daily"
         };
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
 
         Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
@@ -93,7 +91,7 @@ public class WhenHandlingSubscribeCommand
             QueryName = "SimpleEventQuery",
             Trigger = "unknown"
         };
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
 
         Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
@@ -108,7 +106,7 @@ public class WhenHandlingSubscribeCommand
             FormatterName = string.Empty,
             QueryName = "SimpleEventQuery"
         };
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
 
         Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
@@ -122,7 +120,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             QueryName = "UnknownQuery"
         };
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
 
         Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }
@@ -136,7 +134,7 @@ public class WhenHandlingSubscribeCommand
             Destination = "",
             QueryName = "SimpleMasterdataQuery"
         };
-        var handler = new SubscriptionsHandler(Context, new TestCurrentUser(), new EpcisEvents());
+        var handler = new SubscriptionsHandler(Context.DbContext, new TestCurrentUser());
 
         Assert.ThrowsAsync<EpcisException>(() => handler.RegisterSubscriptionAsync(subscription, CancellationToken.None));
     }

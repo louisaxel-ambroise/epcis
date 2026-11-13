@@ -1,5 +1,4 @@
-﻿using FasTnT.Application.Database;
-using FasTnT.Application.Handlers;
+﻿using FasTnT.Application.Handlers;
 using FasTnT.Application.Services.Users;
 using FasTnT.Application.Tests.Context;
 using FasTnT.Domain.Model.Events;
@@ -10,19 +9,19 @@ namespace FasTnT.Application.Tests.Discovery;
 [TestClass]
 public class WhenHandlingListDispositionsRequest
 {
-    readonly static EpcisContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListDispositionsRequest));
+    readonly static EpcisTestContext Context = EpcisTestContext.GetContext(nameof(WhenHandlingListDispositionsRequest));
     readonly static ICurrentUser UserContext = new TestCurrentUser();
 
     [ClassCleanup]
     public static void Cleanup()
     {
-        Context?.Database.EnsureDeleted();
+        Context?.DbContext.Database.EnsureDeleted();
     }
 
     [ClassInitialize]
     public static void Initialize(TestContext _)
     {
-        Context.Add(new Domain.Model.Request
+        Context.DbContext.Add(new Domain.Model.Request
         {
             RecordTime = DateTime.Now,
             DocumentTime = DateTime.Now,
@@ -41,13 +40,13 @@ public class WhenHandlingListDispositionsRequest
             ]
         });
 
-        Context.SaveChanges();
+        Context.DbContext.SaveChanges();
     }
 
     [TestMethod]
     public void ItShouldReturnAllTheDispositionsIfPageSizeIsGreaterThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceHandler(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context.DbContext, UserContext);
         var request = new Pagination(10, 0);
 
         var result = handler.ListDispositions(request, default).Result;
@@ -59,7 +58,7 @@ public class WhenHandlingListDispositionsRequest
     [TestMethod]
     public void ItShouldReturnTheRequestedNumberOfDispositionsIfPageSizeIsLowerThanNumberOfEpcs()
     {
-        var handler = new TopLevelResourceHandler(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context.DbContext, UserContext);
         var request = new Pagination(1, 0);
 
         var result = handler.ListDispositions(request, default).Result;
@@ -71,7 +70,7 @@ public class WhenHandlingListDispositionsRequest
     [TestMethod]
     public void ItShouldReturnTheCorrectPageOfData()
     {
-        var handler = new TopLevelResourceHandler(Context, UserContext);
+        var handler = new TopLevelResourceHandler(Context.DbContext, UserContext);
         var request = new Pagination(10, 1);
 
         var result = handler.ListDispositions(request, default).Result;

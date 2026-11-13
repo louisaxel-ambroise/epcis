@@ -20,7 +20,7 @@ public class WhenParsingAGetSubscriptionIDsQuery : XmlParsingTestCase
     [TestMethod]
     public void ItShouldReturnAListSubscriptionsRequest()
     {
-        Assert.AreEqual(Envelope.Action, "GetSubscriptionIDs");
+        Assert.AreEqual("GetSubscriptionIDs", Envelope.Action);
     }
 
     [TestMethod]

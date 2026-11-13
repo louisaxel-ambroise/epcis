@@ -1,4 +1,4 @@
-﻿using FasTnT.Postgres;
+﻿//using FasTnT.Postgres;
 using FasTnT.Sqlite;
 using FasTnT.SqlServer;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ public static class DatabaseConfiguration
 {
     static readonly Dictionary<string, Action<IServiceCollection, string, int>> Providers = new() {
         { nameof(SqlServer), SqlServerProvider.Configure },
-        { nameof(Postgres), PostgresProvider.Configure },
+        //{ nameof(Postgres), PostgresProvider.Configure },
         { nameof(Sqlite), SqliteProvider.Configure }
     };
 
